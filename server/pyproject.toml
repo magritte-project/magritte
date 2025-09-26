@@ -1,0 +1,18 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "The API server of Magritte"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.117.1",
+    "pydantic>=2.11.9",
+    "sqlmodel>=0.0.25",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+]

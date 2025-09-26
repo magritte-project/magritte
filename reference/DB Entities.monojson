@@ -1,0 +1,791 @@
+{
+  "header" : {
+    "v" : 5
+  },
+  "object_list" : [
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "0011305C-6823-4C3B-B730-AA6722BA000B",
+      "rect_position" : 16,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "0A6ED0D8-CA31-4EF0-8A11-C0EFA6383D76",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "0B656F6F-204E-4E7F-B7B0-627199A624CE",
+      "rect_position" : 15,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "0BC3615C-C1E0-4C9A-95B8-B6C07D1F6EFA",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "0BCFA2CF-C163-4BD2-BEB6-74A4B805ABE5",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "0C6A3B6C-FCB0-4579-B02C-75E5CDD63E29",
+      "rect_position" : 19,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "115E2347-9A6B-49DE-AF12-11FA2C5C7525",
+      "rect_position" : 15,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "145CA68E-1C25-457E-A7B0-379FF6DB84BD",
+      "point" : "59,33",
+      "type_id" : 11
+    },
+    {
+      "direction" : 1,
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "1B48DFF4-B942-4651-81E4-347E649CEE74",
+      "type_id" : 9
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "1C616DCF-611C-443C-BC62-E3AE507C5FA1",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "1E8DD9D8-0A4D-4715-9D46-000129194B29",
+      "rect_position" : 16,
+      "type_id" : 12
+    },
+    {
+      "border_tixels" : "0BC3615C-C1E0-4C9A-95B8-B6C07D1F6EFA",
+      "content_tixels" : "B2BC83B0-5857-4805-B009-36755081444F",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "frame_anchor_ref" : "145CA68E-1C25-457E-A7B0-379FF6DB84BD",
+      "frame_size" : "9,3",
+      "model_text" : "3717059E-1E18-4DE3-B74E-FF565CCADEA7",
+      "name" : "Sources",
+      "object_id" : "2696A6F8-A1AE-42FA-AC39-9F4FCBEE8B57",
+      "origin" : "14,-15",
+      "position_refs" : [
+        "145CA68E-1C25-457E-A7B0-379FF6DB84BD",
+        "6519BB38-AA15-4840-B2E9-D6FF77DC47DB",
+        "0B656F6F-204E-4E7F-B7B0-627199A624CE",
+        "C923D8CD-569B-49D6-AD65-28925A986546",
+        "0C6A3B6C-FCB0-4579-B02C-75E5CDD63E29"
+      ],
+      "type_id" : 20
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "28281087-F676-4D38-9D32-9C265F4FD778",
+      "type_id" : 18
+    },
+    {
+      "content_tixmap_ref" : "82442569-38AD-4F37-BF90-458C8989AAE4",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Songs to Albums",
+      "name_edited" : true,
+      "object_id" : "29BC1CA7-55DC-4769-89B4-2CBF57540419",
+      "origin" : "18,-2",
+      "position_refs" : [
+        "8A2E80F1-39AD-4944-8F39-E9E707FB2AA8",
+        "6A3E000B-BAEC-4FFA-9D19-C45A5F0D7A88"
+      ],
+      "segment_end_refs" : [
+        "8A2E80F1-39AD-4944-8F39-E9E707FB2AA8",
+        "6A3E000B-BAEC-4FFA-9D19-C45A5F0D7A88"
+      ],
+      "segment_refs" : [
+        "F0A42C31-01DB-46FD-81B2-0DD1BC273733"
+      ],
+      "type_id" : 5
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "2A742E3C-455B-4261-B451-4E4C6443DE97",
+      "rect_position" : 19,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "31EA761C-CDEC-4842-A776-35F7B31B6BD7",
+      "point" : "52,19",
+      "type_id" : 11
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 14,
+      "object_id" : "33F8417B-EC6D-4B60-8640-28CCB4378868",
+      "position_ref" : "6F70A346-A5F6-4CE3-A488-C6CBC9CC47EC",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "34560D4D-6E39-42AB-A4D4-FE2D94844BAB",
+      "rect_position" : 16,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "34E2A9EF-E699-4A2D-9ABD-09E21CCC1B6E",
+      "position_ref" : "CA1CDC36-A5A2-4EC0-A40C-F50883FEA1B9",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "3717059E-1E18-4DE3-B74E-FF565CCADEA7",
+      "text" : "Sources",
+      "type_id" : 27
+    },
+    {
+      "direction" : 1,
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "382624AE-2EDA-4184-B8E8-F368C05C20D7",
+      "type_id" : 9
+    },
+    {
+      "direction" : 1,
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "396A012F-F9FF-45BB-B23F-04E572BFBE9F",
+      "type_id" : 9
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "39E5B376-B474-4F17-8A77-82E96699EDBB",
+      "text" : "Artists",
+      "type_id" : 27
+    },
+    {
+      "content_tixmap_ref" : "8BC7CEC1-374E-42AA-88B5-1ECA4CBC98F9",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Artists to Albums",
+      "name_edited" : true,
+      "object_id" : "3DE05BE5-04F6-4DCA-9DDC-425C3A8ADDD7",
+      "origin" : "23,-10",
+      "position_refs" : [
+        "794C874F-FE79-4B7D-9985-0B22633C07D8",
+        "C8E7C63B-F053-495A-A7F4-F252CF0434D8"
+      ],
+      "segment_end_refs" : [
+        "794C874F-FE79-4B7D-9985-0B22633C07D8",
+        "C8E7C63B-F053-495A-A7F4-F252CF0434D8"
+      ],
+      "segment_refs" : [
+        "567E1BAF-0715-4183-8EB7-E7BDE0979B6D"
+      ],
+      "type_id" : 5
+    },
+    {
+      "direction" : 1,
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "3E68D9A2-9089-49DC-B159-D8C7031AE1AB",
+      "type_id" : 9
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "3FEA4A58-790B-47BB-A0A9-18805F632F2F",
+      "rect_position" : 15,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Canvas 1",
+      "object_id" : "4051597E-4120-49CE-903B-F1609E85BAE0",
+      "subshape_refs" : [
+        "3DE05BE5-04F6-4DCA-9DDC-425C3A8ADDD7",
+        "29BC1CA7-55DC-4769-89B4-2CBF57540419",
+        "9C27C304-3199-4D51-9FC4-2A3061101CA4",
+        "C41B3120-9B90-41B8-AEC0-CEF214E77ED2",
+        "4BFA9504-DE10-4F37-B69C-D2E50E29AB0B",
+        "DE799501-0D48-4B8A-BBA6-3277330F61BC",
+        "9687E5BF-8AD6-490C-B5AD-298EB43C5FD0",
+        "E667C4FC-79B3-44AC-BDC5-BE8288D5E997",
+        "8B9A7E64-DFAD-4E6F-AEDC-8563E04ED58E",
+        "AC768F3E-45C3-4AF7-B55A-29BE74AD4F1F",
+        "610DFE3F-FABC-499E-89C2-414C82B3CA1B",
+        "2696A6F8-A1AE-42FA-AC39-9F4FCBEE8B57",
+        "A82A9441-3FAF-493A-AAC4-5E7B5B7FAFA3",
+        "F5319CBB-FFF0-4DBF-AE1B-08491CF9EACD"
+      ],
+      "type_id" : 1
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "48771F1D-7EEE-428F-AD96-A7D669621AF2",
+      "text" : "Songs",
+      "type_id" : 27
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "4BA15FE1-BB02-48CE-B3B4-06452991324A",
+      "point" : "53,10",
+      "type_id" : 11
+    },
+    {
+      "content_tixmap_ref" : "B0030269-B8C4-421B-86F3-6BB88A798CBD",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Library to Albums",
+      "name_edited" : true,
+      "object_id" : "4BFA9504-DE10-4F37-B69C-D2E50E29AB0B",
+      "origin" : "16,-2",
+      "position_refs" : [
+        "750F83C9-72EA-4C75-BD69-156BC497B72B",
+        "A0E7854C-1F40-49F4-83A2-30FCA62E1CA8"
+      ],
+      "segment_end_refs" : [
+        "750F83C9-72EA-4C75-BD69-156BC497B72B",
+        "A0E7854C-1F40-49F4-83A2-30FCA62E1CA8"
+      ],
+      "segment_refs" : [
+        "396A012F-F9FF-45BB-B23F-04E572BFBE9F"
+      ],
+      "type_id" : 5
+    },
+    {
+      "direction" : 1,
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "567E1BAF-0715-4183-8EB7-E7BDE0979B6D",
+      "type_id" : 9
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "5989D287-E381-4A37-81B3-9F74DFD36ED7",
+      "position_ref" : "3FEA4A58-790B-47BB-A0A9-18805F632F2F",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "5CB4874D-ABAE-47E2-B713-183659E3A6C9",
+      "point" : "46,26",
+      "type_id" : 11
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "60783878-E25C-435F-8BC8-C5345769E2DB",
+      "type_id" : 18
+    },
+    {
+      "border_tixels" : "E408B485-7AEE-4120-A5C3-6B21F15367B3",
+      "content_tixels" : "BC5E4858-144E-4681-8448-6C2EDBC0195F",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "frame_anchor_ref" : "5CB4874D-ABAE-47E2-B713-183659E3A6C9",
+      "frame_size" : "7,3",
+      "model_text" : "48771F1D-7EEE-428F-AD96-A7D669621AF2",
+      "name" : "Songs",
+      "object_id" : "610DFE3F-FABC-499E-89C2-414C82B3CA1B",
+      "origin" : "12,-8",
+      "position_refs" : [
+        "5CB4874D-ABAE-47E2-B713-183659E3A6C9",
+        "A203E367-9CA1-4026-9F19-B34763FCA1A3",
+        "3FEA4A58-790B-47BB-A0A9-18805F632F2F",
+        "CA1CDC36-A5A2-4EC0-A40C-F50883FEA1B9",
+        "CB67AD04-86C8-4766-863F-5DAB14EAE9AC"
+      ],
+      "type_id" : 20
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "6519BB38-AA15-4840-B2E9-D6FF77DC47DB",
+      "rect_position" : 12,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "69901FCD-9793-4DE8-889A-575A76469446",
+      "rect_position" : 16,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "6A3E000B-BAEC-4FFA-9D19-C45A5F0D7A88",
+      "position_ref" : "3FEA4A58-790B-47BB-A0A9-18805F632F2F",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "6D659122-B087-438F-A597-3FADEFC4F04E",
+      "rect_position" : 19,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "6F70A346-A5F6-4CE3-A488-C6CBC9CC47EC",
+      "rect_position" : 15,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "716E181A-F692-439C-96B7-85B2901E0F5F",
+      "position_ref" : "0B656F6F-204E-4E7F-B7B0-627199A624CE",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 18,
+      "object_id" : "750F83C9-72EA-4C75-BD69-156BC497B72B",
+      "position_ref" : "69901FCD-9793-4DE8-889A-575A76469446",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "7886EF70-F5B3-43CC-9422-86D0D7A70196",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 18,
+      "object_id" : "794C874F-FE79-4B7D-9985-0B22633C07D8",
+      "position_ref" : "2A742E3C-455B-4261-B451-4E4C6443DE97",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "7E89A10A-E57C-4C0B-8441-64C967427263",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "82442569-38AD-4F37-BF90-458C8989AAE4",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 14,
+      "object_id" : "87957311-8CF5-4B4D-B4C4-A06DE6B20AB4",
+      "position_ref" : "6D659122-B087-438F-A597-3FADEFC4F04E",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "88005FCA-D1DC-46A1-87FE-A4471A1537BA",
+      "rect_position" : 19,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "8A2E80F1-39AD-4944-8F39-E9E707FB2AA8",
+      "position_ref" : "F0F09DEF-F521-475C-888D-AB80632BAEEF",
+      "type_id" : 10
+    },
+    {
+      "border_tixels" : "60783878-E25C-435F-8BC8-C5345769E2DB",
+      "content_tixels" : "F13EDE61-C7A7-4872-BDBD-E7856AA316A8",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "frame_anchor_ref" : "CA7E1880-D8AE-42B4-AD1E-9A01310B87D4",
+      "frame_size" : "8,3",
+      "model_text" : "C3F4C284-2590-4E03-AC82-D66EE0490FC7",
+      "name" : "Albums",
+      "object_id" : "8B9A7E64-DFAD-4E6F-AEDC-8563E04ED58E",
+      "origin" : "19,5",
+      "position_refs" : [
+        "CA7E1880-D8AE-42B4-AD1E-9A01310B87D4",
+        "EAF450F6-E07D-45B5-A9B9-09CF0E7FACD8",
+        "F0F09DEF-F521-475C-888D-AB80632BAEEF",
+        "0011305C-6823-4C3B-B730-AA6722BA000B",
+        "BA713C5E-4BCD-43A3-8A10-A8DED1EB85DC"
+      ],
+      "type_id" : 20
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "8BC7CEC1-374E-42AA-88B5-1ECA4CBC98F9",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "9144B1DB-AE2B-43B4-9A91-CB9094EA6819",
+      "rect_position" : 12,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "9522259B-15AE-4D41-A320-B24B30809D41",
+      "rect_position" : 12,
+      "type_id" : 12
+    },
+    {
+      "direction" : 1,
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "95759C25-74FF-43C2-BBC5-54AB4BD40C1C",
+      "type_id" : 9
+    },
+    {
+      "content_tixmap_ref" : "7886EF70-F5B3-43CC-9422-86D0D7A70196",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Library to Songs",
+      "name_edited" : true,
+      "object_id" : "9687E5BF-8AD6-490C-B5AD-298EB43C5FD0",
+      "origin" : "18,-1",
+      "position_refs" : [
+        "B7F3E613-3362-4BE7-8693-96F65195C5B2",
+        "B5B8155E-546C-4561-9C77-E88564093C14"
+      ],
+      "segment_end_refs" : [
+        "B7F3E613-3362-4BE7-8693-96F65195C5B2",
+        "B5B8155E-546C-4561-9C77-E88564093C14"
+      ],
+      "segment_refs" : [
+        "382624AE-2EDA-4184-B8E8-F368C05C20D7"
+      ],
+      "type_id" : 5
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "97C50CA2-0F88-443F-886B-C4F6910C3620",
+      "point" : "46,26",
+      "type_id" : 11
+    },
+    {
+      "content_tixmap_ref" : "DD9CBC8A-95F1-4B70-95A1-F0B3260B9C94",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Songs to Artists",
+      "name_edited" : true,
+      "object_id" : "9C27C304-3199-4D51-9FC4-2A3061101CA4",
+      "origin" : "18,-2",
+      "position_refs" : [
+        "5989D287-E381-4A37-81B3-9F74DFD36ED7",
+        "BA365469-A4D6-4B14-ACEC-85FE5A6A2E61"
+      ],
+      "segment_end_refs" : [
+        "5989D287-E381-4A37-81B3-9F74DFD36ED7",
+        "BA365469-A4D6-4B14-ACEC-85FE5A6A2E61"
+      ],
+      "segment_refs" : [
+        "95759C25-74FF-43C2-BBC5-54AB4BD40C1C"
+      ],
+      "type_id" : 5
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "A0E7854C-1F40-49F4-83A2-30FCA62E1CA8",
+      "position_ref" : "F0F09DEF-F521-475C-888D-AB80632BAEEF",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "A203E367-9CA1-4026-9F19-B34763FCA1A3",
+      "rect_position" : 12,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "A68AE2E1-DB89-44C4-BF04-F3C3EDA1911B",
+      "rect_position" : 12,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "A7087950-E19B-4FFF-AA3A-782F43DEF430",
+      "type_id" : 18
+    },
+    {
+      "border_tixels" : "28281087-F676-4D38-9D32-9C265F4FD778",
+      "content_tixels" : "0BCFA2CF-C163-4BD2-BEB6-74A4B805ABE5",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "frame_anchor_ref" : "31EA761C-CDEC-4842-A776-35F7B31B6BD7",
+      "frame_size" : "11,3",
+      "model_text" : "B0CE8793-A23E-4A2B-9FEA-1C2F4624BE09",
+      "name" : "Libraries",
+      "object_id" : "A82A9441-3FAF-493A-AAC4-5E7B5B7FAFA3",
+      "origin" : "-16,-1",
+      "position_refs" : [
+        "31EA761C-CDEC-4842-A776-35F7B31B6BD7",
+        "9522259B-15AE-4D41-A320-B24B30809D41",
+        "6F70A346-A5F6-4CE3-A488-C6CBC9CC47EC",
+        "69901FCD-9793-4DE8-889A-575A76469446",
+        "88005FCA-D1DC-46A1-87FE-A4471A1537BA"
+      ],
+      "type_id" : 20
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "A86441E0-073D-470F-BBAD-4B521348BA37",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "AA064B23-1966-49AF-A0F4-553AE416CA32",
+      "rect_position" : 15,
+      "type_id" : 12
+    },
+    {
+      "direction" : 1,
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "AA7816A3-91FE-4AFC-83D8-2712165BE122",
+      "type_id" : 9
+    },
+    {
+      "border_tixels" : "A86441E0-073D-470F-BBAD-4B521348BA37",
+      "content_tixels" : "7E89A10A-E57C-4C0B-8441-64C967427263",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "frame_anchor_ref" : "97C50CA2-0F88-443F-886B-C4F6910C3620",
+      "frame_size" : "9,3",
+      "model_text" : "39E5B376-B474-4F17-8A77-82E96699EDBB",
+      "name" : "Artists",
+      "object_id" : "AC768F3E-45C3-4AF7-B55A-29BE74AD4F1F",
+      "origin" : "19,-2",
+      "position_refs" : [
+        "97C50CA2-0F88-443F-886B-C4F6910C3620",
+        "9144B1DB-AE2B-43B4-9A91-CB9094EA6819",
+        "AA064B23-1966-49AF-A0F4-553AE416CA32",
+        "34560D4D-6E39-42AB-A4D4-FE2D94844BAB",
+        "2A742E3C-455B-4261-B451-4E4C6443DE97"
+      ],
+      "type_id" : 20
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "B0030269-B8C4-421B-86F3-6BB88A798CBD",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "B0CE8793-A23E-4A2B-9FEA-1C2F4624BE09",
+      "text" : "Libraries",
+      "type_id" : 27
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "B2BC83B0-5857-4805-B009-36755081444F",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "B5B8155E-546C-4561-9C77-E88564093C14",
+      "position_ref" : "3FEA4A58-790B-47BB-A0A9-18805F632F2F",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 18,
+      "object_id" : "B60753FE-CAA5-49EF-98B4-7445C812D1FC",
+      "position_ref" : "69901FCD-9793-4DE8-889A-575A76469446",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 18,
+      "object_id" : "B7F3E613-3362-4BE7-8693-96F65195C5B2",
+      "position_ref" : "69901FCD-9793-4DE8-889A-575A76469446",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "B9DE590C-B4D5-428B-9521-E0FE067C6AD1",
+      "text" : "Users",
+      "type_id" : 27
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "BA365469-A4D6-4B14-ACEC-85FE5A6A2E61",
+      "position_ref" : "AA064B23-1966-49AF-A0F4-553AE416CA32",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "BA713C5E-4BCD-43A3-8A10-A8DED1EB85DC",
+      "rect_position" : 19,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "BC5E4858-144E-4681-8448-6C2EDBC0195F",
+      "type_id" : 18
+    },
+    {
+      "canvas_refs" : [
+        "4051597E-4120-49CE-903B-F1609E85BAE0"
+      ],
+      "object_id" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "shape_seq_numbers" : {
+        "2" : 12,
+        "4" : 4,
+        "6" : 1
+      },
+      "type_id" : 0
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "C3F4C284-2590-4E03-AC82-D66EE0490FC7",
+      "text" : "Albums",
+      "type_id" : 27
+    },
+    {
+      "content_tixmap_ref" : "E11A7405-90BA-4309-A3DF-5B3FF2327C92",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Songs to Sources",
+      "name_edited" : true,
+      "object_id" : "C41B3120-9B90-41B8-AEC0-CEF214E77ED2",
+      "origin" : "18,-1",
+      "position_refs" : [
+        "34E2A9EF-E699-4A2D-9ABD-09E21CCC1B6E",
+        "716E181A-F692-439C-96B7-85B2901E0F5F"
+      ],
+      "segment_end_refs" : [
+        "34E2A9EF-E699-4A2D-9ABD-09E21CCC1B6E",
+        "716E181A-F692-439C-96B7-85B2901E0F5F"
+      ],
+      "segment_refs" : [
+        "3E68D9A2-9089-49DC-B159-D8C7031AE1AB"
+      ],
+      "type_id" : 5
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "C8D336EE-1AAD-4432-8659-AEDD60E02B5E",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 18,
+      "object_id" : "C8E7C63B-F053-495A-A7F4-F252CF0434D8",
+      "position_ref" : "EAF450F6-E07D-45B5-A9B9-09CF0E7FACD8",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "C923D8CD-569B-49D6-AD65-28925A986546",
+      "rect_position" : 16,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "CA1CDC36-A5A2-4EC0-A40C-F50883FEA1B9",
+      "rect_position" : 16,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "CA7E1880-D8AE-42B4-AD1E-9A01310B87D4",
+      "point" : "46,26",
+      "type_id" : 11
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "CB67AD04-86C8-4766-863F-5DAB14EAE9AC",
+      "rect_position" : 19,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "D40D434E-36AC-4F40-86A3-6A80A54C8029",
+      "position_ref" : "AA064B23-1966-49AF-A0F4-553AE416CA32",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "DD9CBC8A-95F1-4B70-95A1-F0B3260B9C94",
+      "type_id" : 18
+    },
+    {
+      "content_tixmap_ref" : "A7087950-E19B-4FFF-AA3A-782F43DEF430",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Library to Artists",
+      "name_edited" : true,
+      "object_id" : "DE799501-0D48-4B8A-BBA6-3277330F61BC",
+      "origin" : "18,-2",
+      "position_refs" : [
+        "B60753FE-CAA5-49EF-98B4-7445C812D1FC",
+        "D40D434E-36AC-4F40-86A3-6A80A54C8029"
+      ],
+      "segment_end_refs" : [
+        "B60753FE-CAA5-49EF-98B4-7445C812D1FC",
+        "D40D434E-36AC-4F40-86A3-6A80A54C8029"
+      ],
+      "segment_refs" : [
+        "1B48DFF4-B942-4651-81E4-347E649CEE74"
+      ],
+      "type_id" : 5
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "E11A7405-90BA-4309-A3DF-5B3FF2327C92",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "E408B485-7AEE-4120-A5C3-6B21F15367B3",
+      "type_id" : 18
+    },
+    {
+      "content_tixmap_ref" : "1C616DCF-611C-443C-BC62-E3AE507C5FA1",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Users to Libraries",
+      "name_edited" : true,
+      "object_id" : "E667C4FC-79B3-44AC-BDC5-BE8288D5E997",
+      "origin" : "10,-2",
+      "position_refs" : [
+        "87957311-8CF5-4B4D-B4C4-A06DE6B20AB4",
+        "33F8417B-EC6D-4B60-8640-28CCB4378868"
+      ],
+      "segment_end_refs" : [
+        "87957311-8CF5-4B4D-B4C4-A06DE6B20AB4",
+        "33F8417B-EC6D-4B60-8640-28CCB4378868"
+      ],
+      "segment_refs" : [
+        "AA7816A3-91FE-4AFC-83D8-2712165BE122"
+      ],
+      "type_id" : 5
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "EAF450F6-E07D-45B5-A9B9-09CF0E7FACD8",
+      "rect_position" : 12,
+      "type_id" : 12
+    },
+    {
+      "direction" : 1,
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "F0A42C31-01DB-46FD-81B2-0DD1BC273733",
+      "type_id" : 9
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "F0F09DEF-F521-475C-888D-AB80632BAEEF",
+      "rect_position" : 15,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "F13EDE61-C7A7-4872-BDBD-E7856AA316A8",
+      "type_id" : 18
+    },
+    {
+      "border_tixels" : "0A6ED0D8-CA31-4EF0-8A11-C0EFA6383D76",
+      "content_tixels" : "C8D336EE-1AAD-4432-8659-AEDD60E02B5E",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "frame_anchor_ref" : "4BA15FE1-BB02-48CE-B3B4-06452991324A",
+      "frame_size" : "7,3",
+      "model_text" : "B9DE590C-B4D5-428B-9521-E0FE067C6AD1",
+      "name" : "Users",
+      "object_id" : "F5319CBB-FFF0-4DBF-AE1B-08491CF9EACD",
+      "origin" : "-28,4",
+      "position_refs" : [
+        "4BA15FE1-BB02-48CE-B3B4-06452991324A",
+        "A68AE2E1-DB89-44C4-BF04-F3C3EDA1911B",
+        "115E2347-9A6B-49DE-AF12-11FA2C5C7525",
+        "1E8DD9D8-0A4D-4715-9D46-000129194B29",
+        "6D659122-B087-438F-A597-3FADEFC4F04E"
+      ],
+      "type_id" : 20
+    }
+  ]
+}
