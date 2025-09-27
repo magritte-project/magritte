@@ -46,7 +46,7 @@ Once you've installed all of the prerequisites, you can run the development API 
 just dev
 ```
 
-After a few moments, you should be able to navigate to the Magritte web frontend in your browser:
+After a few moments, you should be able to navigate to the Magritte web front end in your browser:
 
 ```
 http://localhost:6479/
@@ -64,26 +64,30 @@ just test-web
 Magritte is intended to manage multiple libraries. Each library is owned by a single user, a member of a household. Each library contains zero or more songs, artists, and albums. Unless set to private, all users on a Magritte server may access the contents of any library, but they may only edit items in their own library. Songs from one library can be linked to another. Linked songs are read only.
 
 ```
-┌─────┐                                                  
-│Users│                                                  
-└─────┘                                                  
-   ┼                                                     
-   │       ┌─────────┐╲         ╱┌─────┐╲      ╱┌───────┐
-   └──────┼│Libraries│──┼─────┬○─│Songs│─○────○─│Sources│
-           └─────────┘╱       │ ╲└─────┘╱      ╲└───────┘
-                              │                          
-                              │                          
-                              │                          
-                              │        ╱┌───────┐        
-                              ├───────○─│Artists│        
-                              │        ╲└───────┘        
-                              │            ╲│╱           
-                              │             ┼            
-                              │             ┼            
-                              │            ╱│╲           
-                              │        ╱┌──────┐         
-                              └───────○─│Albums│         
-                                       ╲└──────┘         
+┌─────┐                                                         
+│Users│                                                         
+└─────┘                                                         
+   ┼                                                            
+   │       ┌─────────┐╲         ╱┌─────┐╲      ╱┌───────┐       
+   └──────┼│Libraries│──┼─────┬○─│Songs│─○────○─│Sources│       
+           └─────────┘╱       │ ╲└─────┘╱      ╲└───────┘       
+                              │    ╲│╱                          
+                              │     ○                           
+                              │     │          ╱┌──────────────┐
+                              │     └─────────○─│PlaybackEvents│
+                              │                ╲└──────────────┘
+                              │                                 
+                              │                                 
+                              │        ╱┌───────┐               
+                              ├───────○─│Artists│               
+                              │        ╲└───────┘               
+                              │            ╲│╱                  
+                              │             ┼                   
+                              │             ┼                   
+                              │            ╱│╲                  
+                              │        ╱┌──────┐                
+                              └───────○─│Albums│                
+                                       ╲└──────┘                
 ```
 
 ## File Management
@@ -97,3 +101,7 @@ Songs in a Magritte library can have multiple sources associated with them. This
 Files backing sources may be de-duplicated. This means that e.g. a single file can serve as the source for an identical single and album track.
 
 By default, files are treated as read only. Editing a song's metadata _does not_ modify the underlying files. Re-encoding a file during upload will never erase the original.
+
+## Scrobbling
+
+As songs are played back from a Magritte library, front ends keep a timestamped record of all play, pause, fast forward, rewind, and skip previous/next events which occur while the song is played. These playback events are periodically uploaded to the Magritte server. Playback events can then be used to calculate play and skip counts, to generate rich reports such as what songs/artists/albums the user was listening to in a given period of time, to feed signals into recommendation features, and as means to integrate with services like last.fm.

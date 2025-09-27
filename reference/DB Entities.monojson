@@ -95,7 +95,7 @@
       "name" : "Songs to Albums",
       "name_edited" : true,
       "object_id" : "29BC1CA7-55DC-4769-89B4-2CBF57540419",
-      "origin" : "18,-2",
+      "origin" : "18,2",
       "position_refs" : [
         "8A2E80F1-39AD-4944-8F39-E9E707FB2AA8",
         "6A3E000B-BAEC-4FFA-9D19-C45A5F0D7A88"
@@ -114,6 +114,12 @@
       "object_id" : "2A742E3C-455B-4261-B451-4E4C6443DE97",
       "rect_position" : 19,
       "type_id" : 12
+    },
+    {
+      "direction" : 1,
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "2B24109D-CCBE-4C4B-98EA-68B93DE091F3",
+      "type_id" : 9
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
@@ -171,7 +177,7 @@
       "name" : "Artists to Albums",
       "name_edited" : true,
       "object_id" : "3DE05BE5-04F6-4DCA-9DDC-425C3A8ADDD7",
-      "origin" : "23,-10",
+      "origin" : "23,-6",
       "position_refs" : [
         "794C874F-FE79-4B7D-9985-0B22633C07D8",
         "C8E7C63B-F053-495A-A7F4-F252CF0434D8"
@@ -202,6 +208,8 @@
       "name" : "Canvas 1",
       "object_id" : "4051597E-4120-49CE-903B-F1609E85BAE0",
       "subshape_refs" : [
+        "D253DECB-9DAA-4B16-8885-53FC0A86D071",
+        "B15D2BD8-1E78-4BF8-9ED6-06231D228F53",
         "3DE05BE5-04F6-4DCA-9DDC-425C3A8ADDD7",
         "29BC1CA7-55DC-4769-89B4-2CBF57540419",
         "9C27C304-3199-4D51-9FC4-2A3061101CA4",
@@ -221,6 +229,17 @@
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "42E2239F-F5C7-4239-9EEE-A3B351F1A618",
+      "rect_position" : 19,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "4829BB20-8A4E-4904-B468-83C2CC48149A",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
       "object_id" : "48771F1D-7EEE-428F-AD96-A7D669621AF2",
       "text" : "Songs",
       "type_id" : 27
@@ -237,7 +256,7 @@
       "name" : "Library to Albums",
       "name_edited" : true,
       "object_id" : "4BFA9504-DE10-4F37-B69C-D2E50E29AB0B",
-      "origin" : "16,-2",
+      "origin" : "16,2",
       "position_refs" : [
         "750F83C9-72EA-4C75-BD69-156BC497B72B",
         "A0E7854C-1F40-49F4-83A2-30FCA62E1CA8"
@@ -263,6 +282,12 @@
       "object_id" : "5989D287-E381-4A37-81B3-9F74DFD36ED7",
       "position_ref" : "3FEA4A58-790B-47BB-A0A9-18805F632F2F",
       "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "5B971245-D135-402F-95CD-EE6B1DA337A9",
+      "point" : "46,26",
+      "type_id" : 11
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
@@ -308,6 +333,12 @@
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "69AC9AFF-B019-4FF4-99E1-79367DE7FED8",
+      "rect_position" : 15,
+      "type_id" : 12
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
       "head_type" : 19,
       "object_id" : "6A3E000B-BAEC-4FFA-9D19-C45A5F0D7A88",
       "position_ref" : "3FEA4A58-790B-47BB-A0A9-18805F632F2F",
@@ -341,6 +372,13 @@
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "7781EB33-6F06-48CC-A48F-4E32ED839F38",
+      "position_ref" : "69AC9AFF-B019-4FF4-99E1-79367DE7FED8",
+      "type_id" : 10
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
       "object_id" : "7886EF70-F5B3-43CC-9422-86D0D7A70196",
       "type_id" : 18
     },
@@ -355,6 +393,12 @@
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
       "object_id" : "7E89A10A-E57C-4C0B-8441-64C967427263",
       "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "82017993-DA8B-4469-9012-6D7E02B02691",
+      "rect_position" : 12,
+      "type_id" : 12
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
@@ -390,7 +434,7 @@
       "model_text" : "C3F4C284-2590-4E03-AC82-D66EE0490FC7",
       "name" : "Albums",
       "object_id" : "8B9A7E64-DFAD-4E6F-AEDC-8563E04ED58E",
-      "origin" : "19,5",
+      "origin" : "19,9",
       "position_refs" : [
         "CA7E1880-D8AE-42B4-AD1E-9A01310B87D4",
         "EAF450F6-E07D-45B5-A9B9-09CF0E7FACD8",
@@ -404,6 +448,17 @@
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
       "object_id" : "8BC7CEC1-374E-42AA-88B5-1ECA4CBC98F9",
       "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "8BF3394C-568E-4434-9B3B-48B2D406318F",
+      "type_id" : 18
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "8F91CB7C-C51A-4DE8-A84F-1103B3D93648",
+      "text" : "PlaybackEvents",
+      "type_id" : 27
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
@@ -455,7 +510,7 @@
       "name" : "Songs to Artists",
       "name_edited" : true,
       "object_id" : "9C27C304-3199-4D51-9FC4-2A3061101CA4",
-      "origin" : "18,-2",
+      "origin" : "18,2",
       "position_refs" : [
         "5989D287-E381-4A37-81B3-9F74DFD36ED7",
         "BA365469-A4D6-4B14-ACEC-85FE5A6A2E61"
@@ -538,7 +593,7 @@
       "model_text" : "39E5B376-B474-4F17-8A77-82E96699EDBB",
       "name" : "Artists",
       "object_id" : "AC768F3E-45C3-4AF7-B55A-29BE74AD4F1F",
-      "origin" : "19,-2",
+      "origin" : "19,2",
       "position_refs" : [
         "97C50CA2-0F88-443F-886B-C4F6910C3620",
         "9144B1DB-AE2B-43B4-9A91-CB9094EA6819",
@@ -558,6 +613,25 @@
       "object_id" : "B0CE8793-A23E-4A2B-9FEA-1C2F4624BE09",
       "text" : "Libraries",
       "type_id" : 27
+    },
+    {
+      "border_tixels" : "E6708574-243F-4071-B75E-A2644D1C272A",
+      "content_tixels" : "8BF3394C-568E-4434-9B3B-48B2D406318F",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "frame_anchor_ref" : "5B971245-D135-402F-95CD-EE6B1DA337A9",
+      "frame_size" : "16,3",
+      "model_text" : "8F91CB7C-C51A-4DE8-A84F-1103B3D93648",
+      "name" : "PlaybackEvents",
+      "object_id" : "B15D2BD8-1E78-4BF8-9ED6-06231D228F53",
+      "origin" : "27,-3",
+      "position_refs" : [
+        "5B971245-D135-402F-95CD-EE6B1DA337A9",
+        "82017993-DA8B-4469-9012-6D7E02B02691",
+        "69AC9AFF-B019-4FF4-99E1-79367DE7FED8",
+        "E429DDE9-A301-4AE6-9821-FF52AD9F7A9A",
+        "42E2239F-F5C7-4239-9EEE-A3B351F1A618"
+      ],
+      "type_id" : 20
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
@@ -615,7 +689,7 @@
       ],
       "object_id" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
       "shape_seq_numbers" : {
-        "2" : 12,
+        "2" : 13,
         "4" : 4,
         "6" : 1
       },
@@ -646,6 +720,13 @@
         "3E68D9A2-9089-49DC-B159-D8C7031AE1AB"
       ],
       "type_id" : 5
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "head_type" : 19,
+      "object_id" : "C751CC98-EB3D-436B-BD6B-37245F0B5387",
+      "position_ref" : "CB67AD04-86C8-4766-863F-5DAB14EAE9AC",
+      "type_id" : 10
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
@@ -684,6 +765,25 @@
       "type_id" : 12
     },
     {
+      "content_tixmap_ref" : "4829BB20-8A4E-4904-B468-83C2CC48149A",
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "name" : "Line 13",
+      "object_id" : "D253DECB-9DAA-4B16-8885-53FC0A86D071",
+      "origin" : "0,1",
+      "position_refs" : [
+        "7781EB33-6F06-48CC-A48F-4E32ED839F38",
+        "C751CC98-EB3D-436B-BD6B-37245F0B5387"
+      ],
+      "segment_end_refs" : [
+        "7781EB33-6F06-48CC-A48F-4E32ED839F38",
+        "C751CC98-EB3D-436B-BD6B-37245F0B5387"
+      ],
+      "segment_refs" : [
+        "2B24109D-CCBE-4C4B-98EA-68B93DE091F3"
+      ],
+      "type_id" : 5
+    },
+    {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
       "head_type" : 19,
       "object_id" : "D40D434E-36AC-4F40-86A3-6A80A54C8029",
@@ -701,7 +801,7 @@
       "name" : "Library to Artists",
       "name_edited" : true,
       "object_id" : "DE799501-0D48-4B8A-BBA6-3277330F61BC",
-      "origin" : "18,-2",
+      "origin" : "18,2",
       "position_refs" : [
         "B60753FE-CAA5-49EF-98B4-7445C812D1FC",
         "D40D434E-36AC-4F40-86A3-6A80A54C8029"
@@ -726,6 +826,12 @@
       "type_id" : 18
     },
     {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "E429DDE9-A301-4AE6-9821-FF52AD9F7A9A",
+      "rect_position" : 16,
+      "type_id" : 12
+    },
+    {
       "content_tixmap_ref" : "1C616DCF-611C-443C-BC62-E3AE507C5FA1",
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
       "name" : "Users to Libraries",
@@ -744,6 +850,11 @@
         "AA7816A3-91FE-4AFC-83D8-2712165BE122"
       ],
       "type_id" : 5
+    },
+    {
+      "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
+      "object_id" : "E6708574-243F-4071-B75E-A2644D1C272A",
+      "type_id" : 18
     },
     {
       "doc_ref" : "BF82CA4A-8F37-40D3-B89D-33E54C7A08C9",
