@@ -37,6 +37,20 @@ asdf install
 
 Next, follow the installation directions in the [server](/decarbonization/magritte/tree/main/server/README.md) and [server](/decarbonization/magritte/tree/main/web/README.md) README files.
 
+## Development
+
+Once you've installed all of the prerequisites, you can run the development API and web servers:
+
+```sh
+just dev
+```
+
+After a few moments, you should be able to navigate to the Magritte web frontend in your browser:
+
+```
+http://localhost:6479/
+```
+
 ## Data Architecture
 
 Magritte is intended to manage multiple libraries. Each library is owned by a single user, a member of a household. Each library contains zero or more songs, artists, and albums. Unless set to private, all users on a Magritte server may access the contents of any library, but they may only edit items in their own library. Songs from one library can be linked to another. Linked songs are read only.

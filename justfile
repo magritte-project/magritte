@@ -6,3 +6,12 @@ bootstrap:
     asdf install
     cd ./server/ && uv sync
     cd ./web/ && pnpm install
+
+dev-server:
+    cd ./server/ && uv run fastapi dev main.py --port 6477
+
+dev-web:
+    cd ./web/ && pnpm dev
+
+[parallel]
+dev: dev-server dev-web
