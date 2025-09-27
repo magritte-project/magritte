@@ -15,3 +15,9 @@ dev-web:
 
 [parallel]
 dev: dev-server dev-web
+
+test-server:
+    cd ./server/ && uv run pytest
+
+test-web:
+    cd ./web/ && pnpm test

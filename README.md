@@ -8,6 +8,7 @@ Magritte is intended to be installed on an in-home server with a large storage m
 
 ## Front ends
 
+- [web](/magritte/tree/main/web)[The built-in web front end.]
 - [rené](https://github.com/decarbonization/rene): A front end that runs on embedded Linux devices like the Raspberry Pi.
 
 ## Installation
@@ -49,6 +50,13 @@ After a few moments, you should be able to navigate to the Magritte web frontend
 
 ```
 http://localhost:6479/
+```
+
+To execute the tests:
+
+```sh
+just test-server
+just test-web
 ```
 
 ## Data Architecture
