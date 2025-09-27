@@ -12,7 +12,15 @@ Magritte is intended to be installed on an in-home server with a large storage m
 
 ## Installation
 
-Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling. After installing `asdf`, you will need to install all required plugins:
+Magritte uses [`just`](https://github.com/casey/just) to handle tasks and [`asdf`](https://asdf-vm.com/) to manage tooling. Once you've installed `just` and `asdf`, you can bootstrap your development environment:
+
+```sh
+just bootstrap
+```
+
+### Manual Installation
+
+After installing `asdf`, you will need to install all required plugins:
 
 ```sh
 asdf plugin add python
@@ -26,6 +34,8 @@ Once you've installed the plugins, you can install the tools:
 ```sh
 asdf install
 ```
+
+Next, follow the installation directions in the [server](/decarbonization/magritte/tree/main/server/README.md) and [server](/decarbonization/magritte/tree/main/web/README.md) README files.
 
 ## Data Architecture
 
