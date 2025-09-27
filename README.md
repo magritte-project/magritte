@@ -6,6 +6,10 @@ A home server to manage and listen to a household's music collections.
 
 Magritte is intended to be installed on an in-home server with a large storage medium available e.g. a Synology DiskStation or a Raspberry Pi with an external drive attached.
 
+## Front ends
+
+- [rené](https://github.com/decarbonization/rene): A front end that runs on embedded Linux devices like the Raspberry Pi.
+
 ## Installation
 
 Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling. After installing `asdf`, you will need to install all required plugins:
