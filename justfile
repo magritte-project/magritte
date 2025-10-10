@@ -43,3 +43,10 @@ format-server:
     cd ./server/ && uvx ruff format
 
 format: format-server
+
+## - check-types
+
+check-types-server:
+    cd ./server/ && uvx ty check
+
+check-types: check-types-server
