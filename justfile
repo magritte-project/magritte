@@ -35,18 +35,27 @@ test: test-server test-web
 lint-server:
     cd ./server/ && uvx ruff check --fix
 
-lint: lint-server
+lint-web:
+    cd ./web/ && pnpm biome lint --fix
+
+lint: lint-server lint-web
 
 ## - format
 
 format-server:
     cd ./server/ && uvx ruff format
 
-format: format-server
+format-web:
+    cd ./web/ && pnpm biome format --fix
+
+format: format-server format-web
 
 ## - check-types
 
 check-types-server:
     cd ./server/ && uvx ty check
 
-check-types: check-types-server
+check-types-web:
+    cd ./web/ && pnpm tsc --noEmit
+
+check-types: check-types-server check-types-web
