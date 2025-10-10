@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
@@ -6,6 +7,10 @@ from model.base import LibraryModel
 
 if TYPE_CHECKING:
     from .library import Library
+
+
+class Scope(str, Enum):
+    ME = "me"
 
 
 class UserLibraryLink(SQLModel, table=True):
@@ -50,9 +55,17 @@ class User(LibraryModel, table=True):
         description="The user's handle",
     )
     preferred_name: str | None = Field(
+        default=None,
         min_length=1,
         description="The user's preferred name",
     )
+    hashed_password: str = Field(
+        description="This user's password",
+    )
+    # scopes: list[Scope] = Field(
+    #     default_factory=lambda: [Scope.ME],
+    #     description="This user's enabled scopes",
+    # )
     libraries: list["Library"] = Relationship(
         back_populates="users",
         link_model=UserLibraryLink,

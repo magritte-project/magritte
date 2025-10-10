@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from sqlmodel import Field, Relationship
 
@@ -20,5 +20,5 @@ class Album(LibraryModel, table=True):
         foreign_key="artists.id",
         description="ID of this album's artist",
     )
-    artist: "Artist | None" = Relationship(back_populates="albums")
+    artist: Union["Artist", None] = Relationship(back_populates="albums")
     songs: list["Song"] = Relationship(back_populates="album")

@@ -1,6 +1,7 @@
-from sqlmodel import Field
+from sqlmodel import Field, Relationship
 
 from model.base import LibraryModel
+from model.song import Song, SourceArtworkLink
 
 
 class Source(LibraryModel, table=True):
@@ -8,4 +9,8 @@ class Source(LibraryModel, table=True):
 
     url: str = Field(
         description="The location of this source",
+    )
+    songs: list[Song] = Relationship(
+        back_populates="sources",
+        link_model=SourceArtworkLink,
     )

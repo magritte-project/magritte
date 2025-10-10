@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -65,13 +65,13 @@ class Song(LibraryModel, table=True):
         foreign_key="artists.id",
         description="ID of this song's artist, if any",
     )
-    artist: "Artist | None" = Relationship(back_populates="songs")
+    artist: Union["Artist", None] = Relationship(back_populates="songs")
     album_id: int | None = Field(
         default=None,
         foreign_key="albums.id",
         description="ID of this song's album, if any",
     )
-    album: "Album | None" = Relationship(back_populates="songs")
+    album: Union["Album", None] = Relationship(back_populates="songs")
     artworks: list["Artwork"] = Relationship(
         back_populates="songs",
         link_model=SongArtworkLink,
@@ -81,7 +81,7 @@ class Song(LibraryModel, table=True):
         link_model=SongLibraryLink,
     )
     sources: list["Source"] = Relationship(
-        back_populates="sources",
+        back_populates="songs",
         link_model=SourceArtworkLink,
     )
 
