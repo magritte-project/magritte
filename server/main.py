@@ -1,9 +1,19 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
+from db import get_library_db_engine
+
 load_dotenv()
 
-app = FastAPI()
+
+async def app_lifespan(app: FastAPI):
+    await get_library_db_engine()
+    yield
+
+
+app = FastAPI(
+    lifespan=app_lifespan,
+)
 
 
 @app.get("/")
