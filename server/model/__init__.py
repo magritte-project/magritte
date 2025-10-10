@@ -1,13 +1,13 @@
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlmodel import SQLModel
+
 from .album import Album
 from .artist import Artist
 from .artwork import Artwork
+from .library import Library
 from .playback_event import PlaybackEvent
 from .song import Song
 from .source import Source
-from .library import Library
-
-from sqlalchemy.ext.asyncio import AsyncEngine
-from sqlmodel import SQLModel
 
 
 async def create_model_tables_if_needed(engine: AsyncEngine):

@@ -1,5 +1,7 @@
 from enum import Enum
+
 from sqlmodel import Field, Relationship
+
 from model.base import LibraryModel
 
 from .song import Song, SongArtworkLink

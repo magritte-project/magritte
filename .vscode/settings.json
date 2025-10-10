@@ -1,5 +1,4 @@
 {
-    "python.defaultInterpreterPath": "server/.venv/bin/python",
     "files.watcherExclude": {
         "**/routeTree.gen.ts": true
     },
@@ -34,7 +33,14 @@
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
     "editor.codeActionsOnSave": {
-        "source.organizeImports.biome": "explicit"
+        "source.organizeImports.biome": "explicit",
+        "source.fixAll.ruff": "always"
     },
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "python.defaultInterpreterPath": "server/.venv/bin/python",
+    "python.envFile": "${workspaceFolder}/server/.env",
+    "python.testing.cwd": "${workspaceFolder}/server/",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/server/"
+    ]
 }

@@ -1,6 +1,6 @@
 from functools import cache
 
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from model import create_model_tables_if_needed
 
