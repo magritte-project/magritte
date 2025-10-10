@@ -30,7 +30,11 @@
     "[css]": {
         "editor.defaultFormatter": "biomejs.biome"
     },
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
     "editor.codeActionsOnSave": {
-    "   source.organizeImports.biome": "explicit"
-    }
+        "source.organizeImports.biome": "explicit"
+    },
+    "editor.formatOnSave": true
 }
