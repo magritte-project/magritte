@@ -1,13 +1,22 @@
 ## - bootstrap
 
 bootstrap:
+    # Add all required asdf plugins
     asdf plugin add python
     asdf plugin add uv
     asdf plugin add nodejs
     asdf plugin add pnpm
+    
+    # Install project tooling
     asdf install
+    
+    # Set up server development environment
     cd ./server/ && uv sync
+    cp ./server/.env.example ./server/.env
+    
+    # Set up web development environment
     cd ./web/ && pnpm install
+    cp ./web/.env.example ./web/.env
 
 ## - dev
 
