@@ -376,3 +376,7 @@ __MACOSX/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Magritte
+*.sqlite
+*.sqlite3

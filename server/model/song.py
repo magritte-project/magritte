@@ -169,3 +169,11 @@ class Song(LibraryModel, table=True):
     music_brainz_recording_id: str | None = Field(
         default=None,
     )
+
+    @property
+    def artist_name(self):
+        return self.artist.name if self.artist else None
+
+    @property
+    def album_title(self):
+        return self.album.title if self.album else None

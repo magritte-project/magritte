@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
-from db import get_db_engine
 from routes import router
 
 load_dotenv()
@@ -11,7 +10,6 @@ load_dotenv()
 
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
-    await get_db_engine()
     yield
 
 

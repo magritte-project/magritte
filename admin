@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd "$(dirname "$0")"
+uv --directory "./server" run python admin.py "$@"

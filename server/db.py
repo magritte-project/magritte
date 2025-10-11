@@ -18,7 +18,6 @@ async def get_db_engine():
 
 
 async def get_db_session(engine: Annotated[AsyncEngine, Depends(get_db_engine)]):
-    engine = await get_db_engine()
     async with AsyncSession(engine) as session:
         try:
             yield session
