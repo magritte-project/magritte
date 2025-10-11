@@ -1,5 +1,5 @@
 import pathlib
-from typing import Callable, TypeVar
+from typing import Callable, Mapping, TypeVar, cast
 
 import mutagen
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,8 +13,10 @@ from model.source import Source
 _T = TypeVar("_T")
 
 
-def get_only_tag(tags: mutagen.Tags, name: str, conversion: Callable[[str], _T]) -> _T:
-    values = tags.get(name, [])
+def get_only_tag(
+    tags: mutagen.Tags, name: str, conversion: Callable[[str], _T]
+) -> _T | None:
+    values = cast(Mapping[str, str], tags).get(name, [])
     if not values:
         return None
     if len(values) > 1:
@@ -34,10 +36,10 @@ async def try_ingest_file(
     mime_type = file.mime[0]
 
     tags = file.tags
-    artist_name = get_only_tag(tags, "ARTIST", str)
+    artist_name = get_only_tag(tags, "ARTIST", str) or ""
     artist = await Artist.read_or_insert(artist_name, session)
 
-    album_title = get_only_tag(tags, "ALBUM", str)
+    album_title = get_only_tag(tags, "ALBUM", str) or ""
     album = await Album.read_or_insert(album_title, artist.id, session)
 
     new_song = Song(

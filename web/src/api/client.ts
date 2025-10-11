@@ -40,3 +40,16 @@ export function unwrap<
     }
     throw new Error(message)
 }
+
+export function toFormData<TBody extends NonNullable<object>>(
+    body: NonNullable<TBody>,
+) {
+    const formBody = new FormData()
+    for (const [key, value] of Object.entries(body)) {
+        if (!value) {
+            continue
+        }
+        formBody.set(key, String(value))
+    }
+    return formBody as unknown as TBody
+}
