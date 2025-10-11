@@ -29,7 +29,7 @@ oauth2_scheme = OAuth2PasswordBearer(
     },
 )
 
-_password_hash = PasswordHash.recommended()
+password_hash = PasswordHash.recommended()
 
 
 def _create_access_token(
@@ -68,7 +68,7 @@ async def create_user(
 ):
     new_user = User(
         username=username,
-        hashed_password=_password_hash.hash(password),
+        hashed_password=password_hash.hash(password),
     )
     session.add(new_user)
     return new_user
@@ -82,7 +82,7 @@ async def authenticate_user(
     user = await User.read_by_username(username, session)
     if not user:
         return None
-    if not _password_hash.verify(password, user.hashed_password):
+    if not password_hash.verify(password, user.hashed_password):
         return None
     return _create_access_token(
         user.username,

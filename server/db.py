@@ -1,3 +1,6 @@
+from typing import Annotated
+
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 
 from config import DB
@@ -14,7 +17,7 @@ async def get_db_engine():
     return _engine
 
 
-async def get_db_session():
+async def get_db_session(engine: Annotated[AsyncEngine, Depends(get_db_engine)]):
     engine = await get_db_engine()
     async with AsyncSession(engine) as session:
         try:
