@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router"
+import { useQuery } from "@tanstack/react-query"
 
 export const Route = createFileRoute("/demo/tanstack-query")({
     component: TanStackQueryDemo,
-});
+})
 
 function TanStackQueryDemo() {
     const { data } = useQuery({
@@ -15,7 +15,7 @@ function TanStackQueryDemo() {
                 { id: 3, name: "Charlie" },
             ]),
         initialData: [],
-    });
+    })
 
     return (
         <div
@@ -43,5 +43,5 @@ function TanStackQueryDemo() {
                 </ul>
             </div>
         </div>
-    );
+    )
 }

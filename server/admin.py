@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 from argparse import ArgumentParser, Namespace
+from traceback import print_tb
 
 from db import get_db_engine, get_db_session
 from ingestion.files import try_ingest_file
@@ -50,6 +51,20 @@ async def ingest_main(args: Namespace):
                         print(f"*** Skipping {file_path}: {e}", file=sys.stderr)
 
 
+async def dump_openapi(args: Namespace):
+    import json
+
+    from main import app
+
+    openapi = app.openapi()
+    dump = json.dumps(openapi)
+    if args.output:
+        with open(args.output, "w") as output_file:
+            output_file.write(dump)
+    else:
+        print(dump)
+
+
 def admin_main():
     parser = ArgumentParser(
         prog="admin",
@@ -80,10 +95,22 @@ def admin_main():
     parser_ingest.add_argument("paths", nargs="*")
     parser_ingest.set_defaults(func=ingest_main)
 
+    parser_dump_openapi = subparsers.add_parser(
+        "dump-openapi", help="Export the Magritte API definition"
+    )
+    parser_dump_openapi.add_argument(
+        "--output",
+        "-o",
+        help="Where to save the OpenAPI dump",
+    )
+    parser_dump_openapi.set_defaults(func=dump_openapi)
+
     args = parser.parse_args()
     try:
         asyncio.run(args.func(args))
     except Exception as e:
+        if e.__traceback__:
+            print_tb(e.__traceback__)
         print(f"*** Error: {e}", file=sys.stderr)
         sys.exit(1)
 

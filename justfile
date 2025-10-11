@@ -68,3 +68,9 @@ check-types-web:
     cd ./web/ && pnpm tsc --noEmit
 
 check-types: check-types-server check-types-web
+
+## - export-openapi
+
+export-openapi:
+    cd ./web/ && ../admin dump-openapi | pnpm openapi-typescript --immutable --properties-required-by-default --root-types --root-types-no-schema-prefix -o src/api/openapi.d.ts
+

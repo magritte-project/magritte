@@ -1,16 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
+import { createFileRoute } from "@tanstack/react-router"
+import { z } from "zod"
 
-import { useAppForm } from "../hooks/demo.form";
+import { useAppForm } from "../hooks/demo.form"
 
 export const Route = createFileRoute("/demo/form/simple")({
     component: SimpleForm,
-});
+})
 
 const schema = z.object({
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
-});
+})
 
 function SimpleForm() {
     const form = useAppForm({
@@ -22,11 +22,11 @@ function SimpleForm() {
             onBlur: schema,
         },
         onSubmit: ({ value }) => {
-            console.log(value);
+            console.log(value)
             // Show success message
-            alert("Form submitted successfully!");
+            alert("Form submitted successfully!")
         },
-    });
+    })
 
     return (
         <div
@@ -39,9 +39,9 @@ function SimpleForm() {
             <div className="w-full max-w-2xl p-8 rounded-xl backdrop-blur-md bg-black/50 shadow-xl border-8 border-black/10">
                 <form
                     onSubmit={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        form.handleSubmit();
+                        e.preventDefault()
+                        e.stopPropagation()
+                        form.handleSubmit()
                     }}
                     className="space-y-6"
                 >
@@ -61,5 +61,5 @@ function SimpleForm() {
                 </form>
             </div>
         </div>
-    );
+    )
 }
