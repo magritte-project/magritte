@@ -33,6 +33,9 @@ async def ingest_main(args: Namespace):
                     if filename.startswith("."):
                         continue
 
+                    # TODO: Skip already seen files
+                    # TODO: Factor this out so it can be used from watchdog too
+
                     file_path = os.path.join(dirpath, filename)
                     try:
                         new_song = await try_ingest_file(

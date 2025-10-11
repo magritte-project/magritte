@@ -84,6 +84,8 @@ async def read_library_songs(
     offset: Annotated[int, Query(description="The page offset to read from")] = 0,
     limit: Annotated[int, Query(description="How many items to read per page")] = 100,
 ):
+    # TODO: Clean up everything about this...
+
     library = await Library.read_by_id(library_id, current_user.id, session)
     if not library:
         raise HTTPException(

@@ -9,6 +9,7 @@ class Source(LibraryModel, table=True):
 
     url: str = Field(
         description="The location of this source",
+        unique=True,
     )
     mime_type: str | None = Field(
         description="The mime type of this source",
