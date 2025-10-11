@@ -16,7 +16,7 @@ class LibraryModel(SQLModel):
     )
 
     creation_date: datetime = Field(
-        sa_type=sa.TIMESTAMP(timezone=True),
+        sa_type=sa.TIMESTAMP,
         nullable=False,
         sa_column_kwargs={
             "server_default": sa.text("CURRENT_TIMESTAMP"),
@@ -25,7 +25,7 @@ class LibraryModel(SQLModel):
     )
 
     last_updated: datetime = Field(
-        sa_type=sa.TIMESTAMP(timezone=True),
+        sa_type=sa.TIMESTAMP,
         nullable=False,
         sa_column_kwargs={
             "server_default": sa.text("CURRENT_TIMESTAMP"),

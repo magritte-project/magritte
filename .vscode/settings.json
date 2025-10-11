@@ -42,5 +42,6 @@
     "python.testing.cwd": "${workspaceFolder}/server/",
     "python.analysis.extraPaths": [
         "${workspaceFolder}/server/"
-    ]
+    ],
+    "ty.interpreter": ["server/.venv/bin/python"]
 }

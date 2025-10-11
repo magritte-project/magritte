@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from enum import Enum
 from typing import Annotated, Any
 
 import jwt
@@ -7,51 +8,70 @@ from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from pwdlib import PasswordHash
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col, select
 
 from config import ALGORITHM, SECRET
 from db import get_db_session
-from model.user import Scope, User
+from model.user import User
+
+
+class OAuth2Scope(str, Enum):
+    PROFILE = "profile"
+    LIBRARIES_READ = "library:read"
+    LIBRARIES_WRITE = "library:write"
+
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/users/sign-in",
-    scopes={Scope.ME: "Access the user's own profile"},
+    tokenUrl="/sign-in",
+    scopes={
+        OAuth2Scope.PROFILE: "Access the user's own profile",
+        OAuth2Scope.LIBRARIES_READ: "Access libraries on this instance",
+        OAuth2Scope.LIBRARIES_WRITE: "Change libraries on this instance",
+    },
 )
 
-password_hash = PasswordHash.recommended()
+_password_hash = PasswordHash.recommended()
 
 
-def create_access_token(
-    username: str,
-    scopes: set[Scope],
-    expires: timedelta | None = timedelta(weeks=4),
+def _create_access_token(
+    subject: str,
+    scope: set[str] = set(),
+    expire_after: timedelta | None = timedelta(weeks=4),
 ):
-    to_encode: dict[str, Any] = {
-        "sub": username,
-        "scope": " ".join(scopes),
-    }
-    if expires:
-        to_encode["exp"] = datetime.now(UTC) + expires
+    to_encode = dict[str, Any]()
+    to_encode["sub"] = subject
+    if scope:
+        to_encode["scope"] = " ".join(scope)
+    if expire_after:
+        to_encode["exp"] = datetime.now(UTC) + expire_after
     return jwt.encode(to_encode, SECRET, ALGORITHM)
 
 
-def verify_password(plain_password: str, hashed_password: str):
-    return password_hash.verify(plain_password, hashed_password)
+def _read_access_token(token: str) -> tuple[str, set[str]]:
+    to_decode = jwt.decode(token, SECRET, algorithms=[ALGORITHM])
+    subject = to_decode.get("sub")
+    if not isinstance(subject, str):
+        raise jwt.InvalidTokenError("Bad subject")
+
+    scope = to_decode.get("scope")
+    if scope is not None and not isinstance(scope, str):
+        raise jwt.InvalidTokenError("Bad scope")
+
+    scopes = {*scope.split(" ")}
+
+    return subject, scopes
 
 
-def get_password_hash(password: str):
-    return password_hash.hash(password)
-
-
-async def get_user(
+async def create_user(
     username: str,
+    password: str,
     session: AsyncSession,
 ):
-    return await session.scalar(
-        select(User).where(
-            col(User.username) == username,
-        ),
+    new_user = User(
+        username=username,
+        hashed_password=_password_hash.hash(password),
     )
+    session.add(new_user)
+    return new_user
 
 
 async def authenticate_user(
@@ -59,12 +79,19 @@ async def authenticate_user(
     password: str,
     session: AsyncSession,
 ):
-    user = await get_user(username, session)
+    user = await User.read_by_username(username, session)
     if not user:
         return None
-    if not verify_password(password, user.hashed_password):
+    if not _password_hash.verify(password, user.hashed_password):
         return None
-    return user
+    return _create_access_token(
+        user.username,
+        {
+            OAuth2Scope.PROFILE,
+            OAuth2Scope.LIBRARIES_READ,
+            OAuth2Scope.LIBRARIES_WRITE,
+        },
+    )
 
 
 async def get_current_user(
@@ -73,35 +100,34 @@ async def get_current_user(
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     try:
-        payload = jwt.decode(token, SECRET, algorithms=[ALGORITHM])
-
-        username: str | None = payload.get("sub")
-        if username is None:
-            raise jwt.InvalidTokenError("Invalid subject")
-
-        scope: str = payload.get("scope", "")
-        token_scopes = set(scope.split(" "))
-
-        user = await get_user(username)
+        username, token_scopes = _read_access_token(token)
+        user = await User.read_by_username(username, session)
         if not user:
             raise jwt.InvalidTokenError("Invalid user")
-    except (jwt.InvalidTokenError, ValidationError):
-        authenticate_value = (
-            f'Bearer scope="{security_scopes.scope_str}"'
-            if security_scopes.scopes
-            else "Bearer"
-        )
+    except (jwt.InvalidTokenError, ValidationError) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
-            headers={"WWW-Authenticate": authenticate_value},
-        )
+            headers={
+                "WWW-Authenticate": (
+                    f'Bearer scope="{security_scopes.scope_str}"'
+                    if security_scopes.scopes
+                    else "Bearer"
+                )
+            },
+        ) from e
 
     if not token_scopes.issuperset(security_scopes.scopes):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not enough permissions",
-            headers={"WWW-Authenticate": authenticate_value},
+            headers={
+                "WWW-Authenticate": (
+                    f'Bearer scope="{security_scopes.scope_str}"'
+                    if security_scopes.scopes
+                    else "Bearer"
+                )
+            },
         )
 
     return user

@@ -1,16 +1,12 @@
-from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import Field, Relationship, SQLModel, col, select
 
 from model.base import LibraryModel
 
 if TYPE_CHECKING:
     from .library import Library
-
-
-class Scope(str, Enum):
-    ME = "me"
 
 
 class UserLibraryLink(SQLModel, table=True):
@@ -70,3 +66,11 @@ class User(LibraryModel, table=True):
         back_populates="users",
         link_model=UserLibraryLink,
     )
+
+    @classmethod
+    async def read_by_username(cls, username: str, session: AsyncSession):
+        return await session.scalar(
+            select(User).where(
+                col(User.username) == username,
+            ),
+        )
