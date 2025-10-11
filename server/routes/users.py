@@ -17,6 +17,7 @@ router = APIRouter(prefix="/users")
 @router.get(
     "/me",
     response_model=UserProfile,
+    summary="Read the signed in user's profile",
 )
 async def read_me(
     current_user: Annotated[
@@ -29,6 +30,7 @@ async def read_me(
 @router.post(
     "/me",
     response_model=UserProfile,
+    summary="Update the signed in user's profile",
 )
 async def update_me(
     profile_update: UserProfileUpdate,

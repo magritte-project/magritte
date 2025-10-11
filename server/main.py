@@ -14,6 +14,7 @@ async def app_lifespan(app: FastAPI):
 
 app = FastAPI(
     lifespan=app_lifespan,
+    description="The API server for a Magritte instance",
 )
 
 app.include_router(router)

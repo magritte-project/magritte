@@ -28,6 +28,7 @@ def read_root():
 @router.post(
     "/sign-up",
     response_model=UserProfile,
+    summary="Sign up a new user",
 )
 async def sign_up(
     sign_up: UserSignUp,
@@ -51,6 +52,7 @@ async def sign_up(
 @router.post(
     "/sign-in",
     response_model=Token,
+    summary="Sign in as a user",
 )
 async def sign_in(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
