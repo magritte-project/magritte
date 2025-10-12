@@ -18,11 +18,17 @@ export default function SubmitButton({
         state.canSubmit,
         state.isSubmitting,
     ])
-    const buttonClasses = classNames(className)
+    const buttonClasses = classNames(
+        "bg-gradient-to-b from-slate-900 to-slate-950 active:from-slate-950",
+        "border border-black focus:border-blue-500 outline-0",
+        "text-slate-50 active:text-white disabled:text-slate-50/50 font-bold",
+        "px-4 py-2 rounded-full",
+        className,
+    )
     return (
         <button
             type={type}
-            className="bg-black active:bg-slate-800 text-white font-bold px-3 py-2 rounded-full"
+            className={buttonClasses}
             disabled={disabled || !canSubmit || isSubmitting}
             {...rest}
         >

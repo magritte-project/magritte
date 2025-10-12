@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router"
+import UserSessionButton from "./UserSessionButton"
 
 export default function Header() {
     return (
@@ -7,6 +8,9 @@ export default function Header() {
                 <div className="px-2 font-bold">
                     <Link to="/">Home</Link>
                 </div>
+            </nav>
+            <nav className="flex flex-row">
+                <UserSessionButton />
             </nav>
         </header>
     )

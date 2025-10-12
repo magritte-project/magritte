@@ -1,20 +1,20 @@
 import { createLibrary, readLibrary, readLibrarySongs } from "@/api/client"
 import { useMutation, useQuery } from "@tanstack/react-query"
 
-export function useCreateLibrary() {
+export function useCreateLibraryMutation() {
     return useMutation({
         mutationFn: createLibrary,
     })
 }
 
-export function useReadLibrary(library_id: number) {
+export function useReadLibraryQuery(library_id: number) {
     return useQuery({
         queryKey: ["/libraries/{library_id}", library_id],
         queryFn: () => readLibrary(library_id),
     })
 }
 
-export function useReadLibrarySongs(
+export function useReadLibrarySongsQuery(
     library_id: number,
     offset: number,
     limit: number,

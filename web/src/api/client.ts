@@ -5,13 +5,24 @@ import type {
     LibraryMediaReadSongRead,
     LibraryRead,
     UserProfile,
+    UserProfileUpdate,
     UserSignUp,
     paths,
 } from "./openapi"
+import { retrieveUserSession } from "./userSession"
 
 const apiClient = createClient<paths>({
     baseUrl: "/api",
 })
+
+function getSessionHeaders() {
+    const headers = new Headers()
+    const { accessToken } = retrieveUserSession()
+    if (accessToken !== null) {
+        headers.append("Authorization", `Bearer ${accessToken}`)
+    }
+    return headers
+}
 
 function unwrap<
     // biome-ignore lint/suspicious/noExplicitAny: Required due to imported API
@@ -76,11 +87,29 @@ export async function signIn(body: BodySignInSignInPost) {
     return unwrap(response)
 }
 
+// -- User Routes -- ?
+
+export async function readMe(): Promise<UserProfile> {
+    const response = await apiClient.GET("/users/me", {
+        headers: getSessionHeaders(),
+    })
+    return unwrap(response)
+}
+
+export async function updateMe(body: UserProfileUpdate): Promise<UserProfile> {
+    const response = await apiClient.POST("/users/me", {
+        body,
+        headers: getSessionHeaders(),
+    })
+    return unwrap(response)
+}
+
 // -- Library Routes -- //
 
 export async function createLibrary(body: LibraryCreate): Promise<LibraryRead> {
     const response = await apiClient.POST("/libraries/create", {
         body,
+        headers: getSessionHeaders(),
     })
     return unwrap(response)
 }
@@ -91,6 +120,7 @@ export async function readLibrary(library_id: number): Promise<LibraryRead> {
             path: {
                 library_id,
             },
+            headers: getSessionHeaders(),
         },
     })
     return unwrap(response)
@@ -111,6 +141,7 @@ export async function readLibrarySongs(
                 limit,
             },
         },
+        headers: getSessionHeaders(),
     })
     return unwrap(response)
 }

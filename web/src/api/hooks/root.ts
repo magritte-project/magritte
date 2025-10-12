@@ -1,13 +1,13 @@
 import { signIn, signUp } from "@/api/client"
 import { useMutation } from "@tanstack/react-query"
 
-export function useSignUp() {
+export function useSignUpMutation() {
     return useMutation({
         mutationFn: signUp,
     })
 }
 
-export function useSignIn() {
+export function useSignInMutation() {
     return useMutation({
         mutationFn: signIn,
     })
