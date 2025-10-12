@@ -1,15 +1,10 @@
 import { useSignInMutation, useSignUpMutation } from "@/api/hooks/root"
-import type { BodySignInSignInPost, UserSignUp } from "@/api/openapi"
+import type { UserSignUp } from "@/api/openapi"
 import { retrieveUserSession } from "@/api/userSession"
 import AppForm from "@/components/AppForm"
 import { useAppForm } from "@/hooks/formHook"
 import useUserSession from "@/hooks/userSessionHook"
-import {
-    Link,
-    createFileRoute,
-    redirect,
-    useNavigate,
-} from "@tanstack/react-router"
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/sign-up")({
     beforeLoad: () => {

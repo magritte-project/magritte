@@ -17,9 +17,9 @@ const apiClient = createClient<paths>({
 
 function getSessionHeaders() {
     const headers = new Headers()
-    const { accessToken } = retrieveUserSession()
-    if (accessToken !== null) {
-        headers.append("Authorization", `Bearer ${accessToken}`)
+    const userSession = retrieveUserSession()
+    if (userSession !== null) {
+        headers.append("Authorization", `Bearer ${userSession.accessToken}`)
     }
     return headers
 }

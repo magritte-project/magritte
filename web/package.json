@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
+    "@nozbe/microfuzz": "^1.0.0",
     "@phosphor-icons/react": "^2.1.10",
     "@tailwindcss/vite": "^4.0.6",
     "@tanstack/react-devtools": "^0.2.2",
@@ -27,6 +28,7 @@
     "openapi-fetch": "^0.14.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hotkeys-hook": "^5.1.0",
     "tailwindcss": "^4.0.6",
     "zod": "^3.24.2"
   },

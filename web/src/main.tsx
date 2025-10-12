@@ -1,6 +1,6 @@
+import { RouterProvider, createRouter } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
-import { RouterProvider, createRouter } from "@tanstack/react-router"
 
 import * as TanStackQueryProvider from "./integrations/tanstack-query/root-provider.tsx"
 
@@ -8,6 +8,7 @@ import * as TanStackQueryProvider from "./integrations/tanstack-query/root-provi
 import { routeTree } from "./routeTree.gen"
 
 import "./styles.css"
+import CommandPaletteContextProvider from "./contexts/providers/CommandPaletteContextProvider.tsx"
 import reportWebVitals from "./reportWebVitals.ts"
 
 // Create a new router instance
@@ -38,7 +39,9 @@ if (rootElement && !rootElement.innerHTML) {
     root.render(
         <StrictMode>
             <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-                <RouterProvider router={router} />
+                <CommandPaletteContextProvider>
+                    <RouterProvider router={router} />
+                </CommandPaletteContextProvider>
             </TanStackQueryProvider.Provider>
         </StrictMode>,
     )

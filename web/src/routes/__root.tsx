@@ -3,6 +3,7 @@ import { Outlet, createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 
 import Header from "@/components/Header"
+import CommandPalette from "@/components/commands/CommandPalette"
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
 import type { QueryClient } from "@tanstack/react-query"
 
@@ -15,6 +16,7 @@ export const Route = createRootRouteWithContext<MagritteRouterContext>()({
         <>
             <Header />
             <Outlet />
+            <CommandPalette />
             <TanstackDevtools
                 config={{
                     position: "bottom-left",
