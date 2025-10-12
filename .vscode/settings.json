@@ -1,13 +1,28 @@
 {
-    "files.watcherExclude": {
-        "**/routeTree.gen.ts": true
+    "biome.lsp.bin": "web/node_modules/@biomejs/biome/bin/biome",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.biome": "always",
+        "source.fixAll.biome": "always",
+        "source.fixAll.ruff": "always"
     },
-    "search.exclude": {
+    "editor.formatOnSave": true,
+    "files.watcherExclude": {
         "**/routeTree.gen.ts": true
     },
     "files.readonlyInclude": {
         "**/routeTree.gen.ts": true
     },
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "search.exclude": {
+        "**/routeTree.gen.ts": true
+    },
+    "python.defaultInterpreterPath": "server/.venv/bin/python",
+    "python.envFile": "${workspaceFolder}/server/.env",
+    "python.testing.cwd": "${workspaceFolder}/server/",
+    "python.analysis.extraPaths": ["${workspaceFolder}/server/"],
+    "ty.interpreter": ["${workspaceFolder}/server/.venv/bin/python"],
     "[javascript]": {
         "editor.defaultFormatter": "biomejs.biome"
     },
@@ -31,16 +46,5 @@
     },
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff"
-    },
-    "editor.codeActionsOnSave": {
-        "source.organizeImports.biome": "explicit",
-        "source.fixAll.ruff": "always"
-    },
-    "editor.formatOnSave": true,
-    "python.defaultInterpreterPath": "server/.venv/bin/python",
-    "python.envFile": "${workspaceFolder}/server/.env",
-    "python.testing.cwd": "${workspaceFolder}/server/",
-    "python.analysis.extraPaths": ["${workspaceFolder}/server/"],
-    "ty.interpreter": ["server/.venv/bin/python"],
-    "biome.lsp.bin": "web/node_modules/@biomejs/biome/bin/biome"
+    }
 }
