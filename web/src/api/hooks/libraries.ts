@@ -1,31 +1,16 @@
+import { createLibrary, readLibrary, readLibrarySongs } from "@/api/client"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiClient, unwrap } from "../client"
-import type { LibraryCreate } from "../openapi"
 
 export function useCreateLibrary() {
     return useMutation({
-        mutationFn: async (body: LibraryCreate) => {
-            const response = await apiClient.POST("/libraries/create", {
-                body,
-            })
-            return unwrap(response)
-        },
+        mutationFn: createLibrary,
     })
 }
 
 export function useReadLibrary(library_id: number) {
     return useQuery({
         queryKey: ["/libraries/{library_id}", library_id],
-        queryFn: async () => {
-            const response = await apiClient.GET("/libraries/{library_id}", {
-                params: {
-                    path: {
-                        library_id,
-                    },
-                },
-            })
-            return unwrap(response)
-        },
+        queryFn: () => readLibrary(library_id),
     })
 }
 
@@ -36,22 +21,6 @@ export function useReadLibrarySongs(
 ) {
     return useQuery({
         queryKey: ["/libraries/{library_id}", library_id, offset, limit],
-        queryFn: async () => {
-            const response = await apiClient.GET(
-                "/libraries/{library_id}/songs",
-                {
-                    params: {
-                        path: {
-                            library_id,
-                        },
-                        query: {
-                            offset,
-                            limit,
-                        },
-                    },
-                },
-            )
-            return unwrap(response)
-        },
+        queryFn: () => readLibrarySongs(library_id, offset, limit),
     })
 }

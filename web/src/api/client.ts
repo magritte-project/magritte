@@ -1,11 +1,19 @@
 import createClient, { type FetchResponse } from "openapi-fetch"
-import type { paths } from "./openapi"
+import type {
+    BodySignInSignInPost,
+    LibraryCreate,
+    LibraryMediaReadSongRead,
+    LibraryRead,
+    UserProfile,
+    UserSignUp,
+    paths,
+} from "./openapi"
 
-export const apiClient = createClient<paths>({
+const apiClient = createClient<paths>({
     baseUrl: "/api",
 })
 
-export function unwrap<
+function unwrap<
     // biome-ignore lint/suspicious/noExplicitAny: Required due to imported API
     T extends Record<string | number, any>,
     Options,
@@ -41,9 +49,7 @@ export function unwrap<
     throw new Error(message)
 }
 
-export function toFormData<TBody extends NonNullable<object>>(
-    body: NonNullable<TBody>,
-) {
+function toFormData<TBody extends NonNullable<object>>(body: TBody) {
     const formBody = new FormData()
     for (const [key, value] of Object.entries(body)) {
         if (!value) {
@@ -52,4 +58,59 @@ export function toFormData<TBody extends NonNullable<object>>(
         formBody.set(key, String(value))
     }
     return formBody as unknown as TBody
+}
+
+// -- Root Routes -- //
+
+export async function signUp(body: UserSignUp): Promise<UserProfile> {
+    const response = await apiClient.POST("/sign-up", {
+        body,
+    })
+    return unwrap(response)
+}
+
+export async function signIn(body: BodySignInSignInPost) {
+    const response = await apiClient.POST("/sign-in", {
+        body: toFormData(body),
+    })
+    return unwrap(response)
+}
+
+// -- Library Routes -- //
+
+export async function createLibrary(body: LibraryCreate): Promise<LibraryRead> {
+    const response = await apiClient.POST("/libraries/create", {
+        body,
+    })
+    return unwrap(response)
+}
+
+export async function readLibrary(library_id: number): Promise<LibraryRead> {
+    const response = await apiClient.GET("/libraries/{library_id}", {
+        params: {
+            path: {
+                library_id,
+            },
+        },
+    })
+    return unwrap(response)
+}
+
+export async function readLibrarySongs(
+    library_id: number,
+    offset: number,
+    limit: number,
+): Promise<LibraryMediaReadSongRead> {
+    const response = await apiClient.GET("/libraries/{library_id}/songs", {
+        params: {
+            path: {
+                library_id,
+            },
+            query: {
+                offset,
+                limit,
+            },
+        },
+    })
+    return unwrap(response)
 }
