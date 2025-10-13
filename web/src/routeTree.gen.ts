@@ -11,7 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as LibrariesRouteImport } from './routes/libraries'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LibrariesLibraryIdRouteRouteImport } from './routes/libraries.$libraryId/route'
+import { Route as LibrariesLibraryIdIndexRouteImport } from './routes/libraries.$libraryId/index'
+import { Route as LibrariesLibraryIdSongsRouteImport } from './routes/libraries.$libraryId/songs'
+import { Route as LibrariesLibraryIdArtistsRouteImport } from './routes/libraries.$libraryId/artists'
+import { Route as LibrariesLibraryIdAlbumsRouteImport } from './routes/libraries.$libraryId/albums'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -23,38 +29,115 @@ const SignInRoute = SignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LibrariesRoute = LibrariesRouteImport.update({
+  id: '/libraries',
+  path: '/libraries',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LibrariesLibraryIdRouteRoute = LibrariesLibraryIdRouteRouteImport.update({
+  id: '/$libraryId',
+  path: '/$libraryId',
+  getParentRoute: () => LibrariesRoute,
+} as any)
+const LibrariesLibraryIdIndexRoute = LibrariesLibraryIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LibrariesLibraryIdRouteRoute,
+} as any)
+const LibrariesLibraryIdSongsRoute = LibrariesLibraryIdSongsRouteImport.update({
+  id: '/songs',
+  path: '/songs',
+  getParentRoute: () => LibrariesLibraryIdRouteRoute,
+} as any)
+const LibrariesLibraryIdArtistsRoute =
+  LibrariesLibraryIdArtistsRouteImport.update({
+    id: '/artists',
+    path: '/artists',
+    getParentRoute: () => LibrariesLibraryIdRouteRoute,
+  } as any)
+const LibrariesLibraryIdAlbumsRoute =
+  LibrariesLibraryIdAlbumsRouteImport.update({
+    id: '/albums',
+    path: '/albums',
+    getParentRoute: () => LibrariesLibraryIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
+  '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
+  '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
+  '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
+  '/libraries/$libraryId/': typeof LibrariesLibraryIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
+  '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
+  '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
+  '/libraries/$libraryId': typeof LibrariesLibraryIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
+  '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
+  '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
+  '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
+  '/libraries/$libraryId/': typeof LibrariesLibraryIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/sign-up'
+  fullPaths:
+    | '/'
+    | '/libraries'
+    | '/sign-in'
+    | '/sign-up'
+    | '/libraries/$libraryId'
+    | '/libraries/$libraryId/albums'
+    | '/libraries/$libraryId/artists'
+    | '/libraries/$libraryId/songs'
+    | '/libraries/$libraryId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/sign-up'
-  id: '__root__' | '/' | '/sign-in' | '/sign-up'
+  to:
+    | '/'
+    | '/libraries'
+    | '/sign-in'
+    | '/sign-up'
+    | '/libraries/$libraryId/albums'
+    | '/libraries/$libraryId/artists'
+    | '/libraries/$libraryId/songs'
+    | '/libraries/$libraryId'
+  id:
+    | '__root__'
+    | '/'
+    | '/libraries'
+    | '/sign-in'
+    | '/sign-up'
+    | '/libraries/$libraryId'
+    | '/libraries/$libraryId/albums'
+    | '/libraries/$libraryId/artists'
+    | '/libraries/$libraryId/songs'
+    | '/libraries/$libraryId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LibrariesRoute: typeof LibrariesRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
 }
@@ -75,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/libraries': {
+      id: '/libraries'
+      path: '/libraries'
+      fullPath: '/libraries'
+      preLoaderRoute: typeof LibrariesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,11 +172,79 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/libraries/$libraryId': {
+      id: '/libraries/$libraryId'
+      path: '/$libraryId'
+      fullPath: '/libraries/$libraryId'
+      preLoaderRoute: typeof LibrariesLibraryIdRouteRouteImport
+      parentRoute: typeof LibrariesRoute
+    }
+    '/libraries/$libraryId/': {
+      id: '/libraries/$libraryId/'
+      path: '/'
+      fullPath: '/libraries/$libraryId/'
+      preLoaderRoute: typeof LibrariesLibraryIdIndexRouteImport
+      parentRoute: typeof LibrariesLibraryIdRouteRoute
+    }
+    '/libraries/$libraryId/songs': {
+      id: '/libraries/$libraryId/songs'
+      path: '/songs'
+      fullPath: '/libraries/$libraryId/songs'
+      preLoaderRoute: typeof LibrariesLibraryIdSongsRouteImport
+      parentRoute: typeof LibrariesLibraryIdRouteRoute
+    }
+    '/libraries/$libraryId/artists': {
+      id: '/libraries/$libraryId/artists'
+      path: '/artists'
+      fullPath: '/libraries/$libraryId/artists'
+      preLoaderRoute: typeof LibrariesLibraryIdArtistsRouteImport
+      parentRoute: typeof LibrariesLibraryIdRouteRoute
+    }
+    '/libraries/$libraryId/albums': {
+      id: '/libraries/$libraryId/albums'
+      path: '/albums'
+      fullPath: '/libraries/$libraryId/albums'
+      preLoaderRoute: typeof LibrariesLibraryIdAlbumsRouteImport
+      parentRoute: typeof LibrariesLibraryIdRouteRoute
+    }
   }
 }
 
+interface LibrariesLibraryIdRouteRouteChildren {
+  LibrariesLibraryIdAlbumsRoute: typeof LibrariesLibraryIdAlbumsRoute
+  LibrariesLibraryIdArtistsRoute: typeof LibrariesLibraryIdArtistsRoute
+  LibrariesLibraryIdSongsRoute: typeof LibrariesLibraryIdSongsRoute
+  LibrariesLibraryIdIndexRoute: typeof LibrariesLibraryIdIndexRoute
+}
+
+const LibrariesLibraryIdRouteRouteChildren: LibrariesLibraryIdRouteRouteChildren =
+  {
+    LibrariesLibraryIdAlbumsRoute: LibrariesLibraryIdAlbumsRoute,
+    LibrariesLibraryIdArtistsRoute: LibrariesLibraryIdArtistsRoute,
+    LibrariesLibraryIdSongsRoute: LibrariesLibraryIdSongsRoute,
+    LibrariesLibraryIdIndexRoute: LibrariesLibraryIdIndexRoute,
+  }
+
+const LibrariesLibraryIdRouteRouteWithChildren =
+  LibrariesLibraryIdRouteRoute._addFileChildren(
+    LibrariesLibraryIdRouteRouteChildren,
+  )
+
+interface LibrariesRouteChildren {
+  LibrariesLibraryIdRouteRoute: typeof LibrariesLibraryIdRouteRouteWithChildren
+}
+
+const LibrariesRouteChildren: LibrariesRouteChildren = {
+  LibrariesLibraryIdRouteRoute: LibrariesLibraryIdRouteRouteWithChildren,
+}
+
+const LibrariesRouteWithChildren = LibrariesRoute._addFileChildren(
+  LibrariesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LibrariesRoute: LibrariesRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
 }

@@ -14,7 +14,6 @@ export interface MagritteRouterContext {
 export const Route = createRootRouteWithContext<MagritteRouterContext>()({
     component: () => (
         <>
-            <Header />
             <Outlet />
             <CommandPalette />
             <TanstackDevtools

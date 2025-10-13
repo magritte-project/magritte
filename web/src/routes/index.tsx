@@ -1,9 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { retrieveUserSession } from "@/api/userSession"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/")({
-    component: AppComponent,
+    beforeLoad: async () => {
+        if (retrieveUserSession() !== null) {
+            throw redirect({ to: "/libraries" })
+        } else {
+            throw redirect({ to: "/sign-in" })
+        }
+    },
 })
-
-function AppComponent() {
-    return <div className="text-center">Welcome</div>
-}
