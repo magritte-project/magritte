@@ -8,9 +8,17 @@ class SongRead(BaseModel):
         default=None,
         description="ID of this song's artist, if any",
     )
+    artist_name: str | None = Field(
+        default=None,
+        description="Name of this song's song, if any",
+    )
     album_id: int | None = Field(
         default=None,
         description="ID of this song's album, if any",
+    )
+    album_title: str | None = Field(
+        default=None,
+        description="Title of this song's album, if any",
     )
 
     start_time: float = Field(

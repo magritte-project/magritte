@@ -45,6 +45,30 @@ class Library(LibraryModel, table=True):
         return permissions
 
     @classmethod
+    async def read_all(
+        cls,
+        user_id: int,
+        session: AsyncSession,
+        can_view: bool | None = None,
+        can_add: bool | None = None,
+        can_edit: bool | None = None,
+        can_remove: bool | None = None,
+    ):
+        return await session.scalars(
+            select(cls)
+            .where(
+                *cls._build_permissions(can_view, can_add, can_edit, can_remove),
+            )
+            .join(
+                UserLibraryLink,
+                and_(
+                    col(UserLibraryLink.library_id) == col(cls.id),
+                    col(UserLibraryLink.user_id) == user_id,
+                ),
+            )
+        )
+
+    @classmethod
     async def read_by_id(
         cls,
         id: int,
@@ -55,7 +79,6 @@ class Library(LibraryModel, table=True):
         can_edit: bool | None = None,
         can_remove: bool | None = None,
     ):
-        cls._build_permissions(can_view, can_add, can_edit, can_remove)
         return await session.scalar(
             select(cls)
             .where(

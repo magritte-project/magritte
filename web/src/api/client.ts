@@ -106,6 +106,13 @@ export async function updateMe(body: UserProfileUpdate): Promise<UserProfile> {
 
 // -- Library Routes -- //
 
+export async function readLibraries(): Promise<readonly LibraryRead[]> {
+    const response = await apiClient.GET("/libraries/", {
+        headers: getSessionHeaders(),
+    })
+    return unwrap(response)
+}
+
 export async function createLibrary(body: LibraryCreate): Promise<LibraryRead> {
     const response = await apiClient.POST("/libraries/create", {
         body,
@@ -120,16 +127,16 @@ export async function readLibrary(library_id: number): Promise<LibraryRead> {
             path: {
                 library_id,
             },
-            headers: getSessionHeaders(),
         },
+        headers: getSessionHeaders(),
     })
     return unwrap(response)
 }
 
 export async function readLibrarySongs(
     library_id: number,
-    offset: number,
-    limit: number,
+    offset?: number,
+    limit?: number,
 ): Promise<LibraryMediaReadSongRead> {
     const response = await apiClient.GET("/libraries/{library_id}/songs", {
         params: {

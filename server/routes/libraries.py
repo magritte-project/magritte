@@ -17,6 +17,21 @@ from schemas.songs import SongRead
 router = APIRouter(prefix="/libraries")
 
 
+@router.get(
+    "/",
+    response_model=list[LibraryRead],
+    summary="Read the libraries the signed in user has access to",
+)
+async def read_libraries(
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    libraries = await Library.read_all(current_user.id, session, can_view=True)
+    return [LibraryRead(**library.model_dump()) for library in libraries]
+
+
 @router.post(
     "/create",
     response_model=LibraryRead,

@@ -2,13 +2,18 @@ import { useUserProfileQuery } from "@/api/hooks/users"
 import type { Command } from "@/commands/command"
 import useUserSession from "@/hooks/userSessionHook"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
-import { Link } from "@tanstack/react-router"
-import { useMemo } from "react"
+import { Link, useNavigate } from "@tanstack/react-router"
+import { useCallback, useMemo } from "react"
 import { Commands } from "./commands/Commands"
 
 export default function UserSessionButton() {
+    const navigate = useNavigate()
     const { isSignedIn, signOut } = useUserSession()
     const meQuery = useUserProfileQuery(isSignedIn)
+    const handleSignOut = useCallback(async () => {
+        await signOut()
+        navigate({ to: "/" })
+    }, [signOut])
     const commands = useMemo<Command[]>(() => {
         return isSignedIn
             ? [
@@ -49,7 +54,7 @@ export default function UserSessionButton() {
                             <button
                                 type="button"
                                 className="block p-2 data-focus:bg-blue-100 text-nowrap"
-                                onClick={signOut}
+                                onClick={handleSignOut}
                             >
                                 Sign Out
                             </button>

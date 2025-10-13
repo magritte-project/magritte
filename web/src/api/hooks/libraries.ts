@@ -1,5 +1,17 @@
-import { createLibrary, readLibrary, readLibrarySongs } from "@/api/client"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import {
+    createLibrary,
+    readLibraries,
+    readLibrary,
+    readLibrarySongs,
+} from "@/api/client"
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
+
+export function useReadLibrariesQuery() {
+    return useSuspenseQuery({
+        queryKey: ["/libraries/"],
+        queryFn: () => readLibraries(),
+    })
+}
 
 export function useCreateLibraryMutation() {
     return useMutation({
@@ -8,7 +20,7 @@ export function useCreateLibraryMutation() {
 }
 
 export function useReadLibraryQuery(library_id: number) {
-    return useQuery({
+    return useSuspenseQuery({
         queryKey: ["/libraries/{library_id}", library_id],
         queryFn: () => readLibrary(library_id),
     })
@@ -16,10 +28,10 @@ export function useReadLibraryQuery(library_id: number) {
 
 export function useReadLibrarySongsQuery(
     library_id: number,
-    offset: number,
-    limit: number,
+    offset?: number,
+    limit?: number,
 ) {
-    return useQuery({
+    return useSuspenseQuery({
         queryKey: ["/libraries/{library_id}", library_id, offset, limit],
         queryFn: () => readLibrarySongs(library_id, offset, limit),
     })

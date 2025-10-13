@@ -4,583 +4,628 @@
  */
 
 export interface paths {
+    readonly "/libraries/": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read the libraries the signed in user has access to */
+        readonly get: operations["read_libraries_libraries__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/libraries/create": {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
-        readonly get?: never
-        readonly put?: never
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
         /** Create an empty library owned by the signed in user */
-        readonly post: operations["create_library_libraries_create_post"]
-        readonly delete?: never
-        readonly options?: never
-        readonly head?: never
-        readonly patch?: never
-        readonly trace?: never
-    }
+        readonly post: operations["create_library_libraries_create_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/libraries/{library_id}": {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
         /** Read a library by its ID */
-        readonly get: operations["read_library_libraries__library_id__get"]
-        readonly put?: never
-        readonly post?: never
-        readonly delete?: never
-        readonly options?: never
-        readonly head?: never
-        readonly patch?: never
-        readonly trace?: never
-    }
+        readonly get: operations["read_library_libraries__library_id__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/libraries/{library_id}/songs": {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
         /** Read a page of songs in a library */
-        readonly get: operations["read_library_songs_libraries__library_id__songs_get"]
-        readonly put?: never
-        readonly post?: never
-        readonly delete?: never
-        readonly options?: never
-        readonly head?: never
-        readonly patch?: never
-        readonly trace?: never
-    }
+        readonly get: operations["read_library_songs_libraries__library_id__songs_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/users/me": {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
         /** Read the signed in user's profile */
-        readonly get: operations["read_me_users_me_get"]
-        readonly put?: never
+        readonly get: operations["read_me_users_me_get"];
+        readonly put?: never;
         /** Update the signed in user's profile */
-        readonly post: operations["update_me_users_me_post"]
-        readonly delete?: never
-        readonly options?: never
-        readonly head?: never
-        readonly patch?: never
-        readonly trace?: never
-    }
+        readonly post: operations["update_me_users_me_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/": {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
         /** Read Root */
-        readonly get: operations["read_root__get"]
-        readonly put?: never
-        readonly post?: never
-        readonly delete?: never
-        readonly options?: never
-        readonly head?: never
-        readonly patch?: never
-        readonly trace?: never
-    }
+        readonly get: operations["read_root__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/sign-up": {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
-        readonly get?: never
-        readonly put?: never
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
         /** Sign up a new user */
-        readonly post: operations["sign_up_sign_up_post"]
-        readonly delete?: never
-        readonly options?: never
-        readonly head?: never
-        readonly patch?: never
-        readonly trace?: never
-    }
+        readonly post: operations["sign_up_sign_up_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/sign-in": {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
-        readonly get?: never
-        readonly put?: never
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
         /** Sign in as a user */
-        readonly post: operations["sign_in_sign_in_post"]
-        readonly delete?: never
-        readonly options?: never
-        readonly head?: never
-        readonly patch?: never
-        readonly trace?: never
-    }
+        readonly post: operations["sign_in_sign_in_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** Body_sign_in_sign_in_post */
         readonly Body_sign_in_sign_in_post: {
             /** Grant Type */
-            readonly grant_type?: string | null
+            readonly grant_type?: string | null;
             /** Username */
-            readonly username: string
+            readonly username: string;
             /**
              * Password
              * Format: password
              */
-            readonly password: string
+            readonly password: string;
             /**
              * Scope
              * @default
              */
-            readonly scope: string
+            readonly scope: string;
             /** Client Id */
-            readonly client_id?: string | null
+            readonly client_id?: string | null;
             /**
              * Client Secret
              * Format: password
              */
-            readonly client_secret?: string | null
-        }
+            readonly client_secret?: string | null;
+        };
         /** HTTPValidationError */
         readonly HTTPValidationError: {
             /** Detail */
-            readonly detail: readonly components["schemas"]["ValidationError"][]
-        }
+            readonly detail: readonly components["schemas"]["ValidationError"][];
+        };
         /** LibraryCreate */
         readonly LibraryCreate: {
             /** Name */
-            readonly name: string
-        }
+            readonly name: string;
+        };
         /** LibraryMediaRead[SongRead] */
         readonly LibraryMediaRead_SongRead_: {
             /** Items */
-            readonly items: readonly components["schemas"]["SongRead"][]
+            readonly items: readonly components["schemas"]["SongRead"][];
             /** Offset */
-            readonly offset: number
+            readonly offset: number;
             /** Limit */
-            readonly limit: number
+            readonly limit: number;
             /** Total */
-            readonly total: number
-        }
+            readonly total: number;
+        };
         /** LibraryRead */
         readonly LibraryRead: {
             /** Id */
-            readonly id: number
+            readonly id: number;
             /** Name */
-            readonly name: string
-        }
+            readonly name: string;
+        };
         /** SongRead */
         readonly SongRead: {
             /** Id */
-            readonly id: number
+            readonly id: number;
             /**
              * Artist Id
              * @description ID of this song's artist, if any
              */
-            readonly artist_id?: number | null
+            readonly artist_id?: number | null;
+            /**
+             * Artist Name
+             * @description Name of this song's song, if any
+             */
+            readonly artist_name?: string | null;
             /**
              * Album Id
              * @description ID of this song's album, if any
              */
-            readonly album_id?: number | null
+            readonly album_id?: number | null;
+            /**
+             * Album Title
+             * @description Title of this song's album, if any
+             */
+            readonly album_title?: string | null;
             /**
              * Start Time
              * @description Where in the song to start playback
              * @default 0
              */
-            readonly start_time: number
+            readonly start_time: number;
             /**
              * End Time
              * @description Where in the song to end playback
              */
-            readonly end_time: number
+            readonly end_time: number;
             /**
              * Title
              * @description The title of the song
              */
-            readonly title?: string | null
+            readonly title?: string | null;
             /**
              * Album Artist
              * @description The song's album artist
              */
-            readonly album_artist?: string | null
+            readonly album_artist?: string | null;
             /**
              * Composer
              * @description The composer of the song
              */
-            readonly composer?: string | null
+            readonly composer?: string | null;
             /**
              * Genre
              * @description The genre of the song
              */
-            readonly genre?: string | null
+            readonly genre?: string | null;
             /**
              * Release Date
              * @description The release date of the song
              */
-            readonly release_date?: string | null
+            readonly release_date?: string | null;
             /**
              * Track Number
              * @description The track number of the song
              */
-            readonly track_number?: number | null
+            readonly track_number?: number | null;
             /**
              * Track Total
              * @description The total number of tracks on the album
              */
-            readonly track_total?: number | null
+            readonly track_total?: number | null;
             /**
              * Disc Number
              * @description The disc number in the album
              */
-            readonly disc_number?: number | null
+            readonly disc_number?: number | null;
             /**
              * Disc Total
              * @description The total number of discs in the album
              */
-            readonly disc_total?: number | null
+            readonly disc_total?: number | null;
             /**
              * Lyrics
              * @description The lyrics of the song
              */
-            readonly lyrics?: string | null
+            readonly lyrics?: string | null;
             /**
              * Rating
              * @description The rating of the song
              */
-            readonly rating?: number | null
+            readonly rating?: number | null;
             /**
              * Bpm
              * @description The beats per minute of the song
              */
-            readonly bpm?: number | null
+            readonly bpm?: number | null;
             /**
              * Comment
              * @description A user defined comment
              */
-            readonly comment?: string | null
+            readonly comment?: string | null;
             /**
              * Grouping
              * @description The grouping of the song
              */
-            readonly grouping?: string | null
+            readonly grouping?: string | null;
             /** Mcn */
-            readonly mcn?: string | null
+            readonly mcn?: string | null;
             /** Isrc */
-            readonly isrc?: string | null
+            readonly isrc?: string | null;
             /** Music Brainz Release Id */
-            readonly music_brainz_release_id?: string | null
+            readonly music_brainz_release_id?: string | null;
             /** Music Brainz Recording Id */
-            readonly music_brainz_recording_id?: string | null
-        }
+            readonly music_brainz_recording_id?: string | null;
+        };
         /** Token */
         readonly Token: {
             /** Access Token */
-            readonly access_token: string
+            readonly access_token: string;
             /**
              * Token Type
              * @constant
              */
-            readonly token_type: "bearer"
-        }
+            readonly token_type: "bearer";
+        };
         /** UserProfile */
         readonly UserProfile: {
             /** Username */
-            readonly username: string
+            readonly username: string;
             /** Preferred Name */
-            readonly preferred_name: string | null
-        }
+            readonly preferred_name: string | null;
+        };
         /** UserProfileUpdate */
         readonly UserProfileUpdate: {
             /** Preferred Name */
-            readonly preferred_name: string | null
-        }
+            readonly preferred_name: string | null;
+        };
         /** UserSignUp */
         readonly UserSignUp: {
             /** Username */
-            readonly username: string
+            readonly username: string;
             /** Password */
-            readonly password: string
-        }
+            readonly password: string;
+        };
         /** ValidationError */
         readonly ValidationError: {
             /** Location */
-            readonly loc: readonly (string | number)[]
+            readonly loc: readonly (string | number)[];
             /** Message */
-            readonly msg: string
+            readonly msg: string;
             /** Error Type */
-            readonly type: string
-        }
-    }
-    responses: never
-    parameters: never
-    requestBodies: never
-    headers: never
-    pathItems: never
+            readonly type: string;
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-export type BodySignInSignInPost =
-    components["schemas"]["Body_sign_in_sign_in_post"]
-export type HttpValidationError = components["schemas"]["HTTPValidationError"]
-export type LibraryCreate = components["schemas"]["LibraryCreate"]
-export type LibraryMediaReadSongRead =
-    components["schemas"]["LibraryMediaRead_SongRead_"]
-export type LibraryRead = components["schemas"]["LibraryRead"]
-export type SongRead = components["schemas"]["SongRead"]
-export type Token = components["schemas"]["Token"]
-export type UserProfile = components["schemas"]["UserProfile"]
-export type UserProfileUpdate = components["schemas"]["UserProfileUpdate"]
-export type UserSignUp = components["schemas"]["UserSignUp"]
-export type ValidationError = components["schemas"]["ValidationError"]
-export type $defs = Record<string, never>
+export type BodySignInSignInPost = components['schemas']['Body_sign_in_sign_in_post'];
+export type HttpValidationError = components['schemas']['HTTPValidationError'];
+export type LibraryCreate = components['schemas']['LibraryCreate'];
+export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
+export type LibraryRead = components['schemas']['LibraryRead'];
+export type SongRead = components['schemas']['SongRead'];
+export type Token = components['schemas']['Token'];
+export type UserProfile = components['schemas']['UserProfile'];
+export type UserProfileUpdate = components['schemas']['UserProfileUpdate'];
+export type UserSignUp = components['schemas']['UserSignUp'];
+export type ValidationError = components['schemas']['ValidationError'];
+export type $defs = Record<string, never>;
 export interface operations {
+    readonly read_libraries_libraries__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": readonly components["schemas"]["LibraryRead"][];
+                };
+            };
+        };
+    };
     readonly create_library_libraries_create_post: {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
         readonly requestBody: {
             readonly content: {
-                readonly "application/json": components["schemas"]["LibraryCreate"]
-            }
-        }
+                readonly "application/json": components["schemas"]["LibraryCreate"];
+            };
+        };
         readonly responses: {
             /** @description Successful Response */
             readonly 200: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["LibraryRead"]
-                }
-            }
+                    readonly "application/json": components["schemas"]["LibraryRead"];
+                };
+            };
             /** @description Validation Error */
             readonly 422: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"]
-                }
-            }
-        }
-    }
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly read_library_libraries__library_id__get: {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
+            readonly query?: never;
+            readonly header?: never;
             readonly path: {
-                readonly library_id: number
-            }
-            readonly cookie?: never
-        }
-        readonly requestBody?: never
+                readonly library_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
         readonly responses: {
             /** @description Successful Response */
             readonly 200: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["LibraryRead"]
-                }
-            }
+                    readonly "application/json": components["schemas"]["LibraryRead"];
+                };
+            };
             /** @description Validation Error */
             readonly 422: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"]
-                }
-            }
-        }
-    }
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly read_library_songs_libraries__library_id__songs_get: {
         readonly parameters: {
             readonly query?: {
                 /** @description The page offset to read from */
-                readonly offset?: number
+                readonly offset?: number;
                 /** @description How many items to read per page */
-                readonly limit?: number
-            }
-            readonly header?: never
+                readonly limit?: number;
+            };
+            readonly header?: never;
             readonly path: {
-                readonly library_id: number
-            }
-            readonly cookie?: never
-        }
-        readonly requestBody?: never
+                readonly library_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
         readonly responses: {
             /** @description Successful Response */
             readonly 200: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["LibraryMediaRead_SongRead_"]
-                }
-            }
+                    readonly "application/json": components["schemas"]["LibraryMediaRead_SongRead_"];
+                };
+            };
             /** @description Validation Error */
             readonly 422: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"]
-                }
-            }
-        }
-    }
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly read_me_users_me_get: {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
-        readonly requestBody?: never
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
         readonly responses: {
             /** @description Successful Response */
             readonly 200: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["UserProfile"]
-                }
-            }
-        }
-    }
+                    readonly "application/json": components["schemas"]["UserProfile"];
+                };
+            };
+        };
+    };
     readonly update_me_users_me_post: {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
         readonly requestBody: {
             readonly content: {
-                readonly "application/json": components["schemas"]["UserProfileUpdate"]
-            }
-        }
+                readonly "application/json": components["schemas"]["UserProfileUpdate"];
+            };
+        };
         readonly responses: {
             /** @description Successful Response */
             readonly 200: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["UserProfile"]
-                }
-            }
+                    readonly "application/json": components["schemas"]["UserProfile"];
+                };
+            };
             /** @description Validation Error */
             readonly 422: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"]
-                }
-            }
-        }
-    }
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly read_root__get: {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
-        readonly requestBody?: never
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
         readonly responses: {
             /** @description Successful Response */
             readonly 200: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": unknown
-                }
-            }
-        }
-    }
+                    readonly "application/json": unknown;
+                };
+            };
+        };
+    };
     readonly sign_up_sign_up_post: {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
         readonly requestBody: {
             readonly content: {
-                readonly "application/json": components["schemas"]["UserSignUp"]
-            }
-        }
+                readonly "application/json": components["schemas"]["UserSignUp"];
+            };
+        };
         readonly responses: {
             /** @description Successful Response */
             readonly 200: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["UserProfile"]
-                }
-            }
+                    readonly "application/json": components["schemas"]["UserProfile"];
+                };
+            };
             /** @description Validation Error */
             readonly 422: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"]
-                }
-            }
-        }
-    }
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly sign_in_sign_in_post: {
         readonly parameters: {
-            readonly query?: never
-            readonly header?: never
-            readonly path?: never
-            readonly cookie?: never
-        }
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
         readonly requestBody: {
             readonly content: {
-                readonly "application/x-www-form-urlencoded": components["schemas"]["Body_sign_in_sign_in_post"]
-            }
-        }
+                readonly "application/x-www-form-urlencoded": components["schemas"]["Body_sign_in_sign_in_post"];
+            };
+        };
         readonly responses: {
             /** @description Successful Response */
             readonly 200: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["Token"]
-                }
-            }
+                    readonly "application/json": components["schemas"]["Token"];
+                };
+            };
             /** @description Validation Error */
             readonly 422: {
                 headers: {
-                    readonly [name: string]: unknown
-                }
+                    readonly [name: string]: unknown;
+                };
                 content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"]
-                }
-            }
-        }
-    }
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
 }

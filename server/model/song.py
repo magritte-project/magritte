@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Union
 
+from pydantic import computed_field
 from sqlmodel import Field, Relationship, SQLModel
 
 from model.base import LibraryModel
@@ -65,13 +66,21 @@ class Song(LibraryModel, table=True):
         foreign_key="artists.id",
         description="ID of this song's artist, if any",
     )
-    artist: Union["Artist", None] = Relationship(back_populates="songs")
+    artist: Union["Artist", None] = Relationship(
+        back_populates="songs",
+        sa_relationship_kwargs={
+            "lazy": "joined",
+        },
+    )
     album_id: int | None = Field(
         default=None,
         foreign_key="albums.id",
         description="ID of this song's album, if any",
     )
-    album: Union["Album", None] = Relationship(back_populates="songs")
+    album: Union["Album", None] = Relationship(
+        back_populates="songs",
+        sa_relationship_kwargs={"lazy": "joined"},
+    )
     artworks: list["Artwork"] = Relationship(
         back_populates="songs",
         link_model=SongArtworkLink,
@@ -170,10 +179,12 @@ class Song(LibraryModel, table=True):
         default=None,
     )
 
+    @computed_field
     @property
-    def artist_name(self):
+    def artist_name(self) -> str | None:
         return self.artist.name if self.artist else None
 
+    @computed_field
     @property
-    def album_title(self):
+    def album_title(self) -> str | None:
         return self.album.title if self.album else None
