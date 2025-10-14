@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from schemas.sources import SourceRead
+
 
 class SongRead(BaseModel):
     id: int
@@ -19,6 +21,11 @@ class SongRead(BaseModel):
     album_title: str | None = Field(
         default=None,
         description="Title of this song's album, if any",
+    )
+
+    sources: list[SourceRead] = Field(
+        default_factory=lambda: [],
+        description="The sources of this song",
     )
 
     start_time: float = Field(

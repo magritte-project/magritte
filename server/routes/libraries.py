@@ -13,6 +13,7 @@ from model.song import Song
 from model.user import User, UserLibraryLink
 from schemas.libraries import LibraryCreate, LibraryMediaRead, LibraryRead
 from schemas.songs import SongRead
+from schemas.sources import SourceRead
 
 router = APIRouter(prefix="/libraries")
 
@@ -128,7 +129,16 @@ async def read_library_songs(
     )
     songs = song_results.unique().scalars()
     return LibraryMediaRead(
-        items=[SongRead(**song.model_dump()) for song in songs],
+        items=[
+            SongRead(
+                **song.model_dump(),
+                sources=[
+                    SourceRead(**source.model_dump())
+                    for source in await song.awaitable_attrs.sources
+                ],
+            )
+            for song in songs
+        ],
         offset=offset,
         limit=limit,
         total=total,

@@ -1,10 +1,11 @@
 from datetime import datetime
 
 import sqlalchemy as sa
+from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlmodel import Field, SQLModel
 
 
-class LibraryModel(SQLModel):
+class LibraryModel(SQLModel, AsyncAttrs):
     """
     Base class for models in a library
     """
