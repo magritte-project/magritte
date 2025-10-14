@@ -1,17 +1,17 @@
 from typing import Annotated
 from urllib.parse import unquote, urlparse
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Security, status
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth import OAuth2Scope, get_current_user
 from db import get_db_session
 from model.source import Source
+from model.user import User
 from schemas.sources import SourceRead
 
 router = APIRouter(prefix="/sources")
-
-# TODO: None of these routes have auth
 
 
 @router.get(
@@ -21,6 +21,9 @@ router = APIRouter(prefix="/sources")
 )
 async def read_source(
     source_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     source = await session.get(Source, source_id)
@@ -35,10 +38,13 @@ async def read_source(
 @router.get(
     "/{source_id}/file",
     response_class=FileResponse,
-    summary="",
+    summary="Stream the file of a source",
 )
 async def stream_source_file(
     source_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     source = await session.get(Source, source_id)
