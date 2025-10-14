@@ -1,6 +1,5 @@
 import { useSignInMutation } from "@/api/hooks/root"
 import type { BodySignInSignInPost } from "@/api/openapi"
-import { retrieveUserSession } from "@/api/userSession"
 import AppForm from "@/components/AppForm"
 import { useAppForm } from "@/hooks/formHook"
 import useUserSession from "@/hooks/userSessionHook"
@@ -12,8 +11,8 @@ import {
 } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/sign-in")({
-    beforeLoad: () => {
-        if (retrieveUserSession() !== null) {
+    beforeLoad: async ({ context: { userSession } }) => {
+        if (userSession.isSignedIn) {
             throw redirect({ to: "/" })
         }
     },

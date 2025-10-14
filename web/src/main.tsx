@@ -8,7 +8,8 @@ import * as TanStackQueryProvider from "./integrations/tanstack-query/root-provi
 import { routeTree } from "./routeTree.gen"
 
 import "./styles.css"
-import CommandPaletteContextProvider from "./contexts/providers/CommandPaletteContextProvider.tsx"
+import { StorageUserSessionManager } from "./api/userSession.ts"
+import AppCommandPaletteContextProvider from "./contexts/providers/AppCommandPaletteContextProvider.tsx"
 import reportWebVitals from "./reportWebVitals.ts"
 
 // Create a new router instance
@@ -17,6 +18,7 @@ const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
 const router = createRouter({
     routeTree,
     context: {
+        userSession: StorageUserSessionManager.local,
         ...TanStackQueryProviderContext,
     },
     defaultPreload: "intent",
@@ -39,9 +41,9 @@ if (rootElement && !rootElement.innerHTML) {
     root.render(
         <StrictMode>
             <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-                <CommandPaletteContextProvider>
+                <AppCommandPaletteContextProvider>
                     <RouterProvider router={router} />
-                </CommandPaletteContextProvider>
+                </AppCommandPaletteContextProvider>
             </TanStackQueryProvider.Provider>
         </StrictMode>,
     )

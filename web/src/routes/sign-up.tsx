@@ -1,14 +1,13 @@
 import { useSignInMutation, useSignUpMutation } from "@/api/hooks/root"
 import type { UserSignUp } from "@/api/openapi"
-import { retrieveUserSession } from "@/api/userSession"
 import AppForm from "@/components/AppForm"
 import { useAppForm } from "@/hooks/formHook"
 import useUserSession from "@/hooks/userSessionHook"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/sign-up")({
-    beforeLoad: () => {
-        if (retrieveUserSession() !== null) {
+    beforeLoad: async ({ context: { userSession } }) => {
+        if (userSession.isSignedIn) {
             throw redirect({ to: "/" })
         }
     },

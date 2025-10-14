@@ -1,36 +1,72 @@
-const events = new EventTarget()
-
 export interface UserSession {
     readonly accessToken: string
 }
 
-export function retrieveUserSession(): UserSession | null {
-    const accessToken = localStorage.getItem("userSession.accessToken")
-    if (accessToken === null) {
-        return null
+export class UserSessionManager {
+    constructor() {
+        this._eventTarget = new EventTarget()
     }
-    return {
-        accessToken,
+
+    readonly _eventTarget: EventTarget
+
+    get current(): UserSession | null {
+        throw new Error("Unimplemented")
+    }
+
+    set current(_userSession: UserSession | null) {
+        throw new Error("Unimplemented")
+    }
+
+    get isSignedIn(): boolean {
+        return this.current !== null
+    }
+
+    dispatchUserSessionChangeEvent() {
+        this._eventTarget.dispatchEvent(new CustomEvent("onUserSessionChange"))
+    }
+
+    addUserSessionChangeEventListener(
+        callback: EventListenerOrEventListenerObject,
+    ) {
+        this._eventTarget.addEventListener("onUserSessionChange", callback)
+    }
+
+    removeUserSessionChangeEventListener(
+        callback: EventListenerOrEventListenerObject,
+    ) {
+        this._eventTarget.removeEventListener("onUserSessionChange", callback)
     }
 }
 
-export function storeUserSession(userSession: UserSession | null) {
-    if (userSession != null) {
-        localStorage.setItem("userSession.accessToken", userSession.accessToken)
-    } else {
-        localStorage.removeItem("userSession.accessToken")
+export class StorageUserSessionManager extends UserSessionManager {
+    static readonly local = new StorageUserSessionManager(localStorage)
+
+    constructor(storage: Storage) {
+        super()
+        this._storage = storage
     }
-    events.dispatchEvent(new CustomEvent("onUserSessionChange"))
-}
 
-export function addUserSessionChangeEventListener(
-    callback: EventListenerOrEventListenerObject,
-) {
-    events.addEventListener("onUserSessionChange", callback)
-}
+    readonly _storage: Storage
 
-export function removeUserSessionChangeEventListener(
-    callback: EventListenerOrEventListenerObject,
-) {
-    events.removeEventListener("onUserSessionChange", callback)
+    override get current(): UserSession | null {
+        const accessToken = this._storage.getItem("userSession.accessToken")
+        if (accessToken === null) {
+            return null
+        }
+        return {
+            accessToken,
+        }
+    }
+
+    override set current(userSession: UserSession | null) {
+        if (userSession != null) {
+            this._storage.setItem(
+                "userSession.accessToken",
+                userSession.accessToken,
+            )
+        } else {
+            this._storage.removeItem("userSession.accessToken")
+        }
+        this.dispatchUserSessionChangeEvent()
+    }
 }

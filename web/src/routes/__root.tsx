@@ -2,20 +2,21 @@ import { TanstackDevtools } from "@tanstack/react-devtools"
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 
-import Header from "@/components/Header"
-import CommandPalette from "@/components/commands/CommandPalette"
+import type { UserSessionManager } from "@/api/userSession"
+import AppCommandPalette from "@/components/AppCommandPalette"
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
 import type { QueryClient } from "@tanstack/react-query"
 
 export interface MagritteRouterContext {
     readonly queryClient: QueryClient
+    readonly userSession: UserSessionManager
 }
 
 export const Route = createRootRouteWithContext<MagritteRouterContext>()({
     component: () => (
         <>
             <Outlet />
-            <CommandPalette />
+            <AppCommandPalette />
             <TanstackDevtools
                 config={{
                     position: "bottom-left",

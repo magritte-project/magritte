@@ -9,15 +9,16 @@ import type {
     UserSignUp,
     paths,
 } from "./openapi"
-import { retrieveUserSession } from "./userSession"
+import { StorageUserSessionManager } from "./userSession"
 
 const apiClient = createClient<paths>({
     baseUrl: "/api",
 })
 
 function getSessionHeaders() {
+    // TODO: This isn't referentially transparent
     const headers = new Headers()
-    const userSession = retrieveUserSession()
+    const userSession = StorageUserSessionManager.local.current
     if (userSession !== null) {
         headers.append("Authorization", `Bearer ${userSession.accessToken}`)
     }

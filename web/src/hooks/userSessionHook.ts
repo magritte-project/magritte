@@ -1,43 +1,54 @@
 import type { Token } from "@/api/openapi"
-import {
-    type UserSession,
-    addUserSessionChangeEventListener,
-    removeUserSessionChangeEventListener,
-    retrieveUserSession,
-    storeUserSession,
-} from "@/api/userSession"
+import type { UserSession } from "@/api/userSession"
 import { useQueryClient } from "@tanstack/react-query"
+import {
+    useNavigate,
+    useRouteContext,
+    useRouterState,
+} from "@tanstack/react-router"
 import { useCallback, useEffect, useState } from "react"
 
 export interface UseUserSessionResult {
-    readonly userSession: UserSession | null
+    readonly current: UserSession | null
     readonly isSignedIn: boolean
     readonly signIn: (token: Token) => Promise<void>
     readonly signOut: () => Promise<void>
 }
 
 export default function useUserSession(): UseUserSessionResult {
+    const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const [userSession, setUserSession] = useState(() => retrieveUserSession())
-    const isSignedIn = userSession !== null
+    const context = useRouteContext({
+        strict: false,
+    })
+    // biome-ignore lint/style/noNonNullAssertion: userSession is set at root level
+    const userSession = context.userSession!
+    const [current, setCurrent] = useState(() => userSession.current)
+    const isSignedIn = current !== null
     useEffect(() => {
         const handleUserSessionChangeEventListener = async () => {
-            setUserSession(retrieveUserSession())
+            setCurrent(userSession.current)
             queryClient.invalidateQueries()
         }
-        addUserSessionChangeEventListener(handleUserSessionChangeEventListener)
+        userSession.addUserSessionChangeEventListener(
+            handleUserSessionChangeEventListener,
+        )
         return () => {
-            removeUserSessionChangeEventListener(
+            userSession.removeUserSessionChangeEventListener(
                 handleUserSessionChangeEventListener,
             )
         }
-    }, [queryClient])
-    const signIn = useCallback(async (token: Token) => {
-        storeUserSession({ accessToken: token.access_token })
-    }, [])
+    }, [userSession, queryClient])
+    const signIn = useCallback(
+        async (token: Token) => {
+            userSession.current = { accessToken: token.access_token }
+        },
+        [userSession],
+    )
     const signOut = useCallback(async () => {
-        storeUserSession(null)
-    }, [])
+        userSession.current = null
+        navigate({ to: "/" })
+    }, [navigate, userSession])
 
-    return { userSession, isSignedIn, signIn, signOut }
+    return { current: current, isSignedIn, signIn, signOut }
 }
