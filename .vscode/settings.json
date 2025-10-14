@@ -23,6 +23,8 @@
     "python.testing.cwd": "${workspaceFolder}/server/",
     "python.analysis.extraPaths": ["${workspaceFolder}/server/"],
     "ty.interpreter": ["${workspaceFolder}/server/.venv/bin/python"],
+    "ty.inlayHints.callArgumentNames": false,
+    "ty.inlayHints.variableTypes": false,
     "[javascript]": {
         "editor.defaultFormatter": "biomejs.biome"
     },

@@ -1,11 +1,10 @@
 import asyncio
-import os
 import sys
 from argparse import ArgumentParser, Namespace
 from traceback import print_tb
 
 from db import get_db_engine, get_db_session
-from ingestion.files import try_ingest_file
+from ingestion.files import try_ingest_path
 from model.library import Library
 from model.user import User
 
@@ -26,29 +25,12 @@ async def ingest_main(args: Namespace):
             raise ValueError(f"No such library as '{args.library}'")
 
         for path in args.paths:
-            for dirpath, _, filenames in os.walk(
+            await try_ingest_path(
                 path,
-                followlinks=args.follow_links,
-            ):
-                for filename in filenames:
-                    if filename.startswith("."):
-                        continue
-
-                    # TODO: Skip already seen files
-                    # TODO: Factor this out so it can be used from watchdog too
-
-                    file_path = os.path.join(dirpath, filename)
-                    try:
-                        new_song = await try_ingest_file(
-                            path=file_path,
-                            library=library,
-                            session=session,
-                        )
-                        print(
-                            f"Added '{filename}': '{new_song.title}' from '{new_song.album_title}' by '{new_song.artist_name}'"
-                        )
-                    except Exception as e:
-                        print(f"*** Skipping {file_path}: {e}", file=sys.stderr)
+                args.follow_links,
+                library,
+                session,
+            )
 
 
 async def dump_openapi(args: Namespace):
