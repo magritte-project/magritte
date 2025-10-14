@@ -109,7 +109,14 @@ async def read_library_songs(
         )
 
     total = (
-        await session.scalar(select(func.count(col(Song.id))).select_from(Song)) or 0
+        await session.scalar(
+            select(func.count(col(Song.id)))
+            .select_from(Song)
+            .where(
+                col(Song.libraries).any(col(Library.id) == library_id),
+            )
+        )
+        or 0
     )
     song_results = await session.execute(
         select(Song)
