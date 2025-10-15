@@ -47,6 +47,43 @@ async def dump_openapi_main(args: Namespace):
         print(dump)
 
 
+async def dominant_colors_main(args: Namespace):
+    from PIL import Image
+
+    for path in args.paths:
+        with Image.open(path) as image:
+            if image.has_transparency_data:
+                # TODO: We can handle images with an alpha channel but no transparent pixels
+                raise ValueError("Transparent images not supported")
+
+            sampleable_image = image.copy()
+            sampleable_image.thumbnail((100, 100))
+
+            paletted_image = sampleable_image.convert(
+                mode="P",
+                palette=Image.Palette.ADAPTIVE,
+                colors=args.palette_size,
+            )
+            palette = paletted_image.palette
+            if not palette:
+                raise ValueError("Could not palletize image")
+
+            indexed_colors = {index: color for color, index in palette.colors.items()}
+            color_counts = sorted(paletted_image.getcolors(), reverse=True)
+            dominant_colors = list[tuple[int, ...]]()
+            for _, index in color_counts[: args.color_count]:
+                dominant_colors.append(indexed_colors[index])
+
+            for dominant_color in dominant_colors:
+                match dominant_color:
+                    case (red, green, blue, alpha):
+                        print(f"rgba({red}, {green}, {blue}, {alpha})")
+                    case (red, green, blue):
+                        print(f"rgb({red}, {green}, {blue})")
+                    case (white,):
+                        print(f"rgb({white}, {white}, {white})")
+
+
 def main():
     parser = ArgumentParser(
         prog="admin",
@@ -86,6 +123,26 @@ def main():
         help="Where to save the OpenAPI dump",
     )
     parser_dump_openapi.set_defaults(func=dump_openapi_main)
+
+    parser_dominant_colors = subparsers.add_parser(
+        "dominant-colors", help="Analyze an image for its dominant colors"
+    )
+    parser_dominant_colors.add_argument(
+        "--palette-size",
+        "-p",
+        type=int,
+        default=4,
+        help="The size of the palette used to deduce dominant colors",
+    )
+    parser_dominant_colors.add_argument(
+        "--color-count",
+        "-c",
+        type=int,
+        default=4,
+        help="The number of colors to produce",
+    )
+    parser_dominant_colors.add_argument("paths", nargs="*")
+    parser_dominant_colors.set_defaults(func=dominant_colors_main)
 
     args = parser.parse_args()
     try:
