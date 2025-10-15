@@ -33,7 +33,7 @@ async def ingest_main(args: Namespace):
             )
 
 
-async def dump_openapi(args: Namespace):
+async def dump_openapi_main(args: Namespace):
     import json
 
     from main import app
@@ -47,7 +47,7 @@ async def dump_openapi(args: Namespace):
         print(dump)
 
 
-def admin_main():
+def main():
     parser = ArgumentParser(
         prog="admin",
         description="Manage a Magritte instance",
@@ -85,7 +85,7 @@ def admin_main():
         "-o",
         help="Where to save the OpenAPI dump",
     )
-    parser_dump_openapi.set_defaults(func=dump_openapi)
+    parser_dump_openapi.set_defaults(func=dump_openapi_main)
 
     args = parser.parse_args()
     try:
@@ -98,4 +98,4 @@ def admin_main():
 
 
 if __name__ == "__main__":
-    admin_main()
+    main()
