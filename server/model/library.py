@@ -2,6 +2,8 @@ from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Field, Relationship, and_, col, select
 
+from model.album import Album, AlbumLibraryLink
+from model.artist import Artist, ArtistLibraryLink
 from model.base import LibraryModel
 from model.song import Song, SongLibraryLink
 from model.user import User, UserLibraryLink
@@ -22,6 +24,16 @@ class Library(LibraryModel, table=True):
     songs: list[Song] = Relationship(
         back_populates="libraries",
         link_model=SongLibraryLink,
+        sa_relationship_kwargs={"lazy": "noload"},
+    )
+    artists: list[Artist] = Relationship(
+        back_populates="libraries",
+        link_model=ArtistLibraryLink,
+        sa_relationship_kwargs={"lazy": "noload"},
+    )
+    albums: list[Album] = Relationship(
+        back_populates="libraries",
+        link_model=AlbumLibraryLink,
         sa_relationship_kwargs={"lazy": "noload"},
     )
 

@@ -8,3 +8,4 @@ ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 SECRET = os.environ["SECRET"]
 SALT = os.environ["SALT"]
 DB = os.environ["DB"]
+COVER_STORE = os.environ["COVER_STORE"]

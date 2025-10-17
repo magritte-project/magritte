@@ -1,13 +1,29 @@
 from typing import TYPE_CHECKING, Union
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import Field, Relationship, col, select
+from sqlmodel import Field, Relationship, SQLModel, col, select
 
 from model.base import LibraryModel
 
 if TYPE_CHECKING:
     from .artist import Artist
+    from .library import Library
     from .song import Song
+
+
+class AlbumLibraryLink(SQLModel, table=True):
+    __tablename__: str = "album_library_links"
+
+    album_id: int | None = Field(
+        default=None,
+        foreign_key="albums.id",
+        primary_key=True,
+    )
+    library_id: int | None = Field(
+        default=None,
+        foreign_key="libraries.id",
+        primary_key=True,
+    )
 
 
 class Album(LibraryModel, table=True):
@@ -25,18 +41,32 @@ class Album(LibraryModel, table=True):
     )
     artist: Union["Artist", None] = Relationship(back_populates="albums")
     songs: list["Song"] = Relationship(back_populates="album")
+    libraries: list["Library"] = Relationship(
+        back_populates="albums",
+        link_model=AlbumLibraryLink,
+    )
 
     @classmethod
-    async def read_or_insert(cls, title: str, artist_id: int, session: AsyncSession):
+    async def read_or_insert(
+        cls, title: str, artist_id: int, library: "Library", session: AsyncSession
+    ):
         existing_album = await session.scalar(
             select(cls).where(col(cls.title) == title, col(cls.artist_id) == artist_id)
         )
         if existing_album:
+            if not any(
+                existing_library
+                for existing_library in existing_album.libraries
+                if existing_library.id == library.id
+            ):
+                existing_album.libraries.append(library)
+
             return existing_album
         else:
             new_album = cls(
                 title=title,
                 artist_id=artist_id,
+                libraries=[library],
             )
             session.add(new_album)
             await session.flush()

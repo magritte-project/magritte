@@ -2,31 +2,18 @@ import os
 import pathlib
 import sys
 from mimetypes import guess_file_type
-from typing import Callable, Mapping, TypeVar, cast
 
-import mutagen
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, select
 from tinytag import TinyTag, UnsupportedFormatError
 
+from ingestion.artwork import try_ingest_artwork
 from model.album import Album
 from model.artist import Artist
+from model.artwork import Artwork, ArtworkKind
 from model.library import Library
 from model.song import Song
 from model.source import Source
-
-_T = TypeVar("_T")
-
-
-def get_only_tag(
-    tags: mutagen.Tags, name: str, conversion: Callable[[str], _T]
-) -> _T | None:
-    values = cast(Mapping[str, str], tags).get(name, [])
-    if not values:
-        return None
-    if len(values) > 1:
-        raise ValueError(f"More than one value for tag {name} in {tags}")
-    return conversion(values[0])
 
 
 async def try_ingest_file(
@@ -54,15 +41,25 @@ async def try_ingest_file(
     mime_type, _encoding = guess_file_type(path)
 
     artist_name = tags.artist or ""
-    artist = await Artist.read_or_insert(artist_name, session)
+    artist = await Artist.read_or_insert(artist_name, library, session)
 
     album_title = tags.album or ""
-    album = await Album.read_or_insert(album_title, artist.id, session)
+    album = await Album.read_or_insert(album_title, artist.id, library, session)
+
+    artworks = list[Artwork]()
+    cover_image = tags.images.any
+    if cover_image:
+        cover_artwork = await try_ingest_artwork(
+            cover_image,
+            ArtworkKind.FRONT_COVER,
+            session,
+        )
+        artworks.append(cover_artwork)
 
     new_song = Song(
         artist=artist,
         album=album,
-        artworks=[],  # list["Artwork"]
+        artworks=artworks,
         libraries=[library],
         sources=[
             Source(
