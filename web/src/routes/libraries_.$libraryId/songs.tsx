@@ -5,19 +5,23 @@ import { z } from "zod"
 
 function formatDuration(seconds: number) {
     const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
+    const remainingSeconds = Math.round(seconds % 60)
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
 }
 
 export const Route = createFileRoute("/libraries_/$libraryId/songs")({
     validateSearch: z.object({
+        album_id: z.number().optional(),
+        artist_id: z.number().optional(),
         offset: z.number().optional(),
     }),
     component: function LibrarySongsComponent() {
         const { libraryId } = Route.useParams()
-        const { offset } = Route.useSearch()
+        const { album_id, artist_id, offset } = Route.useSearch()
         const { data: page } = useReadLibrarySongsQuery(
             Number(libraryId),
+            album_id,
+            artist_id,
             offset,
         )
         return (

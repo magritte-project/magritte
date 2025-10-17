@@ -2,6 +2,8 @@ import createClient, { type FetchResponse } from "openapi-fetch"
 import type {
     BodySignInSignInPost,
     LibraryCreate,
+    LibraryMediaReadAlbumRead,
+    LibraryMediaReadArtistRead,
     LibraryMediaReadSongRead,
     LibraryRead,
     UserProfile,
@@ -134,8 +136,52 @@ export async function readLibrary(library_id: number): Promise<LibraryRead> {
     return unwrap(response)
 }
 
+export async function readLibraryAlbums(
+    library_id: number,
+    artist_id?: number,
+    offset?: number,
+    limit?: number,
+): Promise<LibraryMediaReadAlbumRead> {
+    const response = await apiClient.GET("/libraries/{library_id}/albums", {
+        params: {
+            path: {
+                library_id,
+            },
+            query: {
+                artist_id,
+                offset,
+                limit,
+            },
+        },
+        headers: getSessionHeaders(),
+    })
+    return unwrap(response)
+}
+
+export async function readLibraryArtists(
+    library_id: number,
+    offset?: number,
+    limit?: number,
+): Promise<LibraryMediaReadArtistRead> {
+    const response = await apiClient.GET("/libraries/{library_id}/artists", {
+        params: {
+            path: {
+                library_id,
+            },
+            query: {
+                offset,
+                limit,
+            },
+        },
+        headers: getSessionHeaders(),
+    })
+    return unwrap(response)
+}
+
 export async function readLibrarySongs(
     library_id: number,
+    album_id?: number,
+    artist_id?: number,
     offset?: number,
     limit?: number,
 ): Promise<LibraryMediaReadSongRead> {
@@ -145,6 +191,8 @@ export async function readLibrarySongs(
                 library_id,
             },
             query: {
+                album_id,
+                artist_id,
                 offset,
                 limit,
             },

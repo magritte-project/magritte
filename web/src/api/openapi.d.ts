@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    readonly "/artworks/{artwork_id}/image": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Get the image of an artwork */
+        readonly get: operations["read_artwork_image_artworks__artwork_id__image_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/libraries/": {
         readonly parameters: {
             readonly query?: never;
@@ -515,6 +532,35 @@ export type UserSignUp = components['schemas']['UserSignUp'];
 export type ValidationError = components['schemas']['ValidationError'];
 export type $defs = Record<string, never>;
 export interface operations {
+    readonly read_artwork_image_artworks__artwork_id__image_get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly artwork_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly read_libraries_libraries__get: {
         readonly parameters: {
             readonly query?: never;
@@ -602,6 +648,8 @@ export interface operations {
     readonly read_library_albums_libraries__library_id__albums_get: {
         readonly parameters: {
             readonly query?: {
+                /** @description ID of the artist to filter the songs by */
+                readonly artist_id?: number | null;
                 /** @description The page offset to read from */
                 readonly offset?: number;
                 /** @description How many items to read per page */
@@ -674,6 +722,10 @@ export interface operations {
     readonly read_library_songs_libraries__library_id__songs_get: {
         readonly parameters: {
             readonly query?: {
+                /** @description ID of the album to filter the songs by */
+                readonly album_id?: number | null;
+                /** @description ID of the artist to filter the songs by */
+                readonly artist_id?: number | null;
                 /** @description The page offset to read from */
                 readonly offset?: number;
                 /** @description How many items to read per page */

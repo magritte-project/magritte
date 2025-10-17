@@ -1,11 +1,7 @@
 import type { Token } from "@/api/openapi"
 import type { UserSession } from "@/api/userSession"
 import { useQueryClient } from "@tanstack/react-query"
-import {
-    useNavigate,
-    useRouteContext,
-    useRouterState,
-} from "@tanstack/react-router"
+import { useNavigate, useRouteContext } from "@tanstack/react-router"
 import { useCallback, useEffect, useState } from "react"
 
 export interface UseUserSessionResult {

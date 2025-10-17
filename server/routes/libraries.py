@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
+from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, func, select
 
@@ -101,6 +102,12 @@ async def read_library_albums(
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    artist_id: Annotated[
+        int | None,
+        Query(
+            description="ID of the artist to filter the songs by",
+        ),
+    ] = None,
     offset: Annotated[int, Query(description="The page offset to read from")] = 0,
     limit: Annotated[int, Query(description="How many items to read per page")] = 100,
 ):
@@ -112,12 +119,17 @@ async def read_library_albums(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
+    where_criteria = list[ColumnExpressionArgument]()
+    if artist_id is not None:
+        where_criteria.append(col(Album.artist_id) == artist_id)
+
     total = (
         await session.scalar(
             select(func.count(col(Album.id)))
             .select_from(Album)
             .where(
                 col(Album.libraries).any(col(Library.id) == library_id),
+                *where_criteria,
             )
         )
         or 0
@@ -126,6 +138,7 @@ async def read_library_albums(
         select(Album)
         .where(
             col(Album.libraries).any(col(Library.id) == library_id),
+            *where_criteria,
         )
         .order_by(
             col(Album.title),
@@ -229,6 +242,18 @@ async def read_library_songs(
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    album_id: Annotated[
+        int | None,
+        Query(
+            description="ID of the album to filter the songs by",
+        ),
+    ] = None,
+    artist_id: Annotated[
+        int | None,
+        Query(
+            description="ID of the artist to filter the songs by",
+        ),
+    ] = None,
     offset: Annotated[int, Query(description="The page offset to read from")] = 0,
     limit: Annotated[int, Query(description="How many items to read per page")] = 100,
 ):
@@ -240,12 +265,19 @@ async def read_library_songs(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
+    where_criteria = list[ColumnExpressionArgument]()
+    if album_id is not None:
+        where_criteria.append(col(Song.album_id) == album_id)
+    if artist_id is not None:
+        where_criteria.append(col(Song.artist_id) == artist_id)
+
     total = (
         await session.scalar(
             select(func.count(col(Song.id)))
             .select_from(Song)
             .where(
                 col(Song.libraries).any(col(Library.id) == library_id),
+                *where_criteria,
             )
         )
         or 0
@@ -254,6 +286,7 @@ async def read_library_songs(
         select(Song)
         .where(
             col(Song.libraries).any(col(Library.id) == library_id),
+            *where_criteria,
         )
         .join(Artist, col(Artist.id) == col(Song.artist_id))
         .join(Album, col(Album.id) == col(Song.album_id))

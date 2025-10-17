@@ -1,7 +1,7 @@
 import { useUserProfileQuery } from "@/api/hooks/users"
 import useUserSession from "@/hooks/userSessionHook"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 
 export default function UserSessionButton() {
     const { isSignedIn, signOut } = useUserSession()
