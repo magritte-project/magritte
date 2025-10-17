@@ -1,11 +1,13 @@
 import os
 import pathlib
 import sys
+from mimetypes import guess_file_type
 from typing import Callable, Mapping, TypeVar, cast
 
 import mutagen
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, select
+from tinytag import TinyTag, UnsupportedFormatError
 
 from model.album import Album
 from model.artist import Artist
@@ -32,9 +34,10 @@ async def try_ingest_file(
     library: Library,
     session: AsyncSession,
 ):
-    file = mutagen.File(path, easy=True)
-    if file is None:
-        raise TypeError("Unsupported file")
+    try:
+        tags = TinyTag.get(path, image=True)
+    except UnsupportedFormatError:
+        return None
 
     file_url = pathlib.Path(path).as_uri()
     already_exists = (
@@ -48,39 +51,13 @@ async def try_ingest_file(
     if already_exists:
         raise FileExistsError("File has already been ingested")
 
-    mime_type = file.mime[0]
+    mime_type, _encoding = guess_file_type(path)
 
-    tags = file.tags
-    artist_name = get_only_tag(tags, "ARTIST", str) or ""
+    artist_name = tags.artist or ""
     artist = await Artist.read_or_insert(artist_name, session)
 
-    album_title = get_only_tag(tags, "ALBUM", str) or ""
+    album_title = tags.album or ""
     album = await Album.read_or_insert(album_title, artist.id, session)
-
-    track_number = get_only_tag(tags, "TRACKNUMBER", str)
-    track_total = None
-    if track_number is not None:
-        if "/" in track_number:
-            number_and_total = track_number.split("/")
-            track_number = int(number_and_total[0])
-            track_total = int(number_and_total[1])
-        else:
-            track_number = int(track_number)
-
-    if track_total is None:
-        track_total = get_only_tag(tags, "TRACKTOTAL", int)
-
-    disc_number = get_only_tag(tags, "DISCNUMBER", str)
-    disc_total = None
-    if disc_number is not None:
-        if "/" in disc_number:
-            number_and_total = disc_number.split("/")
-            disc_number = int(number_and_total[0])
-            disc_total = int(number_and_total[1])
-        else:
-            disc_number = int(disc_number)
-
-    disc_total = get_only_tag(tags, "DISCTOTAL", int)
 
     new_song = Song(
         artist=artist,
@@ -94,23 +71,23 @@ async def try_ingest_file(
             )
         ],
         start_time=0,
-        end_time=file.info.length,
-        title=get_only_tag(tags, "TITLE", str),
-        album_artist=get_only_tag(tags, "ALBUMARTIST", str),
-        composer=get_only_tag(tags, "COMPOSER", str),
-        genre=get_only_tag(tags, "GENRE", str),
-        release_date=get_only_tag(tags, "DATE", str),
-        track_number=track_number,
-        track_total=track_total,
-        disc_number=disc_number,
-        disc_total=disc_total,
-        lyrics=get_only_tag(tags, "LYRICS", str),
+        end_time=tags.duration,
+        title=tags.title,
+        album_artist=tags.albumartist,
+        composer=tags.composer,
+        genre=tags.genre,
+        release_date=tags.year,
+        track_number=tags.track,
+        track_total=tags.track_total,
+        disc_number=tags.disc,
+        disc_total=tags.disc_total,
+        lyrics=tags.other.get("lyrics")[0] if tags.other.get("lyrics") else None,
         rating=None,
         bpm=None,
-        comment=None,
+        comment=tags.comment,
         grouping=None,
         mcn=None,
-        isrc=get_only_tag(tags, "ISRC", str),
+        isrc=tags.other.get("isrc")[0] if tags.other.get("isrc") else None,
         music_brainz_release_id=None,
         music_brainz_recording_id=None,
     )
