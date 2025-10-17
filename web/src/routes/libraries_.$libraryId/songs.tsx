@@ -38,7 +38,10 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                     </thead>
                     <tbody>
                         {page.items.map((song) => (
-                            <tr key={`song-${song.id}`}>
+                            <tr
+                                key={`song-${song.id}`}
+                                className="bg-gray-50 odd:bg-inherit"
+                            >
                                 <td className="px-2 py-1">{song.title}</td>
                                 <td className="px-2 py-1">
                                     {formatDuration(
