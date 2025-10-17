@@ -8,9 +8,13 @@ from auth import OAuth2Scope, get_current_user
 from db import get_db_session
 from model.album import Album
 from model.artist import Artist
+from model.artwork import Artwork
 from model.library import Library
 from model.song import Song
 from model.user import User, UserLibraryLink
+from schemas.albums import AlbumRead
+from schemas.artists import ArtistRead
+from schemas.artwork import ArtworkRead
 from schemas.libraries import LibraryCreate, LibraryMediaRead, LibraryRead
 from schemas.songs import SongRead
 from schemas.sources import SourceRead
@@ -87,6 +91,134 @@ async def read_library(
 
 
 @router.get(
+    "/{library_id}/albums",
+    response_model=LibraryMediaRead[AlbumRead],
+    summary="Read a page of albums in a library",
+)
+async def read_library_albums(
+    library_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    offset: Annotated[int, Query(description="The page offset to read from")] = 0,
+    limit: Annotated[int, Query(description="How many items to read per page")] = 100,
+):
+    # TODO: Clean up everything about this...
+
+    library = await Library.read_by_id(library_id, current_user.id, session)
+    if not library:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    total = (
+        await session.scalar(
+            select(func.count(col(Album.id)))
+            .select_from(Album)
+            .where(
+                col(Album.libraries).any(col(Library.id) == library_id),
+            )
+        )
+        or 0
+    )
+    album_results = await session.execute(
+        select(Album)
+        .where(
+            col(Album.libraries).any(col(Library.id) == library_id),
+        )
+        .order_by(
+            col(Album.title),
+        )
+        .offset(offset)
+        .limit(limit)
+    )
+    albums = album_results.unique().scalars().all()
+    artworks_by_album = dict[int, list[Artwork]]()
+    for album in albums:
+        songs = await album.awaitable_attrs.songs
+        if songs:
+            artworks = await songs[0].awaitable_attrs.artworks
+            if artworks:
+                if album.id not in artworks_by_album:
+                    artworks_by_album[album.id] = []
+                artworks_by_album[album.id].append(artworks[0])
+
+    return LibraryMediaRead(
+        items=[
+            AlbumRead(
+                **album.model_dump(),
+                artworks=[
+                    ArtworkRead(**artwork.model_dump())
+                    for artwork in artworks_by_album.get(album.id, [])
+                ],
+            )
+            for album in albums
+        ],
+        offset=offset,
+        limit=limit,
+        total=total,
+    )
+
+
+@router.get(
+    "/{library_id}/artists",
+    response_model=LibraryMediaRead[ArtistRead],
+    summary="Read a page of albums in a library",
+)
+async def read_library_artists(
+    library_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    offset: Annotated[int, Query(description="The page offset to read from")] = 0,
+    limit: Annotated[int, Query(description="How many items to read per page")] = 100,
+):
+    # TODO: Clean up everything about this...
+
+    library = await Library.read_by_id(library_id, current_user.id, session)
+    if not library:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    total = (
+        await session.scalar(
+            select(func.count(col(Artist.id)))
+            .select_from(Artist)
+            .where(
+                col(Artist.libraries).any(col(Library.id) == library_id),
+            )
+        )
+        or 0
+    )
+    artist_results = await session.execute(
+        select(Artist)
+        .where(
+            col(Artist.libraries).any(col(Library.id) == library_id),
+        )
+        .order_by(
+            col(Artist.name),
+        )
+        .offset(offset)
+        .limit(limit)
+    )
+    artists = artist_results.unique().scalars()
+    return LibraryMediaRead(
+        items=[
+            ArtistRead(
+                **artist.model_dump(),
+            )
+            for artist in artists
+        ],
+        offset=offset,
+        limit=limit,
+        total=total,
+    )
+
+
+@router.get(
     "/{library_id}/songs",
     response_model=LibraryMediaRead[SongRead],
     summary="Read a page of songs in a library",
@@ -139,6 +271,10 @@ async def read_library_songs(
         items=[
             SongRead(
                 **song.model_dump(),
+                artworks=[
+                    ArtworkRead(**artwork.model_dump())
+                    for artwork in await song.awaitable_attrs.artworks
+                ],
                 sources=[
                     SourceRead(**source.model_dump())
                     for source in await song.awaitable_attrs.sources

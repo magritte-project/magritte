@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+from schemas.artwork import ArtworkRead
 from schemas.sources import SourceRead
 
 
@@ -23,6 +24,10 @@ class SongRead(BaseModel):
         description="Title of this song's album, if any",
     )
 
+    artworks: list[ArtworkRead] = Field(
+        default_factory=lambda: [],
+        description="The artworks of this song",
+    )
     sources: list[SourceRead] = Field(
         default_factory=lambda: [],
         description="The sources of this song",
