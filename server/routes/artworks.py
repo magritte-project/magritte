@@ -1,7 +1,7 @@
 from typing import Annotated
 from urllib.parse import unquote, urlparse
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +18,12 @@ router = APIRouter(prefix="/artworks")
 )
 async def read_artwork_image(
     artwork_id: int,
+    token: Annotated[
+        str,
+        Query(
+            description="The token authenticating this artwork image read",
+        ),
+    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     artwork = await session.get(Artwork, artwork_id)

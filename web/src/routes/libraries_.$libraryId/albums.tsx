@@ -1,4 +1,5 @@
 import { useReadLibraryAlbumsQuery } from "@/api/hooks/libraries"
+import useUserSession from "@/hooks/userSessionHook"
 import { Link, createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
             artist_id,
             offset,
         )
+        const userSession = useUserSession()
         return (
             <div className="m-2 flex flex-col gap-2">
                 <ol className="flex items-start flex-wrap gap-2">
@@ -28,7 +30,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                                 <div className="flex items-center justify-center h-36 bg-blue-200">
                                     {album.artworks?.length && (
                                         <img
-                                            src={`/api/artworks/${album.artworks[0].id}/image`}
+                                            src={`/api/artworks/${album.artworks[0].id}/image?token=${userSession.current?.accessToken ?? ""}`}
                                             alt={`Cover for ${album.title}`}
                                         />
                                     )}
