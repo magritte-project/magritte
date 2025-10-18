@@ -34,20 +34,12 @@ jobs:
         run: just lint
       - name: Format
         run: just format
-      - name: Verify Already Linted And Formatted
-        run: |
-          if [[ -n $(git status --porcelain) ]]; then
-            echo "::error::Branch is not fully linted and formatted"
-            git status
-            git diff
-            exit 1
-          fi
       - name: Export OpenAPI
         run: just export-openapi
       - name: Verify Openapi Up To Date
         run: |
           if [[ -n $(git status --porcelain) ]]; then
-            echo "::error::openapi.d.ts is out of date"
+            echo "::error::Branch is not clean. Check that it is linted, formatted, and has an up to date openapi.d.ts file"
             git status
             git diff
             exit 1
