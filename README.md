@@ -1,5 +1,7 @@
 # Magritte
 
+[![Test](https://github.com/decarbonization/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/decarbonization/magritte/actions/workflows/test.yml)
+
 A home server to manage and listen to a household's music collections.
 
 ## Scope
