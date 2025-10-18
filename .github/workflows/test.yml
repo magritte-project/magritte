@@ -14,8 +14,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup just
+      - name: Install just
         uses: extractions/setup-just@v3
+      - name: Install asdf & tools
+        uses: asdf-vm/actions/install@v4
       - name: Bootstrap
         run: just bootstrap
       - name: Lint
