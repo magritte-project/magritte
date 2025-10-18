@@ -534,7 +534,10 @@ export type $defs = Record<string, never>;
 export interface operations {
     readonly read_artwork_image_artworks__artwork_id__image_get: {
         readonly parameters: {
-            readonly query?: never;
+            readonly query: {
+                /** @description The token authenticating this artwork image read */
+                readonly token: string;
+            };
             readonly header?: never;
             readonly path: {
                 readonly artwork_id: number;
@@ -792,7 +795,10 @@ export interface operations {
     };
     readonly stream_source_file_sources__source_id__file_get: {
         readonly parameters: {
-            readonly query?: never;
+            readonly query: {
+                /** @description The token authenticating this source stream */
+                readonly token: string;
+            };
             readonly header?: never;
             readonly path: {
                 readonly source_id: number;
