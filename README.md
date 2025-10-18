@@ -1,12 +1,16 @@
 # Magritte
 
-[![Test](https://github.com/decarbonization/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/decarbonization/magritte/actions/workflows/test.yml)
-
 A home server to manage and listen to a household's music collections.
+
+[![Test](https://github.com/decarbonization/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/decarbonization/magritte/actions/workflows/test.yml)
 
 ## Scope
 
 Magritte is intended to be installed on an in-home server with a large storage medium available e.g. a Synology DiskStation or a Raspberry Pi with an external drive attached.
+
+### Known Working Configurations
+
+- macOS 15.5
 
 ## Front ends
 
