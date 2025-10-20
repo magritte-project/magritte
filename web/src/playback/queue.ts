@@ -1,13 +1,55 @@
-export interface QueueShardItem<ItemID extends string = string> {
-    readonly id: ItemID
+// TODO: figure out item ids
+
+export interface QueueShardItem {
+    readonly id: number
 }
 
 export interface QueueShard<ID extends string, Item extends QueueShardItem> {
     readonly id: ID
     firstItem(): Promise<Item | null>
     lastItem(): Promise<Item | null>
-    itemPreceding(ItemId: Item["id"]): Promise<Item | null>
-    itemFollowing(ItemId: Item["id"]): Promise<Item | null>
+    itemPreceding(itemId: Item["id"]): Promise<Item | null>
+    itemFollowing(itemId: Item["id"]): Promise<Item | null>
+}
+
+export class StaticQueueShard<ID extends string, Item extends QueueShardItem>
+    implements QueueShard<ID, Item>
+{
+    // TODO: this can be 'open'
+    constructor(
+        readonly id: ID,
+        private readonly items: readonly Item[],
+    ) {}
+
+    async firstItem(): Promise<Item | null> {
+        if (this.items.length === 0) {
+            return null
+        }
+        return this.items[0]
+    }
+
+    async lastItem(): Promise<Item | null> {
+        if (this.items.length === 0) {
+            return null
+        }
+        return this.items[this.items.length - 1]
+    }
+
+    async itemPreceding(itemId: Item["id"]): Promise<Item | null> {
+        const itemIndex = this.items.findIndex((item) => item.id === itemId)
+        if (itemIndex === -1 || itemIndex === 0) {
+            return null
+        }
+        return this.items[itemIndex - 1]
+    }
+
+    async itemFollowing(itemId: Item["id"]): Promise<Item | null> {
+        const itemIndex = this.items.findIndex((item) => item.id === itemId)
+        if (itemIndex === -1 || itemIndex === this.items.length - 1) {
+            return null
+        }
+        return this.items[itemIndex + 1]
+    }
 }
 
 export interface OpenQueueShard<ID extends string, Item extends QueueShardItem>

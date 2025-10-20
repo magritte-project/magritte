@@ -1,5 +1,7 @@
 import { useReadLibrarySongsQuery } from "@/api/hooks/libraries"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
+import { Player } from "@/playback/player"
+import { Queue, StaticQueueShard } from "@/playback/queue"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 
@@ -37,10 +39,22 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                         </tr>
                     </thead>
                     <tbody>
-                        {page.items.map((song) => (
+                        {page.items.map((song, index) => (
                             <tr
                                 key={`song-${song.id}`}
                                 className="bg-gray-50 odd:bg-inherit"
+                                onClick={() =>
+                                    Player.shared.replaceQueue({
+                                        newQueue: new Queue([
+                                            new StaticQueueShard(
+                                                "songs",
+                                                page.items.slice(index),
+                                            ),
+                                        ]),
+                                        playNow: true,
+                                    })
+                                }
+                                onKeyDown={() => {}}
                             >
                                 <td className="px-2 py-1">{song.title}</td>
                                 <td className="px-2 py-1">

@@ -5,6 +5,7 @@ export type PlaybackEngineEventDetail<Item extends {}> =
     | { type: "playingItemChanged" }
     | { type: "encounteredError"; error: Error }
     | { type: "endOfAudio"; lastItem: Item | null }
+
 export type PlaybackEngineEvent<Item extends {}> = CustomEvent<
     PlaybackEngineEventDetail<Item>
 >
@@ -39,8 +40,20 @@ export interface PlaybackEngine<Item extends {}> {
     readonly totalTime: number | null
     readonly currentTime: number | null
 
-    /** Enqueue an item to in order to play it with this engine. */
-    enqueue(itemToPlay: PlaybackEngineEnqueueOptions<Item>): Promise<void>
+    /**
+     * Check whether this playback engine can play a given item.
+     *
+     * @param item The item to check.
+     * @returns `true` if the item can be enqueued in this engine; `false` otherwise.
+     */
+    canEnqueue(item: Item): Promise<boolean>
+
+    /**
+     * Enqueue an item to in order to play it with this engine.
+     *
+     * @param options The item to add and the behavior around that.
+     */
+    enqueue(options: PlaybackEngineEnqueueOptions<Item>): Promise<void>
 
     /**
      * Skip the currently playing item in the engine's queue to play the previous one.

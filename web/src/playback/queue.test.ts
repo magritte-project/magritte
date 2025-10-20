@@ -9,34 +9,30 @@ describe("Queue", () => {
 
         readonly id: string
 
-        async firstItem(): Promise<QueueShardItem<string> | null> {
+        async firstItem(): Promise<QueueShardItem | null> {
             if (this.items.length === 0) {
                 return null
             }
             return this.items[0]
         }
 
-        async lastItem(): Promise<QueueShardItem<string> | null> {
+        async lastItem(): Promise<QueueShardItem | null> {
             if (this.items.length === 0) {
                 return null
             }
             return this.items[this.items.length - 1]
         }
 
-        async itemPreceding(
-            ItemId: string,
-        ): Promise<QueueShardItem<string> | null> {
-            const itemIndex = this.items.findIndex((item) => item.id === ItemId)
+        async itemPreceding(itemId: number): Promise<QueueShardItem | null> {
+            const itemIndex = this.items.findIndex((item) => item.id === itemId)
             if (itemIndex === -1 || itemIndex === 0) {
                 return null
             }
             return this.items[itemIndex - 1]
         }
 
-        async itemFollowing(
-            ItemId: string,
-        ): Promise<QueueShardItem<string> | null> {
-            const itemIndex = this.items.findIndex((item) => item.id === ItemId)
+        async itemFollowing(itemId: number): Promise<QueueShardItem | null> {
+            const itemIndex = this.items.findIndex((item) => item.id === itemId)
             if (itemIndex === -1 || itemIndex === this.items.length - 1) {
                 return null
             }
@@ -45,7 +41,7 @@ describe("Queue", () => {
     }
 
     function stubItem(): QueueShardItem {
-        return { id: `item-${Math.random()}` }
+        return { id: Math.random() }
     }
 
     describe("#firstItem", () => {
