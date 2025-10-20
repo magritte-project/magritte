@@ -81,6 +81,34 @@ class Library(LibraryModel, table=True):
         )
 
     @classmethod
+    async def can_user_access_by_id(
+        cls,
+        id: int,
+        user_id: int,
+        session: AsyncSession,
+        can_view: bool | None = None,
+        can_add: bool | None = None,
+        can_edit: bool | None = None,
+        can_remove: bool | None = None,
+    ):
+        return await cls.exists(
+            where=[
+                col(cls.id) == id,
+                *cls._build_permissions(can_view, can_add, can_edit, can_remove),
+            ],
+            joins=[
+                (
+                    UserLibraryLink,
+                    and_(
+                        col(UserLibraryLink.library_id) == col(cls.id),
+                        col(UserLibraryLink.user_id) == user_id,
+                    ),
+                )
+            ],
+            session=session,
+        )
+
+    @classmethod
     async def read_by_id(
         cls,
         id: int,

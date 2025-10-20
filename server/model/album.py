@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Iterable, Union
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Field, Relationship, SQLModel, col, select
@@ -7,6 +7,7 @@ from model.base import LibraryModel
 
 if TYPE_CHECKING:
     from .artist import Artist
+    from .artwork import Artwork
     from .library import Library
     from .song import Song
 
@@ -45,6 +46,20 @@ class Album(LibraryModel, table=True):
         back_populates="albums",
         link_model=AlbumLibraryLink,
     )
+
+    @property
+    async def all_artworks(self) -> Iterable["Artwork"]:
+        """
+        Collects and returns all artworks from this album's songs. Not cached.
+        """
+        songs = await self.awaitable_attrs.songs
+        all_artworks = dict[int, "Artwork"]()
+        for song in songs:
+            song_artworks = await song.awaitable_attrs.artworks
+            for song_artwork in song_artworks:
+                if song_artwork.id not in all_artworks:
+                    all_artworks[song_artwork.id] = song_artwork
+        return all_artworks.values()
 
     @classmethod
     async def read_or_insert(

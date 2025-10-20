@@ -3,13 +3,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
 from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col, func, select
+from sqlmodel import col
 
 from auth import OAuth2Scope, get_current_user
 from db import get_db_session
 from model.album import Album
 from model.artist import Artist
-from model.artwork import Artwork
 from model.library import Library
 from model.song import Song
 from model.user import User, UserLibraryLink
@@ -111,10 +110,7 @@ async def read_library_albums(
     offset: Annotated[int, Query(description="The page offset to read from")] = 0,
     limit: Annotated[int, Query(description="How many items to read per page")] = 100,
 ):
-    # TODO: Clean up everything about this...
-
-    library = await Library.read_by_id(library_id, current_user.id, session)
-    if not library:
+    if not await Library.can_user_access_by_id(library_id, current_user.id, session):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
@@ -123,47 +119,26 @@ async def read_library_albums(
     if artist_id is not None:
         where_criteria.append(col(Album.artist_id) == artist_id)
 
-    total = (
-        await session.scalar(
-            select(func.count(col(Album.id)))
-            .select_from(Album)
-            .where(
-                col(Album.libraries).any(col(Library.id) == library_id),
-                *where_criteria,
-            )
-        )
-        or 0
-    )
-    album_results = await session.execute(
-        select(Album)
-        .where(
+    total, albums = await Album.read_many_with_total(
+        where=[
             col(Album.libraries).any(col(Library.id) == library_id),
             *where_criteria,
-        )
-        .order_by(
+        ],
+        joins=[],
+        order_by=[
             col(Album.title),
-        )
-        .offset(offset)
-        .limit(limit)
+        ],
+        offset=offset,
+        limit=limit,
+        session=session,
     )
-    albums = album_results.unique().scalars().all()
-    artworks_by_album = dict[int, list[Artwork]]()
-    for album in albums:
-        songs = await album.awaitable_attrs.songs
-        if songs:
-            artworks = await songs[0].awaitable_attrs.artworks
-            if artworks:
-                if album.id not in artworks_by_album:
-                    artworks_by_album[album.id] = []
-                artworks_by_album[album.id].append(artworks[0])
-
     return LibraryMediaRead(
         items=[
             AlbumRead(
                 **album.model_dump(),
                 artworks=[
                     ArtworkRead(**artwork.model_dump())
-                    for artwork in artworks_by_album.get(album.id, [])
+                    for artwork in await album.all_artworks
                 ],
             )
             for album in albums
@@ -188,36 +163,23 @@ async def read_library_artists(
     offset: Annotated[int, Query(description="The page offset to read from")] = 0,
     limit: Annotated[int, Query(description="How many items to read per page")] = 100,
 ):
-    # TODO: Clean up everything about this...
-
-    library = await Library.read_by_id(library_id, current_user.id, session)
-    if not library:
+    if not await Library.can_user_access_by_id(library_id, current_user.id, session):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    total = (
-        await session.scalar(
-            select(func.count(col(Artist.id)))
-            .select_from(Artist)
-            .where(
-                col(Artist.libraries).any(col(Library.id) == library_id),
-            )
-        )
-        or 0
-    )
-    artist_results = await session.execute(
-        select(Artist)
-        .where(
+    total, artists = await Artist.read_many_with_total(
+        where=[
             col(Artist.libraries).any(col(Library.id) == library_id),
-        )
-        .order_by(
+        ],
+        joins=[],
+        order_by=[
             col(Artist.name),
-        )
-        .offset(offset)
-        .limit(limit)
+        ],
+        offset=offset,
+        limit=limit,
+        session=session,
     )
-    artists = artist_results.unique().scalars()
     return LibraryMediaRead(
         items=[
             ArtistRead(
@@ -257,10 +219,7 @@ async def read_library_songs(
     offset: Annotated[int, Query(description="The page offset to read from")] = 0,
     limit: Annotated[int, Query(description="How many items to read per page")] = 100,
 ):
-    # TODO: Clean up everything about this...
-
-    library = await Library.read_by_id(library_id, current_user.id, session)
-    if not library:
+    if not await Library.can_user_access_by_id(library_id, current_user.id, session):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
@@ -271,35 +230,25 @@ async def read_library_songs(
     if artist_id is not None:
         where_criteria.append(col(Song.artist_id) == artist_id)
 
-    total = (
-        await session.scalar(
-            select(func.count(col(Song.id)))
-            .select_from(Song)
-            .where(
-                col(Song.libraries).any(col(Library.id) == library_id),
-                *where_criteria,
-            )
-        )
-        or 0
-    )
-    song_results = await session.execute(
-        select(Song)
-        .where(
+    total, songs = await Song.read_many_with_total(
+        where=[
             col(Song.libraries).any(col(Library.id) == library_id),
             *where_criteria,
-        )
-        .join(Artist, col(Artist.id) == col(Song.artist_id))
-        .join(Album, col(Album.id) == col(Song.album_id))
-        .order_by(
+        ],
+        joins=[
+            (Artist, col(Artist.id) == col(Song.artist_id)),
+            (Album, col(Album.id) == col(Song.album_id)),
+        ],
+        order_by=[
             col(Artist.name),
             col(Album.title),
             col(Song.disc_number),
             col(Song.track_number),
-        )
-        .offset(offset)
-        .limit(limit)
+        ],
+        offset=offset,
+        limit=limit,
+        session=session,
     )
-    songs = song_results.unique().scalars()
     return LibraryMediaRead(
         items=[
             SongRead(

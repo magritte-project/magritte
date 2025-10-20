@@ -4,7 +4,7 @@ import sys
 from mimetypes import guess_file_type
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col, select
+from sqlmodel import col
 from tinytag import TinyTag, UnsupportedFormatError
 
 from ingestion.artwork import try_ingest_artwork
@@ -27,13 +27,10 @@ async def try_ingest_file(
         return None
 
     file_url = pathlib.Path(path).as_uri()
-    already_exists = (
-        await session.scalar(
-            select(True).where(
-                select(Source).where(col(Source.url) == file_url).exists()
-            )
-        )
-        or False
+    already_exists = await Source.exists(
+        where=[col(Source.url) == file_url],
+        joins=[],
+        session=session,
     )
     if already_exists:
         raise FileExistsError("File has already been ingested")
