@@ -20,17 +20,22 @@ export default function ArtworkImage({
     return (
         <div
             className={classNames(
-                "flex items-center justify-center bg-blue-200",
+                "relative flex items-center justify-center rounded-md overflow-clip bg-blue-200",
                 className,
             )}
             {...rest}
         >
             {artworks?.length && (
                 <img
+                    className="object-fit w-full h-full"
                     src={`/api/artworks/${artworks[0].id}/image?token=${userSession.current?.accessToken ?? ""}`}
                     alt={`Cover for ${itemTitle}`}
                 />
             )}
+            <div
+                className="absolute top-0 left-0 w-full h-full rounded-md border border-black/10"
+                aria-hidden
+            />
         </div>
     )
 }

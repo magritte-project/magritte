@@ -28,7 +28,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
         )
         const player = usePlayer()
         return (
-            <div className="m-2 flex flex-col gap-2">
+            <div className="m-2 flex flex-col gap-2 cursor-default">
                 <table>
                     <thead>
                         <tr className="text-left font-semibold text-sm">
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                         {page.items.map((song) => (
                             <tr
                                 key={`song-${song.id}`}
-                                className="bg-gray-50 odd:bg-inherit"
+                                className="cursor-pointer bg-gray-50 odd:bg-inherit hover:bg-blue-50"
                                 onClick={() =>
                                     player.replaceQueue({
                                         newQueue: new Queue([

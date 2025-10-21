@@ -21,9 +21,9 @@ export default function PlaybackControls() {
             </PopoverButton>
             <PopoverPanel
                 anchor="bottom end"
-                className="bg-white border border-slate-100 shadow rounded-sm p-2 flex flex-col gap-2"
+                className="bg-white border border-slate-100 shadow rounded-sm p-2 flex flex-col gap-3 w-[300px]"
             >
-                <header className="flex items-center gap-2">
+                <header className="flex items-center gap-3">
                     <ArtworkImage
                         className="h-16 w-16"
                         artworks={playingSong?.artworks}
@@ -39,7 +39,7 @@ export default function PlaybackControls() {
                         </div>
                     </div>
                 </header>
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center justify-center gap-3">
                     <ThemedButton onClick={() => player.skipPrevious()}>
                         <SkipBackIcon />
                     </ThemedButton>

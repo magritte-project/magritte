@@ -1,7 +1,13 @@
 import PlaybackControls from "@/components/PlaybackControls"
 import UserSessionButton from "@/components/UserSessionButton"
+import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
-import { DiscIcon, MicrophoneIcon, MusicNotesIcon } from "@phosphor-icons/react"
+import {
+    DiscIcon,
+    Microphone,
+    MicrophoneIcon,
+    MusicNotesIcon,
+} from "@phosphor-icons/react"
 import {
     Link,
     Outlet,
@@ -63,16 +69,11 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                     params={params}
                                 >
                                     {({ isActive }) => (
-                                        <div
-                                            className="flex flex-col items-center gap-1 data-[active=true]:text-blue-500"
-                                            data-active={isActive}
-                                        >
-                                            <MicrophoneIcon
-                                                size="2em"
-                                                weight="light"
-                                            />
-                                            Artists
-                                        </div>
+                                        <ThemedTabItemLabel
+                                            isActive={isActive}
+                                            icon={Microphone}
+                                            label="Artists"
+                                        />
                                     )}
                                 </Link>
                             </li>
@@ -82,16 +83,11 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                     params={params}
                                 >
                                     {({ isActive }) => (
-                                        <div
-                                            className="flex flex-col items-center gap-1 data-[active=true]:text-blue-500"
-                                            data-active={isActive}
-                                        >
-                                            <DiscIcon
-                                                size="2em"
-                                                weight="light"
-                                            />
-                                            Albums
-                                        </div>
+                                        <ThemedTabItemLabel
+                                            isActive={isActive}
+                                            icon={DiscIcon}
+                                            label="Albums"
+                                        />
                                     )}
                                 </Link>
                             </li>
@@ -101,16 +97,11 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                     params={params}
                                 >
                                     {({ isActive }) => (
-                                        <div
-                                            className="flex flex-col items-center gap-1 data-[active=true]:text-blue-500"
-                                            data-active={isActive}
-                                        >
-                                            <MusicNotesIcon
-                                                size="2em"
-                                                weight="light"
-                                            />
-                                            Songs
-                                        </div>
+                                        <ThemedTabItemLabel
+                                            isActive={isActive}
+                                            icon={MusicNotesIcon}
+                                            label="Songs"
+                                        />
                                     )}
                                 </Link>
                             </li>
