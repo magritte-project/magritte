@@ -1,25 +1,24 @@
-// TODO: figure out item ids
-
-export interface QueueShardItem {
-    readonly id: number
-}
-
-export interface QueueShard<ID extends string, Item extends QueueShardItem> {
-    readonly id: ID
+export interface QueueShard<Item> {
+    readonly id: string
+    containsItem(item: Item): Promise<boolean>
     firstItem(): Promise<Item | null>
     lastItem(): Promise<Item | null>
-    itemPreceding(itemId: Item["id"]): Promise<Item | null>
-    itemFollowing(itemId: Item["id"]): Promise<Item | null>
+    itemPreceding(item: Item): Promise<Item | null>
+    itemFollowing(item: Item): Promise<Item | null>
 }
 
-export class StaticQueueShard<ID extends string, Item extends QueueShardItem>
-    implements QueueShard<ID, Item>
+export class StaticQueueShard<Item extends { id: unknown }>
+    implements QueueShard<Item>
 {
     // TODO: this can be 'open'
     constructor(
-        readonly id: ID,
+        readonly id: string,
         private readonly items: readonly Item[],
     ) {}
+
+    async containsItem(item: Item): Promise<boolean> {
+        return this.items.some((candidate) => candidate.id === item.id)
+    }
 
     async firstItem(): Promise<Item | null> {
         if (this.items.length === 0) {
@@ -35,16 +34,20 @@ export class StaticQueueShard<ID extends string, Item extends QueueShardItem>
         return this.items[this.items.length - 1]
     }
 
-    async itemPreceding(itemId: Item["id"]): Promise<Item | null> {
-        const itemIndex = this.items.findIndex((item) => item.id === itemId)
+    async itemPreceding(item: Item): Promise<Item | null> {
+        const itemIndex = this.items.findIndex(
+            (candidate) => candidate.id === item.id,
+        )
         if (itemIndex === -1 || itemIndex === 0) {
             return null
         }
         return this.items[itemIndex - 1]
     }
 
-    async itemFollowing(itemId: Item["id"]): Promise<Item | null> {
-        const itemIndex = this.items.findIndex((item) => item.id === itemId)
+    async itemFollowing(item: Item): Promise<Item | null> {
+        const itemIndex = this.items.findIndex(
+            (candidate) => candidate.id === item.id,
+        )
         if (itemIndex === -1 || itemIndex === this.items.length - 1) {
             return null
         }
@@ -52,79 +55,98 @@ export class StaticQueueShard<ID extends string, Item extends QueueShardItem>
     }
 }
 
-export interface OpenQueueShard<ID extends string, Item extends QueueShardItem>
-    extends QueueShard<ID, Item> {
+export interface OpenQueueShard<Item> extends QueueShard<Item> {
     readonly items: readonly Item[]
     putItems(newItems: readonly Item[], position?: number): Promise<this>
-    removeItems(ItemIds: readonly Item["id"][]): Promise<this>
+    removeItems(items: readonly Item[]): Promise<this>
     moveItems(offsets: readonly Item[], destination: number): Promise<this>
 }
 
-export class Queue<ID extends string, Item extends QueueShardItem> {
-    constructor(readonly shards: readonly QueueShard<ID, Item>[]) {}
+export interface QueueEntry<Item> {
+    readonly shard: QueueShard<Item>
+    readonly item: Item
+}
 
-    async firstItem(): Promise<[ID, Item] | null> {
+export class Queue<Item> {
+    private readonly _shardIndices: Map<string, number>
+
+    constructor(readonly shards: readonly QueueShard<Item>[] = []) {
+        this._shardIndices = new Map(
+            shards.map((shard, index) => [shard.id, index]),
+        )
+    }
+
+    async entryForItem(item: Item): Promise<QueueEntry<Item> | null> {
         for (const shard of this.shards) {
-            const firstItem = await shard.firstItem()
-            if (firstItem !== null) {
-                return [shard.id, firstItem]
+            if (await shard.containsItem(item)) {
+                return { shard, item }
             }
         }
         return null
     }
 
-    async itemPreceding(shardId: ID, item: Item): Promise<[ID, Item] | null> {
-        const startIndex = this.shards.findIndex(
-            (shard) => shard.id === shardId,
-        )
-        if (startIndex === -1) {
+    async firstEntry(): Promise<QueueEntry<Item> | null> {
+        for (const shard of this.shards) {
+            const item = await shard.firstItem()
+            if (item !== null) {
+                return { shard, item }
+            }
+        }
+        return null
+    }
+
+    async entryPreceding(
+        entry: QueueEntry<Item>,
+    ): Promise<QueueEntry<Item> | null> {
+        const startIndex = this._shardIndices.get(entry.shard.id)
+        if (startIndex === undefined) {
             return null
         }
         // First we ask the shard for a preceding item
         const startingShard = this.shards[startIndex]
-        const precedingItem = await startingShard.itemPreceding(item.id)
+        const precedingItem = await startingShard.itemPreceding(entry.item)
         if (precedingItem !== null) {
-            return [startingShard.id, precedingItem]
+            return { shard: startingShard, item: precedingItem }
         }
         // If that fails, we search for a preceding shard with a last item
         for (let i = startIndex - 1; i >= 0; i--) {
-            const shard = this.shards[i]
-            const lastItem = await shard.lastItem()
+            const previousShard = this.shards[i]
+            const lastItem = await previousShard.lastItem()
             if (lastItem !== null) {
-                return [shard.id, lastItem]
+                return { shard: previousShard, item: lastItem }
             }
         }
         return null
     }
 
-    async itemFollowing(shardId: ID, item: Item): Promise<[ID, Item] | null> {
-        const startIndex = this.shards.findIndex(
-            (shard) => shard.id === shardId,
-        )
-        if (startIndex === -1) {
+    async entryFollowing(
+        entry: QueueEntry<Item>,
+    ): Promise<QueueEntry<Item> | null> {
+        const startIndex = this._shardIndices.get(entry.shard.id)
+        if (startIndex === undefined) {
             return null
         }
         // First we ask the shard for a following item
         const startingShard = this.shards[startIndex]
-        const followingItem = await startingShard.itemFollowing(item.id)
+        const followingItem = await startingShard.itemFollowing(entry.item)
         if (followingItem !== null) {
-            return [startingShard.id, followingItem]
+            return { shard: startingShard, item: followingItem }
         }
         // If that fails, we search for a preceding shard with a last item
         for (let i = startIndex + 1; i < this.shards.length; i++) {
-            const shard = this.shards[i]
-            const firstItem = await shard.firstItem()
+            const nextShard = this.shards[i]
+            const firstItem = await nextShard.firstItem()
             if (firstItem !== null) {
-                return [shard.id, firstItem]
+                return { shard: nextShard, item: firstItem }
             }
         }
         return null
     }
 
     async putShard(
-        newShard: QueueShard<ID, Item>,
+        newShard: QueueShard<Item>,
         position?: number,
-    ): Promise<Queue<ID, Item>> {
+    ): Promise<Queue<Item>> {
         const shards = [...this.shards]
         const toRemove = shards.findIndex((shard) => shard.id === newShard.id)
         if (toRemove !== -1) {
@@ -138,7 +160,7 @@ export class Queue<ID extends string, Item extends QueueShardItem> {
         return new Queue(shards)
     }
 
-    async removeShard(idOrPosition: string | number): Promise<Queue<ID, Item>> {
+    async removeShard(idOrPosition: string | number): Promise<Queue<Item>> {
         const shards = [...this.shards]
         if (typeof idOrPosition === "string") {
             const toRemove = shards.findIndex(

@@ -1,50 +1,40 @@
 import type { SongRead } from "@/api/openapi"
-import type {
-    PlaybackEngine,
-    PlaybackEngineEnqueueOptions,
-    PlaybackEngineEvent,
+import {
+    type PlaybackEngine,
+    type PlaybackEngineEnqueueOptions,
+    type PlaybackEngineEvent,
+    type PlaybackEngineEventDetail,
+    type PlaybackEngineState,
+    createPlaybackEngineEvent,
 } from "@/playback/engine"
-import { Queue } from "@/playback/queue"
-import WebPlaybackEngine from "./engines/web"
-
-// TODO: spin this out into a dynamic registry
-const allEngines: readonly PlaybackEngine<SongRead>[] = [
-    WebPlaybackEngine.shared,
-]
-
-async function engineToPlay(
-    item: SongRead,
-): Promise<PlaybackEngine<SongRead> | null> {
-    for (const engine of allEngines) {
-        if (await engine.canEnqueue(item)) {
-            return engine
-        }
-    }
-    return null
-}
+import { Queue, type QueueEntry } from "@/playback/queue"
+import { findPlaybackEngineFor } from "./engine-registry"
 
 export interface ReplaceQueueOptions
     extends Omit<PlaybackEngineEnqueueOptions<SongRead>, "itemToPlay"> {
-    readonly newQueue: Queue<string, SongRead>
-    // TODO: really need to support starting ID here...
+    readonly newQueue: Queue<SongRead>
+    readonly startingItem?: SongRead
 }
 
 export class Player {
+    private readonly _eventTarget: EventTarget
     private _activeEngine: PlaybackEngine<SongRead> | null
-    private _eventForwarder: (event: PlaybackEngineEvent<SongRead>) => void
-    private _queue: Queue<string, SongRead>
-    private _currentShardId: string | null
-    private _currentItem: SongRead | null
-
-    // TODO: put this in the react tree
-    static readonly shared = new Player()
+    private _engineEventSink: (event: PlaybackEngineEvent<SongRead>) => void
+    private _queue: Queue<SongRead>
+    private _playingEntry: QueueEntry<SongRead> | null
 
     constructor() {
+        this._eventTarget = new EventTarget()
         this._activeEngine = null
-        this._eventForwarder = (e) => this._handleEngineEvent(e)
-        this._queue = new Queue([])
-        this._currentShardId = null
-        this._currentItem = null
+        this._engineEventSink = (e) => this._handleEngineEvent(e)
+        this._queue = new Queue()
+        this._playingEntry = null
+    }
+
+    private _dispatchEvent(detail: PlaybackEngineEventDetail<SongRead>) {
+        this._eventTarget.dispatchEvent(
+            createPlaybackEngineEvent("onPlayerEvent", detail),
+        )
     }
 
     private _changeEngine(newEngine: PlaybackEngine<SongRead> | null) {
@@ -53,77 +43,179 @@ export class Player {
         }
         if (this._activeEngine !== null) {
             this._activeEngine.stop()
-            this._activeEngine.removeEventListener(this._eventForwarder)
+            this._activeEngine.removeEventListener(this._engineEventSink)
         }
         this._activeEngine = newEngine
         if (newEngine !== null) {
-            newEngine.addEventListener(this._eventForwarder)
+            newEngine.addEventListener(this._engineEventSink)
         }
+    }
+
+    private async _playEntry(
+        entry: QueueEntry<SongRead>,
+        options: Omit<PlaybackEngineEnqueueOptions<SongRead>, "itemToPlay">,
+    ): Promise<void> {
+        const engine = await findPlaybackEngineFor(entry.item)
+        if (engine === null) {
+            return // TODO: handle error
+        }
+        this._changeEngine(engine)
+        this._playingEntry = entry
+        await engine.enqueue({
+            itemToPlay: entry.item,
+            ...options,
+        })
     }
 
     private async _handleEngineEvent(
         event: PlaybackEngineEvent<SongRead>,
     ): Promise<void> {
         switch (event.detail.type) {
-            case "playbackStateDidChange": {
-                // TODO: handle this
+            case "playbackStateDidChange":
+            case "playingItemChanged":
+            case "encounteredError":
+                this._dispatchEvent(event.detail)
                 break
-            }
-            case "playingItemChanged": {
-                // TODO: handle this
-                break
-            }
-            case "encounteredError": {
-                // TODO: handle this
-                break
-            }
             case "endOfAudio": {
-                if (
-                    this._currentShardId === null ||
-                    this._currentItem === null
-                ) {
+                if (this._playingEntry === null) {
                     return
                 }
-                const result = await this._queue.itemFollowing(
-                    this._currentShardId,
-                    this._currentItem,
+                const nextEntry = await this._queue.entryFollowing(
+                    this._playingEntry,
                 )
-                if (result === null) {
+                if (nextEntry === null) {
+                    this._dispatchEvent(event.detail)
                     return
                 }
-                const [shardId, nextItem] = result
-                const engine = await engineToPlay(nextItem)
-                if (engine === null) {
-                    return // TODO: handle error
-                }
-                this._changeEngine(engine)
-                this._currentShardId = shardId
-                this._currentItem = nextItem
-                await engine.enqueue({ itemToPlay: nextItem, playNow: true })
+                await this._playEntry(nextEntry, { playNow: true })
                 break
             }
         }
     }
 
+    get playingEntry(): QueueEntry<SongRead> | null {
+        return this._playingEntry
+    }
+
+    get playbackState(): PlaybackEngineState {
+        if (this._activeEngine !== null) {
+            return this._activeEngine.playbackState
+        } else {
+            return "stopped"
+        }
+    }
+
+    get totalTime(): number | null {
+        if (this._activeEngine !== null) {
+            return this._activeEngine.totalTime
+        } else {
+            return null
+        }
+    }
+
+    get currentTime(): number | null {
+        if (this._activeEngine !== null) {
+            return this._activeEngine.currentTime
+        } else {
+            return null
+        }
+    }
+
     async replaceQueue({
         newQueue,
-        ...rest
+        startingItem,
+        ...options
     }: ReplaceQueueOptions): Promise<void> {
         await this._activeEngine?.stop()
 
         this._queue = newQueue
-        const result = await newQueue.firstItem()
-        if (result === null) {
+        const startingEntry = startingItem
+            ? await newQueue.entryForItem(startingItem)
+            : await newQueue.firstEntry()
+        if (startingEntry === null) {
             return // shrug
         }
-        const [shardId, upFirst] = result
-        const engine = await engineToPlay(upFirst)
-        if (engine === null) {
-            return // TODO: handle error
+        await this._playEntry(startingEntry, options)
+    }
+
+    async skipPrevious(): Promise<boolean> {
+        const currentTime = this.currentTime
+        if (currentTime !== null && currentTime > 10) {
+            await this.seek(0)
+            return true
         }
-        this._changeEngine(engine)
-        this._currentShardId = shardId
-        this._currentItem = upFirst
-        await engine.enqueue({ itemToPlay: upFirst, ...rest })
+        if (this._playingEntry === null) {
+            const firstEntry = await this._queue.firstEntry()
+            if (firstEntry !== null) {
+                await this._playEntry(firstEntry, { playNow: true })
+                return true
+            }
+            return false
+        } else {
+            const previousEntry = await this._queue.entryPreceding(
+                this._playingEntry,
+            )
+            if (previousEntry === null) {
+                await this.stop()
+                return false
+            }
+            await this._playEntry(previousEntry, { playNow: true })
+            return true
+        }
+    }
+
+    async skipNext(): Promise<boolean> {
+        if (this._playingEntry === null) {
+            const firstEntry = await this._queue.firstEntry()
+            if (firstEntry !== null) {
+                await this._playEntry(firstEntry, { playNow: true })
+                return true
+            }
+            return false
+        } else {
+            const followingEntry = await this._queue.entryFollowing(
+                this._playingEntry,
+            )
+            if (followingEntry === null) {
+                await this.stop()
+                return false
+            }
+            await this._playEntry(followingEntry, { playNow: true })
+            return true
+        }
+    }
+
+    async seek(newTime: number): Promise<void> {
+        await this._activeEngine?.seek(newTime)
+    }
+
+    async pause(): Promise<void> {
+        await this._activeEngine?.pause()
+    }
+
+    async resume(): Promise<void> {
+        await this._activeEngine?.resume()
+    }
+
+    async stop(): Promise<void> {
+        await this._activeEngine?.stop()
+    }
+
+    addEventListener(
+        callback: (event: PlaybackEngineEvent<SongRead>) => void,
+    ): void {
+        this._eventTarget.addEventListener(
+            "onPlayerEvent",
+            callback as EventListenerOrEventListenerObject,
+        )
+    }
+
+    removeEventListener(
+        callback: (event: PlaybackEngineEvent<SongRead>) => void,
+    ): void {
+        this._eventTarget.removeEventListener(
+            "onPlayerEvent",
+            callback as EventListenerOrEventListenerObject,
+        )
     }
 }

@@ -1,11 +1,12 @@
 import type { SongRead } from "@/api/openapi"
 import { StorageUserSessionManager } from "@/api/userSession"
-import type {
-    PlaybackEngine,
-    PlaybackEngineEnqueueOptions,
-    PlaybackEngineEvent,
-    PlaybackEngineEventDetail,
-    PlaybackEngineState,
+import {
+    type PlaybackEngine,
+    type PlaybackEngineEnqueueOptions,
+    type PlaybackEngineEvent,
+    type PlaybackEngineEventDetail,
+    type PlaybackEngineState,
+    createPlaybackEngineEvent,
 } from "@/playback/engine"
 
 export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
@@ -64,10 +65,7 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
 
     private _dispatchEvent(detail: PlaybackEngineEventDetail<SongRead>) {
         this._eventTarget.dispatchEvent(
-            new CustomEvent<PlaybackEngineEventDetail<SongRead>>(
-                "onWebPlaybackEngineEvent",
-                { detail },
-            ),
+            createPlaybackEngineEvent("onWebPlaybackEngineEvent", detail),
         )
     }
 
@@ -96,7 +94,11 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
     async canEnqueue(item: SongRead): Promise<boolean> {
         const sources = item.sources ?? []
         // TODO: this is nasty
-        return sources.some((source) => source.url?.startsWith("magritte://"))
+        return sources.some(
+            (source) =>
+                this._audio.canPlayType(source.mime_type ?? "") &&
+                source.url?.startsWith("magritte://"),
+        )
     }
 
     async enqueue({

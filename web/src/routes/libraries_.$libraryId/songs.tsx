@@ -1,6 +1,6 @@
 import { useReadLibrarySongsQuery } from "@/api/hooks/libraries"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
-import { Player } from "@/playback/player"
+import usePlayer from "@/hooks/playerHook"
 import { Queue, StaticQueueShard } from "@/playback/queue"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             artist_id,
             offset,
         )
+        const player = usePlayer()
         return (
             <div className="m-2 flex flex-col gap-2">
                 <table>
@@ -39,18 +40,19 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                         </tr>
                     </thead>
                     <tbody>
-                        {page.items.map((song, index) => (
+                        {page.items.map((song) => (
                             <tr
                                 key={`song-${song.id}`}
                                 className="bg-gray-50 odd:bg-inherit"
                                 onClick={() =>
-                                    Player.shared.replaceQueue({
+                                    player.replaceQueue({
                                         newQueue: new Queue([
                                             new StaticQueueShard(
-                                                "songs",
-                                                page.items.slice(index),
+                                                `/libraries/${libraryId}/songs`,
+                                                page.items,
                                             ),
                                         ]),
+                                        startingItem: song,
                                         playNow: true,
                                     })
                                 }

@@ -1,14 +1,21 @@
 export type PlaybackEngineState = "playing" | "paused" | "stopped"
 
-export type PlaybackEngineEventDetail<Item extends {}> =
+export type PlaybackEngineEventDetail<Item> =
     | { type: "playbackStateDidChange" }
     | { type: "playingItemChanged" }
     | { type: "encounteredError"; error: Error }
     | { type: "endOfAudio"; lastItem: Item | null }
 
-export type PlaybackEngineEvent<Item extends {}> = CustomEvent<
+export type PlaybackEngineEvent<Item> = CustomEvent<
     PlaybackEngineEventDetail<Item>
 >
+
+export function createPlaybackEngineEvent<Item>(
+    type: string,
+    detail: PlaybackEngineEventDetail<Item>,
+): PlaybackEngineEvent<Item> {
+    return new CustomEvent<PlaybackEngineEventDetail<Item>>(type, { detail })
+}
 
 export interface PlaybackEngineEnqueueOptions<Item extends {}> {
     /**

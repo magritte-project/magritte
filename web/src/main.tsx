@@ -2,15 +2,20 @@ import { RouterProvider, createRouter } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
-import * as TanStackQueryProvider from "./integrations/tanstack-query/root-provider.tsx"
+import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
 
 // Import the generated route tree
-import { routeTree } from "./routeTree.gen"
+import { routeTree } from "@/routeTree.gen"
 
+import { StorageUserSessionManager } from "@/api/userSession.ts"
+import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
+import PlayerContextProvider from "@/contexts/providers/PlayerContextProvider"
+import { Player } from "@/playback/player.ts"
+import reportWebVitals from "@/reportWebVitals.ts"
 import "./styles.css"
-import { StorageUserSessionManager } from "./api/userSession.ts"
-import AppCommandPaletteContextProvider from "./contexts/providers/AppCommandPaletteContextProvider.tsx"
-import reportWebVitals from "./reportWebVitals.ts"
+
+// Set up playback
+const player = new Player()
 
 // Create a new router instance
 
@@ -19,6 +24,7 @@ const router = createRouter({
     routeTree,
     context: {
         userSession: StorageUserSessionManager.local,
+        player,
         ...TanStackQueryProviderContext,
     },
     defaultPreload: "intent",
@@ -41,9 +47,11 @@ if (rootElement && !rootElement.innerHTML) {
     root.render(
         <StrictMode>
             <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-                <AppCommandPaletteContextProvider>
-                    <RouterProvider router={router} />
-                </AppCommandPaletteContextProvider>
+                <PlayerContextProvider value={player}>
+                    <AppCommandPaletteContextProvider>
+                        <RouterProvider router={router} />
+                    </AppCommandPaletteContextProvider>
+                </PlayerContextProvider>
             </TanStackQueryProvider.Provider>
         </StrictMode>,
     )

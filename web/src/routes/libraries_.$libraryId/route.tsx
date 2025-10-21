@@ -1,3 +1,4 @@
+import PlaybackControls from "@/components/PlaybackControls"
 import UserSessionButton from "@/components/UserSessionButton"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
 import { DiscIcon, MicrophoneIcon, MusicNotesIcon } from "@phosphor-icons/react"
@@ -114,6 +115,7 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                 </Link>
                             </li>
                         </ol>
+                        <PlaybackControls />
                         <UserSessionButton />
                     </header>
                     <main>

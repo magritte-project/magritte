@@ -7,12 +7,15 @@ export default function UserSessionButton() {
     const { isSignedIn, signOut } = useUserSession()
     const meQuery = useUserProfileQuery(isSignedIn)
     return !isSignedIn ? (
-        <Link to="/sign-in" className="px-2 font-bold">
+        <Link
+            to="/sign-in"
+            className="px-3 py-2 font-bold rounded-full bg-gray-50 data-open:bg-gray-100"
+        >
             Sign In
         </Link>
     ) : (
         <Menu>
-            <MenuButton className="px-2 font-bold">
+            <MenuButton className="px-3 py-2 font-bold rounded-full bg-gray-50 data-open:bg-gray-100">
                 {meQuery?.data?.preferred_name ??
                     meQuery?.data?.username ??
                     "Me"}

@@ -1,38 +1,46 @@
 import { describe, expect, it } from "vitest"
-import { Queue, type QueueShard, type QueueShardItem } from "./queue"
+import { Queue, type QueueShard } from "./queue"
 
 describe("Queue", () => {
-    class StubQueueShard implements QueueShard<string, QueueShardItem> {
-        constructor(readonly items: readonly QueueShardItem[]) {
+    class StubQueueShard implements QueueShard<string> {
+        constructor(readonly items: readonly string[]) {
             this.id = `shard-${Math.random()}`
         }
 
         readonly id: string
 
-        async firstItem(): Promise<QueueShardItem | null> {
+        async containsItem(item: string): Promise<boolean> {
+            return this.items.includes(item)
+        }
+
+        async firstItem(): Promise<string | null> {
             if (this.items.length === 0) {
                 return null
             }
             return this.items[0]
         }
 
-        async lastItem(): Promise<QueueShardItem | null> {
+        async lastItem(): Promise<string | null> {
             if (this.items.length === 0) {
                 return null
             }
             return this.items[this.items.length - 1]
         }
 
-        async itemPreceding(itemId: number): Promise<QueueShardItem | null> {
-            const itemIndex = this.items.findIndex((item) => item.id === itemId)
+        async itemPreceding(item: string): Promise<string | null> {
+            const itemIndex = this.items.findIndex(
+                (candidate) => candidate === item,
+            )
             if (itemIndex === -1 || itemIndex === 0) {
                 return null
             }
             return this.items[itemIndex - 1]
         }
 
-        async itemFollowing(itemId: number): Promise<QueueShardItem | null> {
-            const itemIndex = this.items.findIndex((item) => item.id === itemId)
+        async itemFollowing(item: string): Promise<string | null> {
+            const itemIndex = this.items.findIndex(
+                (candidate) => candidate === item,
+            )
             if (itemIndex === -1 || itemIndex === this.items.length - 1) {
                 return null
             }
@@ -40,18 +48,42 @@ describe("Queue", () => {
         }
     }
 
-    function stubItem(): QueueShardItem {
-        return { id: Math.random() }
+    function stubItem(): string {
+        return `item-${Math.random()}`
     }
+
+    describe("#entryForItem", () => {
+        it("should return the shard which contains the item", async () => {
+            const firstItem = stubItem()
+            const secondItem = stubItem()
+            const subject = new Queue([
+                new StubQueueShard([firstItem]),
+                new StubQueueShard([secondItem]),
+            ])
+            await expect(
+                subject.entryForItem(secondItem),
+            ).resolves.toMatchObject({
+                shard: subject.shards[1],
+                item: secondItem,
+            })
+        })
+
+        it("should return null if the item is not in the queue", async () => {
+            const firstItem = stubItem()
+            const secondItem = stubItem()
+            const subject = new Queue([new StubQueueShard([firstItem])])
+            await expect(subject.entryForItem(secondItem)).resolves.toBeNull()
+        })
+    })
 
     describe("#firstItem", () => {
         it("should return the first item from the first shard", async () => {
             const onlyItem = stubItem()
             const subject = new Queue([new StubQueueShard([onlyItem])])
-            await expect(subject.firstItem()).resolves.toMatchObject([
-                subject.shards[0].id,
-                onlyItem,
-            ])
+            await expect(subject.firstEntry()).resolves.toMatchObject({
+                shard: subject.shards[0],
+                item: onlyItem,
+            })
         })
 
         it("should search for the first non-empty shard", async () => {
@@ -61,15 +93,15 @@ describe("Queue", () => {
                 new StubQueueShard([]),
                 new StubQueueShard([onlyItem]),
             ])
-            await expect(subject.firstItem()).resolves.toMatchObject([
-                subject.shards[2].id,
-                onlyItem,
-            ])
+            await expect(subject.firstEntry()).resolves.toMatchObject({
+                shard: subject.shards[2],
+                item: onlyItem,
+            })
         })
 
         it("should return null if the queue is empty", async () => {
             const subject = new Queue([])
-            await expect(subject.firstItem()).resolves.toBeNull()
+            await expect(subject.firstEntry()).resolves.toBeNull()
         })
     })
 
@@ -81,8 +113,14 @@ describe("Queue", () => {
                 new StubQueueShard([firstItem, secondItem]),
             ])
             await expect(
-                subject.itemPreceding(subject.shards[0].id, secondItem),
-            ).resolves.toMatchObject([subject.shards[0].id, firstItem])
+                subject.entryPreceding({
+                    shard: subject.shards[0],
+                    item: secondItem,
+                }),
+            ).resolves.toMatchObject({
+                shard: subject.shards[0],
+                item: firstItem,
+            })
         })
 
         it("should scan preceding shards for an item", async () => {
@@ -93,15 +131,24 @@ describe("Queue", () => {
                 new StubQueueShard([secondItem]),
             ])
             await expect(
-                subject.itemPreceding(subject.shards[1].id, secondItem),
-            ).resolves.toMatchObject([subject.shards[0].id, firstItem])
+                subject.entryPreceding({
+                    shard: subject.shards[1],
+                    item: secondItem,
+                }),
+            ).resolves.toMatchObject({
+                shard: subject.shards[0],
+                item: firstItem,
+            })
         })
 
         it("should return null if there is no preceeding item", async () => {
             const onlyItem = stubItem()
             const subject = new Queue([new StubQueueShard([onlyItem])])
             await expect(
-                subject.itemPreceding(subject.shards[0].id, onlyItem),
+                subject.entryPreceding({
+                    shard: subject.shards[0],
+                    item: onlyItem,
+                }),
             ).resolves.toBeNull()
         })
     })
@@ -114,8 +161,14 @@ describe("Queue", () => {
                 new StubQueueShard([firstItem, secondItem]),
             ])
             await expect(
-                subject.itemFollowing(subject.shards[0].id, firstItem),
-            ).resolves.toMatchObject([subject.shards[0].id, secondItem])
+                subject.entryFollowing({
+                    shard: subject.shards[0],
+                    item: firstItem,
+                }),
+            ).resolves.toMatchObject({
+                shard: subject.shards[0],
+                item: secondItem,
+            })
         })
 
         it("should scan following shards for an item", async () => {
@@ -126,15 +179,24 @@ describe("Queue", () => {
                 new StubQueueShard([secondItem]),
             ])
             await expect(
-                subject.itemFollowing(subject.shards[0].id, firstItem),
-            ).resolves.toMatchObject([subject.shards[1].id, secondItem])
+                subject.entryFollowing({
+                    shard: subject.shards[0],
+                    item: firstItem,
+                }),
+            ).resolves.toMatchObject({
+                shard: subject.shards[1],
+                item: secondItem,
+            })
         })
 
         it("should return null if there is no preceeding item", async () => {
             const onlyItem = stubItem()
             const subject = new Queue([new StubQueueShard([onlyItem])])
             await expect(
-                subject.itemFollowing(subject.shards[0].id, onlyItem),
+                subject.entryFollowing({
+                    shard: subject.shards[0],
+                    item: onlyItem,
+                }),
             ).resolves.toBeNull()
         })
     })
