@@ -1,5 +1,6 @@
 import { useReadLibrariesQuery } from "@/api/hooks/libraries"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
+import ThemedLink from "@/components/theme/ThemedLink"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
 import { PlusIcon, VinylRecordIcon } from "@phosphor-icons/react"
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
@@ -56,13 +57,13 @@ export const Route = createFileRoute("/libraries")({
                             </li>
                         ))}
                     </ol>
-                    <Link
+                    <ThemedLink
                         to="/libraries/create"
-                        className="flex items-center gap-1 text-blue-500 active:text-blue-400 font-bold"
+                        className="flex items-center gap-1"
                     >
                         <PlusIcon weight="bold" />
                         Create
-                    </Link>
+                    </ThemedLink>
                 </div>
             </AppCommandsProvider>
         )

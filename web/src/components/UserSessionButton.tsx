@@ -9,7 +9,7 @@ export default function UserSessionButton() {
     return !isSignedIn ? (
         <Link
             to="/sign-in"
-            className="px-3 py-2 font-bold rounded-full bg-gray-50 data-open:bg-gray-100"
+            className="px-3 py-2 font-bold rounded-full bg-gray-50 active:bg-gray-100"
         >
             Sign In
         </Link>
