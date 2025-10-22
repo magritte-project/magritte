@@ -259,6 +259,28 @@ export interface components {
             /** Id */
             readonly id: number;
             readonly kind: components["schemas"]["ArtworkKind"];
+            /** Image Url */
+            readonly image_url: string;
+            /**
+             * Background Color
+             * @description The background color of the artwork
+             */
+            readonly background_color: string | null;
+            /**
+             * Primary Color
+             * @description The primary color of the artwork
+             */
+            readonly primary_color: string | null;
+            /**
+             * Secondary Color
+             * @description The secondary color of the artwork
+             */
+            readonly secondary_color: string | null;
+            /**
+             * Tertiary Color
+             * @description The tertiary color of the artwork
+             */
+            readonly tertiary_color: string | null;
         };
         /** Body_sign_in_sign_in_post */
         readonly Body_sign_in_sign_in_post: {

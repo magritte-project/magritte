@@ -3,10 +3,13 @@ from urllib.parse import unquote, urlparse
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import FileResponse
+from fastapi.security import SecurityScopes
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth import get_current_user
 from db import get_db_session
 from model.artwork import Artwork
+from schemas.auth import OAuth2Scope
 
 router = APIRouter(prefix="/artworks")
 
@@ -26,6 +29,12 @@ async def read_artwork_image(
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
+    await get_current_user(
+        security_scopes=SecurityScopes(scopes=[OAuth2Scope.LIBRARIES_READ]),
+        token=token,
+        session=session,
+    )
+
     artwork = await session.get(Artwork, artwork_id)
     if not artwork:
         raise HTTPException(

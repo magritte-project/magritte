@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from db import get_db_engine
 from main import app
 from model import create_model_tables_if_needed
-from schemas.users import Token
+from schemas.user import Token
 from testseed import seed_test_data
 
 

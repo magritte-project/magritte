@@ -26,6 +26,22 @@ class Artwork(LibraryModel, table=True):
     image_url: str = Field(
         description="The location of this artwork's image",
     )
+    background_color: str | None = Field(
+        default=None,
+        description="The background color of the artwork",
+    )
+    primary_color: str | None = Field(
+        default=None,
+        description="The primary color of the artwork",
+    )
+    secondary_color: str | None = Field(
+        default=None,
+        description="The secondary color of the artwork",
+    )
+    tertiary_color: str | None = Field(
+        default=None,
+        description="The tertiary color of the artwork",
+    )
     songs: list[Song] = Relationship(
         back_populates="artworks",
         link_model=SongArtworkLink,

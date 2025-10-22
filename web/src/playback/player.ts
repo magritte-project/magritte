@@ -7,8 +7,8 @@ import {
     type PlaybackEngineState,
     createPlaybackEngineEvent,
 } from "@/playback/engine"
+import type PlaybackEngineRegistry from "@/playback/engine-registry"
 import { Queue, type QueueEntry } from "@/playback/queue"
-import { findPlaybackEngineFor } from "./engine-registry"
 
 export interface ReplaceQueueOptions
     extends Omit<PlaybackEngineEnqueueOptions<SongRead>, "itemToPlay"> {
@@ -17,13 +17,15 @@ export interface ReplaceQueueOptions
 }
 
 export class Player {
+    private readonly _engineRegistry: PlaybackEngineRegistry<SongRead>
     private readonly _eventTarget: EventTarget
     private _activeEngine: PlaybackEngine<SongRead> | null
     private _engineEventSink: (event: PlaybackEngineEvent<SongRead>) => void
     private _queue: Queue<SongRead>
     private _playingEntry: QueueEntry<SongRead> | null
 
-    constructor() {
+    constructor(engineRegistry: PlaybackEngineRegistry<SongRead>) {
+        this._engineRegistry = engineRegistry
         this._eventTarget = new EventTarget()
         this._activeEngine = null
         this._engineEventSink = (e) => this._handleEngineEvent(e)
@@ -55,7 +57,9 @@ export class Player {
         entry: QueueEntry<SongRead>,
         options: Omit<PlaybackEngineEnqueueOptions<SongRead>, "itemToPlay">,
     ): Promise<void> {
-        const engine = await findPlaybackEngineFor(entry.item)
+        const engine = await this._engineRegistry.findPlaybackEngineFor(
+            entry.item,
+        )
         if (engine === null) {
             return // TODO: handle error
         }

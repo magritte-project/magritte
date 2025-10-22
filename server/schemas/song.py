@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 from schemas.artwork import ArtworkRead
-from schemas.sources import SourceRead
+from schemas.source import SourceRead
 
 
 class SongRead(BaseModel):

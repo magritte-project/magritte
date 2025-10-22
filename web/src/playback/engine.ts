@@ -17,7 +17,7 @@ export function createPlaybackEngineEvent<Item>(
     return new CustomEvent<PlaybackEngineEventDetail<Item>>(type, { detail })
 }
 
-export interface PlaybackEngineEnqueueOptions<Item extends {}> {
+export interface PlaybackEngineEnqueueOptions<Item> {
     /**
      * The item to play, typically from the library, but may
      * be from other source like a streaming music service.
@@ -41,7 +41,7 @@ export interface PlaybackEngineEnqueueOptions<Item extends {}> {
     readonly playNow?: boolean
 }
 
-export interface PlaybackEngine<Item extends {}> {
+export interface PlaybackEngine<Item> {
     readonly playingItem: Item | null
     readonly playbackState: PlaybackEngineState
     readonly totalTime: number | null

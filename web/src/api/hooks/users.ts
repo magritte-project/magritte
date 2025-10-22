@@ -1,6 +1,6 @@
+import { readMe, updateMe } from "@/api/client"
+import type { UserProfileUpdate } from "@/api/openapi"
 import { type QueryClient, useMutation, useQuery } from "@tanstack/react-query"
-import { readMe, updateMe } from "../client"
-import type { UserProfileUpdate } from "../openapi"
 
 export function useUserProfileQuery(enabled = true) {
     return useQuery({

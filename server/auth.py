@@ -1,5 +1,4 @@
 from datetime import UTC, datetime, timedelta
-from enum import Enum
 from typing import Annotated, Any
 
 import jwt
@@ -12,13 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config import ALGORITHM, SECRET
 from db import get_db_session
 from model.user import User
-
-
-class OAuth2Scope(str, Enum):
-    PROFILE = "profile"
-    LIBRARIES_READ = "library:read"
-    LIBRARIES_WRITE = "library:write"
-
+from schemas.auth import OAuth2Scope
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/sign-in",
@@ -34,13 +27,13 @@ password_hash = PasswordHash.recommended()
 
 def _create_access_token(
     subject: str,
-    scope: set[str] = set(),
+    scopes: set[OAuth2Scope] = set(),
     expire_after: timedelta | None = timedelta(weeks=4),
 ):
     to_encode = dict[str, Any]()
     to_encode["sub"] = subject
-    if scope:
-        to_encode["scope"] = " ".join(scope)
+    if scopes:
+        to_encode["scope"] = OAuth2Scope.to_str(scopes)
     if expire_after:
         to_encode["exp"] = datetime.now(UTC) + expire_after
     return jwt.encode(to_encode, SECRET, ALGORITHM)
@@ -56,7 +49,7 @@ def _read_access_token(token: str) -> tuple[str, set[str]]:
     if scope is not None and not isinstance(scope, str):
         raise jwt.InvalidTokenError("Bad scope")
 
-    scopes = {*scope.split(" ")}
+    scopes = OAuth2Scope.from_str(scope)
 
     return subject, scopes
 
@@ -117,7 +110,9 @@ async def get_current_user(
             },
         ) from e
 
-    if not token_scopes.issuperset(security_scopes.scopes):
+    if not token_scopes.issuperset(security_scopes.scopes) or not OAuth2Scope.from_str(
+        user.scope
+    ).issuperset(security_scopes.scopes):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not enough permissions",

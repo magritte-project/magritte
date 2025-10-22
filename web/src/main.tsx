@@ -12,10 +12,20 @@ import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPal
 import PlayerContextProvider from "@/contexts/providers/PlayerContextProvider"
 import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
-import "./styles.css"
+import "@/styles.css"
+import type { SongRead } from "@/api/openapi"
+import PlaybackEngineRegistry from "@/playback/engine-registry"
+import WebPlaybackEngine from "@/playback/engines/web"
+
+// Set up user session
+const userSession = StorageUserSessionManager.local
 
 // Set up playback
-const player = new Player()
+const player = new Player(
+    new PlaybackEngineRegistry<SongRead>().installPlaybackEngine(
+        new WebPlaybackEngine(userSession),
+    ),
+)
 
 // Create a new router instance
 
@@ -23,7 +33,7 @@ const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
 const router = createRouter({
     routeTree,
     context: {
-        userSession: StorageUserSessionManager.local,
+        userSession,
         player,
         ...TanStackQueryProviderContext,
     },

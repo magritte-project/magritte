@@ -1,5 +1,5 @@
 import type { SongRead } from "@/api/openapi"
-import { StorageUserSessionManager } from "@/api/userSession"
+import type { UserSessionManager } from "@/api/userSession"
 import {
     type PlaybackEngine,
     type PlaybackEngineEnqueueOptions,
@@ -8,16 +8,19 @@ import {
     type PlaybackEngineState,
     createPlaybackEngineEvent,
 } from "@/playback/engine"
+import { resolveUrl } from "@/utilities/resources"
 
 export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
+    private readonly _userSession: UserSessionManager
     private readonly _audio: HTMLAudioElement
     private readonly _eventTarget: EventTarget
     private _playingItem: SongRead | null
 
-    // TODO: does this need to be a singleton?
-    static readonly shared = new WebPlaybackEngine()
-
-    constructor(parent: HTMLElement = document.body) {
+    constructor(
+        userSession: UserSessionManager,
+        parent: HTMLElement = document.body,
+    ) {
+        this._userSession = userSession
         this._audio = new Audio()
         this._eventTarget = new EventTarget()
         this._playingItem = null
@@ -109,11 +112,13 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
         const source = sources.find((source) =>
             source.url?.startsWith("magritte://"),
         )
-        if (source === undefined || !source.url) {
+        const audioSrc = source?.url
+            ? resolveUrl(source.url, this._userSession.current)
+            : null
+        if (source === undefined || !audioSrc) {
             throw new Error("No compatible source in song")
         }
-        // TODO: wow, fix this
-        this._audio.src = `${source.url.replace("magritte://", "/api")}?token=${StorageUserSessionManager.local.current?.accessToken}`
+        this._audio.src = audioSrc
         this._audio.load()
 
         this._playingItem = itemToPlay

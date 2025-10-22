@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Field, Relationship, SQLModel, col, select
 
 from model.base import LibraryModel
+from schemas.auth import OAuth2Scope
 
 if TYPE_CHECKING:
     from .library import Library
@@ -58,10 +59,10 @@ class User(LibraryModel, table=True):
     hashed_password: str = Field(
         description="This user's password",
     )
-    # scopes: list[Scope] = Field(
-    #     default_factory=lambda: [Scope.ME],
-    #     description="This user's enabled scopes",
-    # )
+    scope: str = Field(
+        default_factory=lambda: OAuth2Scope.to_str({*OAuth2Scope}),
+        description="The user's enabled scopes",
+    )
     libraries: list["Library"] = Relationship(
         back_populates="users",
         link_model=UserLibraryLink,

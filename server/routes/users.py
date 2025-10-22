@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, Security
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth import (
-    OAuth2Scope,
     get_current_user,
 )
 from db import get_db_session
 from model.user import User
-from schemas.users import UserProfile, UserProfileUpdate
+from schemas.auth import OAuth2Scope
+from schemas.user import UserProfile, UserProfileUpdate
 
 router = APIRouter(prefix="/users")
 

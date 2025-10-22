@@ -3,22 +3,22 @@ import mimetypes
 import os
 import pathlib
 
+import tinytag
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, select
-from tinytag import Image
 
 import config
 from model.artwork import Artwork, ArtworkKind
 
 
-def _image_hash(image: Image):
+def _image_hash(image: tinytag.Image):
     sha256 = hashlib.sha256()
     sha256.update(image.data)
     return sha256.hexdigest()
 
 
 async def try_ingest_artwork(
-    image: Image,
+    image: tinytag.Image,
     kind: ArtworkKind,
     session: AsyncSession,
 ):

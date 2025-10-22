@@ -10,7 +10,7 @@ from auth import (
     create_user,
 )
 from db import get_db_session
-from schemas.users import Token, UserProfile, UserSignUp
+from schemas.user import Token, UserProfile, UserSignUp
 
 from .artworks import router as artworks_router
 from .libraries import router as libraries_router

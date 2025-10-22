@@ -6,11 +6,12 @@ from fastapi.responses import FileResponse
 from fastapi.security import SecurityScopes
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth import OAuth2Scope, get_current_user
+from auth import get_current_user
 from db import get_db_session
 from model.source import Source
 from model.user import User
-from schemas.sources import SourceRead
+from schemas.auth import OAuth2Scope
+from schemas.source import SourceRead
 
 router = APIRouter(prefix="/sources")
 

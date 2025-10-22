@@ -1,27 +1,33 @@
-import type { SongRead } from "@/api/openapi"
 import type { PlaybackEngine } from "@/playback/engine"
-import WebPlaybackEngine from "@/playback/engines/web"
 
-const allEngines: PlaybackEngine<SongRead>[] = [WebPlaybackEngine.shared]
+export default class PlaybackEngineRegistry<Item> {
+    private _engines: PlaybackEngine<Item>[]
 
-export function installPlaybackEngine(newEngine: PlaybackEngine<SongRead>) {
-    allEngines.push(newEngine)
-}
-
-export function uninstallPlaybackEngine(oldEngine: PlaybackEngine<SongRead>) {
-    const toRemove = allEngines.indexOf(oldEngine)
-    if (toRemove !== -1) {
-        allEngines.splice(toRemove, 1)
+    constructor() {
+        this._engines = []
     }
-}
 
-export async function findPlaybackEngineFor(
-    item: SongRead,
-): Promise<PlaybackEngine<SongRead> | null> {
-    for (const engine of allEngines) {
-        if (await engine.canEnqueue(item)) {
-            return engine
+    installPlaybackEngine(newEngine: PlaybackEngine<Item>): this {
+        this._engines.push(newEngine)
+        return this
+    }
+
+    uninstallPlaybackEngine(oldEngine: PlaybackEngine<Item>): this {
+        const toRemove = this._engines.indexOf(oldEngine)
+        if (toRemove !== -1) {
+            this._engines.splice(toRemove, 1)
         }
+        return this
     }
-    return null
+
+    async findPlaybackEngineFor(
+        item: Item,
+    ): Promise<PlaybackEngine<Item> | null> {
+        for (const engine of this._engines) {
+            if (await engine.canEnqueue(item)) {
+                return engine
+            }
+        }
+        return null
+    }
 }

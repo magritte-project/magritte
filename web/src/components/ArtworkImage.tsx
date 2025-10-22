@@ -1,5 +1,6 @@
 import type { ArtworkRead } from "@/api/openapi"
 import useUserSession from "@/hooks/userSessionHook"
+import { resolveUrl } from "@/utilities/resources"
 import classNames from "classnames"
 import type React from "react"
 
@@ -28,7 +29,7 @@ export default function ArtworkImage({
             {artworks?.length && (
                 <img
                     className="object-fit w-full h-full"
-                    src={`/api/artworks/${artworks[0].id}/image?token=${userSession.current?.accessToken ?? ""}`}
+                    src={resolveUrl(artworks[0].image_url, userSession.current)}
                     alt={`Cover for ${itemTitle}`}
                 />
             )}
