@@ -1,13 +1,7 @@
-import PlaybackControls from "@/components/PlaybackControls"
 import UserSessionButton from "@/components/UserSessionButton"
 import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
-import {
-    DiscIcon,
-    Microphone,
-    MicrophoneIcon,
-    MusicNotesIcon,
-} from "@phosphor-icons/react"
+import { DiscIcon, MicrophoneIcon, MusicNotesIcon } from "@phosphor-icons/react"
 import {
     Link,
     Outlet,
@@ -71,7 +65,7 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                     {({ isActive }) => (
                                         <ThemedTabItemLabel
                                             isActive={isActive}
-                                            icon={Microphone}
+                                            icon={MicrophoneIcon}
                                             label="Artists"
                                         />
                                     )}
@@ -106,7 +100,6 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                 </Link>
                             </li>
                         </ol>
-                        <PlaybackControls />
                         <UserSessionButton />
                     </header>
                     <main>

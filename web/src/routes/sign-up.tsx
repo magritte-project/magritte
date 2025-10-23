@@ -63,4 +63,7 @@ export const Route = createFileRoute("/sign-up")({
             </div>
         )
     },
+    staticData: {
+        hideSplit: true,
+    },
 })

@@ -1,13 +1,15 @@
 import { TanstackDevtools } from "@tanstack/react-devtools"
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router"
+import { createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 
 import type { APIClient } from "@/api/client"
 import type { UserSessionManager } from "@/api/userSession"
 import AppCommandPalette from "@/components/AppCommandPalette"
+import RootLayout from "@/components/RootLayout"
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
 import type { Player } from "@/playback/player"
 import type { QueryClient } from "@tanstack/react-query"
+import { z } from "zod"
 
 export interface MagritteRouterContext {
     readonly queryClient: QueryClient
@@ -16,10 +18,20 @@ export interface MagritteRouterContext {
     readonly player: Player
 }
 
+declare module "@tanstack/react-router" {
+    interface StaticDataRouteOption {
+        /** Controls whether a route suppresses the split in the normal root layout */
+        hideSplit?: boolean
+    }
+}
+
 export const Route = createRootRouteWithContext<MagritteRouterContext>()({
+    validateSearch: z.object({
+        split_tab: z.enum(["now_playing"]).optional(),
+    }),
     component: () => (
         <>
-            <Outlet />
+            <RootLayout />
             <AppCommandPalette />
             <TanstackDevtools
                 config={{
