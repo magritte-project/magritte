@@ -1,7 +1,8 @@
-import { useReadLibrarySongsQuery } from "@/api/hooks/libraries"
+import { readLibrarySongs } from "@/api/queries/libraries"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import usePlayer from "@/hooks/playerHook"
 import { Queue, StaticQueueShard } from "@/playback/queue"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 
@@ -20,11 +21,8 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
     component: function LibrarySongsComponent() {
         const { libraryId } = Route.useParams()
         const { album_id, artist_id, offset } = Route.useSearch()
-        const { data: page } = useReadLibrarySongsQuery(
-            Number(libraryId),
-            album_id,
-            artist_id,
-            offset,
+        const { data: page } = useSuspenseQuery(
+            readLibrarySongs(Number(libraryId), album_id, artist_id, offset),
         )
         const player = usePlayer()
         return (

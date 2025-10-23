@@ -1,4 +1,4 @@
-import { useSignInMutation, useSignUpMutation } from "@/api/hooks/root"
+import { useSignIn, useSignUp } from "@/api/mutations/root"
 import type { UserSignUp } from "@/api/openapi"
 import AppForm from "@/components/AppForm"
 import { useAppForm } from "@/hooks/formHook"
@@ -14,8 +14,8 @@ export const Route = createFileRoute("/sign-up")({
     component: function SignUpComponent() {
         const navigate = useNavigate()
         const { signIn } = useUserSession()
-        const signUpMutation = useSignUpMutation()
-        const signInMutation = useSignInMutation()
+        const signUpMutation = useSignUp()
+        const signInMutation = useSignIn()
         const form = useAppForm({
             defaultValues: {
                 username: "",

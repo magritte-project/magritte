@@ -1,8 +1,9 @@
-import { useReadLibrariesQuery } from "@/api/hooks/libraries"
+import { readLibraries } from "@/api/queries/libraries"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
 import { PlusIcon, VinylRecordIcon } from "@phosphor-icons/react"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
 import type { JsonStructure } from "react-cmdk"
@@ -10,7 +11,7 @@ import type { JsonStructure } from "react-cmdk"
 export const Route = createFileRoute("/libraries")({
     component: function LibrariesComponent() {
         const navigate = useNavigate()
-        const { data: libraries } = useReadLibrariesQuery()
+        const { data: libraries } = useSuspenseQuery(readLibraries())
         const libraryItems = useMemo<JsonStructure>(() => {
             return [
                 {

@@ -1,4 +1,5 @@
-import { useReadLibraryArtistsQuery } from "@/api/hooks/libraries"
+import { readLibraryArtists } from "@/api/queries/libraries"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 
@@ -9,9 +10,8 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
     component: function LibraryArtistsComponent() {
         const { libraryId } = Route.useParams()
         const { offset } = Route.useSearch()
-        const { data: page } = useReadLibraryArtistsQuery(
-            Number(libraryId),
-            offset,
+        const { data: page } = useSuspenseQuery(
+            readLibraryArtists(Number(libraryId), offset),
         )
         return (
             <div className="m-2 flex flex-col gap-2">

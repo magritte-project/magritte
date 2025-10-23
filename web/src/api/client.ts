@@ -1,4 +1,7 @@
-import createClient, { type FetchResponse } from "openapi-fetch"
+import createClient, {
+    type FetchResponse,
+    type Middleware,
+} from "openapi-fetch"
 import type {
     BodySignInSignInPost,
     LibraryCreate,
@@ -17,15 +20,55 @@ const apiClient = createClient<paths>({
     baseUrl: "/api",
 })
 
-function getSessionHeaders() {
-    // TODO: This isn't referentially transparent
-    const headers = new Headers()
-    const userSession = StorageUserSessionManager.local.current
-    if (userSession !== null) {
-        headers.append("Authorization", `Bearer ${userSession.accessToken}`)
-    }
-    return headers
+const sessionMiddleware: Middleware = {
+    async onRequest({ request }) {
+        // TODO: This isn't referentially transparent
+        const userSession = StorageUserSessionManager.local.current
+        if (userSession !== null) {
+            request.headers.append(
+                "Authorization",
+                `Bearer ${userSession.accessToken}`,
+            )
+        }
+    },
+    async onResponse({ response }) {
+        if (!response.ok) {
+            if (response.status === 401) {
+                // TODO: This isn't referentially transparent
+                StorageUserSessionManager.local.current = null
+            }
+
+            let message = `${response.status}: ${response.statusText}`
+
+            try {
+                const errorResponse = await response.json()
+                const detail = errorResponse.detail
+                message += ": "
+                if (Array.isArray(detail)) {
+                    message += detail
+                        .filter(
+                            (detail) =>
+                                typeof detail === "object" &&
+                                detail !== null &&
+                                "msg" in detail,
+                        )
+                        .map((detail) => String(detail.msg))
+                        .join("\n")
+                } else {
+                    message += String(detail)
+                }
+            } catch (e) {
+                console.warn(
+                    `Could not include detail for error response, reason: ${e}`,
+                )
+            }
+
+            throw new Error(message)
+        }
+    },
 }
+
+apiClient.use(sessionMiddleware)
 
 function unwrap<
     // biome-ignore lint/suspicious/noExplicitAny: Required due to imported API
@@ -33,34 +76,10 @@ function unwrap<
     Options,
     Media extends `${string}/${string}`,
 >(fetchResponse: FetchResponse<T, Options, Media>) {
-    if (fetchResponse.data !== undefined && fetchResponse.error === undefined) {
-        return fetchResponse.data
+    if (fetchResponse.data === undefined) {
+        throw new Error(`Could not unwrap fetch response: ${fetchResponse}`)
     }
-
-    const errorResponse = fetchResponse.error as unknown
-    let message = `${fetchResponse.response.status}: ${fetchResponse.response.statusText}`
-    if (
-        typeof errorResponse === "object" &&
-        errorResponse !== null &&
-        "detail" in errorResponse
-    ) {
-        const detail = errorResponse.detail
-        message += ": "
-        if (Array.isArray(detail)) {
-            message += detail
-                .filter(
-                    (detail) =>
-                        typeof detail === "object" &&
-                        detail !== null &&
-                        "msg" in detail,
-                )
-                .map((detail) => String(detail.msg))
-                .join("\n")
-        } else {
-            message += String(detail)
-        }
-    }
-    throw new Error(message)
+    return fetchResponse.data
 }
 
 function toFormData<TBody extends NonNullable<object>>(body: TBody) {
@@ -93,16 +112,13 @@ export async function signIn(body: BodySignInSignInPost) {
 // -- User Routes -- ?
 
 export async function readMe(): Promise<UserProfile> {
-    const response = await apiClient.GET("/users/me", {
-        headers: getSessionHeaders(),
-    })
+    const response = await apiClient.GET("/users/me")
     return unwrap(response)
 }
 
 export async function updateMe(body: UserProfileUpdate): Promise<UserProfile> {
     const response = await apiClient.POST("/users/me", {
         body,
-        headers: getSessionHeaders(),
     })
     return unwrap(response)
 }
@@ -110,16 +126,13 @@ export async function updateMe(body: UserProfileUpdate): Promise<UserProfile> {
 // -- Library Routes -- //
 
 export async function readLibraries(): Promise<readonly LibraryRead[]> {
-    const response = await apiClient.GET("/libraries/", {
-        headers: getSessionHeaders(),
-    })
+    const response = await apiClient.GET("/libraries/")
     return unwrap(response)
 }
 
 export async function createLibrary(body: LibraryCreate): Promise<LibraryRead> {
     const response = await apiClient.POST("/libraries/create", {
         body,
-        headers: getSessionHeaders(),
     })
     return unwrap(response)
 }
@@ -131,7 +144,6 @@ export async function readLibrary(library_id: number): Promise<LibraryRead> {
                 library_id,
             },
         },
-        headers: getSessionHeaders(),
     })
     return unwrap(response)
 }
@@ -153,7 +165,6 @@ export async function readLibraryAlbums(
                 limit,
             },
         },
-        headers: getSessionHeaders(),
     })
     return unwrap(response)
 }
@@ -173,7 +184,6 @@ export async function readLibraryArtists(
                 limit,
             },
         },
-        headers: getSessionHeaders(),
     })
     return unwrap(response)
 }
@@ -197,7 +207,6 @@ export async function readLibrarySongs(
                 limit,
             },
         },
-        headers: getSessionHeaders(),
     })
     return unwrap(response)
 }

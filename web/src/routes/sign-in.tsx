@@ -1,4 +1,4 @@
-import { useSignInMutation } from "@/api/hooks/root"
+import { useSignIn } from "@/api/mutations/root"
 import type { BodySignInSignInPost } from "@/api/openapi"
 import AppForm from "@/components/AppForm"
 import ThemedLink from "@/components/theme/ThemedLink"
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/sign-in")({
     component: function SignInComponent() {
         const navigate = useNavigate()
         const { signIn } = useUserSession()
-        const signInMutation = useSignInMutation()
+        const signInMutation = useSignIn()
         const form = useAppForm({
             defaultValues: {
                 grant_type: "password",

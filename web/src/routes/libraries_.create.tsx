@@ -1,4 +1,4 @@
-import { useCreateLibraryMutation } from "@/api/hooks/libraries"
+import { useCreateLibrary } from "@/api/mutations/libraries"
 import type { LibraryCreate } from "@/api/openapi"
 import AppForm from "@/components/AppForm"
 import { useAppForm } from "@/hooks/formHook"
@@ -7,7 +7,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router"
 export const Route = createFileRoute("/libraries_/create")({
     component: function LibrariesCreateComponent() {
         const navigate = useNavigate()
-        const createLibraryMutation = useCreateLibraryMutation()
+        const createLibraryMutation = useCreateLibrary()
         const form = useAppForm({
             defaultValues: {
                 name: "",
