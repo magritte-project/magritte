@@ -125,6 +125,10 @@ export class Player {
         }
     }
 
+    get queue(): Queue<SongRead> {
+        return this._queue
+    }
+
     async replaceQueue({
         newQueue,
         startingItem,

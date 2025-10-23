@@ -4,6 +4,7 @@ import type {
     PlaybackEngineState,
 } from "@/playback/engine"
 import type { Player } from "@/playback/player"
+import type { Queue } from "@/playback/queue"
 import { useEffect, useState } from "react"
 import usePlayer from "./playerHook"
 
@@ -12,6 +13,7 @@ export interface UsePlayerStateResult {
     readonly totalTime: number | null
     readonly getCurrentTime: () => number | null
     readonly playingSong: SongRead | null
+    readonly queue: Queue<SongRead>
 }
 
 function createPlayerState(player: Player): UsePlayerStateResult {
@@ -22,6 +24,7 @@ function createPlayerState(player: Player): UsePlayerStateResult {
             return player.currentTime
         },
         playingSong: player.playingEntry?.item ?? null,
+        queue: player.queue,
     }
 }
 

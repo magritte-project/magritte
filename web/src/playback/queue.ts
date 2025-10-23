@@ -1,5 +1,6 @@
 export interface QueueShard<Item> {
     readonly id: string
+    readonly length: number
     containsItem(item: Item): Promise<boolean>
     firstItem(): Promise<Item | null>
     lastItem(): Promise<Item | null>
@@ -7,14 +8,17 @@ export interface QueueShard<Item> {
     itemFollowing(item: Item): Promise<Item | null>
 }
 
-export class StaticQueueShard<Item extends { id: unknown }>
+export class ArrayQueueShard<Item extends { id: unknown }>
     implements QueueShard<Item>
 {
-    // TODO: this can be 'open'
     constructor(
         readonly id: string,
-        private readonly items: readonly Item[],
+        readonly items: readonly Item[],
     ) {}
+
+    get length(): number {
+        return this.items.length
+    }
 
     async containsItem(item: Item): Promise<boolean> {
         return this.items.some((candidate) => candidate.id === item.id)
@@ -55,13 +59,6 @@ export class StaticQueueShard<Item extends { id: unknown }>
     }
 }
 
-export interface OpenQueueShard<Item> extends QueueShard<Item> {
-    readonly items: readonly Item[]
-    putItems(newItems: readonly Item[], position?: number): Promise<this>
-    removeItems(items: readonly Item[]): Promise<this>
-    moveItems(offsets: readonly Item[], destination: number): Promise<this>
-}
-
 export interface QueueEntry<Item> {
     readonly shard: QueueShard<Item>
     readonly item: Item
@@ -74,6 +71,10 @@ export class Queue<Item> {
         this._shardIndices = new Map(
             shards.map((shard, index) => [shard.id, index]),
         )
+    }
+
+    get length(): number {
+        return this.shards.reduce((acc, shard) => acc + shard.length, 0)
     }
 
     async entryForItem(item: Item): Promise<QueueEntry<Item> | null> {

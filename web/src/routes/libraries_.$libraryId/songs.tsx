@@ -2,7 +2,7 @@ import { readLibrarySongs } from "@/api/queries/libraries"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
-import { Queue, StaticQueueShard } from "@/playback/queue"
+import { ArrayQueueShard, Queue } from "@/playback/queue"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                 onClick={() =>
                                     player.replaceQueue({
                                         newQueue: new Queue([
-                                            new StaticQueueShard(
+                                            new ArrayQueueShard(
                                                 `/libraries/${libraryId}/songs`,
                                                 page.items,
                                             ),
