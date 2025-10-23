@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    readonly "/plugins/installed": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read the plugins installed on this server */
+        readonly get: operations["read_installed_plugins_plugins_installed_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/plugins/applemusic/preauthorize": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Get a short-lived access token */
+        readonly get: operations["preauthorize_plugins_applemusic_preauthorize_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/artworks/{artwork_id}/image": {
         readonly parameters: {
             readonly query?: never;
@@ -242,6 +276,11 @@ export interface components {
              */
             readonly artworks?: readonly components["schemas"]["ArtworkRead"][];
         };
+        /** AppleMusicPreauthorization */
+        readonly AppleMusicPreauthorization: {
+            /** Developer Token */
+            readonly developer_token: string;
+        };
         /** ArtistRead */
         readonly ArtistRead: {
             /** Id */
@@ -353,6 +392,11 @@ export interface components {
         readonly LibraryRead: {
             /** Id */
             readonly id: number;
+            /** Name */
+            readonly name: string;
+        };
+        /** PluginRead */
+        readonly PluginRead: {
             /** Name */
             readonly name: string;
         };
@@ -535,6 +579,7 @@ export interface components {
     pathItems: never;
 }
 export type AlbumRead = components['schemas']['AlbumRead'];
+export type AppleMusicPreauthorization = components['schemas']['AppleMusicPreauthorization'];
 export type ArtistRead = components['schemas']['ArtistRead'];
 export type ArtworkKind = components['schemas']['ArtworkKind'];
 export type ArtworkRead = components['schemas']['ArtworkRead'];
@@ -545,6 +590,7 @@ export type LibraryMediaReadAlbumRead = components['schemas']['LibraryMediaRead_
 export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead_ArtistRead_'];
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
 export type LibraryRead = components['schemas']['LibraryRead'];
+export type PluginRead = components['schemas']['PluginRead'];
 export type SongRead = components['schemas']['SongRead'];
 export type SourceRead = components['schemas']['SourceRead'];
 export type Token = components['schemas']['Token'];
@@ -554,6 +600,57 @@ export type UserSignUp = components['schemas']['UserSignUp'];
 export type ValidationError = components['schemas']['ValidationError'];
 export type $defs = Record<string, never>;
 export interface operations {
+    readonly read_installed_plugins_plugins_installed_get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": readonly components["schemas"]["PluginRead"][];
+                };
+            };
+        };
+    };
+    readonly preauthorize_plugins_applemusic_preauthorize_get: {
+        readonly parameters: {
+            readonly query?: {
+                readonly ttl_hours?: number;
+            };
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["AppleMusicPreauthorization"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly read_artwork_image_artworks__artwork_id__image_get: {
         readonly parameters: {
             readonly query: {
