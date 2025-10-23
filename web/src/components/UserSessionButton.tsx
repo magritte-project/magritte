@@ -1,4 +1,5 @@
 import { userProfile } from "@/api/queries/users"
+import useAPIClient from "@/hooks/apiClientHook"
 import useUserSession from "@/hooks/userSessionHook"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { useQuery } from "@tanstack/react-query"
@@ -6,7 +7,8 @@ import { Link } from "@tanstack/react-router"
 
 export default function UserSessionButton() {
     const { isSignedIn, signOut } = useUserSession()
-    const meQuery = useQuery(userProfile(isSignedIn))
+    const apiClient = useAPIClient()
+    const meQuery = useQuery(userProfile(apiClient, isSignedIn))
     return !isSignedIn ? (
         <Link
             to="/sign-in"

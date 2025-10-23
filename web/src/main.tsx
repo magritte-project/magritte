@@ -13,12 +13,17 @@ import PlayerContextProvider from "@/contexts/providers/PlayerContextProvider"
 import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
 import "@/styles.css"
+import { APIClient } from "@/api/client"
 import type { SongRead } from "@/api/openapi"
+import APIClientContextProvider from "@/contexts/providers/APIClientContextProvider"
 import PlaybackEngineRegistry from "@/playback/engine-registry"
 import WebPlaybackEngine from "@/playback/engines/web"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
+
+// Set up API client
+const apiClient = new APIClient(userSession)
 
 // Set up playback
 const player = new Player(
@@ -34,6 +39,7 @@ const router = createRouter({
     routeTree,
     context: {
         userSession,
+        apiClient,
         player,
         ...TanStackQueryProviderContext,
     },
@@ -57,11 +63,13 @@ if (rootElement && !rootElement.innerHTML) {
     root.render(
         <StrictMode>
             <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-                <PlayerContextProvider value={player}>
-                    <AppCommandPaletteContextProvider>
-                        <RouterProvider router={router} />
-                    </AppCommandPaletteContextProvider>
-                </PlayerContextProvider>
+                <APIClientContextProvider value={apiClient}>
+                    <PlayerContextProvider value={player}>
+                        <AppCommandPaletteContextProvider>
+                            <RouterProvider router={router} />
+                        </AppCommandPaletteContextProvider>
+                    </PlayerContextProvider>
+                </APIClientContextProvider>
             </TanStackQueryProvider.Provider>
         </StrictMode>,
     )

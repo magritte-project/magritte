@@ -1,6 +1,6 @@
+import { PlayerContext } from "@/contexts/playerContext"
 import type { Player } from "@/playback/player"
 import type { ReactNode } from "react"
-import { PlayerContext } from "../playerContext"
 
 export interface PlayerContextProviderProps {
     readonly value: Player

@@ -1,10 +1,10 @@
-import { readMe } from "@/api/client"
+import type { APIClient } from "@/api/client"
 import { queryOptions } from "@tanstack/react-query"
 
-export function userProfile(enabled = true) {
+export function userProfile(apiClient: APIClient, enabled = true) {
     return queryOptions({
         queryKey: ["readMe"],
-        queryFn: () => readMe(),
+        queryFn: () => apiClient.readMe(),
         enabled,
     })
 }

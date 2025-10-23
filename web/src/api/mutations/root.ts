@@ -1,14 +1,15 @@
-import { signIn, signUp } from "@/api/client"
+import type { APIClient } from "@/api/client"
+import type { BodySignInSignInPost, UserSignUp } from "@/api/openapi"
 import { useMutation } from "@tanstack/react-query"
 
-export function useSignUp() {
+export function useSignUp(apiClient: APIClient) {
     return useMutation({
-        mutationFn: signUp,
+        mutationFn: (body: UserSignUp) => apiClient.signUp(body),
     })
 }
 
-export function useSignIn() {
+export function useSignIn(apiClient: APIClient) {
     return useMutation({
-        mutationFn: signIn,
+        mutationFn: (body: BodySignInSignInPost) => apiClient.signIn(body),
     })
 }

@@ -1,5 +1,6 @@
 import { readLibraryAlbums } from "@/api/queries/libraries"
 import ArtworkImage from "@/components/ArtworkImage"
+import useAPIClient from "@/hooks/apiClientHook"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
@@ -12,8 +13,9 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
     component: function LibraryAlbumsComponent() {
         const { libraryId } = Route.useParams()
         const { artist_id, offset } = Route.useSearch()
+        const apiClient = useAPIClient()
         const { data: page } = useSuspenseQuery(
-            readLibraryAlbums(Number(libraryId), artist_id, offset),
+            readLibraryAlbums(apiClient, Number(libraryId), artist_id, offset),
         )
         return (
             <div className="m-2 flex flex-col gap-2">

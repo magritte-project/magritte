@@ -2,6 +2,7 @@ import { useSignIn } from "@/api/mutations/root"
 import type { BodySignInSignInPost } from "@/api/openapi"
 import AppForm from "@/components/AppForm"
 import ThemedLink from "@/components/theme/ThemedLink"
+import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"
 import useUserSession from "@/hooks/userSessionHook"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
@@ -15,7 +16,8 @@ export const Route = createFileRoute("/sign-in")({
     component: function SignInComponent() {
         const navigate = useNavigate()
         const { signIn } = useUserSession()
-        const signInMutation = useSignIn()
+        const apiClient = useAPIClient()
+        const signInMutation = useSignIn(apiClient)
         const form = useAppForm({
             defaultValues: {
                 grant_type: "password",
