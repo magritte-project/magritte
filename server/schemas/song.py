@@ -1,7 +1,87 @@
-from pydantic import BaseModel, Field
+from enum import Enum
+from typing import Any
+
+from pydantic import BaseModel, Field, GetCoreSchemaHandler
+from pydantic_core import core_schema
 
 from schemas.artwork import ArtworkRead
 from schemas.source import SourceRead
+
+
+class SortOrder(str, Enum):
+    ASCENDING = "+"
+    DESCENDING = "-"
+
+
+class SongSortKey(str, Enum):
+    ARTIST_NAME = "artist_name"
+    ALBUM_TITLE = "album_title"
+    TITLE = "title"
+    ALBUM_ARTIST = "album_artist"
+    COMPOSER = "composer"
+    GENRE = "genre"
+    RELEASE_DATE = "release_date"
+    TRACK_NUMBER = "track_number"
+    TRACK_TOTAL = "track_total"
+    DISC_NUMBER = "disc_number"
+    DISC_TOTAL = "disc_total"
+    RATING = "rating"
+    BPM = "bpm"
+    GROUPING = "grouping"
+
+
+class SongSort:
+    def __init__(self, key: SongSortKey, order: SortOrder):
+        self.key: SongSortKey = key
+        self.order: SortOrder = order
+
+    # @classmethod
+    # def __get_pydantic_json_schema__(
+    #     cls,
+    #     core_schema: CoreSchema,
+    #     handler: GetCoreSchemaHandler,
+    # ):
+    #     allowed_values = list[str]()
+    #     for key in SongSortKey:
+    #         for order in SortOrder:
+    #             allowed_values.append(f"{order}{key}")
+    #     return {
+    #         "type": "string",
+    #         "enum": allowed_values,
+    #     }
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls,
+        source_type: Any,
+        handler: GetCoreSchemaHandler,
+    ):
+        allowed_values = list[str]()
+        for key in SongSortKey:
+            for order in SortOrder:
+                allowed_values.append(f"{order._value_}{key._value_}")
+        return core_schema.no_info_plain_validator_function(
+            cls._validate,
+            json_schema_input_schema=core_schema.literal_schema(allowed_values),
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                cls._serialize,
+                return_schema=core_schema.literal_schema(allowed_values),
+            ),
+        )
+
+    @classmethod
+    def _validate(cls, value: Any):
+        match value:
+            case cls():
+                return value
+            case str():
+                return cls(SongSortKey(value[1:]), SortOrder(value[:1]))
+            case _:
+                raise ValueError(f"Expected string, got {type(value)}")
+
+    @classmethod
+    def _serialize(cls, instance: "SongSort") -> str:
+        return f"{instance.order._value_}{instance.key._value_}"
 
 
 class SongRead(BaseModel):

@@ -8,7 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, select
 
 import config
-from model.artwork import Artwork, ArtworkKind
+from model.artwork import Artwork
+from schemas.artwork import ArtworkKind
 
 
 def _image_hash(image: tinytag.Image):

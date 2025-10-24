@@ -10,10 +10,11 @@ from tinytag import TinyTag, UnsupportedFormatError
 from ingestion.artwork import try_ingest_artwork
 from model.album import Album
 from model.artist import Artist
-from model.artwork import Artwork, ArtworkKind
+from model.artwork import Artwork
 from model.library import Library
 from model.song import Song
 from model.source import Source
+from schemas.artwork import ArtworkKind
 
 
 async def try_ingest_file(

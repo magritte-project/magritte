@@ -17,7 +17,7 @@ from schemas.artist import ArtistRead
 from schemas.artwork import ArtworkRead
 from schemas.auth import OAuth2Scope
 from schemas.library import LibraryCreate, LibraryMediaRead, LibraryRead
-from schemas.song import SongRead
+from schemas.song import SongRead, SongSort, SongSortKey, SortOrder
 from schemas.source import SourceRead
 
 router = APIRouter(prefix="/libraries")
@@ -217,6 +217,12 @@ async def read_library_songs(
             description="ID of the artist to filter the songs by",
         ),
     ] = None,
+    sort_by: Annotated[list[SongSort], Query(description="How to sort the items")] = [
+        SongSort(SongSortKey.ARTIST_NAME, SortOrder.ASCENDING),
+        SongSort(SongSortKey.ALBUM_TITLE, SortOrder.ASCENDING),
+        SongSort(SongSortKey.DISC_NUMBER, SortOrder.ASCENDING),
+        SongSort(SongSortKey.TRACK_NUMBER, SortOrder.ASCENDING),
+    ],
     offset: Annotated[int, Query(description="The page offset to read from")] = 0,
     limit: Annotated[int, Query(description="How many items to read per page")] = 100,
 ):
@@ -240,12 +246,7 @@ async def read_library_songs(
             (Artist, col(Artist.id) == col(Song.artist_id)),
             (Album, col(Album.id) == col(Song.album_id)),
         ],
-        order_by=[
-            col(Artist.name),
-            col(Album.title),
-            col(Song.disc_number),
-            col(Song.track_number),
-        ],
+        order_by=[Song.order_for_sort_key(sort.key, sort.order) for sort in sort_by],
         offset=offset,
         limit=limit,
         session=session,

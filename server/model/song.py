@@ -1,9 +1,12 @@
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Union, assert_never
 
 from pydantic import computed_field
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy import UnaryExpression
+from sqlalchemy.orm import Mapped
+from sqlmodel import Field, Relationship, SQLModel, col
 
 from model.base import LibraryModel
+from schemas.song import SongSortKey, SortOrder
 
 if TYPE_CHECKING:
     from .album import Album
@@ -188,3 +191,53 @@ class Song(LibraryModel, table=True):
     @property
     def album_title(self) -> str | None:
         return self.album.title if self.album else None
+
+    @classmethod
+    def _col_for_sort_key(cls, sort_key: SongSortKey) -> Mapped[Any]:
+        from .album import Album
+        from .artist import Artist
+
+        match sort_key:
+            case SongSortKey.ARTIST_NAME:
+                return col(Artist.name)
+            case SongSortKey.ALBUM_TITLE:
+                return col(Album.title)
+            case SongSortKey.TITLE:
+                return col(cls.title)
+            case SongSortKey.ALBUM_ARTIST:
+                return col(cls.album_artist)
+            case SongSortKey.COMPOSER:
+                return col(cls.composer)
+            case SongSortKey.GENRE:
+                return col(cls.genre)
+            case SongSortKey.RELEASE_DATE:
+                return col(cls.release_date)
+            case SongSortKey.TRACK_NUMBER:
+                return col(cls.track_number)
+            case SongSortKey.TRACK_TOTAL:
+                return col(cls.track_total)
+            case SongSortKey.DISC_NUMBER:
+                return col(cls.disc_number)
+            case SongSortKey.DISC_TOTAL:
+                return col(cls.disc_total)
+            case SongSortKey.RATING:
+                return col(cls.rating)
+            case SongSortKey.BPM:
+                return col(cls.bpm)
+            case SongSortKey.GROUPING:
+                return col(cls.grouping)
+            case _:
+                assert_never(sort_key)
+
+    @classmethod
+    def order_for_sort_key(
+        cls,
+        sort_key: SongSortKey,
+        sort_order: SortOrder,
+    ) -> UnaryExpression[Any]:
+        sort_col = cls._col_for_sort_key(sort_key)
+        match sort_order:
+            case SortOrder.ASCENDING:
+                return sort_col.asc()
+            case SortOrder.DESCENDING:
+                return sort_col.desc()

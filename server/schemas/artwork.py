@@ -1,6 +1,10 @@
+from enum import Enum
+
 from pydantic import BaseModel, Field, field_serializer
 
-from model.artwork import ArtworkKind
+
+class ArtworkKind(str, Enum):
+    FRONT_COVER = "front_cover"
 
 
 class ArtworkRead(BaseModel):

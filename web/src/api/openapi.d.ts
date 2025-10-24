@@ -848,6 +848,8 @@ export interface operations {
                 readonly album_id?: number | null;
                 /** @description ID of the artist to filter the songs by */
                 readonly artist_id?: number | null;
+                /** @description How to sort the items */
+                readonly sort_by?: readonly ("+artist_name" | "-artist_name" | "+album_title" | "-album_title" | "+title" | "-title" | "+album_artist" | "-album_artist" | "+composer" | "-composer" | "+genre" | "-genre" | "+release_date" | "-release_date" | "+track_number" | "-track_number" | "+track_total" | "-track_total" | "+disc_number" | "-disc_number" | "+disc_total" | "-disc_total" | "+rating" | "-rating" | "+bpm" | "-bpm" | "+grouping" | "-grouping")[];
                 /** @description The page offset to read from */
                 readonly offset?: number;
                 /** @description How many items to read per page */

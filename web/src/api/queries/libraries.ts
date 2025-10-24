@@ -1,4 +1,4 @@
-import type { APIClient } from "@/api/client"
+import type { APIClient, ReadLibrarySongsSortBy } from "@/api/client"
 import { queryOptions } from "@tanstack/react-query"
 
 export function readLibraries(apiClient: APIClient) {
@@ -46,6 +46,7 @@ export function readLibrarySongs(
     library_id: number,
     album_id?: number,
     artist_id?: number,
+    sort_by?: ReadLibrarySongsSortBy,
     offset?: number,
     limit?: number,
 ) {
@@ -63,6 +64,7 @@ export function readLibrarySongs(
                 library_id,
                 album_id,
                 artist_id,
+                sort_by,
                 offset,
                 limit,
             ),

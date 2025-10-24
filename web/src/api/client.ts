@@ -17,6 +17,12 @@ import createClient, {
     type Middleware,
 } from "openapi-fetch"
 
+export type ReadLibrarySongsSortBy = NonNullable<
+    Required<
+        paths["/libraries/{library_id}/songs"]["get"]["parameters"]["query"]
+    >
+>["sort_by"]
+
 function unwrap<
     // biome-ignore lint/suspicious/noExplicitAny: Required due to imported API
     T extends Record<string | number, any>,
@@ -202,6 +208,7 @@ export class APIClient {
         library_id: number,
         album_id?: number,
         artist_id?: number,
+        sort_by?: ReadLibrarySongsSortBy,
         offset?: number,
         limit?: number,
     ): Promise<LibraryMediaReadSongRead> {
@@ -215,6 +222,7 @@ export class APIClient {
                     query: {
                         album_id,
                         artist_id,
+                        sort_by,
                         offset,
                         limit,
                     },

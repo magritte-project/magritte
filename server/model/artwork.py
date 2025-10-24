@@ -1,14 +1,9 @@
-from enum import Enum
-
 from sqlmodel import Field, Relationship
 
 from model.base import LibraryModel
+from schemas.artwork import ArtworkKind
 
 from .song import Song, SongArtworkLink
-
-
-class ArtworkKind(str, Enum):
-    FRONT_COVER = "front_cover"
 
 
 class Artwork(LibraryModel, table=True):
