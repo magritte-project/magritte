@@ -1,10 +1,11 @@
 import { readLibrarySongs } from "@/api/queries/libraries"
+import TableFooter from "@/components/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
 import { ArrayQueueShard, Queue } from "@/playback/queue"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
 
 function formatDuration(seconds: number) {
@@ -55,7 +56,9 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
     }),
     component: function LibrarySongsComponent() {
         const { libraryId } = Route.useParams()
-        const { album_id, artist_id, sort_by, offset } = Route.useSearch()
+        const { album_id, artist_id, sort_by, offset, ...restSearch } =
+            Route.useSearch()
+        const navigate = useNavigate()
         const apiClient = useAPIClient()
         const { data: page } = useSuspenseQuery(
             readLibrarySongs(
@@ -116,9 +119,26 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                         ))}
                     </tbody>
                 </table>
-                <footer className="text-sm text-gray-700 self-center">
-                    {new Intl.NumberFormat().format(page.total)} Songs
-                </footer>
+                <TableFooter
+                    className="self-center"
+                    singularLabel="Song"
+                    pluralLabel="Songs"
+                    offset={page.offset}
+                    limit={page.limit}
+                    total={page.total}
+                    onChange={(offset, _limit) =>
+                        navigate({
+                            to: ".",
+                            search: {
+                                album_id,
+                                artist_id,
+                                sort_by,
+                                offset,
+                                ...restSearch,
+                            },
+                        })
+                    }
+                />
             </div>
         )
     },

@@ -1,7 +1,8 @@
 import { readLibraryArtists } from "@/api/queries/libraries"
+import TableFooter from "@/components/TableFooter"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { Link, createFileRoute } from "@tanstack/react-router"
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
 
 export const Route = createFileRoute("/libraries_/$libraryId/artists")({
@@ -10,7 +11,8 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
     }),
     component: function LibraryArtistsComponent() {
         const { libraryId } = Route.useParams()
-        const { offset } = Route.useSearch()
+        const { offset, ...restSearch } = Route.useSearch()
+        const navigate = useNavigate()
         const apiClient = useAPIClient()
         const { data: page } = useSuspenseQuery(
             readLibraryArtists(apiClient, Number(libraryId), offset),
@@ -21,7 +23,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                     {page.items.map((artist) => (
                         <li
                             key={`artist-${artist.id}`}
-                            className="px-2 py-1 bg-gray-50 odd:bg-inherit"
+                            className="px-2 py-1 bg-gray-50 odd:bg-inherit hover:bg-blue-50 cursor-pointer"
                         >
                             <Link
                                 to="/libraries/$libraryId/albums"
@@ -33,9 +35,23 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                         </li>
                     ))}
                 </ol>
-                <footer className="text-sm text-gray-700 self-center">
-                    {new Intl.NumberFormat().format(page.total)} Artists
-                </footer>
+                <TableFooter
+                    className="self-center"
+                    singularLabel="Artist"
+                    pluralLabel="Artists"
+                    offset={page.offset}
+                    limit={page.limit}
+                    total={page.total}
+                    onChange={(offset, _limit) =>
+                        navigate({
+                            to: ".",
+                            search: {
+                                offset,
+                                ...restSearch,
+                            },
+                        })
+                    }
+                />
             </div>
         )
     },
