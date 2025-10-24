@@ -5,12 +5,8 @@ from pydantic import BaseModel, Field, GetCoreSchemaHandler
 from pydantic_core import core_schema
 
 from schemas.artwork import ArtworkRead
+from schemas.base import SortOrder
 from schemas.source import SourceRead
-
-
-class SortOrder(str, Enum):
-    ASCENDING = "+"
-    DESCENDING = "-"
 
 
 class SongSortKey(str, Enum):
@@ -34,21 +30,6 @@ class SongSort:
     def __init__(self, key: SongSortKey, order: SortOrder):
         self.key: SongSortKey = key
         self.order: SortOrder = order
-
-    # @classmethod
-    # def __get_pydantic_json_schema__(
-    #     cls,
-    #     core_schema: CoreSchema,
-    #     handler: GetCoreSchemaHandler,
-    # ):
-    #     allowed_values = list[str]()
-    #     for key in SongSortKey:
-    #         for order in SortOrder:
-    #             allowed_values.append(f"{order}{key}")
-    #     return {
-    #         "type": "string",
-    #         "enum": allowed_values,
-    #     }
 
     @classmethod
     def __get_pydantic_core_schema__(

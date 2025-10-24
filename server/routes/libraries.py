@@ -16,8 +16,9 @@ from schemas.album import AlbumRead
 from schemas.artist import ArtistRead
 from schemas.artwork import ArtworkRead
 from schemas.auth import OAuth2Scope
+from schemas.base import SortOrder
 from schemas.library import LibraryCreate, LibraryMediaRead, LibraryRead
-from schemas.song import SongRead, SongSort, SongSortKey, SortOrder
+from schemas.song import SongRead, SongSort, SongSortKey
 from schemas.source import SourceRead
 
 router = APIRouter(prefix="/libraries")

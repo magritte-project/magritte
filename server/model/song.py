@@ -6,7 +6,8 @@ from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel, col
 
 from model.base import LibraryModel
-from schemas.song import SongSortKey, SortOrder
+from schemas.base import SortOrder
+from schemas.song import SongSortKey
 
 if TYPE_CHECKING:
     from .album import Album
