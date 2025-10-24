@@ -1,18 +1,28 @@
 import UserSessionButton from "@/components/UserSessionButton"
 import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
-import { DiscIcon, MicrophoneIcon, MusicNotesIcon } from "@phosphor-icons/react"
+import {
+    CaretLeftIcon,
+    DiscIcon,
+    MicrophoneIcon,
+    MusicNotesIcon,
+} from "@phosphor-icons/react"
 import {
     Link,
     Outlet,
     createFileRoute,
+    useCanGoBack,
     useNavigate,
+    useRouter,
 } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/libraries_/$libraryId")({
     component: function LibrariesLayoutComponent() {
         const params = Route.useParams()
         const navigate = useNavigate()
+        const { history } = useRouter()
+        const canGoBack = useCanGoBack()
+
         return (
             <AppCommandsProvider
                 items={[
@@ -56,6 +66,14 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
             >
                 <div>
                     <header className="text-sm font-semibold flex items-center gap-4 p-2">
+                        <button
+                            type="button"
+                            className="px-3 py-2 font-bold rounded-full bg-gray-50 active:bg-gray-100 disabled:bg-transparent disabled:text-gray-300"
+                            disabled={!canGoBack}
+                            onClick={() => history.back()}
+                        >
+                            <CaretLeftIcon weight="bold" />
+                        </button>
                         <ol className="flex-1 flex items-center justify-center gap-4">
                             <li>
                                 <Link
