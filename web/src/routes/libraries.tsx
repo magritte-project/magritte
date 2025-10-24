@@ -39,12 +39,12 @@ export const Route = createFileRoute("/libraries")({
                         {libraries.map((library) => (
                             <li
                                 key={`library-${library.id}`}
-                                className="flex flex-col items-center gap-2"
                                 data-testid={`libraries[${library.id}]`}
                             >
                                 <Link
                                     to="/libraries/$libraryId"
                                     params={{ libraryId: String(library.id) }}
+                                    className="flex flex-col items-center gap-3 p-2 rounded-sm hover:bg-blue-50"
                                 >
                                     <div className="bg-cyan-400 rounded-full w-16 h-16 flex items-center justify-center">
                                         <VinylRecordIcon

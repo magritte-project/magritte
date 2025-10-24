@@ -33,10 +33,14 @@ export default function NowPlaying() {
                     </div>
                 </div>
                 <div className="flex items-center justify-center gap-3">
-                    <ThemedButton onClick={() => player.skipPrevious()}>
-                        <SkipBackIcon />
+                    <ThemedButton
+                        disabled={player.queue.length === 0}
+                        onClick={() => player.skipPrevious()}
+                    >
+                        <SkipBackIcon weight="fill" />
                     </ThemedButton>
                     <ThemedButton
+                        disabled={player.queue.length === 0}
                         onClick={() =>
                             player.playbackState === "playing"
                                 ? player.pause()
@@ -44,13 +48,16 @@ export default function NowPlaying() {
                         }
                     >
                         {playbackState === "playing" ? (
-                            <PauseIcon />
+                            <PauseIcon weight="fill" />
                         ) : (
-                            <PlayIcon />
+                            <PlayIcon weight="fill" />
                         )}
                     </ThemedButton>
-                    <ThemedButton onClick={() => player.skipNext()}>
-                        <SkipForwardIcon />
+                    <ThemedButton
+                        disabled={player.queue.length === 0}
+                        onClick={() => player.skipNext()}
+                    >
+                        <SkipForwardIcon weight="fill" />
                     </ThemedButton>
                 </div>
             </div>

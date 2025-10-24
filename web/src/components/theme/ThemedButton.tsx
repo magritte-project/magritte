@@ -12,9 +12,8 @@ export default function ThemedButton({
         <button
             type={type}
             className={classNames(
-                "bg-gradient-to-b from-slate-900 to-slate-950 active:from-slate-950",
-                "border border-black focus:border-blue-500 outline-0",
-                "text-slate-50 active:text-white disabled:text-slate-50/50 font-bold",
+                "bg-blue-500 active:bg-blue-400 disabled:bg-blue-200",
+                "text-slate-50 active:text-white font-bold",
                 "px-4 py-2 rounded-full",
                 className,
             )}
