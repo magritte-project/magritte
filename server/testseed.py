@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from auth import password_hash
+from config import config
 from model.library import Library
 from model.user import User, UserLibraryLink
 
@@ -9,13 +10,13 @@ async def _seed_users(session: AsyncSession):
     session.add(
         User(
             username="test",
-            hashed_password=password_hash.hash("password"),
+            hashed_password=password_hash.hash("password", salt=config.salt),
         )
     )
     session.add(
         User(
             username="unlucky",
-            hashed_password=password_hash.hash("password"),
+            hashed_password=password_hash.hash("password", salt=config.salt),
         )
     )
     await session.flush()

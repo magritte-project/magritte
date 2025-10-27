@@ -36,4 +36,3 @@ check-types: server::check-types web::check-types
 [working-directory: 'web']
 export-openapi:
     ../admin dump-openapi | pnpm openapi-typescript --immutable --properties-required-by-default --root-types --root-types-no-schema-prefix -o src/api/openapi.d.ts
-

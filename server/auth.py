@@ -63,7 +63,7 @@ async def create_user(
 ):
     new_user = User(
         username=username,
-        hashed_password=password_hash.hash(password),
+        hashed_password=password_hash.hash(password, salt=config.salt),
     )
     session.add(new_user)
     return new_user

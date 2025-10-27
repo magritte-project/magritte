@@ -18,7 +18,7 @@ class Config(BaseSettings):
         description="The secret used when signing file access tokens",
     )
 
-    password_salt: str = Field(
+    salt: bytes = Field(
         min_length=64,
         description="The salt added to passwords before storing them in the DB",
     )
@@ -47,6 +47,7 @@ class Config(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
+        json_schema_extra={"exclude": True},
     )
 
 
