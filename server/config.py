@@ -9,17 +9,17 @@ class Config(BaseSettings):
     )
 
     session_token_secret: str = Field(
-        min_length=128,
+        # min_length=128,
         description="The secret used when signing user session access tokens",
     )
 
     file_token_secret: str = Field(
-        min_length=128,
+        # min_length=128,
         description="The secret used when signing file access tokens",
     )
 
     salt: bytes = Field(
-        min_length=64,
+        # min_length=64,
         description="The salt added to passwords before storing them in the DB",
     )
 
