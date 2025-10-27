@@ -1,16 +1,15 @@
 import asyncio
-import secrets
 import sys
 from argparse import ArgumentParser, Namespace
 from traceback import print_tb
 
-from db import get_db_engine, get_db_session
-from ingestion.files import try_ingest_path
-from model.library import Library
-from model.user import User
-
 
 async def ingest_main(args: Namespace):
+    from db import get_db_engine, get_db_session
+    from ingestion.files import try_ingest_path
+    from model.library import Library
+    from model.user import User
+
     engine = await get_db_engine()
     async for session in get_db_session(engine):
         user = await User.read_by_username(args.username, session)
@@ -86,10 +85,14 @@ async def dominant_colors_main(args: Namespace):
 
 
 async def new_token_secret(args: Namespace):
+    import secrets
+
     print(secrets.token_hex(64))
 
 
 async def new_password_salt(args: Namespace):
+    import secrets
+
     print(secrets.token_hex(32))
 
 
