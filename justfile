@@ -13,8 +13,8 @@ bootstrap:
     
     # Set up the environment files
     -[ ! -e .env ] && cp "$PWD/.env.example" "$PWD/.env"
-    -[ ! -e server/.env ] && ln "$PWD/.env" "$PWD/server/.env"
-    -[ ! -e web/.env ] && ln "$PWD/.env" "$PWD/web/.env"
+    -[ ! -e server/.env ] && ln -s "$PWD/.env" "$PWD/server/.env"
+    -[ ! -e web/.env ] && ln -s "$PWD/.env" "$PWD/web/.env"
 
     # Set up server dependencies
     @just server::sync-deps
