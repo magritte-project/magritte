@@ -44,6 +44,10 @@ asdf install
 
 Next, follow the installation directions in the [server](/decarbonization/magritte/tree/main/server/README.md) and [server](/decarbonization/magritte/tree/main/web/README.md) README files.
 
+### After Installation
+
+Bootstrapping the development enviornment creates a single `.env` file at the root project directory and symlinks it into the `server/` and `web/` subdirectories. Edit the entries the `.env` file to be suitable for your local working environment.
+
 ## Development
 
 Once you've installed all of the prerequisites, you can run the development API and web servers:

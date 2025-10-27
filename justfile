@@ -11,11 +11,16 @@ bootstrap:
     # Install project tooling
     asdf install
     
-    # Set up server development environment
-    @just server::bootstrap
+    # Set up the environment files
+    -[ ! -e .env ] && cp .env.example .env
+    -[ ! -e server/.env ] && ln .env server/.env
+    -[ ! -e web/.env ] && ln .env web/.env
+
+    # Set up server dependencies
+    @just server::sync-deps
     
-    # Set up web development environment
-    @just web::bootstrap
+    # Set up web dependencies
+    @just web::sync-deps
 
 [parallel]
 dev: server::dev web::dev

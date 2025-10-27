@@ -7,7 +7,7 @@ import tinytag
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, select
 
-import config
+from config import config
 from model.artwork import Artwork
 from schemas.artwork import ArtworkKind
 
@@ -36,7 +36,7 @@ async def try_ingest_artwork(
 
     extension = mimetypes.guess_extension(image.mime_type) if image.mime_type else None
     image_name = f"{image_hash}{extension}" if extension else image_hash
-    image_path = os.path.join(config.COVER_STORE, image_name)
+    image_path = os.path.join(config.image_home, image_name)
 
     with open(image_path, "wb") as image_file:
         image_file.write(image.data)

@@ -1,4 +1,5 @@
 import asyncio
+import secrets
 import sys
 from argparse import ArgumentParser, Namespace
 from traceback import print_tb
@@ -84,6 +85,14 @@ async def dominant_colors_main(args: Namespace):
                         print(f"rgb({white}, {white}, {white})")
 
 
+async def new_token_secret(args: Namespace):
+    print(secrets.token_hex(64))
+
+
+async def new_password_salt(args: Namespace):
+    print(secrets.token_hex(32))
+
+
 def main():
     parser = ArgumentParser(
         prog="admin",
@@ -143,6 +152,18 @@ def main():
     )
     parser_dominant_colors.add_argument("paths", nargs="*")
     parser_dominant_colors.set_defaults(func=dominant_colors_main)
+
+    parser_new_token_secret = subparsers.add_parser(
+        "new-token-secret",
+        help="Make a secure random token for a .env file",
+    )
+    parser_new_token_secret.set_defaults(func=new_token_secret)
+
+    parser_new_password_salt = subparsers.add_parser(
+        "new-password-salt",
+        help="Make a password salt for a .env file",
+    )
+    parser_new_password_salt.set_defaults(func=new_password_salt)
 
     args = parser.parse_args()
     try:

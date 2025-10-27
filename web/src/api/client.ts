@@ -51,7 +51,7 @@ export class APIClient {
 
     constructor(userSessionManager: UserSessionManager) {
         this._client = createClient<paths>({
-            baseUrl: "/api",
+            baseUrl: import.meta.env.VITE_API_URL,
         })
 
         const sessionMiddleware: Middleware = {

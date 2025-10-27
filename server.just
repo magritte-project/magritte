@@ -1,8 +1,7 @@
 set working-directory := 'server'
 
-bootstrap:
+sync-deps:
     uv sync
-    cp .env.example .env
 
 dev:
     uv run fastapi dev main.py --port 6477

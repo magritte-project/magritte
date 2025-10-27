@@ -8,7 +8,7 @@ from pwdlib import PasswordHash
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from config import ALGORITHM, SECRET
+from config import config
 from db import get_db_session
 from model.user import User
 from schemas.auth import OAuth2Scope
@@ -36,11 +36,13 @@ def _create_access_token(
         to_encode["scope"] = OAuth2Scope.to_str(scopes)
     if expire_after:
         to_encode["exp"] = datetime.now(UTC) + expire_after
-    return jwt.encode(to_encode, SECRET, ALGORITHM)
+    return jwt.encode(to_encode, config.session_token_secret, config.token_algorithm)
 
 
 def _read_access_token(token: str) -> tuple[str, set[str]]:
-    to_decode = jwt.decode(token, SECRET, algorithms=[ALGORITHM])
+    to_decode = jwt.decode(
+        token, config.session_token_secret, algorithms=[config.token_algorithm]
+    )
     subject = to_decode.get("sub")
     if not isinstance(subject, str):
         raise jwt.InvalidTokenError("Bad subject")

@@ -1,8 +1,7 @@
 set working-directory := 'web'
 
-bootstrap:
+sync-deps:
     pnpm install
-    cp .env.example .env
 
 dev:
     pnpm dev

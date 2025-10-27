@@ -32,6 +32,14 @@ jobs:
         uses: asdf-vm/actions/install@v4
       - name: Bootstrap
         run: just bootstrap
+      - name: Seed Environment
+        run: |
+          SESSION_TOKEN_SECRET=$(./admin new-token-secret)
+          sed -i -r "s#^(SESSION_TOKEN_SECRET=).*#\1${SESSION_TOKEN_SECRET//#/\\#}#" .env
+          FILE_TOKEN_SECRET=$(./admin new-token-secret)
+          sed -i -r "s#^(FILE_TOKEN_SECRET=).*#\1${FILE_TOKEN_SECRET//#/\\#}#" .env
+          PASSWORD_SALT=$(./admin new-password-salt)
+          sed -i -r "s#^(PASSWORD_SALT=).*#\1${PASSWORD_SALT//#/\\#}#" .env
       - name: Lint
         run: just lint
       - name: Format
