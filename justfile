@@ -12,9 +12,9 @@ bootstrap:
     asdf install
     
     # Set up the environment files
-    -[ ! -e .env ] && cp .env.example .env
-    -[ ! -e server/.env ] && ln .env server/.env
-    -[ ! -e web/.env ] && ln .env web/.env
+    -[ ! -e .env ] && cp "$PWD/.env.example" "$PWD/.env"
+    -[ ! -e server/.env ] && ln "$PWD/.env" "$PWD/server/.env"
+    -[ ! -e web/.env ] && ln "$PWD/.env" "$PWD/web/.env"
 
     # Set up server dependencies
     @just server::sync-deps

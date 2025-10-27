@@ -40,6 +40,8 @@ jobs:
           sed -i.bak "s#^\(FILE_TOKEN_SECRET=\).*#\1${FILE_TOKEN_SECRET//#/\\#}#" .env && rm .env.bak
           PASSWORD_SALT=$(./admin new-password-salt)
           sed -i.bak "s#^\(PASSWORD_SALT=\).*#\1${PASSWORD_SALT//#/\\#}#" .env && rm .env.bak
+          echo "\n------ .env ------"
+          cat .env
       - name: Lint
         run: just lint
       - name: Format
