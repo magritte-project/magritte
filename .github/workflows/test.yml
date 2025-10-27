@@ -35,11 +35,11 @@ jobs:
       - name: Seed Environment
         run: |
           SESSION_TOKEN_SECRET=$(./admin new-token-secret)
-          sed -i -r "s#^(SESSION_TOKEN_SECRET=).*#\1${SESSION_TOKEN_SECRET//#/\\#}#" .env
+          sed -i.bak "s#^\(SESSION_TOKEN_SECRET=\).*#\1${SESSION_TOKEN_SECRET//#/\\#}#" .env && rm .env.bak
           FILE_TOKEN_SECRET=$(./admin new-token-secret)
-          sed -i -r "s#^(FILE_TOKEN_SECRET=).*#\1${FILE_TOKEN_SECRET//#/\\#}#" .env
+          sed -i.bak "s#^\(FILE_TOKEN_SECRET=\).*#\1${FILE_TOKEN_SECRET//#/\\#}#" .env && rm .env.bak
           PASSWORD_SALT=$(./admin new-password-salt)
-          sed -i -r "s#^(PASSWORD_SALT=).*#\1${PASSWORD_SALT//#/\\#}#" .env
+          sed -i.bak "s#^\(PASSWORD_SALT=\).*#\1${PASSWORD_SALT//#/\\#}#" .env && rm .env.bak
       - name: Lint
         run: just lint
       - name: Format
