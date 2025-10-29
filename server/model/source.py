@@ -1,7 +1,7 @@
 import pathlib
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import Field, Relationship, col, update
+from sqlmodel import Field, Relationship, col, select, update
 
 from model.base import LibraryModel
 from model.song import Song, SourceArtworkLink
@@ -55,3 +55,38 @@ class Source(LibraryModel, table=True):
             )
         )
         return update_result.rowcount
+
+    @classmethod
+    async def move(
+        cls,
+        src_path: str,
+        dest_path: str,
+        session: AsyncSession,
+        is_file: bool = True,
+    ):
+        src_url = pathlib.Path(src_path).as_uri()
+        dest_url = pathlib.Path(dest_path).as_uri()
+        if is_file:
+            update_result = await session.execute(
+                update(Source)
+                .values(
+                    url=dest_path,
+                )
+                .where(col(cls.url) == src_url)
+            )
+            return update_result.rowcount
+        else:
+            to_update = (
+                await session.scalars(
+                    select(cls).where(
+                        col(cls.url).startswith(src_url),
+                    )
+                )
+            ).all()
+
+            for source in to_update:
+                source.url = source.url.replace(src_url, dest_url, count=1)
+
+            await session.flush()
+
+            return len(to_update)
