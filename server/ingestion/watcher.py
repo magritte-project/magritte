@@ -17,24 +17,41 @@ from watchdog.observers import Observer
 
 from config import config
 from db import get_db_engine, get_db_session
+from model.source import Source
 
 
 @asynccontextmanager
-async def db_session():
+async def _db_session():
     engine = await get_db_engine()
     async for session in get_db_session(engine):
         yield session
 
 
+def _path_str(path: str | bytes):
+    match path:
+        case str():
+            return path
+        case bytes():
+            return path.decode()
+
+
 async def _process_event(event: FileSystemEvent):
-    async with db_session() as session:
+    async with _db_session() as session:
         match event:
             case DirDeletedEvent():
-                pass  # TODO: Mark sources with this prefix as broken
+                await Source.mark_invalid(
+                    path=_path_str(event.dest_path),
+                    is_file=False,
+                    session=session,
+                )
             case DirMovedEvent():
                 pass  # TODO: Move sources starting with this path
             case FileDeletedEvent():
-                pass  # TODO: Mark source matching this path as broken
+                await Source.mark_invalid(
+                    path=_path_str(event.dest_path),
+                    is_file=True,
+                    session=session,
+                )
             case FileModifiedEvent():
                 pass  # TODO: Update song(s) associated with this source
             case FileMovedEvent():

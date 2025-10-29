@@ -532,6 +532,8 @@ export interface components {
             readonly url: string | null;
             /** Mime Type */
             readonly mime_type: string | null;
+            /** Is Invalid */
+            readonly is_invalid: boolean;
         };
         /** Token */
         readonly Token: {

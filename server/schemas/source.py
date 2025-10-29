@@ -5,6 +5,7 @@ class SourceRead(BaseModel):
     id: int
     url: str | None
     mime_type: str | None
+    is_invalid: bool
 
     @field_serializer("url", mode="plain")
     def redact_file_urls(self, url: str | None):
