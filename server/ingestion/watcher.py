@@ -44,6 +44,12 @@ async def _process_event(event: FileSystemEvent):
                     is_file=False,
                     session=session,
                 )
+            case FileDeletedEvent():
+                await Source.mark_invalid(
+                    path=_path_str(event.dest_path),
+                    is_file=True,
+                    session=session,
+                )
             case DirMovedEvent():
                 await Source.move(
                     src_path=_path_str(event.src_path),
@@ -51,14 +57,6 @@ async def _process_event(event: FileSystemEvent):
                     is_file=False,
                     session=session,
                 )
-            case FileDeletedEvent():
-                await Source.mark_invalid(
-                    path=_path_str(event.dest_path),
-                    is_file=True,
-                    session=session,
-                )
-            case FileModifiedEvent():
-                pass  # TODO: Update song(s) associated with this source
             case FileMovedEvent():
                 await Source.move(
                     src_path=_path_str(event.src_path),
@@ -66,6 +64,8 @@ async def _process_event(event: FileSystemEvent):
                     is_file=True,
                     session=session,
                 )
+            case FileModifiedEvent():
+                pass  # TODO: Update song(s) associated with this source
             case _:
                 print(
                     f"*** Ignoring library file system event: {event}",
