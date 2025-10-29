@@ -2,12 +2,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from ingestion.watcher import library_watcher
 from routes import router
 
 
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
-    yield
+    with library_watcher():
+        yield
 
 
 app = FastAPI(
