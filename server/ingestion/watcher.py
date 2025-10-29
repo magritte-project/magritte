@@ -69,31 +69,34 @@ class _WorkerEventHandler(FileSystemEventHandler):
 
 @contextmanager
 def library_watcher():
-    event_queue = multiprocessing.Queue()
-    worker_process = multiprocessing.Process(
-        target=_worker_main,
-        args=(event_queue,),
-    )
-    worker_process.start()
+    if config.watch_library:
+        event_queue = multiprocessing.Queue()
+        worker_process = multiprocessing.Process(
+            target=_worker_main,
+            args=(event_queue,),
+        )
+        worker_process.start()
 
-    event_handler = _WorkerEventHandler(event_queue)
-    observer = Observer()
-    observer.schedule(
-        event_handler,
-        config.library_home,
-        recursive=True,
-        event_filter=[
-            DirDeletedEvent,
-            DirMovedEvent,
-            FileDeletedEvent,
-            FileModifiedEvent,
-            FileMovedEvent,
-        ],
-    )
-    observer.start()
-    try:
+        event_handler = _WorkerEventHandler(event_queue)
+        observer = Observer()
+        observer.schedule(
+            event_handler,
+            config.library_home,
+            recursive=True,
+            event_filter=[
+                DirDeletedEvent,
+                DirMovedEvent,
+                FileDeletedEvent,
+                FileModifiedEvent,
+                FileMovedEvent,
+            ],
+        )
+        observer.start()
+        try:
+            yield
+        finally:
+            observer.stop()
+            observer.join()
+            worker_process.terminate()
+    else:
         yield
-    finally:
-        observer.stop()
-        observer.join()
-        worker_process.terminate()

@@ -35,10 +35,6 @@ class Config(BaseSettings):
         description="Where library files are stored and retrieved from",
     )
 
-    rescan_library_on_start: bool = Field(
-        description="Whether the server should rescan the library when starting up",
-    )
-
     watch_library: bool = Field(
         description="Whether the server should watch the library for changes",
     )
