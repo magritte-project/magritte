@@ -3,6 +3,8 @@ import sys
 from argparse import ArgumentParser, Namespace
 from traceback import print_tb
 
+from ingestion.artwork import find_dominant_image_colors
+
 
 async def ingest_main(args: Namespace):
     from db import get_db_engine, get_db_session
@@ -48,40 +50,14 @@ async def dump_openapi_main(args: Namespace):
 
 
 async def dominant_colors_main(args: Namespace):
-    from PIL import Image
-
     for path in args.paths:
-        with Image.open(path) as image:
-            if image.has_transparency_data:
-                # TODO: We can handle images with an alpha channel but no transparent pixels
-                raise ValueError("Transparent images not supported")
-
-            sampleable_image = image.copy()
-            sampleable_image.thumbnail((100, 100))
-
-            paletted_image = sampleable_image.convert(
-                mode="P",
-                palette=Image.Palette.ADAPTIVE,
-                colors=args.palette_size,
-            )
-            palette = paletted_image.palette
-            if not palette:
-                raise ValueError("Could not palletize image")
-
-            indexed_colors = {index: color for color, index in palette.colors.items()}
-            color_counts = sorted(paletted_image.getcolors(), reverse=True)
-            dominant_colors = list[tuple[int, ...]]()
-            for _, index in color_counts[: args.color_count]:
-                dominant_colors.append(indexed_colors[index])
-
-            for dominant_color in dominant_colors:
-                match dominant_color:
-                    case (red, green, blue, alpha):
-                        print(f"rgba({red}, {green}, {blue}, {alpha})")
-                    case (red, green, blue):
-                        print(f"rgb({red}, {green}, {blue})")
-                    case (white,):
-                        print(f"rgb({white}, {white}, {white})")
+        dominant_colors = find_dominant_image_colors(
+            path,
+            palette_size=args.palette_size,
+            color_count=args.color_count,
+        )
+        for dominant_color in dominant_colors:
+            print(dominant_color)
 
 
 async def new_token_secret(args: Namespace):
