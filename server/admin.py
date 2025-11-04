@@ -3,8 +3,6 @@ import sys
 from argparse import ArgumentParser, Namespace
 from traceback import print_tb
 
-from ingestion.artwork import find_dominant_image_colors
-
 
 async def ingest_main(args: Namespace):
     from db import get_db_engine, get_db_session
@@ -50,6 +48,8 @@ async def dump_openapi_main(args: Namespace):
 
 
 async def dominant_colors_main(args: Namespace):
+    from ingestion.artwork import find_dominant_image_colors
+
     for path in args.paths:
         dominant_colors = find_dominant_image_colors(
             path,
