@@ -28,7 +28,7 @@ async def ingest_main(args: Namespace):
             await try_ingest_path(
                 path,
                 args.follow_links,
-                library,
+                [library],
                 session,
             )
 

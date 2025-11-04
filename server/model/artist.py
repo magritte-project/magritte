@@ -42,25 +42,28 @@ class Artist(LibraryModel, table=True):
     )
 
     @classmethod
-    async def read_or_insert(cls, name: str, library: "Library", session: AsyncSession):
+    async def read_or_insert(
+        cls, name: str, libraries: list["Library"], session: AsyncSession
+    ):
         existing_artist = await session.scalar(
             select(cls).where(
                 col(cls.name) == name,
             )
         )
         if existing_artist:
-            if not any(
-                existing_library
-                for existing_library in existing_artist.libraries
-                if existing_library.id == library.id
-            ):
-                existing_artist.libraries.append(library)
+            existing_library_ids = {
+                library.id
+                for library in await existing_artist.awaitable_attrs.libraries
+            }
+            for library in libraries:
+                if library.id not in existing_library_ids:
+                    existing_artist.libraries.append(library)
 
             return existing_artist
         else:
             new_artist = cls(
                 name=name,
-                libraries=[library],
+                libraries=libraries,
             )
             session.add(new_artist)
             await session.flush()

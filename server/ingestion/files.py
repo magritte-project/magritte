@@ -10,16 +10,53 @@ from tinytag import TinyTag, UnsupportedFormatError
 from ingestion.artwork import try_ingest_artwork
 from model.album import Album
 from model.artist import Artist
-from model.artwork import Artwork
 from model.library import Library
 from model.song import Song
 from model.source import Source
 from schemas.artwork import ArtworkKind
 
 
+async def update_song_metadata(
+    song: Song,
+    tags: TinyTag,
+    libraries: list[Library],
+    session: AsyncSession,
+):
+    artist_name = tags.artist or ""
+    artist = await Artist.read_or_insert(artist_name, libraries, session)
+
+    album_title = tags.album or ""
+    album = await Album.read_or_insert(album_title, artist.id, libraries, session)
+
+    cover_image = tags.images.any
+    if cover_image:
+        cover_artwork = await try_ingest_artwork(
+            cover_image,
+            ArtworkKind.FRONT_COVER,
+            session,
+        )
+        (await song.awaitable_attrs.artworks).append(cover_artwork)
+
+    song.artist = artist
+    song.album = album
+    song.end_time = tags.duration
+    song.title = tags.title
+    song.album_artist = tags.albumartist
+    song.composer = tags.composer
+    song.genre = tags.genre
+    song.release_date = tags.year
+    song.track_number = tags.track
+    song.track_total = tags.track_total
+    song.disc_number = tags.disc
+    song.disc_total = tags.disc_total
+    song.lyrics = tags.other.get("lyrics")[0] if tags.other.get("lyrics") else None
+    song.comment = tags.comment
+    song.isrc = tags.other.get("isrc")[0] if tags.other.get("isrc") else None
+
+
 async def try_ingest_file(
     path: str,
-    library: Library,
+    libraries: list[Library],
     session: AsyncSession,
 ):
     try:
@@ -38,67 +75,32 @@ async def try_ingest_file(
 
     mime_type, _encoding = guess_file_type(path)
 
-    artist_name = tags.artist or ""
-    artist = await Artist.read_or_insert(artist_name, library, session)
-
-    album_title = tags.album or ""
-    album = await Album.read_or_insert(album_title, artist.id, library, session)
-
-    artworks = list[Artwork]()
-    cover_image = tags.images.any
-    if cover_image:
-        cover_artwork = await try_ingest_artwork(
-            cover_image,
-            ArtworkKind.FRONT_COVER,
-            session,
-        )
-        artworks.append(cover_artwork)
-
     new_song = Song(
-        artist=artist,
-        album=album,
-        artworks=artworks,
-        libraries=[library],
+        libraries=libraries,
         sources=[
             Source(
                 url=file_url,
                 mime_type=mime_type,
             )
         ],
-        start_time=0,
         end_time=tags.duration,
-        title=tags.title,
-        album_artist=tags.albumartist,
-        composer=tags.composer,
-        genre=tags.genre,
-        release_date=tags.year,
-        track_number=tags.track,
-        track_total=tags.track_total,
-        disc_number=tags.disc,
-        disc_total=tags.disc_total,
-        lyrics=tags.other.get("lyrics")[0] if tags.other.get("lyrics") else None,
-        rating=None,
-        bpm=None,
-        comment=tags.comment,
-        grouping=None,
-        mcn=None,
-        isrc=tags.other.get("isrc")[0] if tags.other.get("isrc") else None,
-        music_brainz_release_id=None,
-        music_brainz_recording_id=None,
     )
     session.add(new_song)
     await session.flush()
+
+    await update_song_metadata(new_song, tags, libraries, session)
+
     return new_song
 
 
 async def try_ingest_path(
     path: str,
     follow_links: bool,
-    library: Library,
+    libraries: list[Library],
     session: AsyncSession,
 ):
     if os.path.isfile(path):
-        await try_ingest_file(path, library, session)
+        await try_ingest_file(path, libraries, session)
     else:
         for dirpath, _, filenames in os.walk(
             path,
@@ -112,9 +114,11 @@ async def try_ingest_path(
                 try:
                     new_song = await try_ingest_file(
                         path=file_path,
-                        library=library,
+                        libraries=libraries,
                         session=session,
                     )
+                    if not new_song:
+                        continue
                     print(
                         f"Added '{filename}': '{new_song.title}' from '{new_song.album_title}' by '{new_song.artist_name}'"
                     )
