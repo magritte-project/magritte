@@ -38,7 +38,7 @@ export class EventSubscription<TEvent> {
     }
 }
 
-export class EventSource<TEvent> {
+export class EventStream<TEvent> {
     /** @hideconstructor */
     constructor(private readonly implementation: EventImplementation<TEvent>) {}
 
@@ -57,10 +57,28 @@ export class EventSink<TEvent> {
     }
 }
 
+/**
+ * Create an event sink and stream pair to expose events from an object.
+ *
+ * To use, declare a private property to hold the event sink and a public
+ * property to expose the event stream. By convention, the sink should be
+ * prefixed with an underscore `_` and the stream with a dollar sign `$`:
+ *
+ * ```typescript
+ * private readonly _events: EventSink<MyEvent>
+ * readonly $events: EventStream<MyEvent>
+ *
+ * constructor() {
+ *     ;[this._events, this.$events] = createEvent()
+ * }
+ * ```
+ *
+ * @returns An event sink and an event stream.
+ */
 export function createEvent<TEvent>(): [
     EventSink<TEvent>,
-    EventSource<TEvent>,
+    EventStream<TEvent>,
 ] {
     const emitter = new EventImplementation<TEvent>()
-    return [new EventSink(emitter), new EventSource(emitter)]
+    return [new EventSink(emitter), new EventStream(emitter)]
 }

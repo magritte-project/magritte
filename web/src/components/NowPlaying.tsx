@@ -3,7 +3,7 @@ import ArtworkImage from "@/components/ArtworkImage"
 import ThemedButton from "@/components/theme/ThemedButton"
 import usePlayer from "@/hooks/playerHook"
 import usePlayerState from "@/hooks/playerStateHook"
-import { ArrayQueueShard } from "@/playback/resources/arrayQueueShard"
+import { ArrayQueueShard } from "@/playback/queueShards/array"
 import {
     PauseIcon,
     PlayIcon,

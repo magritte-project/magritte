@@ -1,19 +1,22 @@
 import type { SongRead } from "@/api/openapi"
 import type { UserSessionManager } from "@/api/userSession"
-import {
-    type PlaybackEngine,
-    type PlaybackEngineEnqueueOptions,
-    type PlaybackEngineEvent,
-    type PlaybackEngineEventDetail,
-    type PlaybackEngineState,
-    createPlaybackEngineEvent,
+import type {
+    PlaybackEngine,
+    PlaybackEngineEnqueueOptions,
+    PlaybackEngineEvent,
+    PlaybackEngineState,
 } from "@/playback/engine"
+import {
+    type EventSink,
+    type EventStream,
+    createEvent,
+} from "@/utilities/events"
 import { resolveUrl } from "@/utilities/resources"
 
 export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
     private readonly _userSession: UserSessionManager
     private readonly _audio: HTMLAudioElement
-    private readonly _eventTarget: EventTarget
+    private readonly _events: EventSink<PlaybackEngineEvent<SongRead>>
     private _playingItem: SongRead | null
 
     constructor(
@@ -22,7 +25,8 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
     ) {
         this._userSession = userSession
         this._audio = new Audio()
-        this._eventTarget = new EventTarget()
+        ;[this._events, this.$events] = createEvent()
+
         this._playingItem = null
 
         this._audio.addEventListener("canplay", (e) => this._handleCanPlay(e))
@@ -41,35 +45,29 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
     }
 
     private _handleCanPlay(_event: Event) {
-        this._dispatchEvent({ type: "playbackStateDidChange" })
+        this._events.dispatch({ type: "playbackStateDidChange" })
     }
 
     private _handleDurationChange(_event: Event) {
-        this._dispatchEvent({ type: "playingItemChanged" })
+        this._events.dispatch({ type: "playingItemChanged" })
     }
 
     private _handleEnded(_event: Event) {
         const lastItem = this._playingItem
         this.stop()
-        this._dispatchEvent({ type: "endOfAudio", lastItem })
+        this._events.dispatch({ type: "endOfAudio", lastItem })
     }
 
     private _handleError(_event: Event) {
-        this._dispatchEvent({ type: "encounteredError", error: new Error() })
+        this._events.dispatch({ type: "encounteredError", error: new Error() })
     }
 
     private _handlePause(_event: Event) {
-        this._dispatchEvent({ type: "playbackStateDidChange" })
+        this._events.dispatch({ type: "playbackStateDidChange" })
     }
 
     private _handlePlay(_event: Event) {
-        this._dispatchEvent({ type: "playbackStateDidChange" })
-    }
-
-    private _dispatchEvent(detail: PlaybackEngineEventDetail<SongRead>) {
-        this._eventTarget.dispatchEvent(
-            createPlaybackEngineEvent("onWebPlaybackEngineEvent", detail),
-        )
+        this._events.dispatch({ type: "playbackStateDidChange" })
     }
 
     get playingItem(): SongRead | null {
@@ -93,6 +91,8 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
     get currentTime(): number | null {
         return this._audio.currentTime
     }
+
+    readonly $events: EventStream<PlaybackEngineEvent<SongRead>>
 
     async canEnqueue(item: SongRead): Promise<boolean> {
         const sources = item.sources ?? []
@@ -122,7 +122,7 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
         this._audio.load()
 
         this._playingItem = itemToPlay
-        this._dispatchEvent({ type: "playingItemChanged" })
+        this._events.dispatch({ type: "playingItemChanged" })
 
         if (playNow) {
             await this._audio.play()
@@ -152,24 +152,6 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
     async stop(): Promise<void> {
         this._audio.src = ""
         this._playingItem = null
-        this._dispatchEvent({ type: "playingItemChanged" })
-    }
-
-    addEventListener(
-        callback: (event: PlaybackEngineEvent<SongRead>) => void,
-    ): void {
-        this._eventTarget.addEventListener(
-            "onWebPlaybackEngineEvent",
-            callback as EventListenerOrEventListenerObject,
-        )
-    }
-
-    removeEventListener(
-        callback: (event: PlaybackEngineEvent<SongRead>) => void,
-    ): void {
-        this._eventTarget.removeEventListener(
-            "onWebPlaybackEngineEvent",
-            callback as EventListenerOrEventListenerObject,
-        )
+        this._events.dispatch({ type: "playingItemChanged" })
     }
 }

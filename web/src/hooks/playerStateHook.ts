@@ -36,7 +36,7 @@ export default function usePlayerState(): UsePlayerStateResult {
 
     useEffect(() => {
         const eventListener = (event: PlaybackEngineEvent<SongRead>) => {
-            switch (event.detail.type) {
+            switch (event.type) {
                 case "playbackStateDidChange":
                 case "playingItemChanged":
                 case "endOfAudio":
@@ -46,9 +46,9 @@ export default function usePlayerState(): UsePlayerStateResult {
                     break
             }
         }
-        player.addEventListener(eventListener)
+        const subscription = player.$events.subscribe(eventListener)
         return () => {
-            player.removeEventListener(eventListener)
+            subscription.unsubscribe()
         }
     }, [player])
 

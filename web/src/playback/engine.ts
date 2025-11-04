@@ -1,21 +1,12 @@
+import type { EventStream } from "@/utilities/events"
+
 export type PlaybackEngineState = "playing" | "paused" | "stopped"
 
-export type PlaybackEngineEventDetail<Item> =
+export type PlaybackEngineEvent<Item> =
     | { type: "playbackStateDidChange" }
     | { type: "playingItemChanged" }
     | { type: "encounteredError"; error: Error }
     | { type: "endOfAudio"; lastItem: Item | null }
-
-export type PlaybackEngineEvent<Item> = CustomEvent<
-    PlaybackEngineEventDetail<Item>
->
-
-export function createPlaybackEngineEvent<Item>(
-    type: string,
-    detail: PlaybackEngineEventDetail<Item>,
-): PlaybackEngineEvent<Item> {
-    return new CustomEvent<PlaybackEngineEventDetail<Item>>(type, { detail })
-}
 
 export interface PlaybackEngineEnqueueOptions<Item> {
     /**
@@ -46,6 +37,9 @@ export interface PlaybackEngine<Item> {
     readonly playbackState: PlaybackEngineState
     readonly totalTime: number | null
     readonly currentTime: number | null
+
+    /** Events relating to the state of this playback engine */
+    readonly $events: EventStream<PlaybackEngineEvent<Item>>
 
     /**
      * Check whether this playback engine can play a given item.
@@ -84,9 +78,4 @@ export interface PlaybackEngine<Item> {
     pause(): Promise<void>
     resume(): Promise<void>
     stop(): Promise<void>
-
-    addEventListener(callback: (event: PlaybackEngineEvent<Item>) => void): void
-    removeEventListener(
-        callback: (event: PlaybackEngineEvent<Item>) => void,
-    ): void
 }

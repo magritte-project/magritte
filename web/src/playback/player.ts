@@ -1,14 +1,18 @@
 import type { SongRead } from "@/api/openapi"
-import {
-    type PlaybackEngine,
-    type PlaybackEngineEnqueueOptions,
-    type PlaybackEngineEvent,
-    type PlaybackEngineEventDetail,
-    type PlaybackEngineState,
-    createPlaybackEngineEvent,
+import type {
+    PlaybackEngine,
+    PlaybackEngineEnqueueOptions,
+    PlaybackEngineEvent,
+    PlaybackEngineState,
 } from "@/playback/engine"
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { Queue, type QueueEntry } from "@/playback/queue"
+import {
+    type EventSink,
+    type EventStream,
+    type EventSubscription,
+    createEvent,
+} from "@/utilities/events"
 
 export interface ReplaceQueueOptions
     extends Omit<PlaybackEngineEnqueueOptions<SongRead>, "itemToPlay"> {
@@ -18,25 +22,21 @@ export interface ReplaceQueueOptions
 
 export class Player {
     private readonly _engineRegistry: PlaybackEngineRegistry<SongRead>
-    private readonly _eventTarget: EventTarget
+    private readonly _events: EventSink<PlaybackEngineEvent<SongRead>>
+    private _activeEngineEventSubscription: EventSubscription<
+        PlaybackEngineEvent<SongRead>
+    > | null
     private _activeEngine: PlaybackEngine<SongRead> | null
-    private _engineEventSink: (event: PlaybackEngineEvent<SongRead>) => void
     private _queue: Queue<SongRead>
     private _playingEntry: QueueEntry<SongRead> | null
 
     constructor(engineRegistry: PlaybackEngineRegistry<SongRead>) {
         this._engineRegistry = engineRegistry
-        this._eventTarget = new EventTarget()
+        ;[this._events, this.$events] = createEvent()
+        this._activeEngineEventSubscription = null
         this._activeEngine = null
-        this._engineEventSink = (e) => this._handleEngineEvent(e)
         this._queue = new Queue()
         this._playingEntry = null
-    }
-
-    private _dispatchEvent(detail: PlaybackEngineEventDetail<SongRead>) {
-        this._eventTarget.dispatchEvent(
-            createPlaybackEngineEvent("onPlayerEvent", detail),
-        )
     }
 
     private _changeEngine(newEngine: PlaybackEngine<SongRead> | null) {
@@ -45,11 +45,14 @@ export class Player {
         }
         if (this._activeEngine !== null) {
             this._activeEngine.stop()
-            this._activeEngine.removeEventListener(this._engineEventSink)
+            this._activeEngineEventSubscription?.unsubscribe()
+            this._activeEngineEventSubscription = null
         }
         this._activeEngine = newEngine
         if (newEngine !== null) {
-            newEngine.addEventListener(this._engineEventSink)
+            this._activeEngineEventSubscription = newEngine.$events.subscribe(
+                (e) => this._handleEngineEvent(e),
+            )
         }
     }
 
@@ -74,11 +77,11 @@ export class Player {
     private async _handleEngineEvent(
         event: PlaybackEngineEvent<SongRead>,
     ): Promise<void> {
-        switch (event.detail.type) {
+        switch (event.type) {
             case "playbackStateDidChange":
             case "playingItemChanged":
             case "encounteredError":
-                this._dispatchEvent(event.detail)
+                this._events.dispatch(event)
                 break
             case "endOfAudio": {
                 if (this._playingEntry === null) {
@@ -89,7 +92,7 @@ export class Player {
                 )
                 if (nextEntry === null) {
                     await this.stop()
-                    this._dispatchEvent(event.detail)
+                    this._events.dispatch(event)
                     return
                 }
                 await this._playEntry(nextEntry, { playNow: true })
@@ -129,6 +132,9 @@ export class Player {
     get queue(): Queue<SongRead> {
         return this._queue
     }
+
+    /** Events relating to the state of playback */
+    readonly $events: EventStream<PlaybackEngineEvent<SongRead>>
 
     async replaceQueue({
         newQueue,
@@ -209,23 +215,5 @@ export class Player {
     async stop(): Promise<void> {
         this._playingEntry = null
         await this._activeEngine?.stop()
-    }
-
-    addEventListener(
-        callback: (event: PlaybackEngineEvent<SongRead>) => void,
-    ): void {
-        this._eventTarget.addEventListener(
-            "onPlayerEvent",
-            callback as EventListenerOrEventListenerObject,
-        )
-    }
-
-    removeEventListener(
-        callback: (event: PlaybackEngineEvent<SongRead>) => void,
-    ): void {
-        this._eventTarget.removeEventListener(
-            "onPlayerEvent",
-            callback as EventListenerOrEventListenerObject,
-        )
     }
 }
