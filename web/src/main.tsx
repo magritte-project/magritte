@@ -16,7 +16,7 @@ import "@/styles.css"
 import { APIClient } from "@/api/client"
 import type { SongRead } from "@/api/openapi"
 import APIClientContextProvider from "@/contexts/providers/APIClientContextProvider"
-import PlaybackEngineRegistry from "@/playback/engine-registry"
+import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import WebPlaybackEngine from "@/playback/engines/web"
 
 // Set up user session

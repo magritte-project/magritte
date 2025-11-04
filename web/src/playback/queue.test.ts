@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { ArrayQueueShard, Queue } from "./queue"
+import { Queue } from "./queue"
+import { ArrayQueueShard } from "./queueShards/array"
 
 describe("Queue", () => {
     function randomShardId(): string {

@@ -4,10 +4,10 @@ import {
     type ReadLibrarySongsCriteria,
     readLibrarySongs,
 } from "@/api/queries/libraries"
-import type { QueueShard } from "@/playback/queue"
+import type { QueueShard, QueueShardContext } from "@/playback/queueShards/base"
 import type { QueryClient } from "@tanstack/react-query"
 
-export class LibrarySongQueue implements QueueShard<SongRead> {
+export class LibrarySongsQueueShard implements QueueShard<SongRead> {
     private readonly _apiClient: APIClient
     private readonly _queryClient: QueryClient
     private readonly _criteria: Omit<
@@ -19,19 +19,21 @@ export class LibrarySongQueue implements QueueShard<SongRead> {
     private _total: number
 
     constructor(
-        apiClient: APIClient,
-        queryClient: QueryClient,
-        criteria: ReadLibrarySongsCriteria,
+        context: QueueShardContext,
         initialPage: LibraryMediaReadSongRead,
+        criteria: ReadLibrarySongsCriteria,
     ) {
-        this._apiClient = apiClient
-        this._queryClient = queryClient
-        this._criteria = criteria
+        this._apiClient = context.apiClient
+        this._queryClient = context.queryClient
+        this._criteria = { ...criteria }
         this._pages = new Map().set(initialPage.offset, initialPage)
         this._limit = initialPage.limit
         this._total = initialPage.total
     }
 
+    /**
+     * The offset of the last page which has items.
+     */
     private get _lastPageOffset(): number {
         return this._limit * Math.floor(this._total / this._limit)
     }
@@ -96,7 +98,7 @@ export class LibrarySongQueue implements QueueShard<SongRead> {
     }
 
     get id(): string {
-        return "library-songs"
+        return `LibrarySongQueueShard${JSON.stringify(this._criteria)}`
     }
 
     get length(): number {
@@ -122,9 +124,9 @@ export class LibrarySongQueue implements QueueShard<SongRead> {
     }
 
     async lastItem(): Promise<SongRead | null> {
-        const firstPage = await this._pageAt(this._lastPageOffset)
-        if (firstPage.items.length > 0) {
-            return firstPage.items[0]
+        const lastPage = await this._pageAt(this._lastPageOffset)
+        if (lastPage.items.length > 0) {
+            return lastPage.items[0]
         } else {
             return null
         }

@@ -7,7 +7,7 @@ import {
     type PlaybackEngineState,
     createPlaybackEngineEvent,
 } from "@/playback/engine"
-import type PlaybackEngineRegistry from "@/playback/engine-registry"
+import type PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { Queue, type QueueEntry } from "@/playback/queue"
 
 export interface ReplaceQueueOptions

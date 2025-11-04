@@ -3,9 +3,10 @@ import TableFooter from "@/components/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
+import useQueueShardContext from "@/hooks/queueShardContextHook"
 import { Queue } from "@/playback/queue"
-import { LibrarySongQueue } from "@/playback/resources/library-song-queue"
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import { LibrarySongsQueueShard } from "@/playback/queueShards/librarySongs"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
 
@@ -65,7 +66,6 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
         } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
         const apiClient = useAPIClient()
-        const queryClient = useQueryClient()
         const { data: page } = useSuspenseQuery(
             readLibrarySongs(apiClient, {
                 libraryId: Number(libraryId),
@@ -75,6 +75,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                 offset,
             }),
         )
+        const queueShardContext = useQueueShardContext()
         const player = usePlayer()
         return (
             <div className="m-2 flex flex-col gap-2 cursor-default">
@@ -95,10 +96,10 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                 className="cursor-pointer bg-gray-50 odd:bg-inherit hover:bg-blue-50"
                                 onClick={() =>
                                     player.replaceQueue({
-                                        newQueue: new Queue([
-                                            new LibrarySongQueue(
-                                                apiClient,
-                                                queryClient,
+                                        newQueue: Queue.with(
+                                            new LibrarySongsQueueShard(
+                                                queueShardContext,
+                                                page,
                                                 {
                                                     libraryId:
                                                         Number(libraryId),
@@ -106,9 +107,8 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                                     artistId,
                                                     sortBy,
                                                 },
-                                                page,
                                             ),
-                                        ]),
+                                        ),
                                         startingItem: song,
                                         playNow: true,
                                     })
