@@ -88,6 +88,7 @@ export class Player {
                     this._playingEntry,
                 )
                 if (nextEntry === null) {
+                    await this.stop()
                     this._dispatchEvent(event.detail)
                     return
                 }
@@ -206,6 +207,7 @@ export class Player {
     }
 
     async stop(): Promise<void> {
+        this._playingEntry = null
         await this._activeEngine?.stop()
     }
 

@@ -11,11 +11,14 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
     }),
     component: function LibraryArtistsComponent() {
         const { libraryId } = Route.useParams()
-        const { offset, ...restSearch } = Route.useSearch()
-        const navigate = useNavigate()
+        const { offset } = Route.useSearch()
+        const navigate = useNavigate({ from: Route.fullPath })
         const apiClient = useAPIClient()
         const { data: page } = useSuspenseQuery(
-            readLibraryArtists(apiClient, Number(libraryId), offset),
+            readLibraryArtists(apiClient, {
+                libraryId: Number(libraryId),
+                offset,
+            }),
         )
         return (
             <div className="m-2 flex flex-col gap-2">
@@ -44,11 +47,10 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                     total={page.total}
                     onChange={(offset, _limit) =>
                         navigate({
-                            to: ".",
-                            search: {
+                            search: (oldSearch) => ({
+                                ...oldSearch,
                                 offset,
-                                ...restSearch,
-                            },
+                            }),
                         })
                     }
                 />

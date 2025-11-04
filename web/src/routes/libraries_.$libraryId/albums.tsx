@@ -13,19 +13,23 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
     }),
     component: function LibraryAlbumsComponent() {
         const { libraryId } = Route.useParams()
-        const { artist_id, offset, ...restSearch } = Route.useSearch()
-        const navigate = useNavigate()
+        const { artist_id: artistId, offset } = Route.useSearch()
+        const navigate = useNavigate({ from: Route.fullPath })
         const apiClient = useAPIClient()
         const { data: page } = useSuspenseQuery(
-            readLibraryAlbums(apiClient, Number(libraryId), artist_id, offset),
+            readLibraryAlbums(apiClient, {
+                libraryId: Number(libraryId),
+                artistId,
+                offset,
+            }),
         )
         return (
             <div className="m-2 flex flex-col gap-2">
-                {artist_id !== undefined && (
+                {artistId !== undefined && (
                     <Link
                         to="/libraries/$libraryId/songs"
                         params={{ libraryId }}
-                        search={{ artist_id }}
+                        search={{ artist_id: artistId }}
                         className="px-2 py-1 hover:bg-blue-50"
                     >
                         All Songs
@@ -40,7 +44,10 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                             <Link
                                 to="/libraries/$libraryId/songs"
                                 params={{ libraryId }}
-                                search={{ artist_id, album_id: album.id }}
+                                search={{
+                                    artist_id: artistId,
+                                    album_id: album.id,
+                                }}
                             >
                                 <ArtworkImage
                                     className="h-36 w-36"
@@ -61,12 +68,10 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                     total={page.total}
                     onChange={(offset, _limit) =>
                         navigate({
-                            to: ".",
-                            search: {
-                                artist_id,
+                            search: (oldSearch) => ({
+                                ...oldSearch,
                                 offset,
-                                ...restSearch,
-                            },
+                            }),
                         })
                     }
                 />

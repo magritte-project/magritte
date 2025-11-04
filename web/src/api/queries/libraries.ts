@@ -15,58 +15,91 @@ export function readLibrary(apiClient: APIClient, library_id: number) {
     })
 }
 
+export interface ReadLibraryAlbumsCriteria {
+    readonly libraryId: number
+    readonly artistId?: number
+    readonly offset?: number
+    readonly limit?: number
+}
+
 export function readLibraryAlbums(
     apiClient: APIClient,
-    library_id: number,
-    artist_id?: number,
-    offset?: number,
-    limit?: number,
+    criteria: ReadLibraryAlbumsCriteria,
 ) {
     return queryOptions({
-        queryKey: ["readLibraryAlbums", library_id, artist_id, offset, limit],
+        queryKey: [
+            "readLibraryAlbums",
+            criteria.libraryId,
+            criteria.artistId,
+            criteria.offset,
+            criteria.limit,
+        ],
         queryFn: () =>
-            apiClient.readLibraryAlbums(library_id, artist_id, offset, limit),
+            apiClient.readLibraryAlbums(
+                criteria.libraryId,
+                criteria.artistId,
+                criteria.offset,
+                criteria.limit,
+            ),
     })
+}
+
+export interface ReadLibraryArtistsCriteria {
+    readonly libraryId: number
+    readonly offset?: number
+    readonly limit?: number
 }
 
 export function readLibraryArtists(
     apiClient: APIClient,
-    library_id: number,
-    offset?: number,
-    limit?: number,
+    criteria: ReadLibraryArtistsCriteria,
 ) {
     return queryOptions({
-        queryKey: ["readLibraryArtists", library_id, offset, limit],
-        queryFn: () => apiClient.readLibraryArtists(library_id, offset, limit),
+        queryKey: [
+            "readLibraryArtists",
+            criteria.libraryId,
+            criteria.offset,
+            criteria.limit,
+        ],
+        queryFn: () =>
+            apiClient.readLibraryArtists(
+                criteria.libraryId,
+                criteria.offset,
+                criteria.limit,
+            ),
     })
+}
+
+export interface ReadLibrarySongsCriteria {
+    readonly libraryId: number
+    readonly albumId?: number
+    readonly artistId?: number
+    readonly sortBy?: ReadLibrarySongsSortBy
+    readonly offset?: number
+    readonly limit?: number
 }
 
 export function readLibrarySongs(
     apiClient: APIClient,
-    library_id: number,
-    album_id?: number,
-    artist_id?: number,
-    sort_by?: ReadLibrarySongsSortBy,
-    offset?: number,
-    limit?: number,
+    criteria: ReadLibrarySongsCriteria,
 ) {
     return queryOptions({
         queryKey: [
             "readLibrarySongs",
-            library_id,
-            album_id,
-            artist_id,
-            offset,
-            limit,
+            criteria.libraryId,
+            criteria.albumId,
+            criteria.artistId,
+            criteria.offset,
+            criteria.limit,
         ],
         queryFn: () =>
             apiClient.readLibrarySongs(
-                library_id,
-                album_id,
-                artist_id,
-                sort_by,
-                offset,
-                limit,
+                criteria.libraryId,
+                criteria.albumId,
+                criteria.artistId,
+                criteria.sortBy,
+                criteria.offset,
+                criteria.limit,
             ),
     })
 }

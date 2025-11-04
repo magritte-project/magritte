@@ -3,8 +3,9 @@ import TableFooter from "@/components/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
-import { ArrayQueueShard, Queue } from "@/playback/queue"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { Queue } from "@/playback/queue"
+import { LibrarySongQueue } from "@/playback/resources/library-song-queue"
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
 
@@ -56,19 +57,23 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
     }),
     component: function LibrarySongsComponent() {
         const { libraryId } = Route.useParams()
-        const { album_id, artist_id, sort_by, offset, ...restSearch } =
-            Route.useSearch()
-        const navigate = useNavigate()
+        const {
+            album_id: albumId,
+            artist_id: artistId,
+            sort_by: sortBy,
+            offset,
+        } = Route.useSearch()
+        const navigate = useNavigate({ from: Route.fullPath })
         const apiClient = useAPIClient()
+        const queryClient = useQueryClient()
         const { data: page } = useSuspenseQuery(
-            readLibrarySongs(
-                apiClient,
-                Number(libraryId),
-                album_id,
-                artist_id,
-                sort_by,
+            readLibrarySongs(apiClient, {
+                libraryId: Number(libraryId),
+                albumId,
+                artistId,
+                sortBy,
                 offset,
-            ),
+            }),
         )
         const player = usePlayer()
         return (
@@ -91,9 +96,17 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                 onClick={() =>
                                     player.replaceQueue({
                                         newQueue: new Queue([
-                                            new ArrayQueueShard(
-                                                `/libraries/${libraryId}/songs`,
-                                                page.items,
+                                            new LibrarySongQueue(
+                                                apiClient,
+                                                queryClient,
+                                                {
+                                                    libraryId:
+                                                        Number(libraryId),
+                                                    albumId,
+                                                    artistId,
+                                                    sortBy,
+                                                },
+                                                page,
                                             ),
                                         ]),
                                         startingItem: song,
@@ -128,14 +141,10 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                     total={page.total}
                     onChange={(offset, _limit) =>
                         navigate({
-                            to: ".",
-                            search: {
-                                album_id,
-                                artist_id,
-                                sort_by,
+                            search: (oldSearch) => ({
+                                ...oldSearch,
                                 offset,
-                                ...restSearch,
-                            },
+                            }),
                         })
                     }
                 />
