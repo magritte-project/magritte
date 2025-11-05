@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import AnyUrl, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,8 +31,8 @@ class Config(BaseSettings):
         description="Where images are stored and retrieved from",
     )
 
-    library_home: str = Field(
-        description="Where library files are stored and retrieved from",
+    library_home: AnyUrl = Field(
+        description="A URL specifying where library files are stored and retrieved from",
     )
 
     watch_library: bool = Field(

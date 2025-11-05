@@ -1,7 +1,9 @@
 import asyncio
+import logging
 import multiprocessing
 import sys
 from contextlib import asynccontextmanager, contextmanager
+from pathlib import Path
 from typing import override
 
 from watchdog.events import (
@@ -74,6 +76,7 @@ async def _process_event(event: FileSystemEvent):
 
 
 def _worker_main(events: multiprocessing.Queue):
+    logging.debug("Library watcher process started")
     while True:
         event: FileSystemEvent = events.get()
         asyncio.run(_process_event(event))
@@ -96,34 +99,41 @@ class _WorkerEventHandler(FileSystemEventHandler):
 
 @contextmanager
 def library_watcher():
-    if config.watch_library:
-        event_queue = multiprocessing.Queue()
-        worker_process = multiprocessing.Process(
-            target=_worker_main,
-            args=(event_queue,),
-        )
-        worker_process.start()
+    if config.watch_library and config.library_home.scheme == "file":
+        library_home_path = Path.from_uri(str(config.library_home))
+        if library_home_path.exists() and library_home_path.is_dir():
+            event_queue = multiprocessing.Queue()
+            worker_process = multiprocessing.Process(
+                target=_worker_main,
+                args=(event_queue,),
+            )
+            worker_process.start()
 
-        event_handler = _WorkerEventHandler(event_queue)
-        observer = Observer()
-        observer.schedule(
-            event_handler,
-            config.library_home,
-            recursive=True,
-            event_filter=[
-                DirDeletedEvent,
-                DirMovedEvent,
-                FileDeletedEvent,
-                FileModifiedEvent,
-                FileMovedEvent,
-            ],
-        )
-        observer.start()
-        try:
+            event_handler = _WorkerEventHandler(event_queue)
+            observer = Observer()
+            observer.schedule(
+                event_handler,
+                str(library_home_path),
+                recursive=True,
+                event_filter=[
+                    DirDeletedEvent,
+                    DirMovedEvent,
+                    FileDeletedEvent,
+                    FileModifiedEvent,
+                    FileMovedEvent,
+                ],
+            )
+            observer.start()
+            try:
+                yield
+            finally:
+                observer.stop()
+                observer.join()
+                worker_process.terminate()
+        else:
+            logging.warning(
+                f"*** library_home refers to directory that does not exist: {config.library_home}"
+            )
             yield
-        finally:
-            observer.stop()
-            observer.join()
-            worker_process.terminate()
     else:
         yield
