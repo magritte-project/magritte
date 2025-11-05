@@ -99,7 +99,11 @@ class _WorkerEventHandler(FileSystemEventHandler):
 
 @contextmanager
 def library_watcher():
-    if config.watch_library and config.library_home.scheme == "file":
+    if (
+        config.watch_library
+        and config.library_home.scheme == "file"
+        and config.library_home.path != "/"
+    ):
         library_home_path = Path.from_uri(str(config.library_home))
         if library_home_path.exists() and library_home_path.is_dir():
             event_queue = multiprocessing.Queue()
