@@ -1,4 +1,4 @@
-import { TanstackDevtools } from "@tanstack/react-devtools"
+import { TanStackDevtools } from "@tanstack/react-devtools"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 
@@ -33,7 +33,7 @@ export const Route = createRootRouteWithContext<MagritteRouterContext>()({
         <>
             <RootLayout />
             <AppCommandPalette />
-            <TanstackDevtools
+            <TanStackDevtools
                 config={{
                     position: "bottom-left",
                 }}
