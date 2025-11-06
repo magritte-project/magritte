@@ -1,5 +1,5 @@
 import { readLibraryArtists } from "@/api/queries/libraries"
-import TableFooter from "@/components/TableFooter"
+import TableFooter from "@/components/reusable/TableFooter"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"

@@ -1,6 +1,6 @@
 import { useCreateLibrary } from "@/api/mutations/libraries"
 import type { LibraryCreate } from "@/api/openapi"
-import AppForm from "@/components/AppForm"
+import AppForm from "@/components/reusable/AppForm"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"

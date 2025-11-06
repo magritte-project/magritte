@@ -1,6 +1,6 @@
 import { readLibraryAlbums } from "@/api/queries/libraries"
-import ArtworkImage from "@/components/ArtworkImage"
-import TableFooter from "@/components/TableFooter"
+import ArtworkImage from "@/components/reusable/ArtworkImage"
+import TableFooter from "@/components/reusable/TableFooter"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"

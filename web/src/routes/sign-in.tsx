@@ -1,6 +1,6 @@
 import { useSignIn } from "@/api/mutations/root"
 import type { BodySignInSignInPost } from "@/api/openapi"
-import AppForm from "@/components/AppForm"
+import AppForm from "@/components/reusable/AppForm"
 import ThemedLink from "@/components/theme/ThemedLink"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"

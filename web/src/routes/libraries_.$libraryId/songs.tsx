@@ -1,5 +1,5 @@
 import { readLibrarySongs } from "@/api/queries/libraries"
-import TableFooter from "@/components/TableFooter"
+import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"

@@ -1,5 +1,5 @@
 import type { SongRead } from "@/api/openapi"
-import ArtworkImage from "@/components/ArtworkImage"
+import ArtworkImage from "@/components/reusable/ArtworkImage"
 import ThemedButton from "@/components/theme/ThemedButton"
 import usePlayer from "@/hooks/playerHook"
 import usePlayerState from "@/hooks/playerStateHook"

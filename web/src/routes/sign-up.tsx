@@ -1,6 +1,6 @@
 import { useSignIn, useSignUp } from "@/api/mutations/root"
 import type { UserSignUp } from "@/api/openapi"
-import AppForm from "@/components/AppForm"
+import AppForm from "@/components/reusable/AppForm"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"
 import useUserSession from "@/hooks/userSessionHook"
