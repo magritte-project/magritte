@@ -8,12 +8,13 @@
     "files": {
         "ignoreUnknown": false,
         "includes": [
-            "src/*",
-            ".vscode/*",
-            "index.html",
-            "vite.config.js",
-            "!src/routeTree.gen.ts",
-            "!package-lock.json"
+            "**/src/**",
+            ".vscode/**",
+            "web/index.html",
+            "web/vite.config.js",
+            "!web/src/routeTree.gen.ts",
+            "!web/src/api/openapi.d.ts",
+            "!web/package-lock.json"
         ]
     },
     "formatter": {

@@ -1,5 +1,5 @@
-import SideBar from "@/components/SideBar"
 import { Outlet, useRouterState } from "@tanstack/react-router"
+import SideBar from "@/components/SideBar"
 
 export default function RootLayout() {
     const hideSplit = useRouterState({
