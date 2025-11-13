@@ -91,7 +91,7 @@ async def create_library_song(
 @router.patch(
     "/{library_id}/songs/{song_id}",
     response_model=SongRead,
-    summary="Create a new song",
+    summary="Update a song",
 )
 async def update_library_song(
     library_id: int,

@@ -9,11 +9,86 @@ from db import get_db_session
 from model.artist import Artist
 from model.library import Library
 from model.user import User
-from schemas.artist import ArtistRead
+from schemas.artist import ArtistCreate, ArtistRead, ArtistUpdate
 from schemas.auth import OAuth2Scope
 from schemas.library import LibraryMediaRead
 
 router = APIRouter()
+
+
+@router.post(
+    "/{library_id}/artists/create",
+    response_model=ArtistRead,
+    summary="Create a new artist",
+)
+async def create_library_artist(
+    library_id: int,
+    create_artist: ArtistCreate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not await Library.can_user_access_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_add=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    new_artist = Artist(
+        name=create_artist.name,
+    )
+    session.add(new_artist)
+    await session.flush()
+    return ArtistRead(
+        **new_artist.model_dump(),
+    )
+
+
+@router.patch(
+    "/{library_id}/artists/{artist_id}",
+    response_model=ArtistRead,
+    summary="Update an artist",
+)
+async def update_library_artist(
+    library_id: int,
+    artist_id: int,
+    update_artist: ArtistUpdate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not await Library.can_user_access_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_edit=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    artist = await session.get(Artist, artist_id)
+    if not artist:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Artist not found"
+        )
+
+    changes = update_artist.model_dump(
+        exclude_unset=True,
+    )
+    for name, value in changes.items():
+        setattr(artist, name, value)
+
+    await session.flush()
+    return ArtistRead(
+        **artist.model_dump(),
+    )
 
 
 @router.get(

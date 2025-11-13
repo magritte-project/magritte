@@ -72,6 +72,40 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/libraries/{library_id}/artists/create": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Create a new artist */
+        readonly post: operations["create_library_artist_libraries__library_id__artists_create_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/libraries/{library_id}/artists/{artist_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        /** Update an artist */
+        readonly patch: operations["update_library_artist_libraries__library_id__artists__artist_id__patch"];
+        readonly trace?: never;
+    };
     readonly "/libraries/{library_id}/artists": {
         readonly parameters: {
             readonly query?: never;
@@ -170,7 +204,7 @@ export interface paths {
         readonly delete?: never;
         readonly options?: never;
         readonly head?: never;
-        /** Create a new song */
+        /** Update a song */
         readonly patch: operations["update_library_song_libraries__library_id__songs__song_id__patch"];
         readonly trace?: never;
     };
@@ -304,6 +338,8 @@ export interface components {
             readonly id: number;
             /** Title */
             readonly title: string;
+            /** Artist Id */
+            readonly artist_id: number | null;
             /**
              * Artworks
              * @description The artworks of this song
@@ -315,12 +351,22 @@ export interface components {
             /** Developer Token */
             readonly developer_token: string;
         };
+        /** ArtistCreate */
+        readonly ArtistCreate: {
+            /** Name */
+            readonly name: string;
+        };
         /** ArtistRead */
         readonly ArtistRead: {
             /** Id */
             readonly id: number;
             /** Name */
             readonly name: string;
+        };
+        /** ArtistUpdate */
+        readonly ArtistUpdate: {
+            /** Name */
+            readonly name: string | null;
         };
         /**
          * ArtworkKind
@@ -718,7 +764,9 @@ export interface components {
 }
 export type AlbumRead = components['schemas']['AlbumRead'];
 export type AppleMusicPreauthorization = components['schemas']['AppleMusicPreauthorization'];
+export type ArtistCreate = components['schemas']['ArtistCreate'];
 export type ArtistRead = components['schemas']['ArtistRead'];
+export type ArtistUpdate = components['schemas']['ArtistUpdate'];
 export type ArtworkKind = components['schemas']['ArtworkKind'];
 export type ArtworkRead = components['schemas']['ArtworkRead'];
 export type BodySignInSignInPost = components['schemas']['Body_sign_in_sign_in_post'];
@@ -848,6 +896,77 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["LibraryMediaRead_AlbumRead_"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly create_library_artist_libraries__library_id__artists_create_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["ArtistCreate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ArtistRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly update_library_artist_libraries__library_id__artists__artist_id__patch: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+                readonly artist_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["ArtistUpdate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ArtistRead"];
                 };
             };
             /** @description Validation Error */
