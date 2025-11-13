@@ -55,6 +55,40 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/libraries/{library_id}/albums/create": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Create a new album */
+        readonly post: operations["create_library_album_libraries__library_id__albums_create_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/libraries/{library_id}/albums/{album}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        /** Update an album */
+        readonly patch: operations["update_library_album_libraries__library_id__albums__album__patch"];
+        readonly trace?: never;
+    };
     readonly "/libraries/{library_id}/albums": {
         readonly parameters: {
             readonly query?: never;
@@ -332,6 +366,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AlbumCreate */
+        readonly AlbumCreate: {
+            /** Title */
+            readonly title: string;
+            /** Artist Id */
+            readonly artist_id: number | null;
+            /** Artwork Ids */
+            readonly artwork_ids: readonly number[];
+        };
         /** AlbumRead */
         readonly AlbumRead: {
             /** Id */
@@ -345,6 +388,15 @@ export interface components {
              * @description The artworks of this song
              */
             readonly artworks?: readonly components["schemas"]["ArtworkRead"][];
+        };
+        /** AlbumUpdate */
+        readonly AlbumUpdate: {
+            /** Title */
+            readonly title: string | null;
+            /** Artist Id */
+            readonly artist_id: number | null;
+            /** Artwork Ids */
+            readonly artwork_ids: readonly number[] | null;
         };
         /** AppleMusicPreauthorization */
         readonly AppleMusicPreauthorization: {
@@ -762,7 +814,9 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type AlbumCreate = components['schemas']['AlbumCreate'];
 export type AlbumRead = components['schemas']['AlbumRead'];
+export type AlbumUpdate = components['schemas']['AlbumUpdate'];
 export type AppleMusicPreauthorization = components['schemas']['AppleMusicPreauthorization'];
 export type ArtistCreate = components['schemas']['ArtistCreate'];
 export type ArtistRead = components['schemas']['ArtistRead'];
@@ -859,6 +913,78 @@ export interface operations {
                     readonly [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly create_library_album_libraries__library_id__albums_create_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["AlbumCreate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["AlbumRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly update_library_album_libraries__library_id__albums__album__patch: {
+        readonly parameters: {
+            readonly query: {
+                readonly album_id: number;
+            };
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["AlbumUpdate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["AlbumRead"];
+                };
             };
             /** @description Validation Error */
             readonly 422: {
