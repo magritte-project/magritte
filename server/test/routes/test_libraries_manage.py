@@ -40,13 +40,13 @@ def test_read_library_requires_library_to_exist(client: TestClient, sign_in: Sig
     assert read_response.json().get("detail") == "Library not found"
 
 
-def test_read_library_requires_view_permission(client: TestClient, sign_in: SignIn):
+def test_read_library_requires_permission(client: TestClient, sign_in: SignIn):
     creator_session = sign_in("test", "password")
 
     create_response = client.post(
         "/libraries/create",
         json={
-            "name": "test_read_library_requires_view_permission",
+            "name": "test_read_library_requires_permission",
         },
         headers={"Authorization": f"Bearer {creator_session.access_token}"},
     )

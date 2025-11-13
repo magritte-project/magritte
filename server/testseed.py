@@ -33,17 +33,31 @@ async def _seed_libraries(session: AsyncSession):
         UserLibraryLink(
             user_id=1,  # test
             library_id=1,  # Empty
-            can_view=True,
             can_add=False,
             can_edit=False,
             can_remove=False,
         )
     )
+    await session.flush()
+    session.add(
+        Library(
+            name="Scratch",
+        )
+    )
+    await session.flush()
+    session.add(
+        UserLibraryLink(
+            user_id=1,  # test
+            library_id=2,  # Scratch
+            can_add=True,
+            can_edit=True,
+            can_remove=True,
+        )
+    )
     session.add(
         UserLibraryLink(
             user_id=2,  # unlucky
-            library_id=1,  # Empty
-            can_view=True,
+            library_id=2,  # Scratch
             can_add=False,
             can_edit=False,
             can_remove=False,

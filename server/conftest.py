@@ -2,6 +2,7 @@ from typing import Callable
 
 import pytest
 import pytest_asyncio
+from faker import Faker
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 
@@ -63,3 +64,8 @@ def sign_in(client: TestClient):
         return Token.model_validate(token_response.json())
 
     return do_sign_in
+
+
+@pytest.fixture
+def faker():
+    return Faker()

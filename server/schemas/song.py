@@ -65,6 +65,60 @@ class SongSort:
         return f"{instance.order._value_}{instance.key._value_}"
 
 
+class SongCreate(BaseModel):
+    artist_id: int | None
+    album_id: int | None
+    artwork_ids: list[int]
+    source_ids: list[int]
+    start_time: float
+    end_time: float
+    title: str | None
+    album_artist: str | None
+    composer: str | None
+    genre: str | None
+    release_date: str | None
+    track_number: int | None
+    track_total: int | None
+    disc_number: int | None
+    disc_total: int | None
+    lyrics: str | None
+    rating: float | None
+    bpm: int | None
+    comment: str | None
+    grouping: str | None
+    mcn: str | None
+    isrc: str | None
+    music_brainz_release_id: str | None
+    music_brainz_recording_id: str | None
+
+
+class SongUpdate(BaseModel):
+    artist_id: int | None = None
+    album_id: int | None = None
+    artwork_ids: list[int] | None = None
+    source_ids: list[int] | None = None
+    start_time: float | None = None
+    end_time: float | None = None
+    title: str | None = None
+    album_artist: str | None = None
+    composer: str | None = None
+    genre: str | None = None
+    release_date: str | None = None
+    track_number: int | None = None
+    track_total: int | None = None
+    disc_number: int | None = None
+    disc_total: int | None = None
+    lyrics: str | None = None
+    rating: float | None = None
+    bpm: int | None = None
+    comment: str | None = None
+    grouping: str | None = None
+    mcn: str | None = None
+    isrc: str | None = None
+    music_brainz_release_id: str | None = None
+    music_brainz_recording_id: str | None = None
+
+
 class SongRead(BaseModel):
     id: int
 

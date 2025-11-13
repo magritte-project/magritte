@@ -23,10 +23,6 @@ class UserLibraryLink(SQLModel, table=True):
         foreign_key="libraries.id",
         primary_key=True,
     )
-    can_view: bool = Field(
-        default=True,
-        description="Whether the user may view this library",
-    )
     can_add: bool = Field(
         default=False,
         description="Whether the user may add songs to this library",

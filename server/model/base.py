@@ -3,7 +3,7 @@ from typing import Self
 
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncAttrs, AsyncSession
-from sqlmodel import Field, SQLModel, col, func, select
+from sqlmodel import Field, Sequence, SQLModel, col, func, select
 
 
 class LibraryModel(SQLModel, AsyncAttrs):
@@ -55,6 +55,27 @@ class LibraryModel(SQLModel, AsyncAttrs):
         for model, clause in joins:
             what = what.join(model, clause)
         return await session.scalar(select(True).where(what.exists())) or False
+
+    @classmethod
+    async def get_many(
+        cls,
+        ids: Sequence[int],
+        session: AsyncSession,
+    ) -> list[Self]:
+        """
+        Read the models with the given IDs.
+
+        :param ids: The IDs of the models to get.
+        :param session: The DB to read the models from.
+        :returns: A list of matching models.
+        :raises: A `ValueError` if one or more IDs is not valid.
+        """
+        what_models = select(cls).where(col(cls.id).in_(ids))
+        model_results = await session.execute(what_models)
+        models = list[Self](model_results.unique().scalars())
+        if len(models) != len(ids):
+            raise ValueError(f"One or more invalid {cls} IDs")
+        return models
 
     @classmethod
     async def read_many_with_total(

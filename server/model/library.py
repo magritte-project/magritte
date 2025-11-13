@@ -40,14 +40,11 @@ class Library(LibraryModel, table=True):
     @classmethod
     def _build_permissions(
         cls,
-        can_view: bool | None,
         can_add: bool | None,
         can_edit: bool | None,
         can_remove: bool | None,
     ):
         permissions = list[ColumnExpressionArgument]()
-        if can_view is not None:
-            permissions.append(col(UserLibraryLink.can_view) == can_view)
         if can_add is not None:
             permissions.append(col(UserLibraryLink.can_add) == can_add)
         if can_edit is not None:
@@ -61,7 +58,6 @@ class Library(LibraryModel, table=True):
         cls,
         user_id: int,
         session: AsyncSession,
-        can_view: bool | None = None,
         can_add: bool | None = None,
         can_edit: bool | None = None,
         can_remove: bool | None = None,
@@ -69,7 +65,7 @@ class Library(LibraryModel, table=True):
         return await session.scalars(
             select(cls)
             .where(
-                *cls._build_permissions(can_view, can_add, can_edit, can_remove),
+                *cls._build_permissions(can_add, can_edit, can_remove),
             )
             .join(
                 UserLibraryLink,
@@ -86,7 +82,6 @@ class Library(LibraryModel, table=True):
         id: int,
         user_id: int,
         session: AsyncSession,
-        can_view: bool | None = None,
         can_add: bool | None = None,
         can_edit: bool | None = None,
         can_remove: bool | None = None,
@@ -94,7 +89,7 @@ class Library(LibraryModel, table=True):
         return await cls.exists(
             where=[
                 col(cls.id) == id,
-                *cls._build_permissions(can_view, can_add, can_edit, can_remove),
+                *cls._build_permissions(can_add, can_edit, can_remove),
             ],
             joins=[
                 (
@@ -114,7 +109,6 @@ class Library(LibraryModel, table=True):
         id: int,
         user_id: int,
         session: AsyncSession,
-        can_view: bool | None = None,
         can_add: bool | None = None,
         can_edit: bool | None = None,
         can_remove: bool | None = None,
@@ -123,7 +117,7 @@ class Library(LibraryModel, table=True):
             select(cls)
             .where(
                 col(cls.id) == id,
-                *cls._build_permissions(can_view, can_add, can_edit, can_remove),
+                *cls._build_permissions(can_add, can_edit, can_remove),
             )
             .join(
                 UserLibraryLink,
@@ -140,7 +134,6 @@ class Library(LibraryModel, table=True):
         name: str,
         user_id: int,
         session: AsyncSession,
-        can_view: bool | None = None,
         can_add: bool | None = None,
         can_edit: bool | None = None,
         can_remove: bool | None = None,
@@ -149,7 +142,7 @@ class Library(LibraryModel, table=True):
             select(cls)
             .where(
                 col(cls.name) == name,
-                *cls._build_permissions(can_view, can_add, can_edit, can_remove),
+                *cls._build_permissions(can_add, can_edit, can_remove),
             )
             .join(
                 UserLibraryLink,
