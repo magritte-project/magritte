@@ -6,6 +6,26 @@ from fastapi.testclient import TestClient
 from conftest import SignIn
 
 
+@pytest_asyncio.fixture
+async def throwaway_album(
+    client: TestClient,
+    sign_in: SignIn,
+    faker: Faker,
+) -> int:
+    session = sign_in("test", "password")
+
+    response = client.post(
+        "/libraries/2/albums/create",
+        json={
+            "title": faker.sentence(nb_words=2),
+            "artist_id": None,
+            "artwork_ids": [],
+        },
+        headers={"Authorization": f"Bearer {session.access_token}"},
+    )
+    return response.json().get("id")
+
+
 class TestCreateLibraryAlbum:
     @pytest.mark.asyncio
     async def test_create(
@@ -70,26 +90,6 @@ class TestCreateLibraryAlbum:
 
 
 class TestUpdateLibraryAlbum:
-    @pytest_asyncio.fixture
-    async def throwaway_album(
-        self,
-        client: TestClient,
-        sign_in: SignIn,
-        faker: Faker,
-    ) -> int:
-        session = sign_in("test", "password")
-
-        response = client.post(
-            "/libraries/2/albums/create",
-            json={
-                "title": faker.sentence(nb_words=2),
-                "artist_id": None,
-                "artwork_ids": [],
-            },
-            headers={"Authorization": f"Bearer {session.access_token}"},
-        )
-        return response.json().get("id")
-
     @pytest.mark.asyncio
     async def test_update(
         self,
@@ -152,6 +152,69 @@ class TestUpdateLibraryAlbum:
         response = client.patch(
             "/libraries/2/albums/9999999",
             json={},
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Album not found"
+
+
+class TestDeleteLibraryAlbum:
+    @pytest.mark.asyncio
+    async def test_delete(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        throwaway_album: int,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            f"/libraries/2/albums/{throwaway_album}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_requires_library_remove_permission(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        throwaway_album: int,
+    ):
+        session = sign_in("unlucky", "password")
+
+        response = client.delete(
+            f"/libraries/2/albums/{throwaway_album}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Library not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_library_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            "/libraries/99999999/albums/9999999",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Library not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_album_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            "/libraries/2/albums/9999999",
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
         assert response.status_code == 404

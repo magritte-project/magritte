@@ -72,7 +72,7 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
-    readonly "/libraries/{library_id}/albums/{album}": {
+    readonly "/libraries/{library_id}/albums/{album_id}": {
         readonly parameters: {
             readonly query?: never;
             readonly header?: never;
@@ -82,11 +82,12 @@ export interface paths {
         readonly get?: never;
         readonly put?: never;
         readonly post?: never;
-        readonly delete?: never;
+        /** Delete an album */
+        readonly delete: operations["delete_library_album_libraries__library_id__albums__album_id__delete"];
         readonly options?: never;
         readonly head?: never;
         /** Update an album */
-        readonly patch: operations["update_library_album_libraries__library_id__albums__album__patch"];
+        readonly patch: operations["update_library_album_libraries__library_id__albums__album_id__patch"];
         readonly trace?: never;
     };
     readonly "/libraries/{library_id}/albums": {
@@ -133,7 +134,8 @@ export interface paths {
         readonly get?: never;
         readonly put?: never;
         readonly post?: never;
-        readonly delete?: never;
+        /** Delete an artist */
+        readonly delete: operations["delete_library_artist_libraries__library_id__artists__artist_id__delete"];
         readonly options?: never;
         readonly head?: never;
         /** Update an artist */
@@ -235,7 +237,8 @@ export interface paths {
         readonly get?: never;
         readonly put?: never;
         readonly post?: never;
-        readonly delete?: never;
+        /** Delete a song */
+        readonly delete: operations["delete_library_song_libraries__library_id__songs__song_id__delete"];
         readonly options?: never;
         readonly head?: never;
         /** Update a song */
@@ -960,14 +963,45 @@ export interface operations {
             };
         };
     };
-    readonly update_library_album_libraries__library_id__albums__album__patch: {
+    readonly delete_library_album_libraries__library_id__albums__album_id__delete: {
         readonly parameters: {
-            readonly query: {
-                readonly album_id: number;
-            };
+            readonly query?: never;
             readonly header?: never;
             readonly path: {
                 readonly library_id: number;
+                readonly album_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly update_library_album_libraries__library_id__albums__album_id__patch: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+                readonly album_id: number;
             };
             readonly cookie?: never;
         };
@@ -1057,6 +1091,38 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["ArtistRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly delete_library_artist_libraries__library_id__artists__artist_id__delete: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+                readonly artist_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -1248,6 +1314,38 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["SongRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly delete_library_song_libraries__library_id__songs__song_id__delete: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+                readonly song_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": unknown;
                 };
             };
             /** @description Validation Error */

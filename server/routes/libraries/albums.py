@@ -107,6 +107,38 @@ async def update_library_album(
     )
 
 
+@router.delete(
+    "/{library_id}/albums/{album_id}",
+    summary="Delete an album",
+)
+async def delete_library_album(
+    library_id: int,
+    album_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not await Library.can_user_access_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_remove=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    album = await session.get(Album, album_id)
+    if not album:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Album not found"
+        )
+
+    await session.delete(album)
+    await session.flush()
+
+
 @router.get(
     "/{library_id}/albums",
     response_model=LibraryMediaRead[AlbumRead],
