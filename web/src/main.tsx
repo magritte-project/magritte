@@ -18,12 +18,16 @@ import type { SongRead } from "@/api/openapi"
 import APIClientContextProvider from "@/contexts/providers/APIClientContextProvider"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import WebPlaybackEngine from "@/playback/engines/web"
+import { ServiceRegistry } from "@/services/registry"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
 
 // Set up API client
 const apiClient = new APIClient(userSession)
+
+// Set up services registry
+const servicesRegistry = new ServiceRegistry(apiClient)
 
 // Set up playback
 const player = new Player(
@@ -41,6 +45,7 @@ const router = createRouter({
         userSession,
         apiClient,
         player,
+        servicesRegistry,
         ...TanStackQueryProviderContext,
     },
     defaultPreload: "intent",
