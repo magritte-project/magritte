@@ -10,18 +10,18 @@ from auth import (
     create_user,
 )
 from db import get_db_session
-from plugins import router as plugins_router
 from schemas.user import Token, UserProfile, UserSignUp
 
 from .artworks import router as artworks_router
 from .libraries import router as libraries_router
+from .services import router as services_router
 from .sources import router as sources_router
 from .users import router as users_router
 
 router = APIRouter()
-router.include_router(plugins_router)
 router.include_router(artworks_router)
 router.include_router(libraries_router)
+router.include_router(services_router)
 router.include_router(sources_router)
 router.include_router(users_router)
 

@@ -4,40 +4,6 @@
  */
 
 export interface paths {
-    readonly "/plugins/installed": {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        /** Read the plugins installed on this server */
-        readonly get: operations["read_installed_plugins_plugins_installed_get"];
-        readonly put?: never;
-        readonly post?: never;
-        readonly delete?: never;
-        readonly options?: never;
-        readonly head?: never;
-        readonly patch?: never;
-        readonly trace?: never;
-    };
-    readonly "/plugins/applemusic/preauthorize": {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        /** Get a short-lived access token */
-        readonly get: operations["preauthorize_plugins_applemusic_preauthorize_get"];
-        readonly put?: never;
-        readonly post?: never;
-        readonly delete?: never;
-        readonly options?: never;
-        readonly head?: never;
-        readonly patch?: never;
-        readonly trace?: never;
-    };
     readonly "/artworks/{artwork_id}/image": {
         readonly parameters: {
             readonly query?: never;
@@ -262,6 +228,40 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/services/available": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read details about available services */
+        readonly get: operations["read_services_services_available_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/services/{name}/token": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Get a bearer token for a specific service */
+        readonly post: operations["read_service_token_services__name__token_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/sources/{source_id}": {
         readonly parameters: {
             readonly query?: never;
@@ -401,11 +401,6 @@ export interface components {
             /** Artwork Ids */
             readonly artwork_ids: readonly number[] | null;
         };
-        /** AppleMusicPreauthorization */
-        readonly AppleMusicPreauthorization: {
-            /** Developer Token */
-            readonly developer_token: string;
-        };
         /** ArtistCreate */
         readonly ArtistCreate: {
             /** Name */
@@ -530,10 +525,26 @@ export interface components {
             /** Name */
             readonly name: string;
         };
-        /** PluginRead */
-        readonly PluginRead: {
+        /**
+         * ServiceFeature
+         * @enum {string}
+         */
+        readonly ServiceFeature: "read_token";
+        /** ServiceRead */
+        readonly ServiceRead: {
             /** Name */
             readonly name: string;
+            /** Display Name */
+            readonly display_name: string;
+            /** Active */
+            readonly active: boolean;
+            /** Features */
+            readonly features: readonly components["schemas"]["ServiceFeature"][];
+        };
+        /** ServiceToken */
+        readonly ServiceToken: {
+            /** Bearer Token */
+            readonly bearer_token: string;
         };
         /** SongCreate */
         readonly SongCreate: {
@@ -820,7 +831,6 @@ export interface components {
 export type AlbumCreate = components['schemas']['AlbumCreate'];
 export type AlbumRead = components['schemas']['AlbumRead'];
 export type AlbumUpdate = components['schemas']['AlbumUpdate'];
-export type AppleMusicPreauthorization = components['schemas']['AppleMusicPreauthorization'];
 export type ArtistCreate = components['schemas']['ArtistCreate'];
 export type ArtistRead = components['schemas']['ArtistRead'];
 export type ArtistUpdate = components['schemas']['ArtistUpdate'];
@@ -833,7 +843,9 @@ export type LibraryMediaReadAlbumRead = components['schemas']['LibraryMediaRead_
 export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead_ArtistRead_'];
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
 export type LibraryRead = components['schemas']['LibraryRead'];
-export type PluginRead = components['schemas']['PluginRead'];
+export type ServiceFeature = components['schemas']['ServiceFeature'];
+export type ServiceRead = components['schemas']['ServiceRead'];
+export type ServiceToken = components['schemas']['ServiceToken'];
 export type SongCreate = components['schemas']['SongCreate'];
 export type SongRead = components['schemas']['SongRead'];
 export type SongUpdate = components['schemas']['SongUpdate'];
@@ -845,57 +857,6 @@ export type UserSignUp = components['schemas']['UserSignUp'];
 export type ValidationError = components['schemas']['ValidationError'];
 export type $defs = Record<string, never>;
 export interface operations {
-    readonly read_installed_plugins_plugins_installed_get: {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        readonly requestBody?: never;
-        readonly responses: {
-            /** @description Successful Response */
-            readonly 200: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": readonly components["schemas"]["PluginRead"][];
-                };
-            };
-        };
-    };
-    readonly preauthorize_plugins_applemusic_preauthorize_get: {
-        readonly parameters: {
-            readonly query?: {
-                readonly ttl_hours?: number;
-            };
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        readonly requestBody?: never;
-        readonly responses: {
-            /** @description Successful Response */
-            readonly 200: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["AppleMusicPreauthorization"];
-                };
-            };
-            /** @description Validation Error */
-            readonly 422: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     readonly read_artwork_image_artworks__artwork_id__image_get: {
         readonly parameters: {
             readonly query: {
@@ -1424,6 +1385,57 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["LibraryMediaRead_SongRead_"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_services_services_available_get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": readonly components["schemas"]["ServiceRead"][];
+                };
+            };
+        };
+    };
+    readonly read_service_token_services__name__token_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly name: string;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ServiceToken"];
                 };
             };
             /** @description Validation Error */

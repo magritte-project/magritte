@@ -5,6 +5,8 @@ import type {
     LibraryMediaReadArtistRead,
     LibraryMediaReadSongRead,
     LibraryRead,
+    ServiceRead,
+    ServiceToken,
     UserProfile,
     UserProfileUpdate,
     UserSignUp,
@@ -119,7 +121,7 @@ export class APIClient {
         return unwrap(response)
     }
 
-    // -- User Routes -- ?
+    // -- User Routes -- //
 
     async readMe(): Promise<UserProfile> {
         const response = await this._client.GET("/users/me")
@@ -229,6 +231,20 @@ export class APIClient {
                 },
             },
         )
+        return unwrap(response)
+    }
+
+    // -- Service Routes -- //
+
+    async readAvailableServices(): Promise<readonly ServiceRead[]> {
+        const response = await this._client.GET("/services/available")
+        return unwrap(response)
+    }
+
+    async readServiceToken(name: string): Promise<ServiceToken> {
+        const response = await this._client.POST("/services/{name}/token", {
+            params: { path: { name } },
+        })
         return unwrap(response)
     }
 }
