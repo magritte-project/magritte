@@ -7,8 +7,8 @@ class ServiceFeature(str, Enum):
     READ_TOKEN = "read_token"
     """The service is able to vend service-specific bearer tokens"""
 
-    SEARCH = "search"
-    """The content offered by service can be searched"""
+    SEARCH_SONGS = "search_songs"
+    """The songs offered by service can be searched"""
 
 
 class ServiceRead(BaseModel):
@@ -22,20 +22,16 @@ class ServiceToken(BaseModel):
     bearer_token: str
 
 
-class ServiceKind(str, Enum):
-    SONGS = "songs"
-    """Include results for songs"""
-
-
-class ServiceSearchResult(BaseModel):
-    kind: ServiceKind
+class ServiceSongRead(BaseModel):
     id: str
     title: str
     artist_name: str | None
     album_title: str | None
+    source_url: str
+    duration: int
 
 
-class ServiceSearchResults(BaseModel):
-    results: list[ServiceSearchResult]
+class ServiceSearchResults[Item: BaseModel](BaseModel):
+    items: list[Item]
     offset: int
     limit: int

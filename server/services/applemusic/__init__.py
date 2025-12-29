@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from httpx import AsyncClient
 
-from schemas.service import ServiceKind, ServiceSearchResult, ServiceSearchResults
+from schemas.service import ServiceSearchResults, ServiceSongRead
 
 from .config import config
 from .utilities.token import create_developer_token
@@ -13,7 +13,7 @@ _apple_music_client = AsyncClient(
 
 display_name = "Apple Music"
 if config.team_id and config.key_id and config.key_secret:
-    features = ["read_token", "search"]
+    features = ["read_token", "search_songs"]
 else:
     features = []
 
@@ -28,9 +28,8 @@ async def read_token():
     )
 
 
-async def search(
+async def search_songs(
     query: str,
-    kind: set[ServiceKind],
     offset: int,
     limit: int,
 ):
@@ -38,7 +37,7 @@ async def search(
         f"/v1/catalog/{config.storefront}/search",
         params={
             "term": query,
-            "types": [kind.value for kind in kind],
+            "types": "songs",
             "offset": offset,
             "limit": limit,
         },
@@ -49,13 +48,14 @@ async def search(
     song_data = response_json["results"]["songs"]["data"]
 
     return ServiceSearchResults(
-        results=[
-            ServiceSearchResult(
-                kind=ServiceKind(song["type"]),
+        items=[
+            ServiceSongRead(
                 id=song["id"],
                 title=song["attributes"]["name"],
                 artist_name=song["attributes"]["artistName"],
                 album_title=song["attributes"]["albumName"],
+                source_url=f"applemusic:///songs/{song['id']}",
+                duration=song["attributes"]["durationInMillis"] * 1000,
             )
             for song in song_data
         ],

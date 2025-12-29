@@ -11,9 +11,8 @@ import type {
     LibraryMediaReadArtistRead,
     LibraryMediaReadSongRead,
     LibraryRead,
-    ServiceKind,
     ServiceRead,
-    ServiceSearchResults,
+    ServiceSearchResultsServiceSongRead,
     ServiceToken,
     SongCreate,
     SongRead,
@@ -378,16 +377,18 @@ export class APIClient {
         return unwrap(response)
     }
 
-    async searchService(
+    async searchServiceSongs(
         name: string,
         query: string,
-        kind?: ServiceKind[],
         offset?: number,
         limit?: number,
-    ): Promise<ServiceSearchResults> {
-        const response = await this._client.GET("/services/{name}/search", {
-            params: { path: { name }, query: { query, kind, offset, limit } },
-        })
+    ): Promise<ServiceSearchResultsServiceSongRead> {
+        const response = await this._client.GET(
+            "/services/{name}/search/songs",
+            {
+                params: { path: { name }, query: { query, offset, limit } },
+            },
+        )
         return unwrap(response)
     }
 

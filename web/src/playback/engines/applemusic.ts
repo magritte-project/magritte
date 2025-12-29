@@ -5,33 +5,18 @@ import type {
     PlaybackEngineEvent,
     PlaybackEngineState,
 } from "@/playback/engine"
-import waitForMusicKit from "@/services/applemusic/initialization"
-import {
-    createEvent,
-    type EventSink,
-    type EventStream,
-} from "@/utilities/events"
+import { createEvent, type EventStream } from "@/utilities/events"
 
 export default class AppleMusicPlaybackEngine
     implements PlaybackEngine<SongRead>
 {
-    private readonly _events: EventSink<PlaybackEngineEvent<SongRead>>
+    //private readonly _events: EventSink<PlaybackEngineEvent<SongRead>>
     private _playingItem: SongRead | null
 
     constructor() {
-        ;[this._events, this.$events] = createEvent()
+        ;[/*this._events*/ , this.$events] = createEvent()
 
         this._playingItem = null
-
-        ;(async () => {
-            await waitForMusicKit()
-            this._musicKit.addEventListener("mediaItemStateDidChange", () => {
-                this._events.dispatch({ type: "playbackStateDidChange" })
-            })
-            this._musicKit.addEventListener("nowPlayingItemDidChange", () => {
-                this._events.dispatch({ type: "playingItemChanged" })
-            })
-        })()
     }
 
     get _musicKit(): MusicKit.Instance {

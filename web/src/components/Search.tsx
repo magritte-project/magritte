@@ -3,7 +3,7 @@ import { useMemo, useState } from "react"
 import { useDebounce } from "@uidotdev/usehooks"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useQuery } from "@tanstack/react-query"
-import { searchService } from "@/api/queries/services"
+import { searchServiceSongs } from "@/api/queries/services"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import ThemedInput from "@/components/theme/ThemedInput"
 import usePlayer from "@/hooks/playerHook"
@@ -25,7 +25,7 @@ export default function Search() {
     const [query, setQuery] = useState("")
     const currentQuery = useDebounce(query, 500)
     const searchQuery = useQuery(
-        searchService(apiClient, selectedService, currentQuery),
+        searchServiceSongs(apiClient, selectedService, currentQuery),
     )
 
     const serviceItems = useMemo<JsonStructure>(() => {
@@ -68,32 +68,32 @@ export default function Search() {
                 />
                 <ol className="flex flex-col gap-2">
                     {searchQuery.isSuccess &&
-                        searchQuery.data.results.map((result) => (
+                        searchQuery.data.items.map((item) => (
                             <li
-                                key={`${result.kind}.${result.id}`}
+                                key={`${item.id}`}
                                 className="flex items-center gap-2"
                                 onKeyDown={() => {}}
                                 onClick={() => {
                                     const song: SongRead = {
-                                        id: Number(result.id),
+                                        id: Number(item.id),
                                         start_time: 0,
                                         end_time: 0,
                                         sources: [
                                             {
                                                 id: 0,
-                                                url: `applemusic:///${result.kind}/${result.id}`,
+                                                url: item.source_url,
                                                 mime_type: null,
                                                 is_invalid: false,
                                             },
                                         ],
-                                        title: result.title,
-                                        artist_name: result.artist_name,
-                                        album_title: result.album_title,
+                                        title: item.title,
+                                        artist_name: item.artist_name,
+                                        album_title: item.album_title,
                                     }
-                                    console.log(result)
+                                    console.log(item)
                                     player.replaceQueue({
                                         newQueue: Queue.with(
-                                            new ArrayQueueShard(result.id, [
+                                            new ArrayQueueShard(item.id, [
                                                 song,
                                             ]),
                                         ),
@@ -103,15 +103,15 @@ export default function Search() {
                             >
                                 <ArtworkImage
                                     className="h-8 aspect-square shrink-0"
-                                    itemTitle={result.title}
+                                    itemTitle={item.title}
                                 />
                                 <div className="flex flex-col">
                                     <div className="font-bold text-sm">
-                                        {result.title ?? "--"}
+                                        {item.title ?? "--"}
                                     </div>
                                     <div className="text-gray-700 text-xs">
-                                        {result.album_title ?? "--"} by{" "}
-                                        {result.artist_name ?? "--"}
+                                        {item.album_title ?? "--"} by{" "}
+                                        {item.artist_name ?? "--"}
                                     </div>
                                 </div>
                             </li>

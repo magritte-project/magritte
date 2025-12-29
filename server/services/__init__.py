@@ -5,7 +5,7 @@ from traceback import print_tb
 from types import ModuleType
 from typing import Any
 
-from schemas.service import ServiceFeature, ServiceKind, ServiceSearchResults
+from schemas.service import ServiceFeature, ServiceSearchResults
 
 _loaded = dict[str, ModuleType | None]()
 
@@ -47,17 +47,15 @@ class Service:
         read_token = self._module_dict.get("read_token", [])
         return await read_token()
 
-    async def search(
+    async def search_songs(
         self,
         query: str,
-        kind: set[ServiceKind],
         offset: int,
         limit: int,
     ) -> ServiceSearchResults:
-        search = self._module_dict.get("search", [])
-        return await search(
+        search_songs = self._module_dict.get("search_songs", [])
+        return await search_songs(
             query=query,
-            kind=kind,
             offset=offset,
             limit=limit,
         )

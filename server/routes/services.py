@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from schemas.service import (
     ServiceFeature,
-    ServiceKind,
     ServiceRead,
     ServiceSearchResults,
+    ServiceSongRead,
     ServiceToken,
 )
 from services import Service, get_service, get_services
@@ -59,14 +59,13 @@ async def read_service_token(
 
 
 @router.get(
-    "/{name}/search",
-    response_model=ServiceSearchResults,
+    "/{name}/search/songs",
+    response_model=ServiceSearchResults[ServiceSongRead],
     summary="Search a service's content",
 )
-async def search_service(
+async def search_service_songs(
     name: str,
     query: Annotated[str, Query()],
-    kind: Annotated[list[ServiceKind], Query(...)] = [ServiceKind.SONGS],
     offset: Annotated[int, Query()] = 0,
     limit: Annotated[int, Query()] = 25,
 ):
@@ -76,14 +75,13 @@ async def search_service(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Service not found",
         )
-    if ServiceFeature.READ_TOKEN not in service.features:
+    if ServiceFeature.SEARCH_SONGS not in service.features:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Service does not support read token",
+            detail="Service does not support search songs",
         )
-    results = await service.search(
+    results = await service.search_songs(
         query=query,
-        kind=kind,
         offset=offset,
         limit=limit,
     )

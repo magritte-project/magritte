@@ -262,7 +262,7 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
-    readonly "/services/{name}/search": {
+    readonly "/services/{name}/search/songs": {
         readonly parameters: {
             readonly query?: never;
             readonly header?: never;
@@ -270,7 +270,7 @@ export interface paths {
             readonly cookie?: never;
         };
         /** Search a service's content */
-        readonly get: operations["search_service_services__name__search_get"];
+        readonly get: operations["search_service_songs_services__name__search_songs_get"];
         readonly put?: never;
         readonly post?: never;
         readonly delete?: never;
@@ -565,12 +565,7 @@ export interface components {
          * ServiceFeature
          * @enum {string}
          */
-        readonly ServiceFeature: "read_token" | "search";
-        /**
-         * ServiceKind
-         * @enum {string}
-         */
-        readonly ServiceKind: "songs";
+        readonly ServiceFeature: "read_token" | "search_songs";
         /** ServiceRead */
         readonly ServiceRead: {
             /** Name */
@@ -582,9 +577,17 @@ export interface components {
             /** Features */
             readonly features: readonly components["schemas"]["ServiceFeature"][];
         };
-        /** ServiceSearchResult */
-        readonly ServiceSearchResult: {
-            readonly kind: components["schemas"]["ServiceKind"];
+        /** ServiceSearchResults[ServiceSongRead] */
+        readonly ServiceSearchResults_ServiceSongRead_: {
+            /** Items */
+            readonly items: readonly components["schemas"]["ServiceSongRead"][];
+            /** Offset */
+            readonly offset: number;
+            /** Limit */
+            readonly limit: number;
+        };
+        /** ServiceSongRead */
+        readonly ServiceSongRead: {
             /** Id */
             readonly id: string;
             /** Title */
@@ -593,15 +596,10 @@ export interface components {
             readonly artist_name: string | null;
             /** Album Title */
             readonly album_title: string | null;
-        };
-        /** ServiceSearchResults */
-        readonly ServiceSearchResults: {
-            /** Results */
-            readonly results: readonly components["schemas"]["ServiceSearchResult"][];
-            /** Offset */
-            readonly offset: number;
-            /** Limit */
-            readonly limit: number;
+            /** Source Url */
+            readonly source_url: string;
+            /** Duration */
+            readonly duration: number;
         };
         /** ServiceToken */
         readonly ServiceToken: {
@@ -922,10 +920,9 @@ export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
 export type LibraryRead = components['schemas']['LibraryRead'];
 export type ServiceFeature = components['schemas']['ServiceFeature'];
-export type ServiceKind = components['schemas']['ServiceKind'];
 export type ServiceRead = components['schemas']['ServiceRead'];
-export type ServiceSearchResult = components['schemas']['ServiceSearchResult'];
-export type ServiceSearchResults = components['schemas']['ServiceSearchResults'];
+export type ServiceSearchResultsServiceSongRead = components['schemas']['ServiceSearchResults_ServiceSongRead_'];
+export type ServiceSongRead = components['schemas']['ServiceSongRead'];
 export type ServiceToken = components['schemas']['ServiceToken'];
 export type SongCreate = components['schemas']['SongCreate'];
 export type SongRead = components['schemas']['SongRead'];
@@ -1532,11 +1529,10 @@ export interface operations {
             };
         };
     };
-    readonly search_service_services__name__search_get: {
+    readonly search_service_songs_services__name__search_songs_get: {
         readonly parameters: {
             readonly query: {
                 readonly query: string;
-                readonly kind?: readonly components["schemas"]["ServiceKind"][];
                 readonly offset?: number;
                 readonly limit?: number;
             };
@@ -1554,7 +1550,7 @@ export interface operations {
                     readonly [name: string]: unknown;
                 };
                 content: {
-                    readonly "application/json": components["schemas"]["ServiceSearchResults"];
+                    readonly "application/json": components["schemas"]["ServiceSearchResults_ServiceSongRead_"];
                 };
             };
             /** @description Validation Error */
