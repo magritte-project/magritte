@@ -7,18 +7,20 @@ import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provi
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
 
-import { StorageUserSessionManager } from "@/api/userSession.ts"
-import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
-import PlayerContextProvider from "@/contexts/providers/PlayerContextProvider"
-import { Player } from "@/playback/player.ts"
-import reportWebVitals from "@/reportWebVitals.ts"
-import "@/styles.css"
 import { APIClient } from "@/api/client"
 import type { SongRead } from "@/api/openapi"
+import { StorageUserSessionManager } from "@/api/userSession.ts"
 import APIClientContextProvider from "@/contexts/providers/APIClientContextProvider"
+import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
+import PlayerContextProvider from "@/contexts/providers/PlayerContextProvider"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import WebPlaybackEngine from "@/playback/engines/web"
+import { Player } from "@/playback/player.ts"
+import reportWebVitals from "@/reportWebVitals.ts"
 import { ServiceRegistry } from "@/services/registry"
+import "@/styles.css"
+import ServiceRegistryContextProvider from "@/contexts/providers/ServiceRegistryContextProvider"
+import AppleMusicPlaybackEngine from "@/playback/engines/applemusic"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
@@ -31,9 +33,9 @@ const servicesRegistry = new ServiceRegistry(apiClient)
 
 // Set up playback
 const player = new Player(
-    new PlaybackEngineRegistry<SongRead>().installPlaybackEngine(
-        new WebPlaybackEngine(userSession),
-    ),
+    new PlaybackEngineRegistry<SongRead>()
+        .installPlaybackEngine(new WebPlaybackEngine(userSession))
+        .installPlaybackEngine(new AppleMusicPlaybackEngine()),
 )
 
 // Create a new router instance
@@ -69,11 +71,13 @@ if (rootElement && !rootElement.innerHTML) {
         <StrictMode>
             <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
                 <APIClientContextProvider value={apiClient}>
-                    <PlayerContextProvider value={player}>
-                        <AppCommandPaletteContextProvider>
-                            <RouterProvider router={router} />
-                        </AppCommandPaletteContextProvider>
-                    </PlayerContextProvider>
+                    <ServiceRegistryContextProvider value={servicesRegistry}>
+                        <PlayerContextProvider value={player}>
+                            <AppCommandPaletteContextProvider>
+                                <RouterProvider router={router} />
+                            </AppCommandPaletteContextProvider>
+                        </PlayerContextProvider>
+                    </ServiceRegistryContextProvider>
                 </APIClientContextProvider>
             </TanStackQueryProvider.Provider>
         </StrictMode>,

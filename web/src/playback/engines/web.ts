@@ -100,7 +100,7 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
         return sources.some(
             (source) =>
                 this._audio.canPlayType(source.mime_type ?? "") &&
-                source.url?.startsWith("magritte://"),
+                source.url.startsWith("magritte://"),
         )
     }
 
@@ -110,7 +110,7 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
     }: PlaybackEngineEnqueueOptions<SongRead>): Promise<void> {
         const sources = itemToPlay.sources ?? []
         const source = sources.find((source) =>
-            source.url?.startsWith("magritte://"),
+            source.url.startsWith("magritte://"),
         )
         const audioSrc = source?.url
             ? resolveUrl(source.url, this._userSession.current)

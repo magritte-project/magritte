@@ -29,7 +29,7 @@ declare module "@tanstack/react-router" {
 
 export const Route = createRootRouteWithContext<MagritteRouterContext>()({
     validateSearch: z.object({
-        split_tab: z.enum(["now_playing"]).optional(),
+        split_tab: z.enum(["now_playing", "search"]).optional(),
     }),
     component: () => (
         <>

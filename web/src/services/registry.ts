@@ -1,4 +1,5 @@
 import type { APIClient } from "@/api/client"
+import type { ServiceRead } from "@/api/openapi"
 import { initializeAppleMusic } from "@/services/applemusic/client"
 import type { ServiceClientInitializer } from "@/services/client"
 
@@ -6,10 +7,8 @@ const CLIENT_INITIALIZERS: ReadonlyMap<string, ServiceClientInitializer> =
     new Map().set("applemusic", initializeAppleMusic)
 
 export class ServiceRegistry {
-    constructor(
-        private readonly apiClient: APIClient,
-        private readonly availableServiceClients: Set<string> = new Set(),
-    ) {
+    private readonly _availableServices: ServiceRead[] = []
+    constructor(private readonly apiClient: APIClient) {
         ;(async () => {
             const services = await this.apiClient.readAvailableServices()
             for (const service of services) {
@@ -24,7 +23,7 @@ export class ServiceRegistry {
                 }
                 try {
                     await initialize({ apiClient })
-                    this.availableServiceClients.add(service.name)
+                    this._availableServices.push(service)
                 } catch (error) {
                     console.error(
                         `*** Could not initialize ${service.name}`,
@@ -33,5 +32,9 @@ export class ServiceRegistry {
                 }
             }
         })()
+    }
+
+    get availableServices(): readonly ServiceRead[] {
+        return this._availableServices
     }
 }
