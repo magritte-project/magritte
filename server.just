@@ -17,4 +17,3 @@ format:
 
 check-types:
     uvx ty check
-

@@ -39,7 +39,7 @@ def _create_access_token(
     return jwt.encode(to_encode, config.session_token_secret, config.token_algorithm)
 
 
-def _read_access_token(token: str) -> tuple[str, set[str]]:
+def _read_access_token(token: str) -> tuple[str, set[OAuth2Scope]]:
     to_decode = jwt.decode(
         token, config.session_token_secret, algorithms=[config.token_algorithm]
     )

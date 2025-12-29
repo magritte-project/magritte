@@ -1,4 +1,4 @@
-python 3.13.7
-uv 0.8.22
-nodejs 22.20.0
-pnpm 9.15.9
+python 3.14.0
+nodejs 24.11.1
+pnpm 10.24.0
+uv 0.9.13

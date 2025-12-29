@@ -49,9 +49,13 @@ async def update_song_metadata(
     song.track_total = tags.track_total
     song.disc_number = tags.disc
     song.disc_total = tags.disc_total
-    song.lyrics = tags.other.get("lyrics")[0] if tags.other.get("lyrics") else None
+    all_lyrics = tags.other.get("lyrics")
+    if all_lyrics is not None:
+        song.lyrics = all_lyrics[0]
     song.comment = tags.comment
-    song.isrc = tags.other.get("isrc")[0] if tags.other.get("isrc") else None
+    all_isrc = tags.other.get("isrc")
+    if all_isrc is not None:
+        song.isrc = all_isrc[0]
 
 
 async def try_ingest_file(
