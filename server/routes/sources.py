@@ -11,9 +11,79 @@ from db import get_db_session
 from model.source import Source
 from model.user import User
 from schemas.auth import OAuth2Scope
-from schemas.source import SourceRead
+from schemas.source import SourceCreate, SourceRead, SourceUpdate
 
 router = APIRouter(prefix="/sources")
+
+
+@router.post(
+    "/create",
+    response_model=SourceRead,
+    summary="Create a source",
+)
+async def create_source(
+    source_create: SourceCreate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    new_source = Source(
+        url=source_create.url,
+        mime_type=source_create.mime_type,
+    )
+    session.add(new_source)
+    await session.flush()
+    return SourceRead(**new_source.model_dump())
+
+
+@router.patch(
+    "/{source_id}",
+    response_model=SourceRead,
+    summary="Update a source",
+)
+async def update_source(
+    source_id: int,
+    update_source: SourceUpdate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    source = await session.get(Source, source_id)
+    if not source:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Source not found"
+        )
+    changes = update_source.model_dump(
+        exclude_unset=True,
+    )
+    for name, value in changes.items():
+        setattr(source, name, value)
+
+    await session.flush()
+    return SourceRead(**source.model_dump())
+
+
+@router.delete(
+    "/{source_id}",
+    summary="Delete a source",
+)
+async def delete_source(
+    source_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    source = await session.get(Source, source_id)
+    if not source:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Source not found"
+        )
+
+    await session.delete(source)
+    await session.flush()
 
 
 @router.get(

@@ -1,4 +1,10 @@
 import type {
+    AlbumCreate,
+    AlbumRead,
+    AlbumUpdate,
+    ArtistCreate,
+    ArtistRead,
+    ArtistUpdate,
     BodySignInSignInPost,
     LibraryCreate,
     LibraryMediaReadAlbumRead,
@@ -7,6 +13,11 @@ import type {
     LibraryRead,
     ServiceRead,
     ServiceToken,
+    SongCreate,
+    SongRead,
+    SongUpdate,
+    SourceRead,
+    SourceUpdate,
     UserProfile,
     UserProfileUpdate,
     UserSignUp,
@@ -160,6 +171,44 @@ export class APIClient {
         return unwrap(response)
     }
 
+    async createLibraryAlbum(
+        library_id: number,
+        body: AlbumCreate,
+    ): Promise<AlbumRead> {
+        const response = await this._client.POST(
+            "/libraries/{library_id}/albums/create",
+            {
+                params: { path: { library_id } },
+                body,
+            },
+        )
+        return unwrap(response)
+    }
+
+    async updateLibraryAlbum(
+        library_id: number,
+        album_id: number,
+        body: AlbumUpdate,
+    ): Promise<AlbumRead> {
+        const response = await this._client.PATCH(
+            "/libraries/{library_id}/albums/{album_id}",
+            {
+                params: { path: { library_id, album_id } },
+                body,
+            },
+        )
+        return unwrap(response)
+    }
+
+    async deleteLibraryAlbum(
+        library_id: number,
+        album_id: number,
+    ): Promise<void> {
+        await this._client.DELETE("/libraries/{library_id}/albums/{album_id}", {
+            params: { path: { library_id, album_id } },
+        })
+    }
+
     async readLibraryAlbums(
         library_id: number,
         artist_id?: number,
@@ -184,6 +233,47 @@ export class APIClient {
         return unwrap(response)
     }
 
+    async createLibraryArtist(
+        library_id: number,
+        body: ArtistCreate,
+    ): Promise<ArtistRead> {
+        const response = await this._client.POST(
+            "/libraries/{library_id}/artists/create",
+            {
+                params: { path: { library_id } },
+                body,
+            },
+        )
+        return unwrap(response)
+    }
+
+    async updateLibraryArtist(
+        library_id: number,
+        artist_id: number,
+        body: ArtistUpdate,
+    ): Promise<ArtistRead> {
+        const response = await this._client.PATCH(
+            "/libraries/{library_id}/artists/{artist_id}",
+            {
+                params: { path: { library_id, artist_id } },
+                body,
+            },
+        )
+        return unwrap(response)
+    }
+
+    async deleteLibraryArtist(
+        library_id: number,
+        artist_id: number,
+    ): Promise<void> {
+        await this._client.DELETE(
+            "/libraries/{library_id}/artists/{artist_id}",
+            {
+                params: { path: { library_id, artist_id } },
+            },
+        )
+    }
+
     async readLibraryArtists(
         library_id: number,
         offset?: number,
@@ -204,6 +294,44 @@ export class APIClient {
             },
         )
         return unwrap(response)
+    }
+
+    async createLibrarySong(
+        library_id: number,
+        body: SongCreate,
+    ): Promise<SongRead> {
+        const response = await this._client.POST(
+            "/libraries/{library_id}/songs/create",
+            {
+                params: { path: { library_id } },
+                body,
+            },
+        )
+        return unwrap(response)
+    }
+
+    async updateLibrarySong(
+        library_id: number,
+        song_id: number,
+        body: SongUpdate,
+    ): Promise<SongRead> {
+        const response = await this._client.PATCH(
+            "/libraries/{library_id}/songs/{song_id}",
+            {
+                params: { path: { library_id, song_id } },
+                body,
+            },
+        )
+        return unwrap(response)
+    }
+
+    async deleteLibrarySong(
+        library_id: number,
+        song_id: number,
+    ): Promise<void> {
+        await this._client.DELETE("/libraries/{library_id}/songs/{song_id}", {
+            params: { path: { library_id, song_id } },
+        })
     }
 
     async readLibrarySongs(
@@ -246,5 +374,31 @@ export class APIClient {
             params: { path: { name } },
         })
         return unwrap(response)
+    }
+
+    // -- Source Routes -- //
+
+    async createSource(body: SourceRead): Promise<SourceRead> {
+        const response = await this._client.POST("/sources/create", {
+            body,
+        })
+        return unwrap(response)
+    }
+
+    async updateSource(
+        source_id: number,
+        body: SourceUpdate,
+    ): Promise<SourceRead> {
+        const response = await this._client.PATCH("/sources/{source_id}", {
+            params: { path: { source_id } },
+            body,
+        })
+        return unwrap(response)
+    }
+
+    async deleteSource(source_id: number): Promise<void> {
+        await this._client.DELETE("/sources/{source_id}", {
+            params: { path: { source_id } },
+        })
     }
 }

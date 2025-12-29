@@ -262,6 +262,23 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/sources/create": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Create a source */
+        readonly post: operations["create_source_sources_create_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/sources/{source_id}": {
         readonly parameters: {
             readonly query?: never;
@@ -273,10 +290,12 @@ export interface paths {
         readonly get: operations["read_source_sources__source_id__get"];
         readonly put?: never;
         readonly post?: never;
-        readonly delete?: never;
+        /** Delete a source */
+        readonly delete: operations["delete_source_sources__source_id__delete"];
         readonly options?: never;
         readonly head?: never;
-        readonly patch?: never;
+        /** Update a source */
+        readonly patch: operations["update_source_sources__source_id__patch"];
         readonly trace?: never;
     };
     readonly "/sources/{source_id}/file": {
@@ -772,16 +791,32 @@ export interface components {
             /** Music Brainz Recording Id */
             readonly music_brainz_recording_id: string | null;
         };
+        /** SourceCreate */
+        readonly SourceCreate: {
+            /** Url */
+            readonly url: string;
+            /** Mime Type */
+            readonly mime_type: string | null;
+        };
         /** SourceRead */
         readonly SourceRead: {
             /** Id */
             readonly id: number;
             /** Url */
-            readonly url: string | null;
+            readonly url: string;
             /** Mime Type */
             readonly mime_type: string | null;
             /** Is Invalid */
             readonly is_invalid: boolean;
+        };
+        /** SourceUpdate */
+        readonly SourceUpdate: {
+            /** Url */
+            readonly url: string | null;
+            /** Mime Type */
+            readonly mime_type: string | null;
+            /** Is Invalid */
+            readonly is_invalid: boolean | null;
         };
         /** Token */
         readonly Token: {
@@ -849,7 +884,9 @@ export type ServiceToken = components['schemas']['ServiceToken'];
 export type SongCreate = components['schemas']['SongCreate'];
 export type SongRead = components['schemas']['SongRead'];
 export type SongUpdate = components['schemas']['SongUpdate'];
+export type SourceCreate = components['schemas']['SourceCreate'];
 export type SourceRead = components['schemas']['SourceRead'];
+export type SourceUpdate = components['schemas']['SourceUpdate'];
 export type Token = components['schemas']['Token'];
 export type UserProfile = components['schemas']['UserProfile'];
 export type UserProfileUpdate = components['schemas']['UserProfileUpdate'];
@@ -1449,6 +1486,39 @@ export interface operations {
             };
         };
     };
+    readonly create_source_sources_create_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["SourceCreate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["SourceRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly read_source_sources__source_id__get: {
         readonly parameters: {
             readonly query?: never;
@@ -1459,6 +1529,72 @@ export interface operations {
             readonly cookie?: never;
         };
         readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["SourceRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly delete_source_sources__source_id__delete: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly source_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly update_source_sources__source_id__patch: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly source_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["SourceUpdate"];
+            };
+        };
         readonly responses: {
             /** @description Successful Response */
             readonly 200: {
