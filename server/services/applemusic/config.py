@@ -22,6 +22,10 @@ class Config(BaseSettings):
         default="",
         description="The private secret of the Apple Music key from Apple Connect",
     )
+    storefront: str = Field(
+        default="us",
+        description="The storefront to make Apple Music calls to",
+    )
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"),

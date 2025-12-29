@@ -262,6 +262,23 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/services/{name}/search": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Search a service's content */
+        readonly get: operations["search_service_services__name__search_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/sources/create": {
         readonly parameters: {
             readonly query?: never;
@@ -548,7 +565,12 @@ export interface components {
          * ServiceFeature
          * @enum {string}
          */
-        readonly ServiceFeature: "read_token";
+        readonly ServiceFeature: "read_token" | "search";
+        /**
+         * ServiceKind
+         * @enum {string}
+         */
+        readonly ServiceKind: "songs";
         /** ServiceRead */
         readonly ServiceRead: {
             /** Name */
@@ -559,6 +581,27 @@ export interface components {
             readonly active: boolean;
             /** Features */
             readonly features: readonly components["schemas"]["ServiceFeature"][];
+        };
+        /** ServiceSearchResult */
+        readonly ServiceSearchResult: {
+            readonly kind: components["schemas"]["ServiceKind"];
+            /** Id */
+            readonly id: string;
+            /** Title */
+            readonly title: string;
+            /** Artist Name */
+            readonly artist_name: string | null;
+            /** Album Title */
+            readonly album_title: string | null;
+        };
+        /** ServiceSearchResults */
+        readonly ServiceSearchResults: {
+            /** Results */
+            readonly results: readonly components["schemas"]["ServiceSearchResult"][];
+            /** Offset */
+            readonly offset: number;
+            /** Limit */
+            readonly limit: number;
         };
         /** ServiceToken */
         readonly ServiceToken: {
@@ -879,7 +922,10 @@ export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
 export type LibraryRead = components['schemas']['LibraryRead'];
 export type ServiceFeature = components['schemas']['ServiceFeature'];
+export type ServiceKind = components['schemas']['ServiceKind'];
 export type ServiceRead = components['schemas']['ServiceRead'];
+export type ServiceSearchResult = components['schemas']['ServiceSearchResult'];
+export type ServiceSearchResults = components['schemas']['ServiceSearchResults'];
 export type ServiceToken = components['schemas']['ServiceToken'];
 export type SongCreate = components['schemas']['SongCreate'];
 export type SongRead = components['schemas']['SongRead'];
@@ -1473,6 +1519,42 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["ServiceToken"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly search_service_services__name__search_get: {
+        readonly parameters: {
+            readonly query: {
+                readonly query: string;
+                readonly kind?: readonly components["schemas"]["ServiceKind"][];
+                readonly offset?: number;
+                readonly limit?: number;
+            };
+            readonly header?: never;
+            readonly path: {
+                readonly name: string;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ServiceSearchResults"];
                 };
             };
             /** @description Validation Error */
