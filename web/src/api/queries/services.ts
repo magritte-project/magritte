@@ -1,5 +1,18 @@
 import type { APIClient } from "@/api/client"
+import { isServiceInitialized } from "@/services/initialization"
 import { queryOptions } from "@tanstack/react-query"
+
+export function readAvailableServices(apiClient: APIClient) {
+    return queryOptions({
+        queryKey: ["readAvailableServices"],
+        queryFn: async () => {
+            const allAvailableServices = await apiClient.readAvailableServices()
+            return allAvailableServices.filter((service) =>
+                isServiceInitialized(service.name),
+            )
+        },
+    })
+}
 
 export function searchServiceSongs(
     apiClient: APIClient,

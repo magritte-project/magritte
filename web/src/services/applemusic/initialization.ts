@@ -1,6 +1,9 @@
-/** Wait for the MusicKit global to be ready */
-export default function waitForMusicKit(): Promise<void> {
-    return new Promise<void>((resolve) => {
+import type { ServiceInitializerContext } from "@/services/types"
+
+export async function initializeAppleMusic({
+    apiClient,
+}: ServiceInitializerContext): Promise<void> {
+    await new Promise<void>((resolve) => {
         if ("MusicKit" in window) {
             resolve()
         } else {
@@ -9,4 +12,12 @@ export default function waitForMusicKit(): Promise<void> {
             })
         }
     })
+    const tokenResult = await apiClient.readServiceToken("applemusic")
+    await MusicKit.configure({
+        developerToken: tokenResult.bearer_token,
+        app: {
+            name: "Magritte",
+        },
+    })
+    console.info("MusicKit ready")
 }

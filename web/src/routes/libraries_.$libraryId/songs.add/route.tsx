@@ -1,7 +1,9 @@
+import { readAvailableServices } from "@/api/queries/services"
 import Modal from "@/components/reusable/Modal"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
-import useServiceRegistry from "@/hooks/serviceRegistryHook"
+import useAPIClient from "@/hooks/apiClientHook"
 import { XIcon } from "@phosphor-icons/react"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import {
     createFileRoute,
     Outlet,
@@ -12,7 +14,10 @@ import { useCallback } from "react"
 
 export const Route = createFileRoute("/libraries_/$libraryId/songs/add")({
     component: function AddLayout() {
-        const serviceRegistry = useServiceRegistry()
+        const apiClient = useAPIClient()
+        const { data: availableServices } = useSuspenseQuery(
+            readAvailableServices(apiClient),
+        )
         const navigate = useNavigate()
         const { libraryId } = Route.useParams()
         const { service: selectedService } = useParams({ strict: false })
@@ -38,7 +43,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs/add")({
                         <XIcon weight="bold" aria-label="Close" />
                     </button>
                     <div className="flex-1 flex items-center justify-center">
-                        {serviceRegistry.availableServices.map((service) => (
+                        {availableServices.map((service) => (
                             <button
                                 key={service.name}
                                 type="button"

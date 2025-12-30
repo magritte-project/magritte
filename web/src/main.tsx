@@ -14,13 +14,12 @@ import APIClientContextProvider from "@/contexts/providers/APIClientContextProvi
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
 import PlayerContextProvider from "@/contexts/providers/PlayerContextProvider"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
+import AppleMusicPlaybackEngine from "@/playback/engines/applemusic"
 import WebPlaybackEngine from "@/playback/engines/web"
 import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
-import { ServiceRegistry } from "@/services/registry"
+import { initializeServices } from "@/services/initialization"
 import "@/styles.css"
-import ServiceRegistryContextProvider from "@/contexts/providers/ServiceRegistryContextProvider"
-import AppleMusicPlaybackEngine from "@/playback/engines/applemusic"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
@@ -28,8 +27,8 @@ const userSession = StorageUserSessionManager.local
 // Set up API client
 const apiClient = new APIClient(userSession)
 
-// Set up services registry
-const servicesRegistry = new ServiceRegistry(apiClient)
+// Set up services
+await initializeServices(apiClient)
 
 // Set up playback
 const player = new Player(
@@ -47,7 +46,6 @@ const router = createRouter({
         userSession,
         apiClient,
         player,
-        servicesRegistry,
         ...TanStackQueryProviderContext,
     },
     defaultPreload: "intent",
@@ -71,13 +69,11 @@ if (rootElement && !rootElement.innerHTML) {
         <StrictMode>
             <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
                 <APIClientContextProvider value={apiClient}>
-                    <ServiceRegistryContextProvider value={servicesRegistry}>
-                        <PlayerContextProvider value={player}>
-                            <AppCommandPaletteContextProvider>
-                                <RouterProvider router={router} />
-                            </AppCommandPaletteContextProvider>
-                        </PlayerContextProvider>
-                    </ServiceRegistryContextProvider>
+                    <PlayerContextProvider value={player}>
+                        <AppCommandPaletteContextProvider>
+                            <RouterProvider router={router} />
+                        </AppCommandPaletteContextProvider>
+                    </PlayerContextProvider>
                 </APIClientContextProvider>
             </TanStackQueryProvider.Provider>
         </StrictMode>,

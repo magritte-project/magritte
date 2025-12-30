@@ -10,14 +10,12 @@ import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
 import type { Player } from "@/playback/player"
 import type { QueryClient } from "@tanstack/react-query"
 import { z } from "zod"
-import type { ServiceRegistry } from "@/services/registry"
 
 export interface MagritteRouterContext {
     readonly queryClient: QueryClient
     readonly apiClient: APIClient
     readonly userSession: UserSessionManager
     readonly player: Player
-    readonly servicesRegistry: ServiceRegistry
 }
 
 declare module "@tanstack/react-router" {
