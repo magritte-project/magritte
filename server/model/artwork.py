@@ -1,4 +1,7 @@
-from sqlmodel import Field, Relationship
+import hashlib
+from collections.abc import Buffer
+
+from sqlmodel import Field, Relationship, UniqueConstraint
 
 from model.base import LibraryModel
 from schemas.artwork import ArtworkKind
@@ -8,13 +11,13 @@ from .song import Song, SongArtworkLink
 
 class Artwork(LibraryModel, table=True):
     __tablename__: str = "artworks"
+    __table_args__ = (UniqueConstraint("kind", "image_hash", name="unique_artwork"),)
 
     kind: ArtworkKind = Field(
         default=ArtworkKind.FRONT_COVER,
         description="What this artwork is",
     )
     image_hash: str = Field(
-        unique=True,
         index=True,
         description="The digest hash of this artwork's image",
     )
@@ -41,3 +44,17 @@ class Artwork(LibraryModel, table=True):
         back_populates="artworks",
         link_model=SongArtworkLink,
     )
+
+    @classmethod
+    def create_image_hash(cls, data: Buffer):
+        """
+        Derive an image hash from the given data.
+
+        :param data: Either the bitmap data of the image
+        an artwork is representing, or a UTF-8 encoded URL
+        string for images not managed by Magritte itself.
+        :returns: A unique, reproducible hash for the artwork.
+        """
+        sha256 = hashlib.sha256()
+        sha256.update(data)
+        return sha256.hexdigest()

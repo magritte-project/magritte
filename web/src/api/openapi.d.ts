@@ -4,6 +4,41 @@
  */
 
 export interface paths {
+    readonly "/artworks/create": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Create an artwork */
+        readonly post: operations["create_artwork_artworks_create_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/artworks/{artwork_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        readonly post?: never;
+        /** Delete an artwork */
+        readonly delete: operations["delete_artwork_artworks__artwork_id__delete"];
+        readonly options?: never;
+        readonly head?: never;
+        /** Update an artwork */
+        readonly patch: operations["update_artwork_artworks__artwork_id__patch"];
+        readonly trace?: never;
+    };
     readonly "/artworks/{artwork_id}/image": {
         readonly parameters: {
             readonly query?: never;
@@ -450,6 +485,20 @@ export interface components {
             /** Name */
             readonly name: string | null;
         };
+        /** ArtworkCreate */
+        readonly ArtworkCreate: {
+            readonly kind: components["schemas"]["ArtworkKind"];
+            /** Image Url */
+            readonly image_url: string;
+            /** Background Color */
+            readonly background_color: string | null;
+            /** Primary Color */
+            readonly primary_color: string | null;
+            /** Secondary Color */
+            readonly secondary_color: string | null;
+            /** Tertiary Color */
+            readonly tertiary_color: string | null;
+        };
         /**
          * ArtworkKind
          * @enum {string}
@@ -462,25 +511,27 @@ export interface components {
             readonly kind: components["schemas"]["ArtworkKind"];
             /** Image Url */
             readonly image_url: string;
-            /**
-             * Background Color
-             * @description The background color of the artwork
-             */
+            /** Background Color */
             readonly background_color: string | null;
-            /**
-             * Primary Color
-             * @description The primary color of the artwork
-             */
+            /** Primary Color */
             readonly primary_color: string | null;
-            /**
-             * Secondary Color
-             * @description The secondary color of the artwork
-             */
+            /** Secondary Color */
             readonly secondary_color: string | null;
-            /**
-             * Tertiary Color
-             * @description The tertiary color of the artwork
-             */
+            /** Tertiary Color */
+            readonly tertiary_color: string | null;
+        };
+        /** ArtworkUpdate */
+        readonly ArtworkUpdate: {
+            readonly kind: components["schemas"]["ArtworkKind"] | null;
+            /** Image Url */
+            readonly image_url: string | null;
+            /** Background Color */
+            readonly background_color: string | null;
+            /** Primary Color */
+            readonly primary_color: string | null;
+            /** Secondary Color */
+            readonly secondary_color: string | null;
+            /** Tertiary Color */
             readonly tertiary_color: string | null;
         };
         /** Body_sign_in_sign_in_post */
@@ -906,8 +957,10 @@ export type AlbumUpdate = components['schemas']['AlbumUpdate'];
 export type ArtistCreate = components['schemas']['ArtistCreate'];
 export type ArtistRead = components['schemas']['ArtistRead'];
 export type ArtistUpdate = components['schemas']['ArtistUpdate'];
+export type ArtworkCreate = components['schemas']['ArtworkCreate'];
 export type ArtworkKind = components['schemas']['ArtworkKind'];
 export type ArtworkRead = components['schemas']['ArtworkRead'];
+export type ArtworkUpdate = components['schemas']['ArtworkUpdate'];
 export type BodySignInSignInPost = components['schemas']['Body_sign_in_sign_in_post'];
 export type HttpValidationError = components['schemas']['HTTPValidationError'];
 export type LibraryCreate = components['schemas']['LibraryCreate'];
@@ -933,6 +986,105 @@ export type UserSignUp = components['schemas']['UserSignUp'];
 export type ValidationError = components['schemas']['ValidationError'];
 export type $defs = Record<string, never>;
 export interface operations {
+    readonly create_artwork_artworks_create_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["ArtworkCreate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ArtworkRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly delete_artwork_artworks__artwork_id__delete: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly artwork_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly update_artwork_artworks__artwork_id__patch: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly artwork_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["ArtworkUpdate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ArtworkRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly read_artwork_image_artworks__artwork_id__image_get: {
         readonly parameters: {
             readonly query: {

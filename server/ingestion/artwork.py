@@ -1,4 +1,3 @@
-import hashlib
 import mimetypes
 import os
 import pathlib
@@ -46,18 +45,12 @@ def find_dominant_image_colors(path: str, palette_size: int, color_count: int):
         ]
 
 
-def _image_hash(image: tinytag.Image):
-    sha256 = hashlib.sha256()
-    sha256.update(image.data)
-    return sha256.hexdigest()
-
-
 async def try_ingest_artwork(
     image: tinytag.Image,
     kind: ArtworkKind,
     session: AsyncSession,
 ):
-    image_hash = _image_hash(image)
+    image_hash = Artwork.create_image_hash(image.data)
 
     existing_artwork = await session.scalar(
         select(Artwork).where(

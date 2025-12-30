@@ -5,6 +5,9 @@ import type {
     ArtistCreate,
     ArtistRead,
     ArtistUpdate,
+    ArtworkCreate,
+    ArtworkRead,
+    ArtworkUpdate,
     BodySignInSignInPost,
     LibraryCreate,
     LibraryMediaReadAlbumRead,
@@ -390,6 +393,32 @@ export class APIClient {
             },
         )
         return unwrap(response)
+    }
+
+    // -- Artwork Routes -- //
+
+    async createArtwork(body: ArtworkCreate): Promise<ArtworkRead> {
+        const response = await this._client.POST("/artworks/create", {
+            body,
+        })
+        return unwrap(response)
+    }
+
+    async updateArtwork(
+        artwork_id: number,
+        body: ArtworkUpdate,
+    ): Promise<ArtworkRead> {
+        const response = await this._client.PATCH("/artworks/{artwork_id}", {
+            params: { path: { artwork_id } },
+            body,
+        })
+        return unwrap(response)
+    }
+
+    async deleteArtwork(artwork_id: number): Promise<void> {
+        await this._client.DELETE("/artworks/{artwork_id}", {
+            params: { path: { artwork_id } },
+        })
     }
 
     // -- Source Routes -- //
