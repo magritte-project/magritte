@@ -5,22 +5,53 @@ import type {
     PlaybackEngineEvent,
     PlaybackEngineState,
 } from "@/playback/engine"
-import { createEvent, type EventStream } from "@/utilities/events"
+import {
+    createEvent,
+    type EventSink,
+    type EventStream,
+} from "@/utilities/events"
 
 export default class AppleMusicPlaybackEngine
     implements PlaybackEngine<SongRead>
 {
-    //private readonly _events: EventSink<PlaybackEngineEvent<SongRead>>
+    private _musicKit: MusicKit.Instance
+    private readonly _events: EventSink<PlaybackEngineEvent<SongRead>>
     private _playingItem: SongRead | null
 
     constructor() {
-        ;[/*this._events*/ , this.$events] = createEvent()
+        this._musicKit = MusicKit.getInstance()
+        ;[this._events, this.$events] = createEvent()
 
         this._playingItem = null
+
+        this._musicKit.addEventListener("mediaPlaybackError", () =>
+            this._handleMediaPlaybackError(),
+        )
+        this._musicKit.addEventListener("playbackStateDidChange", (event) =>
+            this._handlePlaybackStateDidChange(event),
+        )
     }
 
-    get _musicKit(): MusicKit.Instance {
-        return MusicKit.getInstance()
+    private _handleMediaPlaybackError() {
+        this._events.dispatch({ type: "encounteredError", error: new Error() })
+    }
+
+    private _handlePlaybackStateDidChange(
+        event: Parameters<MusicKit.StateChangeEventCallback>[0],
+    ) {
+        this._events.dispatch({ type: "playbackStateDidChange" })
+
+        switch (event.state) {
+            case MusicKit.PlaybackStates.ended:
+            case MusicKit.PlaybackStates.completed: {
+                const lastItem = this._playingItem
+                this.stop()
+                this._events.dispatch({ type: "endOfAudio", lastItem })
+                break
+            }
+            default:
+                break
+        }
     }
 
     get playingItem(): SongRead | null {
@@ -29,18 +60,18 @@ export default class AppleMusicPlaybackEngine
 
     get playbackState(): PlaybackEngineState {
         switch (this._musicKit.playbackState) {
-            case "MusicKit.PlaybackStates.none":
-            case "MusicKit.PlaybackStates.loading":
-            case "MusicKit.PlaybackStates.stopped":
-            case "MusicKit.PlaybackStates.ended":
-            case "MusicKit.PlaybackStates.completed":
+            case MusicKit.PlaybackStates.none:
+            case MusicKit.PlaybackStates.loading:
+            case MusicKit.PlaybackStates.stopped:
+            case MusicKit.PlaybackStates.ended:
+            case MusicKit.PlaybackStates.completed:
                 return "stopped"
-            case "MusicKit.PlaybackStates.waiting":
-            case "MusicKit.PlaybackStates.stalled":
-            case "MusicKit.PlaybackStates.seeking":
-            case "MusicKit.PlaybackStates.playing":
+            case MusicKit.PlaybackStates.waiting:
+            case MusicKit.PlaybackStates.stalled:
+            case MusicKit.PlaybackStates.seeking:
+            case MusicKit.PlaybackStates.playing:
                 return "playing"
-            case "MusicKit.PlaybackStates.paused":
+            case MusicKit.PlaybackStates.paused:
                 return "paused"
             default:
                 return "stopped"
@@ -86,6 +117,9 @@ export default class AppleMusicPlaybackEngine
             default:
                 throw new Error(`Unsupported kind ${kind}`)
         }
+
+        this._playingItem = itemToPlay
+        this._events.dispatch({ type: "playingItemChanged" })
     }
 
     async skipPreviousInQueue(): Promise<boolean> {
@@ -120,5 +154,6 @@ export default class AppleMusicPlaybackEngine
 
     async stop(): Promise<void> {
         this._musicKit.stop()
+        this._playingItem = null
     }
 }

@@ -6,7 +6,7 @@ import {
     DiscIcon,
     MicrophoneIcon,
     MusicNotesIcon,
-    PlusIcon
+    PlusIcon,
 } from "@phosphor-icons/react"
 import {
     Link,

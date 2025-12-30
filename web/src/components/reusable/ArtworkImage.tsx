@@ -26,7 +26,7 @@ export default function ArtworkImage({
             )}
             {...rest}
         >
-            {artworks?.length && (
+            {!!artworks?.length && (
                 <img
                     className="object-fit w-full h-full"
                     src={resolveUrl(artworks[0].image_url, userSession.current)}

@@ -145,7 +145,7 @@ declare namespace MusicKit {
         | "playbackStateDidChange"
     declare type StateChangeEventCallback = (event: {
         oldState: PlaybackStates
-        newState: PlaybackStates
+        state: PlaybackStates
         nowPlayingItem: MediaItem
     }) => void
 
@@ -186,7 +186,6 @@ declare namespace MusicKit {
             callback: StateChangeEventCallback,
         ): void
         authorize(): Promise<string | undefined>
-        unauthorize(): Promise<void>
         changeToMediaAtIndex(index: number): Promise<void>
         changeToMediaItem(descriptor: MediaItem | string): Promise<void>
         changeUserStorefront(storefrontId: string): Promise<void>

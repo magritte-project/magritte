@@ -13,7 +13,6 @@ export async function initializeAppleMusic({
         }
     })
     const tokenResult = await apiClient.readServiceToken("applemusic")
-    console.log(tokenResult)
     await MusicKit.configure({
         developerToken: tokenResult.bearer_token,
         app: {

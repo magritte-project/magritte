@@ -1,7 +1,7 @@
-import type { ServiceCommands } from "@/services/types";
-import { getCommandsForAppleMusic } from "./applemusic/commands";
-import type { JsonStructure } from "react-cmdk";
-import { getInitializedServiceNames } from "@/services/initialization";
+import type { ServiceCommands } from "@/services/types"
+import { getCommandsForAppleMusic } from "./applemusic/commands"
+import type { JsonStructure } from "react-cmdk"
+import { getInitializedServiceNames } from "@/services/initialization"
 
 const COMMANDS: Record<string, ServiceCommands> = {
     applemusic: getCommandsForAppleMusic,
@@ -13,9 +13,7 @@ export default function getServiceCommands(): JsonStructure {
     for (const serviceName of serviceNames) {
         const getCommands = COMMANDS[serviceName]
         if (!getCommands) {
-            console.info(
-                `Skipping service without commands: ${serviceName}`,
-            )
+            console.info(`Skipping service without commands: ${serviceName}`)
             continue
         }
         commands.push(...getCommands())
