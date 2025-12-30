@@ -6,13 +6,11 @@ from schemas.artwork import ArtworkRead
 class AlbumCreate(BaseModel):
     title: str
     artist_id: int | None
-    artwork_ids: list[int]
 
 
 class AlbumUpdate(BaseModel):
     title: str | None = None
     artist_id: int | None = None
-    artwork_ids: list[int] | None = None
 
 
 class AlbumRead(BaseModel):

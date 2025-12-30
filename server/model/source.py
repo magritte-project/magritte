@@ -27,6 +27,21 @@ class Source(LibraryModel, table=True):
     )
 
     @classmethod
+    async def read_one(cls, url: str, session: AsyncSession):
+        """
+        Read the existing source with the given URL.
+
+        :param url: The URL of the source.
+        :param session: The DB to read the source from.
+        :returns: The existing source, if any.
+        """
+        return await session.scalar(
+            select(cls).where(
+                col(cls.url) == url,
+            )
+        )
+
+    @classmethod
     async def mark_invalid(
         cls,
         path: str,

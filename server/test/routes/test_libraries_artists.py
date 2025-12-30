@@ -42,6 +42,29 @@ class TestCreateLibraryArtist:
         assert response.status_code == 200
         assert response_json.get("name") == "I am the greatest of all time"
 
+    def test_handles_duplication(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+        first_response = client.post(
+            "/libraries/2/artists/create",
+            json={"name": "I am the greatest of all time"},
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        first_response_json = first_response.json()
+        assert first_response.status_code == 200
+
+        second_response = client.post(
+            "/libraries/2/artists/create",
+            json={"name": "I am the greatest of all time"},
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        second_response_json = second_response.json()
+        assert second_response.status_code == 200
+        assert second_response_json.get("name") == first_response_json.get("name")
+
     @pytest.mark.asyncio
     async def test_requires_library_add_permission(
         self,

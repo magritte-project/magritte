@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
 from fastapi.responses import FileResponse
 from fastapi.security import SecurityScopes
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import col
 
 from auth import get_current_user
 from db import get_db_session
@@ -22,19 +23,23 @@ router = APIRouter(prefix="/sources")
     summary="Create a source",
 )
 async def create_source(
-    source_create: SourceCreate,
+    create_source: SourceCreate,
     current_user: Annotated[
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
-    new_source = Source(
-        url=source_create.url,
-        mime_type=source_create.mime_type,
+    source, inserted = await Source(
+        url=create_source.url,
+        mime_type=create_source.mime_type,
+    ).try_insert_unique(
+        col(Source.url) == create_source.url,
+        session,
     )
-    session.add(new_source)
-    await session.flush()
-    return SourceRead(**new_source.model_dump())
+    if not inserted:
+        source.mime_type = create_source.mime_type
+        source.is_invalid = False
+    return SourceRead(**source.model_dump())
 
 
 @router.patch(

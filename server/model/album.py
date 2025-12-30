@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Iterable, Union
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import Field, Relationship, SQLModel, col, select
+from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint, col, select
 
 from model.base import LibraryModel
 
@@ -29,10 +29,12 @@ class AlbumLibraryLink(SQLModel, table=True):
 
 class Album(LibraryModel, table=True):
     __tablename__: str = "albums"
+    __table_args__ = (
+        UniqueConstraint("title", "artist_id", name="unique_artist_album"),
+    )
 
     title: str = Field(
         description="The title of the album",
-        unique=True,
         index=True,
     )
     artist_id: int | None = Field(

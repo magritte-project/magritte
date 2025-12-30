@@ -411,8 +411,6 @@ export interface components {
             readonly title: string;
             /** Artist Id */
             readonly artist_id: number | null;
-            /** Artwork Ids */
-            readonly artwork_ids: readonly number[];
         };
         /** AlbumRead */
         readonly AlbumRead: {
@@ -434,8 +432,6 @@ export interface components {
             readonly title: string | null;
             /** Artist Id */
             readonly artist_id: number | null;
-            /** Artwork Ids */
-            readonly artwork_ids: readonly number[] | null;
         };
         /** ArtistCreate */
         readonly ArtistCreate: {

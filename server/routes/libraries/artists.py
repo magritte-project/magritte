@@ -39,13 +39,14 @@ async def create_library_artist(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    new_artist = Artist(
+    artist, _ = await Artist(
         name=create_artist.name,
+    ).try_insert_unique(
+        col(Artist.name) == create_artist.name,
+        session,
     )
-    session.add(new_artist)
-    await session.flush()
     return ArtistRead(
-        **new_artist.model_dump(),
+        **artist.model_dump(),
     )
 
 

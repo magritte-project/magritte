@@ -7,6 +7,24 @@ from conftest import SignIn
 
 
 @pytest_asyncio.fixture
+async def throwaway_artist(
+    client: TestClient,
+    sign_in: SignIn,
+    faker: Faker,
+) -> int:
+    session = sign_in("test", "password")
+
+    response = client.post(
+        "/libraries/2/artists/create",
+        json={
+            "name": faker.name(),
+        },
+        headers={"Authorization": f"Bearer {session.access_token}"},
+    )
+    return response.json().get("id")
+
+
+@pytest_asyncio.fixture
 async def throwaway_album(
     client: TestClient,
     sign_in: SignIn,
@@ -19,7 +37,6 @@ async def throwaway_album(
         json={
             "title": faker.sentence(nb_words=2),
             "artist_id": None,
-            "artwork_ids": [],
         },
         headers={"Authorization": f"Bearer {session.access_token}"},
     )
@@ -40,13 +57,45 @@ class TestCreateLibraryAlbum:
             json={
                 "title": "Smoothest of Jams",
                 "artist_id": None,
-                "artwork_ids": [],
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
         response_json = response.json()
         assert response.status_code == 200
         assert response_json.get("title") == "Smoothest of Jams"
+
+    def test_handles_duplication(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        throwaway_artist: int,
+    ):
+        session = sign_in("test", "password")
+        first_response = client.post(
+            "/libraries/2/albums/create",
+            json={
+                "title": "Smoothest of Jams",
+                "artist_id": throwaway_artist,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        first_response_json = first_response.json()
+        assert first_response.status_code == 200
+
+        second_response = client.post(
+            "/libraries/2/albums/create",
+            json={
+                "title": "Smoothest of Jams",
+                "artist_id": throwaway_artist,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        second_response_json = second_response.json()
+        assert second_response.status_code == 200
+        assert second_response_json.get("title") == first_response_json.get("title")
+        assert second_response_json.get("artist_id") == first_response_json.get(
+            "artist_id"
+        )
 
     @pytest.mark.asyncio
     async def test_requires_library_add_permission(
@@ -61,7 +110,6 @@ class TestCreateLibraryAlbum:
             json={
                 "title": "Smoothest of Jams",
                 "artist_id": None,
-                "artwork_ids": [],
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -81,7 +129,6 @@ class TestCreateLibraryAlbum:
             json={
                 "title": "Smoothest of Jams",
                 "artist_id": None,
-                "artwork_ids": [],
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )

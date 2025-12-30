@@ -46,6 +46,38 @@ class TestCreateSource:
         assert response_json.get("mime_type") is None
         assert response_json.get("is_invalid") is False
 
+    def test_handles_duplication(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+        first_response = client.post(
+            "/sources/create",
+            json={
+                "url": "about:blank",
+                "mime_type": None,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        first_response_json = first_response.json()
+        assert first_response.status_code == 200
+
+        second_response = client.post(
+            "/sources/create",
+            json={
+                "url": "about:blank",
+                "mime_type": "application/null",
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        second_response_json = second_response.json()
+        assert second_response.status_code == 200
+        assert second_response_json.get("id") == first_response_json.get("id")
+        assert second_response_json.get("url") == first_response_json.get("url")
+        assert second_response_json.get("mime_type") == "application/null"
+        assert second_response_json.get("is_invalid") is False
+
     def test_requires_user(
         self,
         client: TestClient,

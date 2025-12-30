@@ -3,12 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
 from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col
+from sqlmodel import and_, col
 
 from auth import get_current_user
 from db import get_db_session
 from model.album import Album
-from model.artwork import Artwork
 from model.library import Library
 from model.user import User
 from schemas.album import AlbumCreate, AlbumRead, AlbumUpdate
@@ -42,18 +41,20 @@ async def create_library_album(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    new_album = Album(
+    album, _ = await Album(
         title=create_album.title,
         artist_id=create_album.artist_id,
-        artworks=await Artwork.get_many(create_album.artwork_ids, session),
+    ).try_insert_unique(
+        and_(
+            col(Album.title) == create_album.title,
+            col(Album.artist_id) == create_album.artist_id,
+        ),
+        session,
     )
-    session.add(new_album)
-    await session.flush()
     return AlbumRead(
-        **new_album.model_dump(),
+        **album.model_dump(),
         artworks=[
-            ArtworkRead(**artwork.model_dump())
-            for artwork in await new_album.all_artworks
+            ArtworkRead(**artwork.model_dump()) for artwork in await album.all_artworks
         ],
     )
 
@@ -94,9 +95,6 @@ async def update_library_album(
     )
     for name, value in changes.items():
         setattr(album, name, value)
-
-    if update_album.artwork_ids:
-        album.artworks = await Artwork.get_many(update_album.artwork_ids, session)
 
     await session.flush()
     return AlbumRead(

@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Self
 
 import sqlalchemy as sa
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncAttrs, AsyncSession
 from sqlmodel import Field, Sequence, SQLModel, col, func, select
 
@@ -118,3 +119,44 @@ class LibraryModel(SQLModel, AsyncAttrs):
         model_results = await session.execute(what_models)
         models = model_results.unique().scalars()
         return total, models
+
+    async def try_insert_unique(
+        self,
+        unique_by: sa.ColumnExpressionArgument,
+        session: AsyncSession,
+    ) -> tuple[Self, bool]:
+        """
+        Attempt to insert this model into the given DB, catching any
+        unique constraint violations and returning an existing model.
+
+        This method will add the model to the session and flush it.
+        Call `try_insert_unique` immediately after creating a model:
+
+        ```python
+        source, inserted = await Source(
+            url=source_create.url,
+            mime_type=source_create.mime_type,
+        ).try_insert_unique(
+            col(Source.url) == source_create.url,
+            session,
+        )
+        ```
+
+        :param unique_by: Select criteria used to locate an existing
+        model with the same data.
+        :param session: The DB to insert the model into.
+        :returns: Either this model or another existing model
+        if a unique constraint violation was encountered, and
+        a boolean indicating whether the model was inserted.
+        """
+        try:
+            session.add(self)
+            await session.flush()
+            return self, True
+        except IntegrityError as e:
+            await session.rollback()
+            existing = await session.scalar(select(type(self)).where(unique_by))
+            if existing:
+                return existing, False
+            else:
+                raise e
