@@ -1,4 +1,7 @@
+import { useDeleteLibrarySong } from "@/api/mutations/libraries"
+import type { SongRead } from "@/api/openapi"
 import { readLibrarySongs } from "@/api/queries/libraries"
+import AsyncButton from "@/components/reusable/AsyncButton"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPIClient from "@/hooks/apiClientHook"
@@ -6,8 +9,11 @@ import usePlayer from "@/hooks/playerHook"
 import useQueueShardContext from "@/hooks/queueShardContextHook"
 import { Queue } from "@/playback/queue"
 import { LibrarySongsQueueShard } from "@/playback/queueShards/librarySongs"
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
+import { DotsThreeCircleVerticalIcon, TrashIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
+import { useCallback } from "react"
 import { z } from "zod"
 
 function formatDuration(seconds: number) {
@@ -75,8 +81,23 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                 offset,
             }),
         )
+        const deleteLibrarySong = useDeleteLibrarySong(Number(libraryId))
+        const handleRemove = useCallback(
+            async (song: SongRead) => {
+                const confirmed = confirm(
+                    `Are you sure you want to remove ${song.title}?`,
+                )
+                if (!confirmed) {
+                    return
+                }
+                await deleteLibrarySong.mutateAsync(song.id)
+            },
+            [deleteLibrarySong],
+        )
+
         const queueShardContext = useQueueShardContext()
         const player = usePlayer()
+
         return (
             <>
                 <div className="m-2 flex flex-col gap-2 cursor-default">
@@ -88,6 +109,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                 <th className="p-2">Artist</th>
                                 <th className="p-2">Album</th>
                                 <th className="p-2">Genre</th>
+                                <th className="p-2"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -129,6 +151,40 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                         {song.artist_name}
                                     </td>
                                     <td className="px-2 py-1">{song.genre}</td>
+                                    <td className="px-2 py-1">
+                                        <Menu>
+                                            <MenuButton
+                                                className="text-blue-600 p-2"
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
+                                            >
+                                                <DotsThreeCircleVerticalIcon
+                                                    weight="bold"
+                                                    aria-label="Actions"
+                                                />
+                                            </MenuButton>
+                                            <MenuItems
+                                                anchor="bottom"
+                                                className="bg-white rounded-md shadow-sm text-sm flex flex-col gap-2"
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
+                                            >
+                                                <MenuItem>
+                                                    <AsyncButton
+                                                        type="button"
+                                                        className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white"
+                                                        onClick={() =>
+                                                            handleRemove(song)
+                                                        }
+                                                    >
+                                                        <TrashIcon /> Remove
+                                                    </AsyncButton>
+                                                </MenuItem>
+                                            </MenuItems>
+                                        </Menu>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

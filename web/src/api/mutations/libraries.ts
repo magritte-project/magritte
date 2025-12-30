@@ -72,3 +72,19 @@ export function useCreateLibrarySong(libraryId: number) {
         },
     })
 }
+
+export function useDeleteLibrarySong(libraryId: number) {
+    const queryClient = useQueryClient()
+    const apiClient = useAPIClient()
+    return useMutation({
+        mutationFn: (songId: number) =>
+            apiClient.deleteLibrarySong(libraryId, songId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: readLibrarySongs(apiClient, {
+                    libraryId,
+                }).queryKey.slice(0, 3),
+            })
+        },
+    })
+}
