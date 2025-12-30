@@ -14,6 +14,10 @@ class Config(BaseSettings):
         default="",
         description="The team ID from Apple Connect",
     )
+    app_id: str = Field(
+        default="",
+        description="The app ID for the Apple Music key from Apple Connect",
+    )
     key_id: str = Field(
         default="",
         description="The ID of the Apple Music key from Apple Connect",

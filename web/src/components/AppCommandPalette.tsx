@@ -1,5 +1,6 @@
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import useUserSession from "@/hooks/userSessionHook"
+import getServiceCommands from "@/services/commands"
 import { PlusIcon, SignInIcon, SignOutIcon } from "@phosphor-icons/react"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
@@ -21,6 +22,7 @@ export default function AppCommandPalette() {
         [
             ...pages,
             // TODO: This is kind of a jank way to inject global actions...
+            ...getServiceCommands(),
             {
                 id: "user",
                 heading: "User",

@@ -8,6 +8,10 @@ const INITIALIZERS: Record<string, ServiceInitializer> = {
 
 const INITIALIZED_SERVICES = new Set<string>()
 
+export function getInitializedServiceNames(): readonly string[] {
+    return Array.from(INITIALIZED_SERVICES)
+}
+
 export function isServiceInitialized(name: string) {
     return INITIALIZED_SERVICES.has(name)
 }

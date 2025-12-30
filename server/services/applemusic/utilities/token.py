@@ -4,7 +4,12 @@ import jwt
 
 
 def create_developer_token(
-    expires_after: timedelta, team_id: str, key_id: str, key_secret: str, algorithm: str
+    expires_after: timedelta,
+    team_id: str,
+    app_id: str,
+    key_id: str,
+    key_secret: str,
+    algorithm: str,
 ):
     expires_at = datetime.now() + expires_after
     headers = {
@@ -13,7 +18,9 @@ def create_developer_token(
     }
     payload = {
         "iss": team_id,
+        "iat": datetime.now(),
         "exp": expires_at,
+        "sub": app_id,
     }
     return jwt.encode(
         payload,

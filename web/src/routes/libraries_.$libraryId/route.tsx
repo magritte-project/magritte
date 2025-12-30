@@ -6,8 +6,7 @@ import {
     DiscIcon,
     MicrophoneIcon,
     MusicNotesIcon,
-    PlusIcon,
-    SignInIcon,
+    PlusIcon
 } from "@phosphor-icons/react"
 import {
     Link,
@@ -71,21 +70,6 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                         to: "/libraries/$libraryId/songs/add",
                                         params,
                                     }),
-                            },
-                        ],
-                    },
-
-                    {
-                        id: "applemusic",
-                        heading: "Apple Music",
-                        items: [
-                            {
-                                id: "applemusic.authorize",
-                                icon: SignInIcon,
-                                children: "Authorize",
-                                onClick: () => {
-                                    MusicKit.getInstance().authorize()
-                                },
                             },
                         ],
                     },

@@ -12,7 +12,7 @@ _apple_music_client = AsyncClient(
 )
 
 display_name = "Apple Music"
-if config.team_id and config.key_id and config.key_secret:
+if config.team_id and config.app_id and config.key_id and config.key_secret:
     features = ["read_token", "search_songs"]
 else:
     features = []
@@ -22,6 +22,7 @@ async def read_token():
     return create_developer_token(
         expires_after=timedelta(days=7),
         team_id=config.team_id,
+        app_id=config.app_id,
         key_id=config.key_id,
         key_secret=config.key_secret,
         algorithm=config.algorithm,
