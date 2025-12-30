@@ -41,10 +41,12 @@ async def create_library_artist(
 
     artist, _ = await Artist(
         name=create_artist.name,
+        libraries=[await session.get(Library, library_id)],
     ).try_insert_unique(
         col(Artist.name) == create_artist.name,
         session,
     )
+    # TODO: Handle insertion into new library
     return ArtistRead(
         **artist.model_dump(),
     )

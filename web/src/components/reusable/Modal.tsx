@@ -1,0 +1,49 @@
+import DismissContextProvider from "@/contexts/providers/DismissContextProvider"
+import useDismiss from "@/hooks/dismissHook"
+import { AnimatePresence, motion } from "motion/react"
+import type { ReactNode } from "react"
+import { classNames } from "react-cmdk"
+
+export interface ModalProps {
+    readonly className?: string
+    readonly isPresented?: boolean
+    readonly onDismiss?: () => void
+    readonly children?: ReactNode
+}
+
+export default function Modal({
+    className,
+    isPresented = true,
+    onDismiss,
+    children,
+}: ModalProps) {
+    const dismiss = useDismiss()
+    return (
+        <DismissContextProvider value={onDismiss ?? dismiss}>
+            <AnimatePresence>
+                {isPresented && (
+                    <motion.div
+                        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => (onDismiss ?? dismiss)()}
+                    >
+                        <motion.div
+                            className={classNames(
+                                "bg-white rounded-lg drop-shadow-2xl",
+                                className,
+                            )}
+                            initial={{ y: -10, scale: 0.9 }}
+                            animate={{ y: 0, scale: 1 }}
+                            exit={{ y: -10, scale: 0.9 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {children}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </DismissContextProvider>
+    )
+}

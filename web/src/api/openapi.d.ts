@@ -642,16 +642,46 @@ export interface components {
         readonly ServiceSongRead: {
             /** Id */
             readonly id: string;
+            /** Source Url */
+            readonly source_url: string;
+            /** Duration */
+            readonly duration: number;
             /** Title */
             readonly title: string;
             /** Artist Name */
             readonly artist_name: string | null;
             /** Album Title */
             readonly album_title: string | null;
-            /** Source Url */
-            readonly source_url: string;
-            /** Duration */
-            readonly duration: number;
+            /** Album Artist */
+            readonly album_artist: string | null;
+            /** Composer */
+            readonly composer: string | null;
+            /** Genre */
+            readonly genre: string | null;
+            /** Release Date */
+            readonly release_date: string | null;
+            /** Track Number */
+            readonly track_number: number | null;
+            /** Track Total */
+            readonly track_total: number | null;
+            /** Disc Number */
+            readonly disc_number: number | null;
+            /** Disc Total */
+            readonly disc_total: number | null;
+            /** Lyrics */
+            readonly lyrics: string | null;
+            /** Bpm */
+            readonly bpm: number | null;
+            /** Grouping */
+            readonly grouping: string | null;
+            /** Mcn */
+            readonly mcn: string | null;
+            /** Isrc */
+            readonly isrc: string | null;
+            /** Music Brainz Release Id */
+            readonly music_brainz_release_id: string | null;
+            /** Music Brainz Recording Id */
+            readonly music_brainz_recording_id: string | null;
         };
         /** ServiceToken */
         readonly ServiceToken: {

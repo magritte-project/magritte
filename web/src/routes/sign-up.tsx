@@ -1,7 +1,6 @@
 import { useSignIn, useSignUp } from "@/api/mutations/root"
 import type { UserSignUp } from "@/api/openapi"
 import AppForm from "@/components/reusable/AppForm"
-import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"
 import useUserSession from "@/hooks/userSessionHook"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
@@ -15,9 +14,8 @@ export const Route = createFileRoute("/sign-up")({
     component: function SignUpComponent() {
         const navigate = useNavigate()
         const { signIn } = useUserSession()
-        const apiClient = useAPIClient()
-        const signUpMutation = useSignUp(apiClient)
-        const signInMutation = useSignIn(apiClient)
+        const signUpMutation = useSignUp()
+        const signInMutation = useSignIn()
         const form = useAppForm({
             defaultValues: {
                 username: "",

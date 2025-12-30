@@ -24,11 +24,26 @@ class ServiceToken(BaseModel):
 
 class ServiceSongRead(BaseModel):
     id: str
+    source_url: str
+    duration: float
     title: str
     artist_name: str | None
     album_title: str | None
-    source_url: str
-    duration: int
+    album_artist: str | None
+    composer: str | None
+    genre: str | None
+    release_date: str | None
+    track_number: int | None
+    track_total: int | None
+    disc_number: int | None
+    disc_total: int | None
+    lyrics: str | None
+    bpm: int | None
+    grouping: str | None
+    mcn: str | None
+    isrc: str | None
+    music_brainz_release_id: str | None
+    music_brainz_recording_id: str | None
 
 
 class ServiceSearchResults[Item: BaseModel](BaseModel):

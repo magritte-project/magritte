@@ -44,6 +44,7 @@ async def create_library_album(
     album, _ = await Album(
         title=create_album.title,
         artist_id=create_album.artist_id,
+        libraries=[await session.get(Library, library_id)],
     ).try_insert_unique(
         and_(
             col(Album.title) == create_album.title,
@@ -51,6 +52,7 @@ async def create_library_album(
         ),
         session,
     )
+    # TODO: Handle insertion into new library
     return AlbumRead(
         **album.model_dump(),
         artworks=[

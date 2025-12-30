@@ -20,6 +20,7 @@ import type {
     SongCreate,
     SongRead,
     SongUpdate,
+    SourceCreate,
     SourceRead,
     SourceUpdate,
     UserProfile,
@@ -423,7 +424,7 @@ export class APIClient {
 
     // -- Source Routes -- //
 
-    async createSource(body: SourceRead): Promise<SourceRead> {
+    async createSource(body: SourceCreate): Promise<SourceRead> {
         const response = await this._client.POST("/sources/create", {
             body,
         })

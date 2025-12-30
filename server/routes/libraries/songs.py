@@ -48,8 +48,8 @@ async def create_library_song(
         )
 
     new_song = Song(
-        artist_id=create_song.artist_id,
-        album_id=create_song.album_id,
+        artist=await Artist.get_one_or_none(create_song.artist_id, session),
+        album=await Album.get_one_or_none(create_song.album_id, session),
         artworks=await Artwork.get_many(create_song.artwork_ids, session),
         sources=await Source.get_many(create_song.source_ids, session),
         start_time=create_song.start_time,
@@ -72,6 +72,7 @@ async def create_library_song(
         isrc=create_song.isrc,
         music_brainz_release_id=create_song.music_brainz_release_id,
         music_brainz_recording_id=create_song.music_brainz_recording_id,
+        libraries=[await session.get(Library, library_id)],
     )
     session.add(new_song)
     await session.flush()
@@ -120,10 +121,16 @@ async def update_library_song(
 
     changes = update_song.model_dump(
         exclude_unset=True,
-        exclude={"artwork_ids", "source_ids"},
+        exclude={"album_id", "artist_id", "artwork_ids", "source_ids"},
     )
     for name, value in changes.items():
         setattr(song, name, value)
+
+    if "album_id" in update_song.model_fields_set:
+        song.album = await Album.get_one_or_none(update_song.album_id, session)
+
+    if "artist_id" in update_song.model_fields_set:
+        song.artist = await Artist.get_one_or_none(update_song.artist_id, session)
 
     if update_song.artwork_ids:
         song.artworks = await Artwork.get_many(update_song.artwork_ids, session)

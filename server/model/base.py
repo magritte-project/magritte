@@ -58,6 +58,25 @@ class LibraryModel(SQLModel, AsyncAttrs):
         return await session.scalar(select(True).where(what.exists())) or False
 
     @classmethod
+    async def get_one_or_none(
+        cls,
+        id: int | None,
+        session: AsyncSession,
+    ):
+        """
+        Read the model with the given ID, if any.
+
+        :param id: The ID of the model to get, if any.
+        :param session: The DB to read the model from.
+        :returns: A model if an ID was specified and it referred
+        to a model which exists; `None` otherwise.
+        """
+        if id is None:
+            return None
+
+        return await session.get(cls, id)
+
+    @classmethod
     async def get_many(
         cls,
         ids: Sequence[int],
