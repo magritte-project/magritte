@@ -1,7 +1,15 @@
 from typing import TYPE_CHECKING, Iterable, Union
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint, col, select
+from sqlmodel import (
+    Field,
+    Relationship,
+    SQLModel,
+    UniqueConstraint,
+    col,
+    delete,
+    select,
+)
 
 from model.base import LibraryModel
 
@@ -62,6 +70,17 @@ class Album(LibraryModel, table=True):
                 if song_artwork.id not in all_artworks:
                     all_artworks[song_artwork.id] = song_artwork
         return all_artworks.values()
+
+    @classmethod
+    async def delete_orphans(cls, session: AsyncSession):
+        """
+        Delete any albums not associated with a song.
+        """
+        await session.execute(
+            delete(cls).where(
+                ~col(cls.songs).any(),
+            )
+        )
 
     @classmethod
     async def read_or_insert(

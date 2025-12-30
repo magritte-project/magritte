@@ -47,8 +47,8 @@ class SongLibraryLink(SQLModel, table=True):
     )
 
 
-class SourceArtworkLink(SQLModel, table=True):
-    __tablename__: str = "source_artwork_links"
+class SongSourceLink(SQLModel, table=True):
+    __tablename__: str = "song_source_link"
 
     song_id: int | None = Field(
         default=None,
@@ -95,7 +95,7 @@ class Song(LibraryModel, table=True):
     )
     sources: list["Source"] = Relationship(
         back_populates="songs",
-        link_model=SourceArtworkLink,
+        link_model=SongSourceLink,
     )
 
     start_time: float = Field(

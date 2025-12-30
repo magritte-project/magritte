@@ -24,5 +24,6 @@ export function searchServiceSongs(
     return queryOptions({
         queryKey: ["searchServiceSongs", name, query, offset, limit],
         queryFn: () => apiClient.searchServiceSongs(name, query, offset, limit),
+        enabled: !!query,
     })
 }

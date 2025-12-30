@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import Field, Relationship, SQLModel, col, select
+from sqlmodel import Field, Relationship, SQLModel, col, delete, select
 
 from model.base import LibraryModel
 
@@ -40,6 +40,17 @@ class Artist(LibraryModel, table=True):
         back_populates="artists",
         link_model=ArtistLibraryLink,
     )
+
+    @classmethod
+    async def delete_orphans(cls, session: AsyncSession):
+        """
+        Delete any artists not associated with a song.
+        """
+        await session.execute(
+            delete(cls).where(
+                ~col(cls.songs).any(),
+            )
+        )
 
     @classmethod
     async def read_or_insert(

@@ -81,6 +81,16 @@ export function useDeleteLibrarySong(libraryId: number) {
             apiClient.deleteLibrarySong(libraryId, songId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
+                queryKey: readLibraryAlbums(apiClient, {
+                    libraryId,
+                }).queryKey.slice(0, 3),
+            })
+            await queryClient.invalidateQueries({
+                queryKey: readLibraryArtists(apiClient, {
+                    libraryId,
+                }).queryKey.slice(0, 3),
+            })
+            await queryClient.invalidateQueries({
                 queryKey: readLibrarySongs(apiClient, {
                     libraryId,
                 }).queryKey.slice(0, 3),

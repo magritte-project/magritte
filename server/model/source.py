@@ -1,10 +1,10 @@
 import pathlib
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import Field, Relationship, col, select, update
+from sqlmodel import Field, Relationship, col, delete, select, update
 
 from model.base import LibraryModel
-from model.song import Song, SourceArtworkLink
+from model.song import Song, SongSourceLink
 
 
 class Source(LibraryModel, table=True):
@@ -23,8 +23,19 @@ class Source(LibraryModel, table=True):
     )
     songs: list[Song] = Relationship(
         back_populates="sources",
-        link_model=SourceArtworkLink,
+        link_model=SongSourceLink,
     )
+
+    @classmethod
+    async def delete_orphans(cls, session: AsyncSession):
+        """
+        Delete any sources not associated with a song.
+        """
+        await session.execute(
+            delete(cls).where(
+                ~col(cls.songs).any(),
+            )
+        )
 
     @classmethod
     async def read_one(cls, url: str, session: AsyncSession):

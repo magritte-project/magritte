@@ -1,7 +1,8 @@
 import hashlib
 from collections.abc import Buffer
 
-from sqlmodel import Field, Relationship, UniqueConstraint
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import Field, Relationship, UniqueConstraint, col, delete
 
 from model.base import LibraryModel
 from schemas.artwork import ArtworkKind
@@ -58,3 +59,14 @@ class Artwork(LibraryModel, table=True):
         sha256 = hashlib.sha256()
         sha256.update(data)
         return sha256.hexdigest()
+
+    @classmethod
+    async def delete_orphans(cls, session: AsyncSession):
+        """
+        Delete any artworks not associated with a song.
+        """
+        await session.execute(
+            delete(cls).where(
+                ~col(cls.songs).any(),
+            )
+        )

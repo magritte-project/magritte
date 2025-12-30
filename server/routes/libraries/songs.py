@@ -1,6 +1,14 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Query,
+    Security,
+    status,
+)
 from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
@@ -20,6 +28,7 @@ from schemas.base import SortOrder
 from schemas.library import LibraryMediaRead
 from schemas.song import SongCreate, SongRead, SongSort, SongSortKey, SongUpdate
 from schemas.source import SourceRead
+from utilities.gc import garbage_collect
 
 router = APIRouter()
 
@@ -163,6 +172,7 @@ async def delete_library_song(
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    background_tasks: BackgroundTasks,
 ):
     if not await Library.can_user_access_by_id(
         library_id,
@@ -182,6 +192,8 @@ async def delete_library_song(
 
     await session.delete(song)
     await session.flush()
+
+    background_tasks.add_task(garbage_collect, session)
 
 
 @router.get(
