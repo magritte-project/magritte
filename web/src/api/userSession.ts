@@ -1,5 +1,8 @@
+import type { OAuth2Scope } from "./openapi"
+
 export interface UserSession {
     readonly accessToken: string
+    readonly scopes: readonly OAuth2Scope[]
 }
 
 export class UserSessionManager {
@@ -53,8 +56,11 @@ export class StorageUserSessionManager extends UserSessionManager {
         if (accessToken === null) {
             return null
         }
+        const scope = this._storage.getItem("userSession.scope") ?? ""
+        const scopes = scope.split(" ") as OAuth2Scope[]
         return {
             accessToken,
+            scopes,
         }
     }
 
@@ -64,8 +70,13 @@ export class StorageUserSessionManager extends UserSessionManager {
                 "userSession.accessToken",
                 userSession.accessToken,
             )
+            this._storage.setItem(
+                "userSession.scope",
+                userSession.scopes.join(" "),
+            )
         } else {
             this._storage.removeItem("userSession.accessToken")
+            this._storage.removeItem("userSession.scope")
         }
         this.dispatchUserSessionChangeEvent()
     }

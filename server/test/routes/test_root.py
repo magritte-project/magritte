@@ -42,6 +42,7 @@ def test_sign_in(client: TestClient):
     )
     token_json = token_response.json()
     assert token_response.status_code == 200
+    assert "scopes" in token_json
     assert "access_token" in token_json
     assert token_json.get("token_type") == "bearer"
 

@@ -12,6 +12,7 @@ from config import config
 from db import get_db_session
 from model.user import User
 from schemas.auth import OAuth2Scope
+from schemas.user import Token
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/sign-in",
@@ -19,6 +20,7 @@ oauth2_scheme = OAuth2PasswordBearer(
         OAuth2Scope.PROFILE: "Access the user's own profile",
         OAuth2Scope.LIBRARIES_READ: "Access libraries on this instance",
         OAuth2Scope.LIBRARIES_WRITE: "Change libraries on this instance",
+        OAuth2Scope.ADMIN: "Administer this instance",
     },
 )
 
@@ -61,9 +63,23 @@ async def create_user(
     password: str,
     session: AsyncSession,
 ):
+    is_first_user = await User.count(session) == 0
+    if is_first_user:
+        scopes = {
+            OAuth2Scope.PROFILE,
+            OAuth2Scope.LIBRARIES_READ,
+            OAuth2Scope.LIBRARIES_WRITE,
+            OAuth2Scope.ADMIN,
+        }
+    else:
+        scopes = {
+            OAuth2Scope.PROFILE,
+            OAuth2Scope.LIBRARIES_READ,
+        }
     new_user = User(
         username=username,
         hashed_password=password_hash.hash(password, salt=config.salt),
+        scope=OAuth2Scope.to_str(scopes),
     )
     session.add(new_user)
     return new_user
@@ -79,13 +95,11 @@ async def authenticate_user(
         return None
     if not password_hash.verify(password, user.hashed_password):
         return None
-    return _create_access_token(
-        user.username,
-        {
-            OAuth2Scope.PROFILE,
-            OAuth2Scope.LIBRARIES_READ,
-            OAuth2Scope.LIBRARIES_WRITE,
-        },
+
+    return Token(
+        scopes=list(user.scopes),
+        access_token=_create_access_token(user.username, user.scopes),
+        token_type="bearer",
     )
 
 
@@ -112,9 +126,9 @@ async def get_current_user(
             },
         ) from e
 
-    if not token_scopes.issuperset(security_scopes.scopes) or not OAuth2Scope.from_str(
-        user.scope
-    ).issuperset(security_scopes.scopes):
+    if not token_scopes.issuperset(
+        security_scopes.scopes
+    ) or not user.scopes.issuperset(security_scopes.scopes):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not enough permissions",

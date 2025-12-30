@@ -2,8 +2,11 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from schemas.auth import OAuth2Scope
+
 
 class Token(BaseModel):
+    scopes: list[OAuth2Scope]
     access_token: str
     token_type: Literal["bearer"]
 

@@ -609,6 +609,11 @@ export interface components {
             readonly name: string;
         };
         /**
+         * OAuth2Scope
+         * @enum {string}
+         */
+        readonly OAuth2Scope: "profile" | "library:read" | "library:write" | "admin";
+        /**
          * ServiceFeature
          * @enum {string}
          */
@@ -908,6 +913,8 @@ export interface components {
         };
         /** Token */
         readonly Token: {
+            /** Scopes */
+            readonly scopes: readonly components["schemas"]["OAuth2Scope"][];
             /** Access Token */
             readonly access_token: string;
             /**
@@ -968,6 +975,7 @@ export type LibraryMediaReadAlbumRead = components['schemas']['LibraryMediaRead_
 export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead_ArtistRead_'];
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
 export type LibraryRead = components['schemas']['LibraryRead'];
+export type OAuth2Scope = components['schemas']['OAuth2Scope'];
 export type ServiceFeature = components['schemas']['ServiceFeature'];
 export type ServiceRead = components['schemas']['ServiceRead'];
 export type ServiceSearchResultsServiceSongRead = components['schemas']['ServiceSearchResults_ServiceSongRead_'];

@@ -66,20 +66,17 @@ async def sign_in(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
-    new_access_token = await authenticate_user(
+    new_token = await authenticate_user(
         form_data.username,
         form_data.password,
         session,
     )
-    if not new_access_token:
+    if not new_token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Incorrect username or password",
         )
-    return Token(
-        access_token=new_access_token,
-        token_type="bearer",
-    )
+    return new_token
 
 
 __all__ = ["router"]

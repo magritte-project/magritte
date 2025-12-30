@@ -6,6 +6,7 @@ class OAuth2Scope(str, Enum):
     PROFILE = "profile"
     LIBRARIES_READ = "library:read"
     LIBRARIES_WRITE = "library:write"
+    ADMIN = "admin"
 
     @classmethod
     def to_str(cls, scopes: set[Self]):

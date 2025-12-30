@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import Field, Relationship, SQLModel, col, select
+from sqlmodel import Field, Relationship, SQLModel, col, func, select
 
 from model.base import LibraryModel
 from schemas.auth import OAuth2Scope
@@ -56,13 +56,27 @@ class User(LibraryModel, table=True):
         description="This user's password",
     )
     scope: str = Field(
-        default_factory=lambda: OAuth2Scope.to_str({*OAuth2Scope}),
         description="The user's enabled scopes",
     )
     libraries: list["Library"] = Relationship(
         back_populates="users",
         link_model=UserLibraryLink,
     )
+
+    @property
+    def scopes(self) -> set[OAuth2Scope]:
+        return OAuth2Scope.from_str(self.scope)
+
+    @scopes.setter
+    def set_scopes(self, scopes: set[OAuth2Scope]):
+        self.scope = OAuth2Scope.to_str(scopes)
+
+    @classmethod
+    async def count(self, session: AsyncSession):
+        """
+        Count the number of existing users.
+        """
+        return await session.scalar(select(func.count()).select_from(self)) or 0
 
     @classmethod
     async def read_by_username(cls, username: str, session: AsyncSession):

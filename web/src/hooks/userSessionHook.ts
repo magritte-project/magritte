@@ -37,7 +37,10 @@ export default function useUserSession(): UseUserSessionResult {
     }, [userSession, queryClient])
     const signIn = useCallback(
         async (token: Token) => {
-            userSession.current = { accessToken: token.access_token }
+            userSession.current = {
+                accessToken: token.access_token,
+                scopes: token.scopes,
+            }
         },
         [userSession],
     )

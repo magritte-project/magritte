@@ -66,7 +66,7 @@ async def new_token_secret(args: Namespace):
     print(secrets.token_hex(64))
 
 
-async def new_SALT(args: Namespace):
+async def new_salt(args: Namespace):
     import secrets
 
     print(secrets.token_hex(32))
@@ -142,7 +142,7 @@ def main():
         "new-password-salt",
         help="Make a password salt for a .env file",
     )
-    parser_new_SALT.set_defaults(func=new_SALT)
+    parser_new_SALT.set_defaults(func=new_salt)
 
     args = parser.parse_args()
     try:

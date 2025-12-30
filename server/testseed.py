@@ -4,6 +4,7 @@ from auth import password_hash
 from config import config
 from model.library import Library
 from model.user import User, UserLibraryLink
+from schemas.auth import OAuth2Scope
 
 
 async def _seed_users(session: AsyncSession):
@@ -11,12 +12,14 @@ async def _seed_users(session: AsyncSession):
         User(
             username="test",
             hashed_password=password_hash.hash("password", salt=config.salt),
+            scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
     )
     session.add(
         User(
             username="unlucky",
             hashed_password=password_hash.hash("password", salt=config.salt),
+            scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
     )
     await session.flush()
