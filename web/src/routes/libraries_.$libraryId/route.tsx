@@ -1,28 +1,18 @@
-import UserSessionButton from "@/components/UserSessionButton"
-import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
+import PrimaryHeader from "@/components/chrome/PrimaryHeader"
+import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
 import {
-    CaretLeftIcon,
     DiscIcon,
     MicrophoneIcon,
     MusicNotesIcon,
     PlusIcon,
 } from "@phosphor-icons/react"
-import {
-    Link,
-    Outlet,
-    createFileRoute,
-    useCanGoBack,
-    useNavigate,
-    useRouter,
-} from "@tanstack/react-router"
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/libraries_/$libraryId")({
     component: function LibrariesLayoutComponent() {
         const params = Route.useParams()
         const navigate = useNavigate()
-        const { history } = useRouter()
-        const canGoBack = useCanGoBack()
 
         return (
             <AppCommandsProvider
@@ -76,61 +66,26 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                 ]}
             >
                 <div>
-                    <header className="text-sm font-semibold flex items-center gap-4 p-2">
-                        <button
-                            type="button"
-                            className="px-3 py-2 font-bold rounded-full bg-gray-50 active:bg-gray-100 disabled:bg-transparent disabled:text-gray-300"
-                            disabled={!canGoBack}
-                            onClick={() => history.back()}
-                        >
-                            <CaretLeftIcon weight="bold" />
-                        </button>
-                        <ol className="flex-1 flex items-center justify-center gap-4">
-                            <li>
-                                <Link
-                                    to="/libraries/$libraryId/artists"
-                                    params={params}
-                                >
-                                    {({ isActive }) => (
-                                        <ThemedTabItemLabel
-                                            isActive={isActive}
-                                            icon={MicrophoneIcon}
-                                            label="Artists"
-                                        />
-                                    )}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    to="/libraries/$libraryId/albums"
-                                    params={params}
-                                >
-                                    {({ isActive }) => (
-                                        <ThemedTabItemLabel
-                                            isActive={isActive}
-                                            icon={DiscIcon}
-                                            label="Albums"
-                                        />
-                                    )}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    to="/libraries/$libraryId/songs"
-                                    params={params}
-                                >
-                                    {({ isActive }) => (
-                                        <ThemedTabItemLabel
-                                            isActive={isActive}
-                                            icon={MusicNotesIcon}
-                                            label="Songs"
-                                        />
-                                    )}
-                                </Link>
-                            </li>
-                        </ol>
-                        <UserSessionButton />
-                    </header>
+                    <PrimaryHeader>
+                        <ThemedTabItemLink
+                            to="/libraries/$libraryId/artists"
+                            params={params}
+                            icon={MicrophoneIcon}
+                            label="Artists"
+                        />
+                        <ThemedTabItemLink
+                            to="/libraries/$libraryId/albums"
+                            params={params}
+                            icon={DiscIcon}
+                            label="Albums"
+                        />
+                        <ThemedTabItemLink
+                            to="/libraries/$libraryId/songs"
+                            params={params}
+                            icon={MusicNotesIcon}
+                            label="Songs"
+                        />
+                    </PrimaryHeader>
                     <main>
                         <Outlet />
                     </main>

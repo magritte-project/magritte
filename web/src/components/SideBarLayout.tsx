@@ -4,8 +4,9 @@ import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 import { MagnifyingGlassIcon, WaveformIcon } from "@phosphor-icons/react"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import { useCallback } from "react"
+import SecondaryHeader from "./chrome/SecondaryHeader"
 
-export default function SideBar() {
+export default function SideBarLayout() {
     const navigate = useNavigate()
     const { split_tab: activeTab = "now_playing" } = useSearch({
         strict: false,
@@ -32,30 +33,25 @@ export default function SideBar() {
 
     return (
         <div>
-            <header className="text-sm font-semibold flex items-center gap-4 p-2">
-                <ol className="flex-1 flex items-center justify-center gap-4">
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("now_playing")}
-                    >
-                        <ThemedTabItemLabel
-                            isActive={activeTab === "now_playing"}
-                            icon={WaveformIcon}
-                            label="Now Playing"
-                        />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("search")}
-                    >
-                        <ThemedTabItemLabel
-                            isActive={activeTab === "search"}
-                            icon={MagnifyingGlassIcon}
-                            label="Search"
-                        />
-                    </button>
-                </ol>
-            </header>
+            <SecondaryHeader>
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("now_playing")}
+                >
+                    <ThemedTabItemLabel
+                        isActive={activeTab === "now_playing"}
+                        icon={WaveformIcon}
+                        label="Now Playing"
+                    />
+                </button>
+                <button type="button" onClick={() => setActiveTab("search")}>
+                    <ThemedTabItemLabel
+                        isActive={activeTab === "search"}
+                        icon={MagnifyingGlassIcon}
+                        label="Search"
+                    />
+                </button>
+            </SecondaryHeader>
             <main>
                 <ActiveTabOutlet />
             </main>
