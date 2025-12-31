@@ -23,7 +23,7 @@ export default function ThemedPopUpMenu({
             {button}
             <MenuItems
                 anchor="bottom"
-                className="bg-white rounded-md shadow-sm text-sm flex flex-col gap-2"
+                className="bg-white rounded-md shadow-sm text-sm flex flex-col gap-2 z-100"
                 onClick={(e) => e.stopPropagation()}
             >
                 {items.map((item) => (

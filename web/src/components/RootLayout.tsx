@@ -1,5 +1,6 @@
 import { Outlet, useRouterState } from "@tanstack/react-router"
 import SideBarLayout from "@/components/SideBarLayout"
+import Split from "@uiw/react-split"
 
 export default function RootLayout() {
     const hideSplit = useRouterState({
@@ -9,13 +10,13 @@ export default function RootLayout() {
     return hideSplit ? (
         <Outlet />
     ) : (
-        <div>
-            <div className="pr-64">
+        <Split mode="horizontal" lineBar className="min-h-screen">
+            <div className="flex-1">
                 <Outlet />
             </div>
-            <div className="fixed right-0 top-0 bottom-0 overflow-auto border-l border-gray-300 w-64">
+            <div className="min-w-64">
                 <SideBarLayout />
             </div>
-        </div>
+        </Split>
     )
 }

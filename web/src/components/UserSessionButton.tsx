@@ -2,10 +2,11 @@ import { userProfile } from "@/api/queries/users"
 import useAPIClient from "@/hooks/apiClientHook"
 import useUserSession from "@/hooks/userSessionHook"
 import { MenuButton } from "@headlessui/react"
-import { SignOutIcon } from "@phosphor-icons/react"
+import { CaretDownIcon, SignOutIcon } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import ThemedPopUpMenu from "./theme/ThemedPopUpMenu"
+import ThemedPopUpMenu from "@/components/theme/ThemedPopUpMenu"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 
 export default function UserSessionButton() {
     const { isSignedIn, signOut } = useUserSession()
@@ -21,11 +22,15 @@ export default function UserSessionButton() {
     ) : (
         <ThemedPopUpMenu
             button={
-                <MenuButton className="px-3 py-2 font-bold rounded-full bg-gray-50 data-open:bg-gray-100">
+                <ThemedSubtleButton
+                    buttonComponent={MenuButton}
+                    className="flex items-center gap-1"
+                >
                     {meQuery?.data?.preferred_name ??
                         meQuery?.data?.username ??
-                        "Me"}
-                </MenuButton>
+                        "Me"}{" "}
+                    <CaretDownIcon />
+                </ThemedSubtleButton>
             }
             items={[
                 {

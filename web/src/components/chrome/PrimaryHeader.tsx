@@ -1,9 +1,10 @@
-import { useCallback, type ReactNode } from "react"
 import ThemedHeader from "@/components/theme/ThemedHeader"
-import { useCanGoBack, useRouter } from "@tanstack/react-router"
-import { CaretLeftIcon, CommandIcon } from "@phosphor-icons/react"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import UserSessionButton from "@/components/UserSessionButton"
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
+import { CaretLeftIcon, CommandIcon } from "@phosphor-icons/react"
+import { useCanGoBack, useRouter } from "@tanstack/react-router"
+import { useCallback, type ReactNode } from "react"
 
 export interface PrimaryHeaderProps {
     readonly children?: ReactNode
@@ -19,28 +20,18 @@ export default function PrimaryHeader({ children }: PrimaryHeaderProps) {
     return (
         <ThemedHeader
             supplementaryStart={
-                <button
-                    type="button"
-                    className="px-3 py-2 font-bold rounded-full bg-gray-50 active:bg-gray-100 disabled:bg-transparent disabled:text-gray-300"
+                <ThemedSubtleButton
                     disabled={!canGoBack}
                     onClick={() => history.back()}
                 >
                     <CaretLeftIcon weight="bold" />
-                </button>
+                </ThemedSubtleButton>
             }
             supplementaryEnd={
                 <>
-                    <button
-                        type="button"
-                        className={`
-                            px-3 py-2 flex items-center gap-0.5
-                            rounded-full bg-gray-50 active:bg-gray-100 disabled:bg-transparent
-                            font-bold disabled:text-gray-300
-                        `}
-                        onClick={handleToggleCommandPalette}
-                    >
+                    <ThemedSubtleButton onClick={handleToggleCommandPalette}>
                         <CommandIcon /> K
-                    </button>
+                    </ThemedSubtleButton>
                     <UserSessionButton />
                 </>
             }

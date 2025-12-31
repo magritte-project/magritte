@@ -26,6 +26,7 @@
     "@tanstack/react-router-devtools": "^1.134.13",
     "@tanstack/router-plugin": "^1.134.13",
     "@uidotdev/usehooks": "^2.4.1",
+    "@uiw/react-split": "^5.9.3",
     "classnames": "^2.5.1",
     "motion": "^12.23.26",
     "openapi-fetch": "^0.15.0",

@@ -1,6 +1,8 @@
 import useDismiss from "@/hooks/dismissHook"
-import { XIcon } from "@phosphor-icons/react"
+import { CaretLeftIcon } from "@phosphor-icons/react"
 import type { ReactNode } from "react"
+import ThemedHeader from "@/components/theme/ThemedHeader"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 
 export interface ModalHeaderProps {
     readonly children?: ReactNode
@@ -9,13 +11,14 @@ export interface ModalHeaderProps {
 export default function ModalHeader({ children }: ModalHeaderProps) {
     const dismiss = useDismiss()
     return (
-        <header className="sticky top-0 bg-white/99 z-50 flex items-center gap-2 p-2">
-            <button type="button" onClick={dismiss} className="cursor-pointer">
-                <XIcon weight="bold" aria-label="Close" />
-            </button>
-            <div className="flex-1 flex items-center justify-center gap-2">
-                {children}
-            </div>
-        </header>
+        <ThemedHeader
+            supplementaryStart={
+                <ThemedSubtleButton onClick={dismiss}>
+                    <CaretLeftIcon weight="bold" aria-label="Dismiss" />
+                </ThemedSubtleButton>
+            }
+        >
+            {children}
+        </ThemedHeader>
     )
 }
