@@ -1,40 +1,34 @@
-import os
-
 from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from utilities.base_config import BaseConfig
 
 
-class Config(BaseSettings):
+class Config(BaseConfig):
     algorithm: str = Field(
         default="ES256",
         description="The algorithm to use when generating tokens",
     )
 
-    team_id: str = Field(
+    apple_music_team_id: str = Field(
         default="",
         description="The team ID from Apple Connect",
     )
-    app_id: str = Field(
+    apple_music_app_id: str = Field(
         default="",
         description="The app ID for the Apple Music key from Apple Connect",
     )
-    key_id: str = Field(
+    apple_music_key_id: str = Field(
         default="",
         description="The ID of the Apple Music key from Apple Connect",
     )
-    key_secret: str = Field(
+    apple_music_key_secret: str = Field(
         default="",
         description="The private secret of the Apple Music key from Apple Connect",
     )
-    storefront: str = Field(
+    apple_music_storefront: str = Field(
         default="us",
         description="The storefront to make Apple Music calls to",
     )
 
-    model_config = SettingsConfigDict(
-        env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"),
-        env_file_encoding="utf-8",
-    )
 
-
-config = Config()  # ty: ignore[missing-argument]
+config = Config.from_dot_env()

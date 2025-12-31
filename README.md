@@ -4,6 +4,8 @@ A home server to manage and listen to a household's music collections.
 
 [![Test](https://github.com/decarbonization/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/decarbonization/magritte/actions/workflows/test.yml)
 
+![Screenshot of the songs library view with a song playing](https://raw.githubusercontent.com/decarbonization/magritte/refs/heads/main/README/screenshot.png)
+
 ## Scope
 
 Magritte is intended to be installed on an in-home server with a large storage medium available e.g. a Synology DiskStation or a Raspberry Pi with an external drive attached.
@@ -46,7 +48,7 @@ Next, follow the installation directions in the [server](/decarbonization/magrit
 
 ### After Installation
 
-Bootstrapping the development enviornment creates a single `.env` file at the root project directory and symlinks it into the `server/` and `web/` subdirectories. Edit the entries the `.env` file to be suitable for your local working environment.
+Bootstrapping the development environment creates a single `.env` file at the root project directory and symlinks it into the `server/` and `web/` subdirectories. Edit the entries the `.env` file to be suitable for your local working environment.
 
 ## Development
 
@@ -74,30 +76,30 @@ just test-web
 Magritte is intended to manage multiple libraries. Each library is owned by a single user, a member of a household. Each library contains zero or more songs, artists, and albums. Unless set to private, all users on a Magritte server may access the contents of any library, but they may only edit items in their own library. Songs from one library can be linked to another. Linked songs are read only.
 
 ```
-┌─────┐                                                         
-│Users│                                                         
-└─────┘                                                         
-   ┼                                                            
-   │       ┌─────────┐╲         ╱┌─────┐╲      ╱┌───────┐       
-   └──────┼│Libraries│──┼─────┬○─│Songs│─○────○─│Sources│       
-           └─────────┘╱       │ ╲└─────┘╱      ╲└───────┘       
-                              │    ╲│╱                          
-                              │     ○                           
+┌─────┐
+│Users│
+└─────┘
+   ┼
+   │       ┌─────────┐╲         ╱┌─────┐╲      ╱┌───────┐
+   └──────┼│Libraries│──┼─────┬○─│Songs│─○────○─│Sources│
+           └─────────┘╱       │ ╲└─────┘╱      ╲└───────┘
+                              │    ╲│╱
+                              │     ○
                               │     │          ╱┌──────────────┐
                               │     └─────────○─│PlaybackEvents│
                               │                ╲└──────────────┘
-                              │                                 
-                              │                                 
-                              │        ╱┌───────┐               
-                              ├───────○─│Artists│               
-                              │        ╲└───────┘               
-                              │            ╲│╱                  
-                              │             ┼                   
-                              │             ┼                   
-                              │            ╱│╲                  
-                              │        ╱┌──────┐                
-                              └───────○─│Albums│                
-                                       ╲└──────┘                
+                              │
+                              │
+                              │        ╱┌───────┐
+                              ├───────○─│Artists│
+                              │        ╲└───────┘
+                              │            ╲│╱
+                              │             ┼
+                              │             ┼
+                              │            ╱│╲
+                              │        ╱┌──────┐
+                              └───────○─│Albums│
+                                       ╲└──────┘
 ```
 
 ## File Management
@@ -111,6 +113,10 @@ Songs in a Magritte library can have multiple sources associated with them. This
 Files backing sources may be de-duplicated. This means that e.g. a single file can serve as the source for an identical single and album track.
 
 By default, files are treated as read only. Editing a song's metadata _does not_ modify the underlying files. Re-encoding a file during upload will never erase the original.
+
+## Streaming Service Libraries
+
+Magritte does not integrate with libraries from streaming services such as Apple Music. That is to say, adding a song from a streaming service to a Magritte library does not also add it to your library on that service. Magritte is at its core a database for managing media which may be backed by multiple sources. A streaming service is just another source, like a local file.
 
 ## Scrobbling
 

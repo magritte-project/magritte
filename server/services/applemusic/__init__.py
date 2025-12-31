@@ -18,7 +18,12 @@ _apple_music_client = AsyncClient(
 )
 
 display_name = "Apple Music"
-if config.team_id and config.app_id and config.key_id and config.key_secret:
+if (
+    config.apple_music_team_id
+    and config.apple_music_app_id
+    and config.apple_music_key_id
+    and config.apple_music_key_secret
+):
     features = ["read_token", "search_songs"]
 else:
     features = []
@@ -27,10 +32,10 @@ else:
 async def read_token():
     return create_developer_token(
         expires_after=timedelta(days=7),
-        team_id=config.team_id,
-        app_id=config.app_id,
-        key_id=config.key_id,
-        key_secret=config.key_secret,
+        team_id=config.apple_music_team_id,
+        app_id=config.apple_music_app_id,
+        key_id=config.apple_music_key_id,
+        key_secret=config.apple_music_key_secret,
         algorithm=config.algorithm,
     )
 
@@ -41,7 +46,7 @@ async def search_songs(
     limit: int,
 ):
     response = await _apple_music_client.get(
-        f"/v1/catalog/{config.storefront}/search",
+        f"/v1/catalog/{config.apple_music_storefront}/search",
         params={
             "term": query,
             "types": "songs",
