@@ -11,6 +11,7 @@ import {
     SkipForwardIcon,
 } from "@phosphor-icons/react"
 import classNames from "classnames"
+import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 
 export default function NowPlaying() {
     const player = usePlayer()
@@ -32,6 +33,7 @@ export default function NowPlaying() {
                         {playingSong?.artist_name ?? "--"}
                     </div>
                 </div>
+                <NowPlayingScrubber />
                 <div className="flex items-center justify-center gap-3">
                     <ThemedButton
                         disabled={player.queue.length === 0}
