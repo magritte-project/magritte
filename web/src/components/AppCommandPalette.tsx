@@ -12,12 +12,11 @@ import CommandPalette, {
 import "react-cmdk/dist/cmdk.css"
 
 export default function AppCommandPalette() {
-    const [isOpen, setIsOpen] = useState(false)
     const [search, setSearch] = useState("")
     const { isSignedIn, signOut } = useUserSession()
 
     const navigate = useNavigate()
-    const { items: pages } = useAppCommandPaletteContext()
+    const { isOpen, setIsOpen, items: pages } = useAppCommandPaletteContext()
     const filteredItems = filterItems(
         [
             ...pages,

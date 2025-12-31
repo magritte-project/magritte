@@ -51,10 +51,16 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                         params,
                                     }),
                             },
+                        ],
+                    },
+                    {
+                        id: `libraries.${params.libraryId}.add`,
+                        heading: "Add to Library",
+                        items: [
                             {
-                                id: `libraries.${params.libraryId}.songs.add`,
+                                id: `libraries.${params.libraryId}.add.songs`,
                                 icon: PlusIcon,
-                                children: "Add Song",
+                                children: "Add Songs",
                                 onClick: () =>
                                     navigate({
                                         to: "/libraries/$libraryId/songs/add",

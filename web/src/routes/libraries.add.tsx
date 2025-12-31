@@ -38,11 +38,9 @@ export const Route = createFileRoute("/libraries/add")({
                     <form.AppField
                         name="name"
                         validators={{
-                            onChange: z
-                                .string()
-                                .min(1, {
-                                    error: "Names must have at least one characters",
-                                }),
+                            onChange: z.string().min(1, {
+                                error: "Names must have at least one characters",
+                            }),
                         }}
                     >
                         {(field) => <field.InputField placeholder="Name" />}

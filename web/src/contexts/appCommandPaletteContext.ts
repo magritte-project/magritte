@@ -6,6 +6,8 @@ export type AppCommandPaletteContextMessage =
     | { type: "unmount"; items: JsonStructure }
 
 export interface AppCommandPaletteContextType {
+    readonly isOpen: boolean
+    readonly setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     readonly items: JsonStructure
     readonly dispatch: (message: AppCommandPaletteContextMessage) => void
 }
