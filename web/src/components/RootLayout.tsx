@@ -14,7 +14,7 @@ export default function RootLayout() {
             <div className="flex-1">
                 <Outlet />
             </div>
-            <div className="min-w-64">
+            <div className="min-w-64 w-64">
                 <SideBarLayout />
             </div>
         </Split>

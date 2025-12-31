@@ -1,22 +1,23 @@
+import {
+    DefaultButtonComponent,
+    type ButtonComponent,
+} from "@/components/reusable/ButtonComponent"
 import classNames from "classnames"
-import type { ReactNode } from "react"
 import type React from "react"
 
 export interface ThemedButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    readonly buttonComponent?: (
-        props: React.ButtonHTMLAttributes<HTMLButtonElement>,
-    ) => ReactNode
+    readonly buttonComponent?: ButtonComponent
 }
 
 export default function ThemedButton({
     type = "submit",
     className,
-    buttonComponent: ButtonComponent = (props) => <button {...props} />,
+    buttonComponent: Button = DefaultButtonComponent,
     ...rest
 }: ThemedButtonProps) {
     return (
-        <ButtonComponent
+        <Button
             type={type}
             className={classNames(
                 "bg-blue-500 active:bg-blue-400 disabled:bg-blue-200",

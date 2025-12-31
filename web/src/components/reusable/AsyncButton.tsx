@@ -1,13 +1,19 @@
 import { useCallback, useState } from "react"
+import {
+    DefaultButtonComponent,
+    type ButtonComponent,
+} from "@/components/reusable/ButtonComponent"
 
 export interface AsyncButtonProps
     extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> {
+    readonly buttonComponent?: ButtonComponent
     readonly onClick?: (
         event: React.MouseEvent<HTMLButtonElement>,
     ) => undefined | Promise<unknown>
 }
 
 export default function AsyncButton({
+    buttonComponent: Button = DefaultButtonComponent,
     onClick,
     disabled,
     ...rest
@@ -30,7 +36,7 @@ export default function AsyncButton({
         [onClick],
     )
     return (
-        <button
+        <Button
             onClick={onClick ? handleClick : undefined}
             disabled={isPending || disabled}
             {...rest}
