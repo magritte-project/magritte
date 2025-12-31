@@ -1,15 +1,15 @@
 import { useDeleteLibrarySong } from "@/api/mutations/libraries"
 import type { SongRead } from "@/api/openapi"
 import { readLibrarySongs } from "@/api/queries/libraries"
-import AsyncButton from "@/components/reusable/AsyncButton"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
+import ThemedPopUpMenu from "@/components/theme/ThemedPopUpMenu"
 import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
 import useQueueShardContext from "@/hooks/queueShardContextHook"
 import { Queue } from "@/playback/queue"
 import { LibrarySongsQueueShard } from "@/playback/queueShards/librarySongs"
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
+import { MenuButton } from "@headlessui/react"
 import { DotsThreeCircleVerticalIcon, TrashIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
@@ -152,38 +152,33 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                     </td>
                                     <td className="px-2 py-1">{song.genre}</td>
                                     <td className="px-2 py-1">
-                                        <Menu>
-                                            <MenuButton
-                                                className="text-blue-600 p-2"
-                                                onClick={(e) =>
-                                                    e.stopPropagation()
-                                                }
-                                            >
-                                                <DotsThreeCircleVerticalIcon
-                                                    weight="bold"
-                                                    aria-label="Actions"
-                                                />
-                                            </MenuButton>
-                                            <MenuItems
-                                                anchor="bottom"
-                                                className="bg-white rounded-md shadow-sm text-sm flex flex-col gap-2"
-                                                onClick={(e) =>
-                                                    e.stopPropagation()
-                                                }
-                                            >
-                                                <MenuItem>
-                                                    <AsyncButton
-                                                        type="button"
-                                                        className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white"
-                                                        onClick={() =>
-                                                            handleRemove(song)
-                                                        }
-                                                    >
-                                                        <TrashIcon /> Remove
-                                                    </AsyncButton>
-                                                </MenuItem>
-                                            </MenuItems>
-                                        </Menu>
+                                        <ThemedPopUpMenu
+                                            button={
+                                                <MenuButton
+                                                    className="text-blue-600 p-2"
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
+                                                >
+                                                    <DotsThreeCircleVerticalIcon
+                                                        weight="bold"
+                                                        aria-label="Actions"
+                                                    />
+                                                </MenuButton>
+                                            }
+                                            items={[
+                                                {
+                                                    key: "remove",
+                                                    label: (
+                                                        <>
+                                                            <TrashIcon /> Remove
+                                                        </>
+                                                    ),
+                                                    onClick: () =>
+                                                        handleRemove(song),
+                                                },
+                                            ]}
+                                        />
                                     </td>
                                 </tr>
                             ))}
