@@ -1,11 +1,18 @@
 import { readLibraries } from "@/api/queries/libraries"
+import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
+import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
 import useAPIClient from "@/hooks/apiClientHook"
-import { PlusIcon, VinylRecordIcon } from "@phosphor-icons/react"
+import { BooksIcon, PlusIcon, VinylRecordIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
+import {
+    Link,
+    Outlet,
+    createFileRoute,
+    useNavigate,
+} from "@tanstack/react-router"
 import { useMemo } from "react"
 import type { JsonStructure } from "react-cmdk"
 
@@ -34,40 +41,52 @@ export const Route = createFileRoute("/libraries")({
         }, [navigate, libraries])
         return (
             <AppCommandsProvider items={libraryItems}>
-                <div className="flex flex-col text-center items-center justify-center gap-2 p-4 min-h-0 h-screen">
-                    <ol>
-                        {libraries.map((library) => (
-                            <li
-                                key={`library-${library.id}`}
-                                data-testid={`libraries[${library.id}]`}
-                            >
-                                <Link
-                                    to="/libraries/$libraryId"
-                                    params={{ libraryId: String(library.id) }}
-                                    className="flex flex-col items-center gap-3 p-2 rounded-sm hover:bg-blue-50"
+                <div>
+                    <PrimaryHeader>
+                        <ThemedTabItemLink
+                            to="/libraries"
+                            icon={BooksIcon}
+                            label="Libraries"
+                        />
+                    </PrimaryHeader>
+                    <main className="flex flex-col text-center items-center justify-center gap-2 p-4 min-h-0 h-screen">
+                        <ol>
+                            {libraries.map((library) => (
+                                <li
+                                    key={`library-${library.id}`}
+                                    data-testid={`libraries[${library.id}]`}
                                 >
-                                    <div className="bg-cyan-400 rounded-full w-16 h-16 flex items-center justify-center">
-                                        <VinylRecordIcon
-                                            className="text-cyan-50"
-                                            size="2.5em"
-                                            weight="light"
-                                        />
-                                    </div>
-                                    <div className="text-lg font-semibold">
-                                        {library.name}
-                                    </div>
-                                </Link>
-                            </li>
-                        ))}
-                    </ol>
-                    <ThemedLink
-                        to="/libraries/create"
-                        className="flex items-center gap-1"
-                    >
-                        <PlusIcon weight="bold" />
-                        Create
-                    </ThemedLink>
+                                    <Link
+                                        to="/libraries/$libraryId"
+                                        params={{
+                                            libraryId: String(library.id),
+                                        }}
+                                        className="flex flex-col items-center gap-3 p-2 rounded-sm hover:bg-blue-50"
+                                    >
+                                        <div className="bg-cyan-400 rounded-full w-16 h-16 flex items-center justify-center">
+                                            <VinylRecordIcon
+                                                className="text-cyan-50"
+                                                size="2.5em"
+                                                weight="light"
+                                            />
+                                        </div>
+                                        <div className="text-lg font-semibold">
+                                            {library.name}
+                                        </div>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ol>
+                        <ThemedLink
+                            to="/libraries/add"
+                            className="flex items-center gap-1"
+                        >
+                            <PlusIcon weight="bold" />
+                            Add
+                        </ThemedLink>
+                    </main>
                 </div>
+                <Outlet />
             </AppCommandsProvider>
         )
     },

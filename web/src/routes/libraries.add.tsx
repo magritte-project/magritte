@@ -1,10 +1,13 @@
 import { useCreateLibrary } from "@/api/mutations/libraries"
 import type { LibraryCreate } from "@/api/openapi"
+import ModalHeader from "@/components/chrome/ModalHeader"
 import AppForm from "@/components/reusable/AppForm"
+import Modal from "@/components/reusable/Modal"
 import { useAppForm } from "@/hooks/formHook"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import z from "zod"
 
-export const Route = createFileRoute("/libraries_/create")({
+export const Route = createFileRoute("/libraries/add")({
     component: function LibrariesCreateComponent() {
         const navigate = useNavigate()
         const createLibraryMutation = useCreateLibrary()
@@ -26,18 +29,27 @@ export const Route = createFileRoute("/libraries_/create")({
             },
         })
         return (
-            <div className="flex flex-col text-center items-center justify-center gap-2 p-4 min-h-0 h-screen">
+            <Modal>
+                <ModalHeader>Add Library</ModalHeader>
                 <AppForm
                     form={form}
-                    className="flex flex-col items-center justify-center gap-2"
+                    className="flex flex-col items-center justify-center gap-2 p-2"
                 >
-                    <h1 className="font-bold text-lg">Create Library</h1>
-                    <form.AppField name="name">
+                    <form.AppField
+                        name="name"
+                        validators={{
+                            onChange: z
+                                .string()
+                                .min(1, {
+                                    error: "Names must have at least one characters",
+                                }),
+                        }}
+                    >
                         {(field) => <field.InputField placeholder="Name" />}
                     </form.AppField>
-                    <form.SubmitButton />
+                    <form.SubmitButton>Add</form.SubmitButton>
                 </AppForm>
-            </div>
+            </Modal>
         )
     },
 })
