@@ -9,7 +9,7 @@ export interface ModalHeaderProps {
 export default function ModalHeader({ children }: ModalHeaderProps) {
     const dismiss = useDismiss()
     return (
-        <header className="flex items-center gap-2 p-2">
+        <header className="sticky top-0 bg-white/99 z-50 flex items-center gap-2 p-2">
             <button type="button" onClick={dismiss} className="cursor-pointer">
                 <XIcon weight="bold" aria-label="Close" />
             </button>

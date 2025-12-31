@@ -31,7 +31,7 @@ export default function Modal({
                     >
                         <motion.div
                             className={classNames(
-                                "bg-white rounded-lg drop-shadow-2xl",
+                                "relative bg-white rounded-lg drop-shadow-2xl max-h-full md:max-h-2/3 overflow-auto",
                                 className,
                             )}
                             initial={{ y: -10, scale: 0.9 }}

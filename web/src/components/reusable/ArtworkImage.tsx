@@ -6,7 +6,7 @@ import type React from "react"
 
 export interface ArtworkImageProps
     extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-    readonly artworks?: readonly ArtworkRead[]
+    readonly artworks?: readonly Omit<ArtworkRead, "id">[]
     readonly itemTitle?: string | null
 }
 

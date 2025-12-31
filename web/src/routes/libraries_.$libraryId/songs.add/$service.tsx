@@ -31,11 +31,12 @@ export const Route = createFileRoute(
             <div className="flex flex-col gap-3 p-3">
                 <ThemedInput
                     type="search"
+                    className="rounded-full! px-4"
                     value={query}
                     onChange={(e) => setQuery(e.currentTarget.value)}
                     placeholder="Search…"
                 />
-                <ol className="flex flex-col gap-2">
+                <ol className="flex flex-col gap-2 min-h-64">
                     {searchQuery.isSuccess &&
                         searchQuery.data.items.map((song) => (
                             <li
@@ -44,6 +45,7 @@ export const Route = createFileRoute(
                             >
                                 <ArtworkImage
                                     className="h-8 aspect-square shrink-0"
+                                    artworks={song.artworks}
                                     itemTitle={song.title}
                                 />
                                 <div className="flex-1 flex flex-col">
