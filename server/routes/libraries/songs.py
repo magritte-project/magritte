@@ -28,7 +28,6 @@ from schemas.base import SortOrder
 from schemas.library import LibraryMediaRead
 from schemas.song import SongCreate, SongRead, SongSort, SongSortKey, SongUpdate
 from schemas.source import SourceRead
-from utilities.gc import garbage_collect
 
 router = APIRouter()
 
@@ -193,7 +192,10 @@ async def delete_library_song(
     await session.delete(song)
     await session.flush()
 
-    background_tasks.add_task(garbage_collect, session)
+    # TODO: Figure out why deleting things with unique constraints
+    #       leaves behind ghost data which prevents entities from
+    #       being re-created later.
+    # background_tasks.add_task(garbage_collect, session)
 
 
 @router.get(
