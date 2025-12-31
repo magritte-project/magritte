@@ -1,3 +1,4 @@
+import { useCreateArtwork } from "@/api/mutations/artwork"
 import {
     useCreateLibraryAlbum,
     useCreateLibraryArtist,
@@ -19,6 +20,7 @@ export default function useAddServiceSong({
     libraryId,
 }: UseAddServiceSongOptions): UseAddServiceSongResult {
     const createSourceMutation = useCreateSource()
+    const createArtwork = useCreateArtwork()
     const createLibraryArtist = useCreateLibraryArtist(libraryId)
     const createLibraryAlbum = useCreateLibraryAlbum(libraryId)
     const createLibrarySong = useCreateLibrarySong(libraryId)
@@ -40,16 +42,26 @@ export default function useAddServiceSong({
                 albumId = album.id
             }
 
-            const source = await createSourceMutation.mutateAsync({
-                url: song.source_url,
-                mime_type: null,
-            })
+            const artworkIds: number[] = []
+            for (const artwork of song.artworks) {
+                const newArtwork = await createArtwork.mutateAsync(artwork)
+                artworkIds.push(newArtwork.id)
+            }
+
+            const sourceIds: number[] = []
+            for (const source of song.sources) {
+                const newSource = await createSourceMutation.mutateAsync({
+                    url: source.url,
+                    mime_type: null,
+                })
+                sourceIds.push(newSource.id)
+            }
 
             return await createLibrarySong.mutateAsync({
                 artist_id: artistId ?? null,
                 album_id: albumId ?? null,
-                artwork_ids: [],
-                source_ids: [source.id],
+                artwork_ids: artworkIds,
+                source_ids: sourceIds,
                 start_time: 0,
                 end_time: song.duration,
                 title: song.title,
@@ -74,6 +86,7 @@ export default function useAddServiceSong({
         },
         [
             createSourceMutation,
+            createArtwork,
             createLibraryArtist,
             createLibraryAlbum,
             createLibrarySong,

@@ -2,6 +2,8 @@ from enum import Enum
 
 from pydantic import BaseModel
 
+from schemas.artwork import ArtworkKind
+
 
 class ServiceFeature(str, Enum):
     READ_TOKEN = "read_token"
@@ -22,10 +24,24 @@ class ServiceToken(BaseModel):
     bearer_token: str
 
 
+class ServiceArtworkRead(BaseModel):
+    kind: ArtworkKind
+    image_url: str
+    background_color: str | None
+    primary_color: str | None
+    secondary_color: str | None
+    tertiary_color: str | None
+
+
+class ServiceSourceRead(BaseModel):
+    url: str
+
+
 class ServiceSongRead(BaseModel):
     id: str
-    source_url: str
     duration: float
+    sources: list[ServiceSourceRead]
+    artworks: list[ServiceArtworkRead]
     title: str
     artist_name: str | None
     album_title: str | None

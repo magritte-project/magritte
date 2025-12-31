@@ -613,6 +613,20 @@ export interface components {
          * @enum {string}
          */
         readonly OAuth2Scope: "profile" | "library:read" | "library:write" | "admin";
+        /** ServiceArtworkRead */
+        readonly ServiceArtworkRead: {
+            readonly kind: components["schemas"]["ArtworkKind"];
+            /** Image Url */
+            readonly image_url: string;
+            /** Background Color */
+            readonly background_color: string | null;
+            /** Primary Color */
+            readonly primary_color: string | null;
+            /** Secondary Color */
+            readonly secondary_color: string | null;
+            /** Tertiary Color */
+            readonly tertiary_color: string | null;
+        };
         /**
          * ServiceFeature
          * @enum {string}
@@ -642,10 +656,12 @@ export interface components {
         readonly ServiceSongRead: {
             /** Id */
             readonly id: string;
-            /** Source Url */
-            readonly source_url: string;
             /** Duration */
             readonly duration: number;
+            /** Sources */
+            readonly sources: readonly components["schemas"]["ServiceSourceRead"][];
+            /** Artworks */
+            readonly artworks: readonly components["schemas"]["ServiceArtworkRead"][];
             /** Title */
             readonly title: string;
             /** Artist Name */
@@ -682,6 +698,11 @@ export interface components {
             readonly music_brainz_release_id: string | null;
             /** Music Brainz Recording Id */
             readonly music_brainz_recording_id: string | null;
+        };
+        /** ServiceSourceRead */
+        readonly ServiceSourceRead: {
+            /** Url */
+            readonly url: string;
         };
         /** ServiceToken */
         readonly ServiceToken: {
@@ -1006,10 +1027,12 @@ export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
 export type LibraryRead = components['schemas']['LibraryRead'];
 export type OAuth2Scope = components['schemas']['OAuth2Scope'];
+export type ServiceArtworkRead = components['schemas']['ServiceArtworkRead'];
 export type ServiceFeature = components['schemas']['ServiceFeature'];
 export type ServiceRead = components['schemas']['ServiceRead'];
 export type ServiceSearchResultsServiceSongRead = components['schemas']['ServiceSearchResults_ServiceSongRead_'];
 export type ServiceSongRead = components['schemas']['ServiceSongRead'];
+export type ServiceSourceRead = components['schemas']['ServiceSourceRead'];
 export type ServiceToken = components['schemas']['ServiceToken'];
 export type SongCreate = components['schemas']['SongCreate'];
 export type SongRead = components['schemas']['SongRead'];

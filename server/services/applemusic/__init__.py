@@ -2,7 +2,13 @@ from datetime import timedelta
 
 from httpx import AsyncClient
 
-from schemas.service import ServiceSearchResults, ServiceSongRead
+from schemas.artwork import ArtworkKind
+from schemas.service import (
+    ServiceArtworkRead,
+    ServiceSearchResults,
+    ServiceSongRead,
+    ServiceSourceRead,
+)
 
 from .config import config
 from .utilities.token import create_developer_token
@@ -52,8 +58,30 @@ async def search_songs(
         items=[
             ServiceSongRead(
                 id=song["id"],
-                source_url=f"applemusic:///songs/{song['id']}",
                 duration=song["attributes"]["durationInMillis"] / 1000,
+                sources=[
+                    ServiceSourceRead(
+                        url=f"applemusic:///songs/{song['id']}",
+                    ),
+                ],
+                artworks=[
+                    ServiceArtworkRead(
+                        kind=ArtworkKind.FRONT_COVER,
+                        image_url=song["attributes"]["artwork"]["url"]
+                        .replace(
+                            "{w}",
+                            str(min(1000, song["attributes"]["artwork"]["width"])),
+                        )
+                        .replace(
+                            "{h}",
+                            str(min(1000, song["attributes"]["artwork"]["height"])),
+                        ),
+                        background_color=song["attributes"]["artwork"].get("bgColor"),
+                        primary_color=song["attributes"]["artwork"].get("textColor1"),
+                        secondary_color=song["attributes"]["artwork"].get("textColor2"),
+                        tertiary_color=song["attributes"]["artwork"].get("textColor3"),
+                    ),
+                ],
                 title=song["attributes"]["name"],
                 artist_name=song["attributes"]["artistName"],
                 album_title=song["attributes"]["albumName"],
