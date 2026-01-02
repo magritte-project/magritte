@@ -8,7 +8,6 @@ import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provi
 import { routeTree } from "@/routeTree.gen"
 
 import { APIClient } from "@/api/client"
-import type { SongRead } from "@/api/openapi"
 import { StorageUserSessionManager } from "@/api/userSession.ts"
 import APIClientContextProvider from "@/contexts/providers/APIClientContextProvider"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
@@ -32,7 +31,7 @@ await initializeServices(apiClient)
 
 // Set up playback
 const player = new Player(
-    new PlaybackEngineRegistry<SongRead>()
+    new PlaybackEngineRegistry()
         .installPlaybackEngine(new WebPlaybackEngine(userSession))
         .installPlaybackEngine(new AppleMusicPlaybackEngine()),
 )

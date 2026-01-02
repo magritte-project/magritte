@@ -1,8 +1,14 @@
 import type { APIClient } from "@/api/client"
 import type { QueryClient } from "@tanstack/react-query"
 
+export type QueueShardID = string
+
+export function uniqueQueueShardID(): QueueShardID {
+    return `queue.shards[${crypto.randomUUID()}]`
+}
+
 export interface QueueShard<Item> {
-    readonly id: string
+    readonly id: QueueShardID
     readonly length: number
     containsItem(item: Item): Promise<boolean>
     firstItem(): Promise<Item | null>

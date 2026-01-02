@@ -1,19 +1,20 @@
 import type { EventStream } from "@/utilities/events"
+import type { PlayableItem } from "@/playback/item"
 
 export type PlaybackEngineState = "playing" | "paused" | "stopped"
 
-export type PlaybackEngineEvent<Item> =
+export type PlaybackEngineEvent =
     | { type: "playbackStateDidChange" }
     | { type: "playingItemChanged" }
     | { type: "encounteredError"; error: Error }
-    | { type: "endOfAudio"; lastItem: Item | null }
+    | { type: "endOfAudio"; lastItem: PlayableItem | null }
 
-export interface PlaybackEngineEnqueueOptions<Item> {
+export interface PlaybackEngineEnqueueOptions {
     /**
      * The item to play, typically from the library, but may
      * be from other source like a streaming music service.
      * */
-    readonly itemToPlay: Item
+    readonly itemToPlay: PlayableItem
 
     /**
      * Whether to immediately start playback of the item.
@@ -32,14 +33,14 @@ export interface PlaybackEngineEnqueueOptions<Item> {
     readonly playNow?: boolean
 }
 
-export interface PlaybackEngine<Item> {
-    readonly playingItem: Item | null
+export interface PlaybackEngine {
+    readonly playingItem: PlayableItem | null
     readonly playbackState: PlaybackEngineState
     readonly totalTime: number | null
     readonly currentTime: number | null
 
     /** Events relating to the state of this playback engine */
-    readonly $events: EventStream<PlaybackEngineEvent<Item>>
+    readonly $events: EventStream<PlaybackEngineEvent>
 
     /**
      * Check whether this playback engine can play a given item.
@@ -47,14 +48,14 @@ export interface PlaybackEngine<Item> {
      * @param item The item to check.
      * @returns `true` if the item can be enqueued in this engine; `false` otherwise.
      */
-    canEnqueue(item: Item): Promise<boolean>
+    canEnqueue(item: PlayableItem): Promise<boolean>
 
     /**
      * Enqueue an item to in order to play it with this engine.
      *
      * @param options The item to add and the behavior around that.
      */
-    enqueue(options: PlaybackEngineEnqueueOptions<Item>): Promise<void>
+    enqueue(options: PlaybackEngineEnqueueOptions): Promise<void>
 
     /**
      * Skip the currently playing item in the engine's queue to play the previous one.

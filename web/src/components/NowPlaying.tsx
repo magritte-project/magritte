@@ -1,8 +1,9 @@
-import type { SongRead } from "@/api/openapi"
+import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import ThemedButton from "@/components/theme/ThemedButton"
 import usePlayer from "@/hooks/playerHook"
 import usePlayerState from "@/hooks/playerStateHook"
+import type { PlayableItem } from "@/playback/item"
 import { ArrayQueueShard } from "@/playback/queueShards/array"
 import {
     PauseIcon,
@@ -11,7 +12,6 @@ import {
     SkipForwardIcon,
 } from "@phosphor-icons/react"
 import classNames from "classnames"
-import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 
 export default function NowPlaying() {
     const player = usePlayer()
@@ -73,7 +73,7 @@ export default function NowPlaying() {
                 >
                     {shard instanceof ArrayQueueShard ? (
                         <ol className="flex flex-col gap-1 px-1">
-                            {(shard.items as SongRead[]).map(
+                            {(shard.items as readonly PlayableItem[]).map(
                                 (song, songIndex) => (
                                     <li
                                         key={`shards[${shard.id}@${shardIndex}].songs[${song.id}@${songIndex}]`}

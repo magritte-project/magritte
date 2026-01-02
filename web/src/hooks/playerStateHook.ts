@@ -1,8 +1,8 @@
-import type { SongRead } from "@/api/openapi"
 import type {
     PlaybackEngineEvent,
     PlaybackEngineState,
 } from "@/playback/engine"
+import type { PlayableItem } from "@/playback/item"
 import type { Player } from "@/playback/player"
 import type { Queue } from "@/playback/queue"
 import { useEffect, useState } from "react"
@@ -12,8 +12,8 @@ export interface UsePlayerStateResult {
     readonly playbackState: PlaybackEngineState
     readonly totalTime: number | null
     readonly getCurrentTime: () => number | null
-    readonly playingSong: SongRead | null
-    readonly queue: Queue<SongRead>
+    readonly playingSong: PlayableItem | null
+    readonly queue: Queue<PlayableItem>
 }
 
 function createPlayerState(player: Player): UsePlayerStateResult {
@@ -35,7 +35,7 @@ export default function usePlayerState(): UsePlayerStateResult {
     )
 
     useEffect(() => {
-        const eventListener = (event: PlaybackEngineEvent<SongRead>) => {
+        const eventListener = (event: PlaybackEngineEvent) => {
             switch (event.type) {
                 case "playbackStateDidChange":
                 case "playingItemChanged":

@@ -1,4 +1,3 @@
-import type { SongRead } from "@/api/openapi"
 import type { UserSessionManager } from "@/api/userSession"
 import type {
     PlaybackEngine,
@@ -12,12 +11,13 @@ import {
     createEvent,
 } from "@/utilities/events"
 import { resolveUrl } from "@/utilities/resources"
+import type { PlayableItem } from "@/playback/item"
 
-export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
+export default class WebPlaybackEngine implements PlaybackEngine {
     private readonly _userSession: UserSessionManager
     private readonly _audio: HTMLAudioElement
-    private readonly _events: EventSink<PlaybackEngineEvent<SongRead>>
-    private _playingItem: SongRead | null
+    private readonly _events: EventSink<PlaybackEngineEvent>
+    private _playingItem: PlayableItem | null
 
     constructor(
         userSession: UserSessionManager,
@@ -70,7 +70,7 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
         this._events.dispatch({ type: "playbackStateDidChange" })
     }
 
-    get playingItem(): SongRead | null {
+    get playingItem(): PlayableItem | null {
         return this._playingItem
     }
 
@@ -92,9 +92,9 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
         return this._audio.currentTime
     }
 
-    readonly $events: EventStream<PlaybackEngineEvent<SongRead>>
+    readonly $events: EventStream<PlaybackEngineEvent>
 
-    async canEnqueue(item: SongRead): Promise<boolean> {
+    async canEnqueue(item: PlayableItem): Promise<boolean> {
         const sources = item.sources ?? []
         // TODO: this is nasty
         return sources.some(
@@ -107,7 +107,7 @@ export default class WebPlaybackEngine implements PlaybackEngine<SongRead> {
     async enqueue({
         itemToPlay,
         playNow,
-    }: PlaybackEngineEnqueueOptions<SongRead>): Promise<void> {
+    }: PlaybackEngineEnqueueOptions): Promise<void> {
         const sources = itemToPlay.sources ?? []
         const source = sources.find((source) =>
             source.url.startsWith("magritte://"),

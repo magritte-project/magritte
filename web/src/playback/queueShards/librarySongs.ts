@@ -4,7 +4,11 @@ import {
     type ReadLibrarySongsCriteria,
     readLibrarySongs,
 } from "@/api/queries/libraries"
-import type { QueueShard, QueueShardContext } from "@/playback/queueShards/base"
+import type {
+    QueueShard,
+    QueueShardContext,
+    QueueShardID,
+} from "@/playback/queueShards/base"
 import type { QueryClient } from "@tanstack/react-query"
 
 export class LibrarySongsQueueShard implements QueueShard<SongRead> {
@@ -97,8 +101,8 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
         return [-1, -1]
     }
 
-    get id(): string {
-        return `LibrarySongQueueShard${JSON.stringify(this._criteria)}`
+    get id(): QueueShardID {
+        return `queue.shards[library${JSON.stringify(this._criteria)}]`
     }
 
     get length(): number {

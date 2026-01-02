@@ -1,10 +1,10 @@
-import type { QueueShard } from "@/playback/queueShards/base"
+import type { QueueShard, QueueShardID } from "@/playback/queueShards/base"
 
 export class ArrayQueueShard<Item extends { id: unknown }>
     implements QueueShard<Item>
 {
     constructor(
-        readonly id: string,
+        readonly id: QueueShardID,
         readonly items: readonly Item[],
     ) {}
 

@@ -1,12 +1,12 @@
-import type { ArtworkRead } from "@/api/openapi"
 import useUserSession from "@/hooks/userSessionHook"
+import type { PlayableItemArtwork } from "@/playback/item"
 import { resolveUrl } from "@/utilities/resources"
 import classNames from "classnames"
 import type React from "react"
 
 export interface ArtworkImageProps
     extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-    readonly artworks?: readonly Omit<ArtworkRead, "id">[]
+    readonly artworks?: readonly PlayableItemArtwork[]
     readonly itemTitle?: string | null
 }
 

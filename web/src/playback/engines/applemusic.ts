@@ -1,4 +1,3 @@
-import type { SongRead } from "@/api/openapi"
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
@@ -10,13 +9,12 @@ import {
     type EventSink,
     type EventStream,
 } from "@/utilities/events"
+import type { PlayableItem } from "@/playback/item"
 
-export default class AppleMusicPlaybackEngine
-    implements PlaybackEngine<SongRead>
-{
+export default class AppleMusicPlaybackEngine implements PlaybackEngine {
     private _musicKit: MusicKit.Instance
-    private readonly _events: EventSink<PlaybackEngineEvent<SongRead>>
-    private _playingItem: SongRead | null
+    private readonly _events: EventSink<PlaybackEngineEvent>
+    private _playingItem: PlayableItem | null
 
     constructor() {
         this._musicKit = MusicKit.getInstance()
@@ -54,7 +52,7 @@ export default class AppleMusicPlaybackEngine
         }
     }
 
-    get playingItem(): SongRead | null {
+    get playingItem(): PlayableItem | null {
         return this._playingItem
     }
 
@@ -86,9 +84,9 @@ export default class AppleMusicPlaybackEngine
         return this._musicKit.currentPlaybackTime
     }
 
-    readonly $events: EventStream<PlaybackEngineEvent<SongRead>>
+    readonly $events: EventStream<PlaybackEngineEvent>
 
-    async canEnqueue(item: SongRead): Promise<boolean> {
+    async canEnqueue(item: PlayableItem): Promise<boolean> {
         const sources = item.sources ?? []
         return sources.some((source) => source.url.startsWith("applemusic://"))
     }
@@ -96,7 +94,7 @@ export default class AppleMusicPlaybackEngine
     async enqueue({
         itemToPlay,
         playNow,
-    }: PlaybackEngineEnqueueOptions<SongRead>): Promise<void> {
+    }: PlaybackEngineEnqueueOptions): Promise<void> {
         const sources = itemToPlay.sources ?? []
         const source = sources.find((source) =>
             source.url.startsWith("applemusic://"),

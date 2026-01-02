@@ -1,4 +1,3 @@
-import type { SongRead } from "@/api/openapi"
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
@@ -13,24 +12,23 @@ import {
     type EventSubscription,
     createEvent,
 } from "@/utilities/events"
+import type { PlayableItem } from "@/playback/item"
 
 export interface ReplaceQueueOptions
-    extends Omit<PlaybackEngineEnqueueOptions<SongRead>, "itemToPlay"> {
-    readonly newQueue: Queue<SongRead>
-    readonly startingItem?: SongRead
+    extends Omit<PlaybackEngineEnqueueOptions, "itemToPlay"> {
+    readonly newQueue: Queue<PlayableItem>
+    readonly startingItem?: PlayableItem
 }
 
 export class Player {
-    private readonly _engineRegistry: PlaybackEngineRegistry<SongRead>
-    private readonly _events: EventSink<PlaybackEngineEvent<SongRead>>
-    private _activeEngineEventSubscription: EventSubscription<
-        PlaybackEngineEvent<SongRead>
-    > | null
-    private _activeEngine: PlaybackEngine<SongRead> | null
-    private _queue: Queue<SongRead>
-    private _playingEntry: QueueEntry<SongRead> | null
+    private readonly _engineRegistry: PlaybackEngineRegistry
+    private readonly _events: EventSink<PlaybackEngineEvent>
+    private _activeEngineEventSubscription: EventSubscription<PlaybackEngineEvent> | null
+    private _activeEngine: PlaybackEngine | null
+    private _queue: Queue<PlayableItem>
+    private _playingEntry: QueueEntry<PlayableItem> | null
 
-    constructor(engineRegistry: PlaybackEngineRegistry<SongRead>) {
+    constructor(engineRegistry: PlaybackEngineRegistry) {
         this._engineRegistry = engineRegistry
         ;[this._events, this.$events] = createEvent()
         this._activeEngineEventSubscription = null
@@ -39,7 +37,7 @@ export class Player {
         this._playingEntry = null
     }
 
-    private _changeEngine(newEngine: PlaybackEngine<SongRead> | null) {
+    private _changeEngine(newEngine: PlaybackEngine | null) {
         if (this._activeEngine === newEngine) {
             return
         }
@@ -57,8 +55,8 @@ export class Player {
     }
 
     private async _playEntry(
-        entry: QueueEntry<SongRead>,
-        options: Omit<PlaybackEngineEnqueueOptions<SongRead>, "itemToPlay">,
+        entry: QueueEntry<PlayableItem>,
+        options: Omit<PlaybackEngineEnqueueOptions, "itemToPlay">,
     ): Promise<void> {
         const engine = await this._engineRegistry.findPlaybackEngineFor(
             entry.item,
@@ -75,7 +73,7 @@ export class Player {
     }
 
     private async _handleEngineEvent(
-        event: PlaybackEngineEvent<SongRead>,
+        event: PlaybackEngineEvent,
     ): Promise<void> {
         switch (event.type) {
             case "playbackStateDidChange":
@@ -101,7 +99,7 @@ export class Player {
         }
     }
 
-    get playingEntry(): QueueEntry<SongRead> | null {
+    get playingEntry(): QueueEntry<PlayableItem> | null {
         return this._playingEntry
     }
 
@@ -129,12 +127,12 @@ export class Player {
         }
     }
 
-    get queue(): Queue<SongRead> {
+    get queue(): Queue<PlayableItem> {
         return this._queue
     }
 
     /** Events relating to the state of playback */
-    readonly $events: EventStream<PlaybackEngineEvent<SongRead>>
+    readonly $events: EventStream<PlaybackEngineEvent>
 
     async replaceQueue({
         newQueue,
