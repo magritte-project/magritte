@@ -35,11 +35,13 @@ class ServiceArtworkRead(BaseModel):
 
 class ServiceSourceRead(BaseModel):
     url: str
+    mime_type: str | None
 
 
 class ServiceSongRead(BaseModel):
     id: str
-    duration: float
+    start_time: float
+    end_time: float
     sources: list[ServiceSourceRead]
     artworks: list[ServiceArtworkRead]
     title: str

@@ -63,10 +63,12 @@ async def search_songs(
         items=[
             ServiceSongRead(
                 id=song["id"],
-                duration=song["attributes"]["durationInMillis"] / 1000,
+                start_time=0,
+                end_time=song["attributes"]["durationInMillis"] / 1000,
                 sources=[
                     ServiceSourceRead(
                         url=f"applemusic:///songs/{song['id']}",
+                        mime_type=None,
                     ),
                 ],
                 artworks=[

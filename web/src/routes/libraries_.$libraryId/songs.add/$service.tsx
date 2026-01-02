@@ -4,6 +4,9 @@ import AsyncButton from "@/components/reusable/AsyncButton"
 import ThemedInput from "@/components/theme/ThemedInput"
 import useAddServiceSong from "@/hooks/addServiceSongHook"
 import useAPIClient from "@/hooks/apiClientHook"
+import usePlayer from "@/hooks/playerHook"
+import { Queue } from "@/playback/queue"
+import { ArrayQueueShard } from "@/playback/queueShards/array"
 import { PlusIcon } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -16,6 +19,7 @@ export const Route = createFileRoute(
     component: function ServiceComponent() {
         const { libraryId, service } = Route.useParams()
         const apiClient = useAPIClient()
+        const player = usePlayer()
 
         const [query, setQuery] = useState("")
         const currentQuery = useDebounce(query, 500)
@@ -39,30 +43,44 @@ export const Route = createFileRoute(
                 <ol className="flex flex-col gap-2 min-h-64">
                     {searchQuery.isSuccess &&
                         searchQuery.data.items.map((song) => (
-                            <li
-                                key={`${song.id}`}
-                                className="flex items-center gap-2"
-                            >
-                                <ArtworkImage
-                                    className="h-8 aspect-square shrink-0"
-                                    artworks={song.artworks}
-                                    itemTitle={song.title}
-                                />
-                                <div className="flex-1 flex flex-col">
-                                    <div className="font-bold text-sm">
-                                        {song.title ?? "--"}
-                                    </div>
-                                    <div className="text-gray-700 text-xs">
-                                        {song.album_title ?? "--"} by{" "}
-                                        {song.artist_name ?? "--"}
-                                    </div>
-                                </div>
+                            <li key={`${song.id}`}>
                                 <AsyncButton
                                     type="button"
-                                    className="cursor-pointer hover:bg-blue-100 active:bg-blue-300 disabled:bg-gray-100 disabled:cursor-not-allowed rounded-full p-1"
-                                    onClick={() => addServiceSong(song)}
+                                    className="flex items-center gap-2 text-start w-full"
+                                    onClick={() =>
+                                        player.replaceQueue({
+                                            newQueue: Queue.with(
+                                                ArrayQueueShard.of(song),
+                                            ),
+                                            startingItem: song,
+                                            playNow: true,
+                                        })
+                                    }
                                 >
-                                    <PlusIcon aria-label="Add" />
+                                    <ArtworkImage
+                                        className="h-8 aspect-square shrink-0"
+                                        artworks={song.artworks}
+                                        itemTitle={song.title}
+                                    />
+                                    <div className="flex-1 flex flex-col">
+                                        <div className="font-bold text-sm">
+                                            {song.title ?? "--"}
+                                        </div>
+                                        <div className="text-gray-700 text-xs">
+                                            {song.album_title ?? "--"} by{" "}
+                                            {song.artist_name ?? "--"}
+                                        </div>
+                                    </div>
+                                    <AsyncButton
+                                        type="button"
+                                        className="cursor-pointer hover:bg-blue-100 active:bg-blue-300 disabled:bg-gray-100 disabled:cursor-not-allowed rounded-full p-1"
+                                        onClick={async (e) => {
+                                            e.stopPropagation()
+                                            await addServiceSong(song)
+                                        }}
+                                    >
+                                        <PlusIcon aria-label="Add" />
+                                    </AsyncButton>
                                 </AsyncButton>
                             </li>
                         ))}

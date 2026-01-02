@@ -656,8 +656,10 @@ export interface components {
         readonly ServiceSongRead: {
             /** Id */
             readonly id: string;
-            /** Duration */
-            readonly duration: number;
+            /** Start Time */
+            readonly start_time: number;
+            /** End Time */
+            readonly end_time: number;
             /** Sources */
             readonly sources: readonly components["schemas"]["ServiceSourceRead"][];
             /** Artworks */
@@ -703,6 +705,8 @@ export interface components {
         readonly ServiceSourceRead: {
             /** Url */
             readonly url: string;
+            /** Mime Type */
+            readonly mime_type: string | null;
         };
         /** ServiceToken */
         readonly ServiceToken: {
