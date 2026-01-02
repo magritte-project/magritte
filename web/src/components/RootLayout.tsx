@@ -1,11 +1,11 @@
 import { Outlet, useRouterState } from "@tanstack/react-router"
-import SideBarLayout from "@/components/SideBarLayout"
 import Split from "@uiw/react-split"
+
+import SideBarLayout from "@/components/SideBarLayout"
 
 export default function RootLayout() {
     const hideSplit = useRouterState({
-        select: ({ matches }) =>
-            matches.some((match) => match.staticData?.hideSplit === true),
+        select: ({ matches }) => matches.some((match) => match.staticData?.hideSplit === true),
     })
     return hideSplit ? (
         <Outlet />

@@ -1,15 +1,7 @@
-import {
-    uniqueQueueShardID,
-    type QueueShard,
-    type QueueShardID,
-} from "@/playback/queueShards/base"
+import { uniqueQueueShardID, type QueueShard, type QueueShardID } from "@/playback/queueShards/base"
 
-export class ArrayQueueShard<Item extends { id: unknown }>
-    implements QueueShard<Item>
-{
-    static of<Item extends { id: unknown }>(
-        ...items: readonly Item[]
-    ): ArrayQueueShard<Item> {
+export class ArrayQueueShard<Item extends { id: unknown }> implements QueueShard<Item> {
+    static of<Item extends { id: unknown }>(...items: readonly Item[]): ArrayQueueShard<Item> {
         return new ArrayQueueShard(uniqueQueueShardID(), items)
     }
 
@@ -41,9 +33,7 @@ export class ArrayQueueShard<Item extends { id: unknown }>
     }
 
     async itemPreceding(item: Item): Promise<Item | null> {
-        const itemIndex = this.items.findIndex(
-            (candidate) => candidate.id === item.id,
-        )
+        const itemIndex = this.items.findIndex((candidate) => candidate.id === item.id)
         if (itemIndex === -1 || itemIndex === 0) {
             return null
         }
@@ -51,9 +41,7 @@ export class ArrayQueueShard<Item extends { id: unknown }>
     }
 
     async itemFollowing(item: Item): Promise<Item | null> {
-        const itemIndex = this.items.findIndex(
-            (candidate) => candidate.id === item.id,
-        )
+        const itemIndex = this.items.findIndex((candidate) => candidate.id === item.id)
         if (itemIndex === -1 || itemIndex === this.items.length - 1) {
             return null
         }

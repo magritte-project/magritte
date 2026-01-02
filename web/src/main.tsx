@@ -2,21 +2,19 @@ import { RouterProvider, createRouter } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
-import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
-
-// Import the generated route tree
-import { routeTree } from "@/routeTree.gen"
-
 import { APIClient } from "@/api/client"
 import { StorageUserSessionManager } from "@/api/userSession.ts"
 import APIClientContextProvider from "@/contexts/providers/APIClientContextProvider"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
 import PlayerContextProvider from "@/contexts/providers/PlayerContextProvider"
+import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import AppleMusicPlaybackEngine from "@/playback/engines/applemusic"
 import WebPlaybackEngine from "@/playback/engines/web"
 import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
+// Import the generated route tree
+import { routeTree } from "@/routeTree.gen"
 import { initializeServices } from "@/services/initialization"
 import "@/styles.css"
 

@@ -1,9 +1,11 @@
+import type { JsonStructure } from "react-cmdk"
+
+import { type ReactNode, useReducer, useState } from "react"
+
 import {
     AppCommandPaletteContext,
     type AppCommandPaletteContextMessage,
 } from "@/contexts/appCommandPaletteContext"
-import { type ReactNode, useReducer, useState } from "react"
-import type { JsonStructure } from "react-cmdk"
 
 function handleMessage(
     items: JsonStructure,
@@ -38,9 +40,7 @@ export default function AppCommandPaletteContextProvider({
     const [isOpen, setIsOpen] = useState(false)
     const [items, dispatch] = useReducer(handleMessage, [])
     return (
-        <AppCommandPaletteContext.Provider
-            value={{ isOpen, setIsOpen, items, dispatch }}
-        >
+        <AppCommandPaletteContext.Provider value={{ isOpen, setIsOpen, items, dispatch }}>
             {children}
         </AppCommandPaletteContext.Provider>
     )

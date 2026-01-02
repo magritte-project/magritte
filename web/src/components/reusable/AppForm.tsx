@@ -1,9 +1,10 @@
-import { formContext } from "@/contexts/formContext"
 import type { AnyFormApi } from "@tanstack/react-form"
+
 import { useCallback } from "react"
 
-export interface AppFormProps
-    extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onsubmit"> {
+import { formContext } from "@/contexts/formContext"
+
+export interface AppFormProps extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onsubmit"> {
     readonly form: AnyFormApi
 }
 

@@ -1,9 +1,6 @@
 import type { UserSession } from "@/api/userSession"
 
-export function resolveUrl(
-    url: string,
-    currentSession: UserSession | null,
-): string | undefined {
+export function resolveUrl(url: string, currentSession: UserSession | null): string | undefined {
     if (url.startsWith("magritte://")) {
         if (currentSession === null) {
             return undefined

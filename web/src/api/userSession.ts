@@ -28,15 +28,11 @@ export class UserSessionManager {
         this._eventTarget.dispatchEvent(new CustomEvent("onUserSessionChange"))
     }
 
-    addUserSessionChangeEventListener(
-        callback: EventListenerOrEventListenerObject,
-    ) {
+    addUserSessionChangeEventListener(callback: EventListenerOrEventListenerObject) {
         this._eventTarget.addEventListener("onUserSessionChange", callback)
     }
 
-    removeUserSessionChangeEventListener(
-        callback: EventListenerOrEventListenerObject,
-    ) {
+    removeUserSessionChangeEventListener(callback: EventListenerOrEventListenerObject) {
         this._eventTarget.removeEventListener("onUserSessionChange", callback)
     }
 }
@@ -66,14 +62,8 @@ export class StorageUserSessionManager extends UserSessionManager {
 
     override set current(userSession: UserSession | null) {
         if (userSession != null) {
-            this._storage.setItem(
-                "userSession.accessToken",
-                userSession.accessToken,
-            )
-            this._storage.setItem(
-                "userSession.scope",
-                userSession.scopes.join(" "),
-            )
+            this._storage.setItem("userSession.accessToken", userSession.accessToken)
+            this._storage.setItem("userSession.scope", userSession.scopes.join(" "))
         } else {
             this._storage.removeItem("userSession.accessToken")
             this._storage.removeItem("userSession.scope")

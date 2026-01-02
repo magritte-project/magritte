@@ -1,5 +1,6 @@
-import { SignInIcon, SignOutIcon } from "@phosphor-icons/react"
 import type { JsonStructure } from "react-cmdk"
+
+import { SignInIcon, SignOutIcon } from "@phosphor-icons/react"
 
 export function getCommandsForAppleMusic(): JsonStructure {
     return [

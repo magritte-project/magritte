@@ -136,13 +136,9 @@ declare namespace MusicKit {
         | "textTrackRemoved"
         | "timedMetadataDidChange"
     declare type SimpleEventCallback = () => void
-    declare type NowPlayingEventName =
-        | "nowPlayingItemWillChange"
-        | "nowPlayingItemDidChange"
+    declare type NowPlayingEventName = "nowPlayingItemWillChange" | "nowPlayingItemDidChange"
     declare type NowPlayingEventCallback = (event: { item: MediaItem }) => void
-    declare type StateChangeEventName =
-        | "playbackStateWillChange"
-        | "playbackStateDidChange"
+    declare type StateChangeEventName = "playbackStateWillChange" | "playbackStateDidChange"
     declare type StateChangeEventCallback = (event: {
         oldState: PlaybackStates
         state: PlaybackStates
@@ -173,18 +169,9 @@ declare namespace MusicKit {
         videoContainerElement: HTMLVideoElement | undefined
         volume: number
 
-        addEventListener(
-            name: SimpleEventName,
-            callback: SimpleEventCallback,
-        ): void
-        addEventListener(
-            name: NowPlayingEventName,
-            callback: NowPlayingEventCallback,
-        ): void
-        addEventListener(
-            name: StateChangeEventName,
-            callback: StateChangeEventCallback,
-        ): void
+        addEventListener(name: SimpleEventName, callback: SimpleEventCallback): void
+        addEventListener(name: NowPlayingEventName, callback: NowPlayingEventCallback): void
+        addEventListener(name: StateChangeEventName, callback: StateChangeEventCallback): void
         authorize(): Promise<string | undefined>
         changeToMediaAtIndex(index: number): Promise<void>
         changeToMediaItem(descriptor: MediaItem | string): Promise<void>
@@ -194,27 +181,12 @@ declare namespace MusicKit {
         mute(): void
         pause(): void
         play(): void
-        playAt(
-            position: number,
-            options: QueueOptions,
-        ): Promise<Queue | undefined>
+        playAt(position: number, options: QueueOptions): Promise<Queue | undefined>
         playLater(options: QueueOptions): Promise<Queue | undefined>
-        playNext(
-            options: QueueOptions,
-            clear?: boolean,
-        ): Promise<Queue | undefined>
-        removeEventListener(
-            name: SimpleEventName,
-            callback: SimpleEventCallback,
-        ): void
-        removeEventListener(
-            name: NowPlayingEventName,
-            callback: NowPlayingEventCallback,
-        ): void
-        removeEventListener(
-            name: StateChangeEventName,
-            callback: StateChangeEventCallback,
-        ): void
+        playNext(options: QueueOptions, clear?: boolean): Promise<Queue | undefined>
+        removeEventListener(name: SimpleEventName, callback: SimpleEventCallback): void
+        removeEventListener(name: NowPlayingEventName, callback: NowPlayingEventCallback): void
+        removeEventListener(name: StateChangeEventName, callback: StateChangeEventCallback): void
         requestFullscreen(element: HTMLElement): Promise<void>
         seekBackward(): Promise<void>
         seekForward(): Promise<void>
@@ -229,9 +201,5 @@ declare namespace MusicKit {
 
     declare function getInstance(): Instance
     declare function configure(config: Configuration): Promise<Instance>
-    declare function formatArtworkURL(
-        artwork: object,
-        width: number,
-        height: number,
-    ): string
+    declare function formatArtworkURL(artwork: object, width: number, height: number): string
 }

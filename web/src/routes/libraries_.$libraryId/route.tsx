@@ -1,13 +1,9 @@
+import { DiscIcon, MicrophoneIcon, MusicNotesIcon, PlusIcon } from "@phosphor-icons/react"
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
+
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
-import {
-    DiscIcon,
-    MicrophoneIcon,
-    MusicNotesIcon,
-    PlusIcon,
-} from "@phosphor-icons/react"
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/libraries_/$libraryId")({
     component: function LibrariesLayoutComponent() {

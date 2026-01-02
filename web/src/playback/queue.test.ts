@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+
 import { Queue } from "./queue"
 import { ArrayQueueShard } from "./queueShards/array"
 
@@ -15,9 +16,7 @@ describe("Queue", () => {
                 ArrayQueueShard.of(firstItem),
                 ArrayQueueShard.of(secondItem),
             )
-            await expect(
-                subject.entryForItem(secondItem),
-            ).resolves.toMatchObject({
+            await expect(subject.entryForItem(secondItem)).resolves.toMatchObject({
                 shard: subject.shards[1],
                 item: secondItem,
             })
@@ -64,9 +63,7 @@ describe("Queue", () => {
         it("should return the preceding item from the shard", async () => {
             const firstItem = stubItem()
             const secondItem = stubItem()
-            const subject = Queue.with(
-                ArrayQueueShard.of(firstItem, secondItem),
-            )
+            const subject = Queue.with(ArrayQueueShard.of(firstItem, secondItem))
             await expect(
                 subject.entryPreceding({
                     shard: subject.shards[0],
@@ -112,9 +109,7 @@ describe("Queue", () => {
         it("should return the following item from the shard", async () => {
             const firstItem = stubItem()
             const secondItem = stubItem()
-            const subject = Queue.with(
-                ArrayQueueShard.of(firstItem, secondItem),
-            )
+            const subject = Queue.with(ArrayQueueShard.of(firstItem, secondItem))
             await expect(
                 subject.entryFollowing({
                     shard: subject.shards[0],
@@ -165,10 +160,7 @@ describe("Queue", () => {
         })
 
         it("should return a copy with the shard copied", async () => {
-            const original = Queue.with(
-                ArrayQueueShard.of(),
-                ArrayQueueShard.of(),
-            )
+            const original = Queue.with(ArrayQueueShard.of(), ArrayQueueShard.of())
             const copy = await original.putShard(ArrayQueueShard.of(), 1)
             expect(original.shards).toHaveLength(2)
             expect(copy.shards).toHaveLength(3)
@@ -178,11 +170,7 @@ describe("Queue", () => {
 
         it("should return a copy with the shard moved", async () => {
             const specificShard = ArrayQueueShard.of()
-            const original = Queue.with(
-                specificShard,
-                ArrayQueueShard.of(),
-                ArrayQueueShard.of(),
-            )
+            const original = Queue.with(specificShard, ArrayQueueShard.of(), ArrayQueueShard.of())
             const copy = await original.putShard(specificShard)
             expect(copy.shards[0].id).not.toStrictEqual(specificShard.id)
             expect(copy.shards[2].id).toStrictEqual(specificShard.id)

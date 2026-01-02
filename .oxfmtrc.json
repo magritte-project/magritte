@@ -1,0 +1,13 @@
+{
+    "$schema": "./web/node_modules/oxfmt/configuration_schema.json",
+    "printWidth": 100,
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": false,
+    "singleQuote": false,
+    "experimentalSortImports": {},
+    "ignorePatterns": [
+        "web/src/routeTree.gen.ts",
+        "web/src/api/openapi.d.ts"
+    ]
+}

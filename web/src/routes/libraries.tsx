@@ -1,3 +1,10 @@
+import type { JsonStructure } from "react-cmdk"
+
+import { BooksIcon, PlusIcon, VinylRecordIcon } from "@phosphor-icons/react"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { Link, Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
+import { useMemo } from "react"
+
 import { readLibraries } from "@/api/queries/libraries"
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
@@ -5,16 +12,6 @@ import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
 import useAPIClient from "@/hooks/apiClientHook"
-import { BooksIcon, PlusIcon, VinylRecordIcon } from "@phosphor-icons/react"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import {
-    Link,
-    Outlet,
-    createFileRoute,
-    useNavigate,
-} from "@tanstack/react-router"
-import { useMemo } from "react"
-import type { JsonStructure } from "react-cmdk"
 
 export const Route = createFileRoute("/libraries")({
     component: function LibrariesComponent() {
@@ -43,11 +40,7 @@ export const Route = createFileRoute("/libraries")({
             <AppCommandsProvider items={libraryItems}>
                 <div>
                     <PrimaryHeader>
-                        <ThemedTabItemLink
-                            to="/libraries"
-                            icon={BooksIcon}
-                            label="Libraries"
-                        />
+                        <ThemedTabItemLink to="/libraries" icon={BooksIcon} label="Libraries" />
                     </PrimaryHeader>
                     <main className="flex flex-col text-center items-center justify-center gap-2 p-4 min-h-0 h-screen">
                         <ol>
@@ -70,17 +63,12 @@ export const Route = createFileRoute("/libraries")({
                                                 weight="light"
                                             />
                                         </div>
-                                        <div className="text-lg font-semibold">
-                                            {library.name}
-                                        </div>
+                                        <div className="text-lg font-semibold">{library.name}</div>
                                     </Link>
                                 </li>
                             ))}
                         </ol>
-                        <ThemedLink
-                            to="/libraries/add"
-                            className="flex items-center gap-1"
-                        >
+                        <ThemedLink to="/libraries/add" className="flex items-center gap-1">
                             <PlusIcon weight="bold" />
                             Add
                         </ThemedLink>

@@ -1,6 +1,8 @@
+import { useSyncExternalStore } from "react"
+
 import type { PlayableItem } from "@/playback/item"
 import type { Queue } from "@/playback/queue"
-import { useSyncExternalStore } from "react"
+
 import usePlayer from "@/hooks/playerHook"
 
 export default function useQueue(): Queue<PlayableItem> {

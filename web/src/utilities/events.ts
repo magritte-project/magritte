@@ -75,10 +75,7 @@ export class EventSink<TEvent> {
  *
  * @returns An event sink and an event stream.
  */
-export function createEvent<TEvent>(): [
-    EventSink<TEvent>,
-    EventStream<TEvent>,
-] {
+export function createEvent<TEvent>(): [EventSink<TEvent>, EventStream<TEvent>] {
     const emitter = new EventImplementation<TEvent>()
     return [new EventSink(emitter), new EventStream(emitter)]
 }

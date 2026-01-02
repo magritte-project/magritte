@@ -1,13 +1,10 @@
-import classNames from "classnames"
 import type React from "react"
+
+import classNames from "classnames"
 
 export type ThemedInputProps = React.InputHTMLAttributes<HTMLInputElement>
 
-export default function ThemedInput({
-    type = "text",
-    className,
-    ...rest
-}: ThemedInputProps) {
+export default function ThemedInput({ type = "text", className, ...rest }: ThemedInputProps) {
     return (
         <input
             type={type}

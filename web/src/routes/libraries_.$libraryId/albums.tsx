@@ -1,10 +1,11 @@
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
+import { z } from "zod"
+
 import { readLibraryAlbums } from "@/api/queries/libraries"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import TableFooter from "@/components/reusable/TableFooter"
 import useAPIClient from "@/hooks/apiClientHook"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
-import { z } from "zod"
 
 export const Route = createFileRoute("/libraries_/$libraryId/albums")({
     validateSearch: z.object({
@@ -37,10 +38,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                 )}
                 <ol className="flex items-start flex-wrap gap-2">
                     {page.items.map((album) => (
-                        <li
-                            key={`album-${album.id}`}
-                            className="w-36 hover:bg-blue-50"
-                        >
+                        <li key={`album-${album.id}`} className="w-36 hover:bg-blue-50">
                             <Link
                                 to="/libraries/$libraryId/songs"
                                 params={{ libraryId }}

@@ -1,5 +1,6 @@
-import { AppCommandPaletteContext } from "@/contexts/appCommandPaletteContext"
 import { useContext } from "react"
+
+import { AppCommandPaletteContext } from "@/contexts/appCommandPaletteContext"
 
 export default function useAppCommandPaletteContext() {
     const context = useContext(AppCommandPaletteContext)

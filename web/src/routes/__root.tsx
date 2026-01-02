@@ -1,15 +1,17 @@
+import type { QueryClient } from "@tanstack/react-query"
+
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+import { z } from "zod"
 
 import type { APIClient } from "@/api/client"
 import type { UserSessionManager } from "@/api/userSession"
+import type { Player } from "@/playback/player"
+
 import AppCommandPalette from "@/components/AppCommandPalette"
 import RootLayout from "@/components/RootLayout"
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
-import type { Player } from "@/playback/player"
-import type { QueryClient } from "@tanstack/react-query"
-import { z } from "zod"
 
 export interface MagritteRouterContext {
     readonly queryClient: QueryClient

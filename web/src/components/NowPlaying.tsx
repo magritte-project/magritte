@@ -1,3 +1,8 @@
+import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon } from "@phosphor-icons/react"
+import classNames from "classnames"
+
+import type { PlayableItem } from "@/playback/item"
+
 import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import ThemedButton from "@/components/theme/ThemedButton"
@@ -5,15 +10,7 @@ import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
 import useQueue from "@/hooks/queueHook"
-import type { PlayableItem } from "@/playback/item"
 import { ArrayQueueShard } from "@/playback/queueShards/array"
-import {
-    PauseIcon,
-    PlayIcon,
-    SkipBackIcon,
-    SkipForwardIcon,
-} from "@phosphor-icons/react"
-import classNames from "classnames"
 
 export default function NowPlaying() {
     const player = usePlayer()
@@ -29,12 +26,9 @@ export default function NowPlaying() {
                     itemTitle={playingItem?.title}
                 />
                 <div className="flex flex-col items-center gap-1 text-sm text-center">
-                    <div className="font-bold">
-                        {playingItem?.title ?? "--"}
-                    </div>
+                    <div className="font-bold">{playingItem?.title ?? "--"}</div>
                     <div className="text-gray-700">
-                        {playingItem?.album_title ?? "--"} by{" "}
-                        {playingItem?.artist_name ?? "--"}
+                        {playingItem?.album_title ?? "--"} by {playingItem?.artist_name ?? "--"}
                     </div>
                 </div>
                 <NowPlayingScrubber />
@@ -48,9 +42,7 @@ export default function NowPlaying() {
                     <ThemedButton
                         disabled={player.queue.length === 0}
                         onClick={() =>
-                            player.playbackState === "playing"
-                                ? player.pause()
-                                : player.resume()
+                            player.playbackState === "playing" ? player.pause() : player.resume()
                         }
                     >
                         {playbackState === "playing" ? (
@@ -67,9 +59,7 @@ export default function NowPlaying() {
                     </ThemedButton>
                 </div>
             </div>
-            <header className="font-bold text-xl border-t border-gray-200 p-3">
-                Up Next
-            </header>
+            <header className="font-bold text-xl border-t border-gray-200 p-3">Up Next</header>
             {queue.shards.map((shard, shardIndex) => (
                 <section
                     key={`shards[${shard.id}@${shardIndex}]`}
@@ -77,41 +67,33 @@ export default function NowPlaying() {
                 >
                     {shard instanceof ArrayQueueShard ? (
                         <ol className="flex flex-col gap-1 px-1">
-                            {(shard.items as readonly PlayableItem[]).map(
-                                (song, songIndex) => (
-                                    <li
-                                        key={`shards[${shard.id}@${shardIndex}].songs[${song.id}@${songIndex}]`}
-                                        className={classNames(
-                                            "flex flex-col gap-1 px-2 py-1 text-sm cursor-pointer hover:bg-blue-50 rounded-sm",
-                                            {
-                                                "text-blue-700":
-                                                    song.id === playingItem?.id,
-                                            },
-                                        )}
-                                        onClick={() =>
-                                            player.replaceQueue({
-                                                newQueue: queue,
-                                                startingItem: song,
-                                                playNow: true,
-                                            })
-                                        }
-                                        onKeyDown={() => {}}
-                                    >
-                                        <div className="font-bold">
-                                            {song?.title ?? "--"}
-                                        </div>
-                                        <div className="text-gray-700">
-                                            {song?.album_title ?? "--"} by{" "}
-                                            {song?.artist_name ?? "--"}
-                                        </div>
-                                    </li>
-                                ),
-                            )}
+                            {(shard.items as readonly PlayableItem[]).map((song, songIndex) => (
+                                <li
+                                    key={`shards[${shard.id}@${shardIndex}].songs[${song.id}@${songIndex}]`}
+                                    className={classNames(
+                                        "flex flex-col gap-1 px-2 py-1 text-sm cursor-pointer hover:bg-blue-50 rounded-sm",
+                                        {
+                                            "text-blue-700": song.id === playingItem?.id,
+                                        },
+                                    )}
+                                    onClick={() =>
+                                        player.replaceQueue({
+                                            newQueue: queue,
+                                            startingItem: song,
+                                            playNow: true,
+                                        })
+                                    }
+                                    onKeyDown={() => {}}
+                                >
+                                    <div className="font-bold">{song?.title ?? "--"}</div>
+                                    <div className="text-gray-700">
+                                        {song?.album_title ?? "--"} by {song?.artist_name ?? "--"}
+                                    </div>
+                                </li>
+                            ))}
                         </ol>
                     ) : (
-                        <div className="font-semibold text-xs p-3">
-                            {shard.length} Songs
-                        </div>
+                        <div className="font-semibold text-xs p-3">{shard.length} Songs</div>
                     )}
                 </section>
             ))}

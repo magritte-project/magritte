@@ -1,5 +1,11 @@
-import useIngestSongs from "@/api/mutations/ingest"
+import { CheckIcon } from "@phosphor-icons/react"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createFileRoute, Outlet, useNavigate, useParams } from "@tanstack/react-router"
+import { useCallback, useState } from "react"
+
 import type { IngestSong } from "@/api/openapi"
+
+import useIngestSongs from "@/api/mutations/ingest"
 import { readAvailableServices } from "@/api/queries/services"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import AsyncButton from "@/components/reusable/AsyncButton"
@@ -8,22 +14,11 @@ import ThemedButton from "@/components/theme/ThemedButton"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import IngestSongsContextProvider from "@/contexts/providers/IngestSongsContextProvider"
 import useAPIClient from "@/hooks/apiClientHook"
-import { CheckIcon } from "@phosphor-icons/react"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import {
-    createFileRoute,
-    Outlet,
-    useNavigate,
-    useParams,
-} from "@tanstack/react-router"
-import { useCallback, useState } from "react"
 
 export const Route = createFileRoute("/libraries_/$libraryId/songs/add")({
     component: function AddLayout() {
         const apiClient = useAPIClient()
-        const { data: availableServices } = useSuspenseQuery(
-            readAvailableServices(apiClient),
-        )
+        const { data: availableServices } = useSuspenseQuery(readAvailableServices(apiClient))
         const navigate = useNavigate()
         const { libraryId } = Route.useParams()
         const { service: selectedService } = useParams({ strict: false })
@@ -58,10 +53,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs/add")({
         }, [songs, ingestSongs, handleDismiss])
 
         return (
-            <Modal
-                className="min-w-full md:min-w-[600px]"
-                onDismiss={handleDismiss}
-            >
+            <Modal className="min-w-full md:min-w-[600px]" onDismiss={handleDismiss}>
                 <IngestSongsContextProvider value={{ isAdded, add, flush }}>
                     <ModalHeader
                         supplementaryEnd={
@@ -85,11 +77,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs/add")({
                                         bg-white text-blue-600
                                         data-active:bg-blue-600 data-active:text-white
                                     `}
-                                data-active={
-                                    selectedService === service.name
-                                        ? ""
-                                        : undefined
-                                }
+                                data-active={selectedService === service.name ? "" : undefined}
                                 onKeyDown={() => {}}
                                 onClick={() =>
                                     navigate({

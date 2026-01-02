@@ -13,9 +13,7 @@ export class Queue<Item> {
     }
 
     constructor(readonly shards: readonly QueueShard<Item>[] = []) {
-        this._shardIndices = new Map(
-            shards.map((shard, index) => [shard.id, index]),
-        )
+        this._shardIndices = new Map(shards.map((shard, index) => [shard.id, index]))
     }
 
     get length(): number {
@@ -41,9 +39,7 @@ export class Queue<Item> {
         return null
     }
 
-    async entryPreceding(
-        entry: QueueEntry<Item>,
-    ): Promise<QueueEntry<Item> | null> {
+    async entryPreceding(entry: QueueEntry<Item>): Promise<QueueEntry<Item> | null> {
         const startIndex = this._shardIndices.get(entry.shard.id)
         if (startIndex === undefined) {
             return null
@@ -65,9 +61,7 @@ export class Queue<Item> {
         return null
     }
 
-    async entryFollowing(
-        entry: QueueEntry<Item>,
-    ): Promise<QueueEntry<Item> | null> {
+    async entryFollowing(entry: QueueEntry<Item>): Promise<QueueEntry<Item> | null> {
         const startIndex = this._shardIndices.get(entry.shard.id)
         if (startIndex === undefined) {
             return null
@@ -89,10 +83,7 @@ export class Queue<Item> {
         return null
     }
 
-    async putShard(
-        newShard: QueueShard<Item>,
-        position?: number,
-    ): Promise<Queue<Item>> {
+    async putShard(newShard: QueueShard<Item>, position?: number): Promise<Queue<Item>> {
         const shards = [...this.shards]
         const toRemove = shards.findIndex((shard) => shard.id === newShard.id)
         if (toRemove !== -1) {
@@ -109,9 +100,7 @@ export class Queue<Item> {
     async removeShard(idOrPosition: string | number): Promise<Queue<Item>> {
         const shards = [...this.shards]
         if (typeof idOrPosition === "string") {
-            const toRemove = shards.findIndex(
-                (shard) => shard.id === idOrPosition,
-            )
+            const toRemove = shards.findIndex((shard) => shard.id === idOrPosition)
             if (toRemove !== -1) {
                 shards.splice(toRemove, 1)
             }

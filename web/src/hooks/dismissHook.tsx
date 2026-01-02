@@ -1,6 +1,7 @@
-import { DismissContext, type Dismiss } from "@/contexts/dismissContext"
 import { useRouter } from "@tanstack/react-router"
 import { useContext } from "react"
+
+import { DismissContext, type Dismiss } from "@/contexts/dismissContext"
 
 export default function useDismiss(): Dismiss {
     const router = useRouter()

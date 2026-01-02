@@ -1,5 +1,13 @@
-import { useDeleteLibrarySong } from "@/api/mutations/libraries"
+import { MenuButton } from "@headlessui/react"
+import { DotsThreeCircleVerticalIcon, TrashIcon } from "@phosphor-icons/react"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
+import { useCallback } from "react"
+import { z } from "zod"
+
 import type { SongRead } from "@/api/openapi"
+
+import { useDeleteLibrarySong } from "@/api/mutations/libraries"
 import { readLibrarySongs } from "@/api/queries/libraries"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
@@ -9,12 +17,6 @@ import usePlayer from "@/hooks/playerHook"
 import useQueueShardContext from "@/hooks/queueShardContextHook"
 import { Queue } from "@/playback/queue"
 import { LibrarySongsQueueShard } from "@/playback/queueShards/librarySongs"
-import { MenuButton } from "@headlessui/react"
-import { DotsThreeCircleVerticalIcon, TrashIcon } from "@phosphor-icons/react"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
-import { useCallback } from "react"
-import { z } from "zod"
 
 function formatDuration(seconds: number) {
     const minutes = Math.floor(seconds / 60)
@@ -84,9 +86,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
         const deleteLibrarySong = useDeleteLibrarySong(Number(libraryId))
         const handleRemove = useCallback(
             async (song: SongRead) => {
-                const confirmed = confirm(
-                    `Are you sure you want to remove ${song.title}?`,
-                )
+                const confirmed = confirm(`Are you sure you want to remove ${song.title}?`)
                 if (!confirmed) {
                     return
                 }
@@ -124,8 +124,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                                     queueShardContext,
                                                     page,
                                                     {
-                                                        libraryId:
-                                                            Number(libraryId),
+                                                        libraryId: Number(libraryId),
                                                         albumId,
                                                         artistId,
                                                         sortBy,
@@ -140,25 +139,17 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                 >
                                     <td className="px-2 py-1">{song.title}</td>
                                     <td className="px-2 py-1">
-                                        {formatDuration(
-                                            song.end_time - song.start_time,
-                                        )}
+                                        {formatDuration(song.end_time - song.start_time)}
                                     </td>
-                                    <td className="px-2 py-1">
-                                        {song.album_title}
-                                    </td>
-                                    <td className="px-2 py-1">
-                                        {song.artist_name}
-                                    </td>
+                                    <td className="px-2 py-1">{song.album_title}</td>
+                                    <td className="px-2 py-1">{song.artist_name}</td>
                                     <td className="px-2 py-1">{song.genre}</td>
                                     <td className="px-2 py-1">
                                         <ThemedPopUpMenu
                                             button={
                                                 <MenuButton
                                                     className="text-blue-600 p-2"
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
+                                                    onClick={(e) => e.stopPropagation()}
                                                 >
                                                     <DotsThreeCircleVerticalIcon
                                                         weight="bold"
@@ -174,8 +165,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                                             <TrashIcon /> Remove
                                                         </>
                                                     ),
-                                                    onClick: () =>
-                                                        handleRemove(song),
+                                                    onClick: () => handleRemove(song),
                                                 },
                                             ]}
                                         />

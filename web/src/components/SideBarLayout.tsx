@@ -1,9 +1,11 @@
-import NowPlaying from "@/components/NowPlaying"
-import Search from "@/components/Search"
-import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 import { MagnifyingGlassIcon, WaveformIcon } from "@phosphor-icons/react"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import { useCallback } from "react"
+
+import NowPlaying from "@/components/NowPlaying"
+import Search from "@/components/Search"
+import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
+
 import SecondaryHeader from "./chrome/SecondaryHeader"
 
 export default function SideBarLayout() {
@@ -34,10 +36,7 @@ export default function SideBarLayout() {
     return (
         <div>
             <SecondaryHeader>
-                <button
-                    type="button"
-                    onClick={() => setActiveTab("now_playing")}
-                >
+                <button type="button" onClick={() => setActiveTab("now_playing")}>
                     <ThemedTabItemLabel
                         isActive={activeTab === "now_playing"}
                         icon={WaveformIcon}

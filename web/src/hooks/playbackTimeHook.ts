@@ -1,5 +1,6 @@
-import usePlayer from "@/hooks/playerHook"
 import { useCallback, useEffect, useState } from "react"
+
+import usePlayer from "@/hooks/playerHook"
 
 export interface UsePlaybackTimeResult {
     readonly elapsedTime: number | null
@@ -26,9 +27,7 @@ export default function usePlaybackTime(): UsePlaybackTimeResult {
     }, [player, isSeeking, player.playbackState])
     const totalTime = player.totalTime
     const remainingTime =
-        totalTime !== null && elapsedTime !== null
-            ? totalTime - elapsedTime
-            : null
+        totalTime !== null && elapsedTime !== null ? totalTime - elapsedTime : null
     const seekToTime = useCallback(
         async (newTime: number) => {
             try {

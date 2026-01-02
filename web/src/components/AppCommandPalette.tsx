@@ -1,7 +1,3 @@
-import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
-import usePlayer from "@/hooks/playerHook"
-import useUserSession from "@/hooks/userSessionHook"
-import getServiceCommands from "@/services/commands"
 import {
     PauseIcon,
     PlayIcon,
@@ -13,11 +9,13 @@ import {
 } from "@phosphor-icons/react"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
-import CommandPalette, {
-    filterItems,
-    getItemIndex,
-    useHandleOpenCommandPalette,
-} from "react-cmdk"
+import CommandPalette, { filterItems, getItemIndex, useHandleOpenCommandPalette } from "react-cmdk"
+
+import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
+import usePlayer from "@/hooks/playerHook"
+import useUserSession from "@/hooks/userSessionHook"
+import getServiceCommands from "@/services/commands"
+
 import "react-cmdk/dist/cmdk.css"
 
 export default function AppCommandPalette() {
@@ -45,14 +43,8 @@ export default function AppCommandPalette() {
                     },
                     {
                         id: "playback.playPaused",
-                        icon:
-                            player.playbackState === "playing"
-                                ? PauseIcon
-                                : PlayIcon,
-                        children:
-                            player.playbackState === "playing"
-                                ? "Pause"
-                                : "Play",
+                        icon: player.playbackState === "playing" ? PauseIcon : PlayIcon,
+                        children: player.playbackState === "playing" ? "Pause" : "Play",
                         onClick: () => player.skipPrevious(),
                         disabled: player.playbackState === "stopped",
                     },
@@ -109,10 +101,7 @@ export default function AppCommandPalette() {
             <CommandPalette.Page id="all">
                 {filteredItems.length ? (
                     filteredItems.map((list) => (
-                        <CommandPalette.List
-                            key={list.id}
-                            heading={list.heading}
-                        >
+                        <CommandPalette.List key={list.id} heading={list.heading}>
                             {list.items.map(({ id, ...rest }) => (
                                 <CommandPalette.ListItem
                                     key={id}

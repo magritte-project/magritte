@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+
 import ThemedHeader from "@/components/theme/ThemedHeader"
 
 export interface SecondaryHeaderProps {

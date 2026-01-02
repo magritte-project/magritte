@@ -1,6 +1,8 @@
-import usePlayer from "@/hooks/playerHook"
-import type { PlayableItem } from "@/playback/item"
 import { useSyncExternalStore } from "react"
+
+import type { PlayableItem } from "@/playback/item"
+
+import usePlayer from "@/hooks/playerHook"
 
 export default function usePlayingItem(): PlayableItem | null {
     const player = usePlayer()

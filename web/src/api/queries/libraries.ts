@@ -1,5 +1,6 @@
-import type { APIClient, ReadLibrarySongsSortBy } from "@/api/client"
 import { queryOptions } from "@tanstack/react-query"
+
+import type { APIClient, ReadLibrarySongsSortBy } from "@/api/client"
 
 export function readLibraries(apiClient: APIClient) {
     return queryOptions({
@@ -22,10 +23,7 @@ export interface ReadLibraryAlbumsCriteria {
     readonly limit?: number
 }
 
-export function readLibraryAlbums(
-    apiClient: APIClient,
-    criteria: ReadLibraryAlbumsCriteria,
-) {
+export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlbumsCriteria) {
     return queryOptions({
         queryKey: [
             "readLibraryAlbums",
@@ -50,23 +48,11 @@ export interface ReadLibraryArtistsCriteria {
     readonly limit?: number
 }
 
-export function readLibraryArtists(
-    apiClient: APIClient,
-    criteria: ReadLibraryArtistsCriteria,
-) {
+export function readLibraryArtists(apiClient: APIClient, criteria: ReadLibraryArtistsCriteria) {
     return queryOptions({
-        queryKey: [
-            "readLibraryArtists",
-            criteria.libraryId,
-            criteria.offset,
-            criteria.limit,
-        ],
+        queryKey: ["readLibraryArtists", criteria.libraryId, criteria.offset, criteria.limit],
         queryFn: () =>
-            apiClient.readLibraryArtists(
-                criteria.libraryId,
-                criteria.offset,
-                criteria.limit,
-            ),
+            apiClient.readLibraryArtists(criteria.libraryId, criteria.offset, criteria.limit),
     })
 }
 
@@ -79,10 +65,7 @@ export interface ReadLibrarySongsCriteria {
     readonly limit?: number
 }
 
-export function readLibrarySongs(
-    apiClient: APIClient,
-    criteria: ReadLibrarySongsCriteria,
-) {
+export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySongsCriteria) {
     return queryOptions({
         queryKey: [
             "readLibrarySongs",

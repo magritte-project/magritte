@@ -1,0 +1,15 @@
+{
+    "$schema": "./web/node_modules/oxlint/configuration_schema.json",
+    "plugins": ["import", "typescript", "unicorn", "react"],
+    "env": {
+        "browser": true,
+        "es2024": true
+    },
+    "rules": {
+        "no-useless-else": "off"
+    },
+    "ignorePatterns": [
+        "web/src/routeTree.gen.ts",
+        "web/src/api/openapi.d.ts"
+    ]
+}

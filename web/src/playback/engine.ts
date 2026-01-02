@@ -1,5 +1,5 @@
-import type { EventStream } from "@/utilities/events"
 import type { PlayableItem } from "@/playback/item"
+import type { EventStream } from "@/utilities/events"
 
 export type PlaybackEngineState = "playing" | "paused" | "stopped"
 

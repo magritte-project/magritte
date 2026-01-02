@@ -1,10 +1,11 @@
+import { CaretLeftIcon, CommandIcon } from "@phosphor-icons/react"
+import { useCanGoBack, useRouter } from "@tanstack/react-router"
+import { useCallback, type ReactNode } from "react"
+
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import UserSessionButton from "@/components/UserSessionButton"
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
-import { CaretLeftIcon, CommandIcon } from "@phosphor-icons/react"
-import { useCanGoBack, useRouter } from "@tanstack/react-router"
-import { useCallback, type ReactNode } from "react"
 
 export interface PrimaryHeaderProps {
     readonly children?: ReactNode
@@ -20,10 +21,7 @@ export default function PrimaryHeader({ children }: PrimaryHeaderProps) {
     return (
         <ThemedHeader
             supplementaryStart={
-                <ThemedSubtleButton
-                    disabled={!canGoBack}
-                    onClick={() => history.back()}
-                >
+                <ThemedSubtleButton disabled={!canGoBack} onClick={() => history.back()}>
                     <CaretLeftIcon weight="bold" />
                 </ThemedSubtleButton>
             }

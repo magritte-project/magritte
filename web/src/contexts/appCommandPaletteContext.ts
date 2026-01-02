@@ -1,5 +1,6 @@
-import { createContext } from "react"
 import type { JsonStructure } from "react-cmdk"
+
+import { createContext } from "react"
 
 export type AppCommandPaletteContextMessage =
     | { type: "mount"; items: JsonStructure }
@@ -12,6 +13,6 @@ export interface AppCommandPaletteContextType {
     readonly dispatch: (message: AppCommandPaletteContextMessage) => void
 }
 
-export const AppCommandPaletteContext = createContext<
-    AppCommandPaletteContextType | undefined
->(undefined)
+export const AppCommandPaletteContext = createContext<AppCommandPaletteContextType | undefined>(
+    undefined,
+)

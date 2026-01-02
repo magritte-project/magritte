@@ -1,5 +1,7 @@
-import { CircleNotchIcon, WarningCircleIcon } from "@phosphor-icons/react"
 import type { ReactNode } from "react"
+
+import { CircleNotchIcon, WarningCircleIcon } from "@phosphor-icons/react"
+
 import ThemedButton from "./ThemedButton"
 
 export interface ThemedContentUnavailableProps {
@@ -18,25 +20,14 @@ export default function ThemedContentUnavailable({
             {error ? (
                 <>
                     <WarningCircleIcon size="3em" weight="light" />
-                    <div className="text-lg font-bold">
-                        Something went wrong
-                    </div>
+                    <div className="text-lg font-bold">Something went wrong</div>
                     <div className="text-sm">
                         {error instanceof Error ? error.message : String(error)}
                     </div>
-                    {onRetry && (
-                        <ThemedButton onClick={onRetry}>
-                            {retryLabel}
-                        </ThemedButton>
-                    )}
+                    {onRetry && <ThemedButton onClick={onRetry}>{retryLabel}</ThemedButton>}
                 </>
             ) : (
-                <CircleNotchIcon
-                    className="animate-spin"
-                    size="3em"
-                    weight="light"
-                    color="gray"
-                />
+                <CircleNotchIcon className="animate-spin" size="3em" weight="light" color="gray" />
             )}
         </div>
     )

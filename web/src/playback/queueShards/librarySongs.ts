@@ -1,23 +1,15 @@
+import type { QueryClient } from "@tanstack/react-query"
+
 import type { APIClient } from "@/api/client"
 import type { LibraryMediaReadSongRead, SongRead } from "@/api/openapi"
-import {
-    type ReadLibrarySongsCriteria,
-    readLibrarySongs,
-} from "@/api/queries/libraries"
-import type {
-    QueueShard,
-    QueueShardContext,
-    QueueShardID,
-} from "@/playback/queueShards/base"
-import type { QueryClient } from "@tanstack/react-query"
+import type { QueueShard, QueueShardContext, QueueShardID } from "@/playback/queueShards/base"
+
+import { type ReadLibrarySongsCriteria, readLibrarySongs } from "@/api/queries/libraries"
 
 export class LibrarySongsQueueShard implements QueueShard<SongRead> {
     private readonly _apiClient: APIClient
     private readonly _queryClient: QueryClient
-    private readonly _criteria: Omit<
-        ReadLibrarySongsCriteria,
-        "offset" | "limit"
-    >
+    private readonly _criteria: Omit<ReadLibrarySongsCriteria, "offset" | "limit">
     private readonly _pages: Map<number, LibraryMediaReadSongRead>
     private _limit: number
     private _total: number
@@ -66,9 +58,7 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
      * Already cached pages are visited first to avoid network activity when
      * not required.
      */
-    private async *_allPages(): AsyncGenerator<
-        [number, LibraryMediaReadSongRead]
-    > {
+    private async *_allPages(): AsyncGenerator<[number, LibraryMediaReadSongRead]> {
         const visitedOffsets = new Set<number>()
         for (const [offset, page] of this._pages) {
             visitedOffsets.add(offset)
@@ -87,13 +77,9 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
         }
     }
 
-    private async _pageOffsetAndIndexForItem(
-        item: SongRead,
-    ): Promise<[number, number]> {
+    private async _pageOffsetAndIndexForItem(item: SongRead): Promise<[number, number]> {
         for await (const [offset, page] of this._allPages()) {
-            const index = page.items.findIndex(
-                (candidate) => candidate.id === item.id,
-            )
+            const index = page.items.findIndex((candidate) => candidate.id === item.id)
             if (index !== -1) {
                 return [offset, index]
             }

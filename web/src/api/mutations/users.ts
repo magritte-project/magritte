@@ -1,7 +1,9 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+
 import type { UserProfileUpdate } from "@/api/openapi"
+
 import { userProfile } from "@/api/queries/users"
 import useAPIClient from "@/hooks/apiClientHook"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export function useUpdateUserProfile() {
     const queryClient = useQueryClient()

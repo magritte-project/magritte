@@ -1,11 +1,13 @@
-import useUserSession from "@/hooks/userSessionHook"
-import type { PlayableItemArtwork } from "@/playback/item"
-import { resolveUrl } from "@/utilities/resources"
-import classNames from "classnames"
 import type React from "react"
 
-export interface ArtworkImageProps
-    extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+import classNames from "classnames"
+
+import type { PlayableItemArtwork } from "@/playback/item"
+
+import useUserSession from "@/hooks/userSessionHook"
+import { resolveUrl } from "@/utilities/resources"
+
+export interface ArtworkImageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
     readonly artworks?: readonly PlayableItemArtwork[]
     readonly itemTitle?: string | null
 }

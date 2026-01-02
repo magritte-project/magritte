@@ -1,9 +1,10 @@
-import { readLibraryArtists } from "@/api/queries/libraries"
-import TableFooter from "@/components/reusable/TableFooter"
-import useAPIClient from "@/hooks/apiClientHook"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
+
+import { readLibraryArtists } from "@/api/queries/libraries"
+import TableFooter from "@/components/reusable/TableFooter"
+import useAPIClient from "@/hooks/apiClientHook"
 
 export const Route = createFileRoute("/libraries_/$libraryId/artists")({
     validateSearch: z.object({

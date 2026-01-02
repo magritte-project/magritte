@@ -5,6 +5,8 @@ import type {
     PlaybackEngineState,
 } from "@/playback/engine"
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
+import type { PlayableItem } from "@/playback/item"
+
 import { Queue, type QueueEntry } from "@/playback/queue"
 import {
     type EventSink,
@@ -12,12 +14,10 @@ import {
     type EventSubscription,
     createEvent,
 } from "@/utilities/events"
-import type { PlayableItem } from "@/playback/item"
 
 export type PlayerEvent = PlaybackEngineEvent | { type: "queueDidChange" }
 
-export interface ReplaceQueueOptions
-    extends Omit<PlaybackEngineEnqueueOptions, "itemToPlay"> {
+export interface ReplaceQueueOptions extends Omit<PlaybackEngineEnqueueOptions, "itemToPlay"> {
     readonly newQueue: Queue<PlayableItem>
     readonly startingItem?: PlayableItem
 }
@@ -50,8 +50,8 @@ export class Player {
         }
         this._activeEngine = newEngine
         if (newEngine !== null) {
-            this._activeEngineEventSubscription = newEngine.$events.subscribe(
-                (e) => this._handleEngineEvent(e),
+            this._activeEngineEventSubscription = newEngine.$events.subscribe((e) =>
+                this._handleEngineEvent(e),
             )
         }
     }
@@ -60,15 +60,11 @@ export class Player {
         entry: QueueEntry<PlayableItem>,
         options: Omit<PlaybackEngineEnqueueOptions, "itemToPlay">,
     ): Promise<void> {
-        const engine = await this._engineRegistry.findPlaybackEngineFor(
-            entry.item,
-        )
+        const engine = await this._engineRegistry.findPlaybackEngineFor(entry.item)
         if (engine === null) {
             this._events.dispatch({
                 type: "encounteredError",
-                error: new Error(
-                    `No engine available to play item ${entry.item}`,
-                ),
+                error: new Error(`No engine available to play item ${entry.item}`),
             })
             return
         }
@@ -80,9 +76,7 @@ export class Player {
         })
     }
 
-    private async _handleEngineEvent(
-        event: PlaybackEngineEvent,
-    ): Promise<void> {
+    private async _handleEngineEvent(event: PlaybackEngineEvent): Promise<void> {
         switch (event.type) {
             case "playbackStateDidChange":
             case "playingItemChanged":
@@ -93,9 +87,7 @@ export class Player {
                 if (this._playingEntry === null) {
                     return
                 }
-                const nextEntry = await this._queue.entryFollowing(
-                    this._playingEntry,
-                )
+                const nextEntry = await this._queue.entryFollowing(this._playingEntry)
                 if (nextEntry === null) {
                     await this.stop()
                     this._events.dispatch(event)
@@ -142,11 +134,7 @@ export class Player {
     /** Events relating to the state of playback */
     readonly $events: EventStream<PlayerEvent>
 
-    async replaceQueue({
-        newQueue,
-        startingItem,
-        ...options
-    }: ReplaceQueueOptions): Promise<void> {
+    async replaceQueue({ newQueue, startingItem, ...options }: ReplaceQueueOptions): Promise<void> {
         await this._activeEngine?.stop()
 
         this._queue = newQueue
@@ -174,9 +162,7 @@ export class Player {
             }
             return false
         } else {
-            const previousEntry = await this._queue.entryPreceding(
-                this._playingEntry,
-            )
+            const previousEntry = await this._queue.entryPreceding(this._playingEntry)
             if (previousEntry === null) {
                 await this.stop()
                 return false
@@ -195,9 +181,7 @@ export class Player {
             }
             return false
         } else {
-            const followingEntry = await this._queue.entryFollowing(
-                this._playingEntry,
-            )
+            const followingEntry = await this._queue.entryFollowing(this._playingEntry)
             if (followingEntry === null) {
                 await this.stop()
                 return false

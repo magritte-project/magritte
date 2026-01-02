@@ -10,10 +10,10 @@ test:
     pnpm test
 
 lint:
-    pnpm biome lint --fix
+    pnpm lint --fix
 
 format:
-    pnpm biome format --fix
+    pnpm format
 
 check-types:
     pnpm tsc --noEmit

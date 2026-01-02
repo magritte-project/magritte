@@ -1,8 +1,6 @@
 import { useCallback, useState } from "react"
-import {
-    DefaultButtonComponent,
-    type ButtonComponent,
-} from "@/components/reusable/ButtonComponent"
+
+import { DefaultButtonComponent, type ButtonComponent } from "@/components/reusable/ButtonComponent"
 import { getErrorMessage } from "@/utilities/errors"
 
 function defaultOnErrorCaught(error: unknown) {
@@ -10,12 +8,12 @@ function defaultOnErrorCaught(error: unknown) {
     alert(getErrorMessage(error))
 }
 
-export interface AsyncButtonProps
-    extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> {
+export interface AsyncButtonProps extends Omit<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    "onClick"
+> {
     readonly buttonComponent?: ButtonComponent
-    readonly onClick?: (
-        event: React.MouseEvent<HTMLButtonElement>,
-    ) => undefined | Promise<unknown>
+    readonly onClick?: (event: React.MouseEvent<HTMLButtonElement>) => undefined | Promise<unknown>
     readonly onErrorCaught?: (error: unknown) => void
 }
 

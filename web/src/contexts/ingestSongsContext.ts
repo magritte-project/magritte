@@ -1,5 +1,6 @@
-import type { IngestSong } from "@/api/openapi"
 import { createContext } from "react"
+
+import type { IngestSong } from "@/api/openapi"
 
 export interface IngestSongsContextType {
     readonly isAdded: (song: IngestSong) => boolean
@@ -7,6 +8,4 @@ export interface IngestSongsContextType {
     readonly flush: () => Promise<void>
 }
 
-export const IngestSongsContext = createContext<
-    IngestSongsContextType | undefined
->(undefined)
+export const IngestSongsContext = createContext<IngestSongsContextType | undefined>(undefined)

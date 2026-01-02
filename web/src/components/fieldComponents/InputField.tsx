@@ -1,18 +1,19 @@
-import type { ThemedInputProps } from "@/components/theme/ThemedInput"
-import ThemedInput from "@/components/theme/ThemedInput"
-import { useFieldContext } from "@/contexts/formContext"
 import type React from "react"
+
 import { useCallback } from "react"
 
-export interface InputFieldProps
-    extends Omit<
-        ThemedInputProps,
-        "value" | "defaultValue" | "onChange" | "onBlur" | "name"
-    > {}
+import type { ThemedInputProps } from "@/components/theme/ThemedInput"
+
+import ThemedInput from "@/components/theme/ThemedInput"
+import { useFieldContext } from "@/contexts/formContext"
+
+export interface InputFieldProps extends Omit<
+    ThemedInputProps,
+    "value" | "defaultValue" | "onChange" | "onBlur" | "name"
+> {}
 
 export default function InputField({ id, ...rest }: InputFieldProps) {
-    const field =
-        useFieldContext<React.InputHTMLAttributes<HTMLInputElement>["value"]>()
+    const field = useFieldContext<React.InputHTMLAttributes<HTMLInputElement>["value"]>()
     const handleChange = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             field.handleChange(event.currentTarget.value)

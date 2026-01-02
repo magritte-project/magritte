@@ -5,13 +5,10 @@ import type {
     PlaybackEngineEvent,
     PlaybackEngineState,
 } from "@/playback/engine"
-import {
-    type EventSink,
-    type EventStream,
-    createEvent,
-} from "@/utilities/events"
-import { resolveUrl } from "@/utilities/resources"
 import type { PlayableItem } from "@/playback/item"
+
+import { type EventSink, type EventStream, createEvent } from "@/utilities/events"
+import { resolveUrl } from "@/utilities/resources"
 
 export default class WebPlaybackEngine implements PlaybackEngine {
     private readonly _userSession: UserSessionManager
@@ -19,10 +16,7 @@ export default class WebPlaybackEngine implements PlaybackEngine {
     private readonly _events: EventSink<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
-    constructor(
-        userSession: UserSessionManager,
-        parent: HTMLElement = document.body,
-    ) {
+    constructor(userSession: UserSessionManager, parent: HTMLElement = document.body) {
         this._userSession = userSession
         this._audio = new Audio()
         ;[this._events, this.$events] = createEvent()
@@ -30,9 +24,7 @@ export default class WebPlaybackEngine implements PlaybackEngine {
         this._playingItem = null
 
         this._audio.addEventListener("canplay", (e) => this._handleCanPlay(e))
-        this._audio.addEventListener("durationchange", (e) =>
-            this._handleDurationChange(e),
-        )
+        this._audio.addEventListener("durationchange", (e) => this._handleDurationChange(e))
         this._audio.addEventListener("ended", (e) => this._handleEnded(e))
         this._audio.addEventListener("error", (e) => this._handleError(e))
         this._audio.addEventListener("pause", (e) => this._handlePause(e))
@@ -104,17 +96,10 @@ export default class WebPlaybackEngine implements PlaybackEngine {
         )
     }
 
-    async enqueue({
-        itemToPlay,
-        playNow,
-    }: PlaybackEngineEnqueueOptions): Promise<void> {
+    async enqueue({ itemToPlay, playNow }: PlaybackEngineEnqueueOptions): Promise<void> {
         const sources = itemToPlay.sources ?? []
-        const source = sources.find((source) =>
-            source.url.startsWith("magritte://"),
-        )
-        const audioSrc = source?.url
-            ? resolveUrl(source.url, this._userSession.current)
-            : null
+        const source = sources.find((source) => source.url.startsWith("magritte://"))
+        const audioSrc = source?.url ? resolveUrl(source.url, this._userSession.current) : null
         if (source === undefined || !audioSrc) {
             throw new Error("No compatible source in song")
         }

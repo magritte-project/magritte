@@ -1,8 +1,9 @@
-import type { Token } from "@/api/openapi"
-import type { UserSession } from "@/api/userSession"
 import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useRouteContext } from "@tanstack/react-router"
 import { useCallback, useEffect, useState } from "react"
+
+import type { Token } from "@/api/openapi"
+import type { UserSession } from "@/api/userSession"
 
 export interface UseUserSessionResult {
     readonly current: UserSession | null
@@ -26,13 +27,9 @@ export default function useUserSession(): UseUserSessionResult {
             setCurrent(userSession.current)
             queryClient.invalidateQueries()
         }
-        userSession.addUserSessionChangeEventListener(
-            handleUserSessionChangeEventListener,
-        )
+        userSession.addUserSessionChangeEventListener(handleUserSessionChangeEventListener)
         return () => {
-            userSession.removeUserSessionChangeEventListener(
-                handleUserSessionChangeEventListener,
-            )
+            userSession.removeUserSessionChangeEventListener(handleUserSessionChangeEventListener)
         }
     }, [userSession, queryClient])
     const signIn = useCallback(

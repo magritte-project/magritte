@@ -1,6 +1,8 @@
-import AsyncButton from "@/components/reusable/AsyncButton"
-import { Menu, MenuItem, MenuItems } from "@headlessui/react"
 import type { ReactNode } from "react"
+
+import { Menu, MenuItem, MenuItems } from "@headlessui/react"
+
+import AsyncButton from "@/components/reusable/AsyncButton"
 
 export interface ThemedPopUpMenuItem {
     readonly key: string
@@ -14,10 +16,7 @@ export interface ThemedPopUpMenuProps {
     readonly items: readonly ThemedPopUpMenuItem[]
 }
 
-export default function ThemedPopUpMenu({
-    button,
-    items,
-}: ThemedPopUpMenuProps) {
+export default function ThemedPopUpMenu({ button, items }: ThemedPopUpMenuProps) {
     return (
         <Menu>
             {button}

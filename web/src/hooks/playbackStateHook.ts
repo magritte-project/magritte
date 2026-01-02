@@ -1,5 +1,7 @@
-import type { PlaybackEngineState } from "@/playback/engine"
 import { useSyncExternalStore } from "react"
+
+import type { PlaybackEngineState } from "@/playback/engine"
+
 import usePlayer from "@/hooks/playerHook"
 
 export default function usePlaybackState(): PlaybackEngineState {

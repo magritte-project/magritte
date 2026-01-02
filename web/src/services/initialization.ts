@@ -1,6 +1,7 @@
 import type { APIClient } from "@/api/client"
-import { initializeAppleMusic } from "@/services/applemusic/initialization"
 import type { ServiceInitializer } from "@/services/types"
+
+import { initializeAppleMusic } from "@/services/applemusic/initialization"
 
 const INITIALIZERS: Record<string, ServiceInitializer> = {
     applemusic: initializeAppleMusic,
@@ -25,9 +26,7 @@ export async function initializeServices(apiClient: APIClient) {
         }
         const initialize = INITIALIZERS[service.name]
         if (!initialize) {
-            console.info(
-                `Skipping service without initializer: ${service.name}`,
-            )
+            console.info(`Skipping service without initializer: ${service.name}`)
             continue
         }
         await initialize({ apiClient })

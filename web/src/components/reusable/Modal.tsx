@@ -1,8 +1,10 @@
+import type { ReactNode } from "react"
+
+import { AnimatePresence, motion } from "motion/react"
+import { classNames } from "react-cmdk"
+
 import DismissContextProvider from "@/contexts/providers/DismissContextProvider"
 import useDismiss from "@/hooks/dismissHook"
-import { AnimatePresence, motion } from "motion/react"
-import type { ReactNode } from "react"
-import { classNames } from "react-cmdk"
 
 export interface ModalProps {
     readonly className?: string
@@ -11,12 +13,7 @@ export interface ModalProps {
     readonly children?: ReactNode
 }
 
-export default function Modal({
-    className,
-    isPresented = true,
-    onDismiss,
-    children,
-}: ModalProps) {
+export default function Modal({ className, isPresented = true, onDismiss, children }: ModalProps) {
     const dismiss = useDismiss()
     return (
         <DismissContextProvider value={onDismiss ?? dismiss}>

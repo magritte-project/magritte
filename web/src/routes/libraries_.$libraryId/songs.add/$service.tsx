@@ -1,3 +1,9 @@
+import { PlusIcon } from "@phosphor-icons/react"
+import { useQuery } from "@tanstack/react-query"
+import { createFileRoute } from "@tanstack/react-router"
+import { useDebounce } from "@uidotdev/usehooks"
+import { useState } from "react"
+
 import { searchServiceSongs } from "@/api/queries/services"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import AsyncButton from "@/components/reusable/AsyncButton"
@@ -7,15 +13,8 @@ import useIngestSongs from "@/hooks/ingestSongsHook"
 import usePlayer from "@/hooks/playerHook"
 import { Queue } from "@/playback/queue"
 import { ArrayQueueShard } from "@/playback/queueShards/array"
-import { PlusIcon } from "@phosphor-icons/react"
-import { useQuery } from "@tanstack/react-query"
-import { createFileRoute } from "@tanstack/react-router"
-import { useDebounce } from "@uidotdev/usehooks"
-import { useState } from "react"
 
-export const Route = createFileRoute(
-    "/libraries_/$libraryId/songs/add/$service",
-)({
+export const Route = createFileRoute("/libraries_/$libraryId/songs/add/$service")({
     component: function ServiceComponent() {
         const { service } = Route.useParams()
         const apiClient = useAPIClient()
@@ -23,9 +22,7 @@ export const Route = createFileRoute(
 
         const [query, setQuery] = useState("")
         const currentQuery = useDebounce(query, 500)
-        const searchQuery = useQuery(
-            searchServiceSongs(apiClient, service, currentQuery),
-        )
+        const searchQuery = useQuery(searchServiceSongs(apiClient, service, currentQuery))
 
         const { isAdded, add } = useIngestSongs()
 
@@ -47,9 +44,7 @@ export const Route = createFileRoute(
                                     className="flex items-center gap-2 text-start w-full"
                                     onClick={() =>
                                         player.replaceQueue({
-                                            newQueue: Queue.with(
-                                                ArrayQueueShard.of(song),
-                                            ),
+                                            newQueue: Queue.with(ArrayQueueShard.of(song)),
                                             startingItem: song,
                                             playNow: true,
                                         })
@@ -65,8 +60,7 @@ export const Route = createFileRoute(
                                             {song.title ?? "--"}
                                         </div>
                                         <div className="text-gray-700 text-xs">
-                                            {song.album_title ?? "--"} by{" "}
-                                            {song.artist_name ?? "--"}
+                                            {song.album_title ?? "--"} by {song.artist_name ?? "--"}
                                         </div>
                                     </div>
                                     <button

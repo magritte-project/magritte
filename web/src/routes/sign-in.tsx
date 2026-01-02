@@ -1,10 +1,12 @@
-import { useSignIn } from "@/api/mutations/root"
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
+
 import type { BodySignInSignInPost } from "@/api/openapi"
+
+import { useSignIn } from "@/api/mutations/root"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedLink from "@/components/theme/ThemedLink"
 import { useAppForm } from "@/hooks/formHook"
 import useUserSession from "@/hooks/userSessionHook"
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/sign-in")({
     beforeLoad: async ({ context: { userSession } }) => {
@@ -36,21 +38,13 @@ export const Route = createFileRoute("/sign-in")({
 
         return (
             <div className="p-4 text-center">
-                <AppForm
-                    form={form}
-                    className="flex flex-col items-center justify-center gap-2"
-                >
+                <AppForm form={form} className="flex flex-col items-center justify-center gap-2">
                     <h1 className="font-bold text-lg">Sign In</h1>
                     <form.AppField name="username">
                         {(field) => <field.InputField placeholder="Username" />}
                     </form.AppField>
                     <form.AppField name="password">
-                        {(field) => (
-                            <field.InputField
-                                type="password"
-                                placeholder="Password"
-                            />
-                        )}
+                        {(field) => <field.InputField type="password" placeholder="Password" />}
                     </form.AppField>
                     <form.SubmitButton />
                     <ThemedLink to="/sign-up">Sign Up</ThemedLink>

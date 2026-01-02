@@ -1,13 +1,13 @@
+import type React from "react"
+
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
-import type React from "react"
 import { type ReactNode, useCallback, useMemo } from "react"
 
-export interface TableFooterProps
-    extends Omit<
-        React.HTMLAttributes<HTMLDivElement>,
-        "onChange" | "children"
-    > {
+export interface TableFooterProps extends Omit<
+    React.HTMLAttributes<HTMLDivElement>,
+    "onChange" | "children"
+> {
     readonly singularLabel: ReactNode
     readonly pluralLabel: ReactNode
     readonly offset: number
@@ -41,10 +41,7 @@ export default function TableFooter({
     }, [onChange, offset, limit])
 
     return (
-        <footer
-            className={classNames("flex items-center gap-1", className)}
-            {...rest}
-        >
+        <footer className={classNames("flex items-center gap-1", className)} {...rest}>
             {total > limit && (
                 <button
                     type="button"
@@ -56,8 +53,7 @@ export default function TableFooter({
                 </button>
             )}
             <span className="text-sm text-gray-700">
-                {new Intl.NumberFormat().format(total)}{" "}
-                {total === 1 ? singularLabel : pluralLabel}
+                {new Intl.NumberFormat().format(total)} {total === 1 ? singularLabel : pluralLabel}
             </span>
             {total > limit && (
                 <button

@@ -1,7 +1,10 @@
-import type { ServiceCommands } from "@/services/types"
-import { getCommandsForAppleMusic } from "./applemusic/commands"
 import type { JsonStructure } from "react-cmdk"
+
+import type { ServiceCommands } from "@/services/types"
+
 import { getInitializedServiceNames } from "@/services/initialization"
+
+import { getCommandsForAppleMusic } from "./applemusic/commands"
 
 const COMMANDS: Record<string, ServiceCommands> = {
     applemusic: getCommandsForAppleMusic,

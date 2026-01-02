@@ -4,12 +4,9 @@ import type {
     PlaybackEngineEvent,
     PlaybackEngineState,
 } from "@/playback/engine"
-import {
-    createEvent,
-    type EventSink,
-    type EventStream,
-} from "@/utilities/events"
 import type { PlayableItem } from "@/playback/item"
+
+import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export default class AppleMusicPlaybackEngine implements PlaybackEngine {
     private _musicKit: MusicKit.Instance
@@ -34,9 +31,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         this._events.dispatch({ type: "encounteredError", error: new Error() })
     }
 
-    private _handlePlaybackStateDidChange(
-        event: Parameters<MusicKit.StateChangeEventCallback>[0],
-    ) {
+    private _handlePlaybackStateDidChange(event: Parameters<MusicKit.StateChangeEventCallback>[0]) {
         this._events.dispatch({ type: "playbackStateDidChange" })
 
         switch (event.state) {
@@ -91,14 +86,9 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         return sources.some((source) => source.url.startsWith("applemusic://"))
     }
 
-    async enqueue({
-        itemToPlay,
-        playNow,
-    }: PlaybackEngineEnqueueOptions): Promise<void> {
+    async enqueue({ itemToPlay, playNow }: PlaybackEngineEnqueueOptions): Promise<void> {
         const sources = itemToPlay.sources ?? []
-        const source = sources.find((source) =>
-            source.url.startsWith("applemusic://"),
-        )
+        const source = sources.find((source) => source.url.startsWith("applemusic://"))
         if (source === undefined) {
             throw new Error("No compatible source in song")
         }

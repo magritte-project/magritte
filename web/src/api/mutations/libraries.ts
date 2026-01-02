@@ -1,4 +1,7 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+
 import type { LibraryCreate } from "@/api/openapi"
+
 import {
     readLibraries,
     readLibraryAlbums,
@@ -6,7 +9,6 @@ import {
     readLibrarySongs,
 } from "@/api/queries/libraries"
 import useAPIClient from "@/hooks/apiClientHook"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export function useCreateLibrary() {
     const queryClient = useQueryClient()
@@ -23,8 +25,7 @@ export function useDeleteLibrarySong(libraryId: number) {
     const queryClient = useQueryClient()
     const apiClient = useAPIClient()
     return useMutation({
-        mutationFn: (songId: number) =>
-            apiClient.deleteLibrarySong(libraryId, songId),
+        mutationFn: (songId: number) => apiClient.deleteLibrarySong(libraryId, songId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: readLibraryAlbums(apiClient, {

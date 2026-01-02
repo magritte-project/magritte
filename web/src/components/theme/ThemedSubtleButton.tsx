@@ -1,12 +1,10 @@
-import {
-    DefaultButtonComponent,
-    type ButtonComponent,
-} from "@/components/reusable/ButtonComponent"
-import classNames from "classnames"
 import type React from "react"
 
-export interface ThemedSubtleButtonProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+import classNames from "classnames"
+
+import { DefaultButtonComponent, type ButtonComponent } from "@/components/reusable/ButtonComponent"
+
+export interface ThemedSubtleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     readonly buttonComponent?: ButtonComponent
 }
 

@@ -1,14 +1,10 @@
-import usePlaybackState from "@/hooks/playbackStateHook"
-import usePlaybackTime from "@/hooks/playbackTimeHook"
 import { useCallback } from "react"
 
+import usePlaybackState from "@/hooks/playbackStateHook"
+import usePlaybackTime from "@/hooks/playbackTimeHook"
+
 export default function NowPlayingScrubber() {
-    const {
-        elapsedTime: currentTime,
-        totalTime,
-        seekToTime,
-        isSeeking,
-    } = usePlaybackTime()
+    const { elapsedTime: currentTime, totalTime, seekToTime, isSeeking } = usePlaybackTime()
     const playbackState = usePlaybackState()
     const handleChange = useCallback(
         async (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,11 +1,13 @@
-import { useCreateLibrary } from "@/api/mutations/libraries"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import z from "zod"
+
 import type { LibraryCreate } from "@/api/openapi"
+
+import { useCreateLibrary } from "@/api/mutations/libraries"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import AppForm from "@/components/reusable/AppForm"
 import Modal from "@/components/reusable/Modal"
 import { useAppForm } from "@/hooks/formHook"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import z from "zod"
 
 export const Route = createFileRoute("/libraries/add")({
     component: function LibrariesCreateComponent() {
@@ -17,8 +19,7 @@ export const Route = createFileRoute("/libraries/add")({
             } satisfies LibraryCreate,
             onSubmit: async ({ value }) => {
                 try {
-                    const library =
-                        await createLibraryMutation.mutateAsync(value)
+                    const library = await createLibraryMutation.mutateAsync(value)
                     navigate({
                         to: "/libraries/$libraryId",
                         params: { libraryId: String(library.id) },

@@ -21,9 +21,7 @@ export default class PlaybackEngineRegistry {
         return this
     }
 
-    async findPlaybackEngineFor(
-        item: PlayableItem,
-    ): Promise<PlaybackEngine | null> {
+    async findPlaybackEngineFor(item: PlayableItem): Promise<PlaybackEngine | null> {
         for (const engine of this._engines) {
             if (await engine.canEnqueue(item)) {
                 return engine

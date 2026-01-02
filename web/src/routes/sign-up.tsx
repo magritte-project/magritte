@@ -1,9 +1,11 @@
-import { useSignIn, useSignUp } from "@/api/mutations/root"
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
+
 import type { UserSignUp } from "@/api/openapi"
+
+import { useSignIn, useSignUp } from "@/api/mutations/root"
 import AppForm from "@/components/reusable/AppForm"
 import { useAppForm } from "@/hooks/formHook"
 import useUserSession from "@/hooks/userSessionHook"
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/sign-up")({
     beforeLoad: async ({ context: { userSession } }) => {
@@ -40,21 +42,13 @@ export const Route = createFileRoute("/sign-up")({
 
         return (
             <div className="p-4 text-center">
-                <AppForm
-                    form={form}
-                    className="flex flex-col items-center justify-center gap-2"
-                >
+                <AppForm form={form} className="flex flex-col items-center justify-center gap-2">
                     <h1 className="font-bold text-lg">Sign Up</h1>
                     <form.AppField name="username">
                         {(field) => <field.InputField placeholder="Username" />}
                     </form.AppField>
                     <form.AppField name="password">
-                        {(field) => (
-                            <field.InputField
-                                type="password"
-                                placeholder="Password"
-                            />
-                        )}
+                        {(field) => <field.InputField type="password" placeholder="Password" />}
                     </form.AppField>
                     <form.SubmitButton />
                 </AppForm>
