@@ -1,8 +1,10 @@
 import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import ThemedButton from "@/components/theme/ThemedButton"
+import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
-import usePlayerState from "@/hooks/playerStateHook"
+import usePlayingItem from "@/hooks/playingItemHook"
+import useQueue from "@/hooks/queueHook"
 import type { PlayableItem } from "@/playback/item"
 import { ArrayQueueShard } from "@/playback/queueShards/array"
 import {
@@ -15,22 +17,24 @@ import classNames from "classnames"
 
 export default function NowPlaying() {
     const player = usePlayer()
-    const { playbackState, playingSong, queue } = usePlayerState()
+    const queue = useQueue()
+    const playbackState = usePlaybackState()
+    const playingItem = usePlayingItem()
     return (
         <div className="flex flex-col">
             <div className="flex flex-col gap-3 p-4">
                 <ArtworkImage
                     className="w-full aspect-square"
-                    artworks={playingSong?.artworks}
-                    itemTitle={playingSong?.title}
+                    artworks={playingItem?.artworks}
+                    itemTitle={playingItem?.title}
                 />
                 <div className="flex flex-col items-center gap-1 text-sm text-center">
                     <div className="font-bold">
-                        {playingSong?.title ?? "--"}
+                        {playingItem?.title ?? "--"}
                     </div>
                     <div className="text-gray-700">
-                        {playingSong?.album_title ?? "--"} by{" "}
-                        {playingSong?.artist_name ?? "--"}
+                        {playingItem?.album_title ?? "--"} by{" "}
+                        {playingItem?.artist_name ?? "--"}
                     </div>
                 </div>
                 <NowPlayingScrubber />
@@ -81,7 +85,7 @@ export default function NowPlaying() {
                                             "flex flex-col gap-1 px-2 py-1 text-sm cursor-pointer hover:bg-blue-50 rounded-sm",
                                             {
                                                 "text-blue-700":
-                                                    song.id === playingSong?.id,
+                                                    song.id === playingItem?.id,
                                             },
                                         )}
                                         onClick={() =>

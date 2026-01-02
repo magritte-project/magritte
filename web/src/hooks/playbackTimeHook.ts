@@ -1,17 +1,15 @@
 import usePlayer from "@/hooks/playerHook"
-import type { PlaybackEngineState } from "@/playback/engine"
 import { useCallback, useEffect, useState } from "react"
 
-export interface UsePlayerTimeResult {
+export interface UsePlaybackTimeResult {
     readonly elapsedTime: number | null
     readonly totalTime: number | null
     readonly remainingTime: number | null
     readonly seekToTime: (newTime: number) => Promise<void>
     readonly isSeeking: boolean
-    readonly playbackState: PlaybackEngineState
 }
 
-export default function usePlayerTime(): UsePlayerTimeResult {
+export default function usePlaybackTime(): UsePlaybackTimeResult {
     const player = usePlayer()
     const [elapsedTime, setElapsedTime] = useState(player.currentTime)
     const [isSeeking, setIsSeeking] = useState(false)
@@ -36,21 +34,17 @@ export default function usePlayerTime(): UsePlayerTimeResult {
             try {
                 setIsSeeking(true)
                 player.seek(newTime)
+            } finally {
                 setIsSeeking(false)
-            } catch (error) {
-                setIsSeeking(false)
-                throw error
             }
         },
         [player],
     )
-    const playbackState = player.playbackState
     return {
         totalTime,
         elapsedTime,
         remainingTime,
         seekToTime,
         isSeeking,
-        playbackState,
     }
 }

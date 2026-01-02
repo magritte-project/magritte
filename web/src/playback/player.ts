@@ -14,6 +14,8 @@ import {
 } from "@/utilities/events"
 import type { PlayableItem } from "@/playback/item"
 
+export type PlayerEvent = PlaybackEngineEvent | { type: "queueDidChange" }
+
 export interface ReplaceQueueOptions
     extends Omit<PlaybackEngineEnqueueOptions, "itemToPlay"> {
     readonly newQueue: Queue<PlayableItem>
@@ -22,7 +24,7 @@ export interface ReplaceQueueOptions
 
 export class Player {
     private readonly _engineRegistry: PlaybackEngineRegistry
-    private readonly _events: EventSink<PlaybackEngineEvent>
+    private readonly _events: EventSink<PlayerEvent>
     private _activeEngineEventSubscription: EventSubscription<PlaybackEngineEvent> | null
     private _activeEngine: PlaybackEngine | null
     private _queue: Queue<PlayableItem>
@@ -132,7 +134,7 @@ export class Player {
     }
 
     /** Events relating to the state of playback */
-    readonly $events: EventStream<PlaybackEngineEvent>
+    readonly $events: EventStream<PlayerEvent>
 
     async replaceQueue({
         newQueue,
@@ -142,6 +144,7 @@ export class Player {
         await this._activeEngine?.stop()
 
         this._queue = newQueue
+        this._events.dispatch({ type: "queueDidChange" })
         const startingEntry = startingItem
             ? await newQueue.entryForItem(startingItem)
             : await newQueue.firstEntry()
