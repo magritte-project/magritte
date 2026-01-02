@@ -9,47 +9,11 @@ from db import get_db_session
 from model.artist import Artist
 from model.library import Library
 from model.user import User
-from schemas.artist import ArtistCreate, ArtistRead, ArtistUpdate
+from schemas.artist import ArtistRead, ArtistUpdate
 from schemas.auth import OAuth2Scope
 from schemas.library import LibraryMediaRead
 
 router = APIRouter()
-
-
-@router.post(
-    "/{library_id}/artists/create",
-    response_model=ArtistRead,
-    summary="Create a new artist",
-)
-async def create_library_artist(
-    library_id: int,
-    create_artist: ArtistCreate,
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
-    ],
-    session: Annotated[AsyncSession, Depends(get_db_session)],
-):
-    if not await Library.can_user_access_by_id(
-        library_id,
-        current_user.id,
-        session,
-        can_add=True,
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
-        )
-
-    artist, _ = await Artist(
-        name=create_artist.name,
-        libraries=[await session.get(Library, library_id)],
-    ).try_insert_unique(
-        col(Artist.name) == create_artist.name,
-        session,
-    )
-    # TODO: Handle insertion into new library
-    return ArtistRead(
-        **artist.model_dump(),
-    )
 
 
 @router.patch(

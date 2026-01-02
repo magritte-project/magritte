@@ -56,7 +56,9 @@ class ServiceSongRead(BaseModel):
     disc_number: int | None
     disc_total: int | None
     lyrics: str | None
+    rating: float | None
     bpm: int | None
+    comment: str | None
     grouping: str | None
     mcn: str | None
     isrc: str | None

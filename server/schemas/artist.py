@@ -1,10 +1,6 @@
 from pydantic import BaseModel
 
 
-class ArtistCreate(BaseModel):
-    name: str
-
-
 class ArtistUpdate(BaseModel):
     name: str | None = None
 

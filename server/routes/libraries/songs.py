@@ -26,75 +26,10 @@ from schemas.artwork import ArtworkRead
 from schemas.auth import OAuth2Scope
 from schemas.base import SortOrder
 from schemas.library import LibraryMediaRead
-from schemas.song import SongCreate, SongRead, SongSort, SongSortKey, SongUpdate
+from schemas.song import SongRead, SongSort, SongSortKey, SongUpdate
 from schemas.source import SourceRead
 
 router = APIRouter()
-
-
-@router.post(
-    "/{library_id}/songs/create",
-    response_model=SongRead,
-    summary="Create a new song",
-)
-async def create_library_song(
-    library_id: int,
-    create_song: SongCreate,
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
-    ],
-    session: Annotated[AsyncSession, Depends(get_db_session)],
-):
-    if not await Library.can_user_access_by_id(
-        library_id,
-        current_user.id,
-        session,
-        can_add=True,
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
-        )
-
-    new_song = Song(
-        artist=await Artist.get_one_or_none(create_song.artist_id, session),
-        album=await Album.get_one_or_none(create_song.album_id, session),
-        artworks=await Artwork.get_many(create_song.artwork_ids, session),
-        sources=await Source.get_many(create_song.source_ids, session),
-        start_time=create_song.start_time,
-        end_time=create_song.end_time,
-        title=create_song.title,
-        album_artist=create_song.album_artist,
-        composer=create_song.composer,
-        genre=create_song.genre,
-        release_date=create_song.release_date,
-        track_number=create_song.track_number,
-        track_total=create_song.track_total,
-        disc_number=create_song.disc_number,
-        disc_total=create_song.disc_total,
-        lyrics=create_song.lyrics,
-        rating=create_song.rating,
-        bpm=create_song.bpm,
-        comment=create_song.comment,
-        grouping=create_song.grouping,
-        mcn=create_song.mcn,
-        isrc=create_song.isrc,
-        music_brainz_release_id=create_song.music_brainz_release_id,
-        music_brainz_recording_id=create_song.music_brainz_recording_id,
-        libraries=[await session.get(Library, library_id)],
-    )
-    session.add(new_song)
-    await session.flush()
-    return SongRead(
-        **new_song.model_dump(),
-        artworks=[
-            ArtworkRead(**artwork.model_dump())
-            for artwork in await new_song.awaitable_attrs.artworks
-        ],
-        sources=[
-            SourceRead(**source.model_dump())
-            for source in await new_song.awaitable_attrs.sources
-        ],
-    )
 
 
 @router.patch(

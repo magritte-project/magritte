@@ -1,14 +1,13 @@
 import type {
-    AlbumCreate,
     AlbumRead,
     AlbumUpdate,
-    ArtistCreate,
     ArtistRead,
     ArtistUpdate,
     ArtworkCreate,
     ArtworkRead,
     ArtworkUpdate,
     BodySignInSignInPost,
+    BulkIngestSongs,
     LibraryCreate,
     LibraryMediaReadAlbumRead,
     LibraryMediaReadArtistRead,
@@ -17,7 +16,6 @@ import type {
     ServiceRead,
     ServiceSearchResultsServiceSongRead,
     ServiceToken,
-    SongCreate,
     SongRead,
     SongUpdate,
     SourceCreate,
@@ -176,20 +174,6 @@ export class APIClient {
         return unwrap(response)
     }
 
-    async createLibraryAlbum(
-        library_id: number,
-        body: AlbumCreate,
-    ): Promise<AlbumRead> {
-        const response = await this._client.POST(
-            "/libraries/{library_id}/albums/create",
-            {
-                params: { path: { library_id } },
-                body,
-            },
-        )
-        return unwrap(response)
-    }
-
     async updateLibraryAlbum(
         library_id: number,
         album_id: number,
@@ -233,20 +217,6 @@ export class APIClient {
                         limit,
                     },
                 },
-            },
-        )
-        return unwrap(response)
-    }
-
-    async createLibraryArtist(
-        library_id: number,
-        body: ArtistCreate,
-    ): Promise<ArtistRead> {
-        const response = await this._client.POST(
-            "/libraries/{library_id}/artists/create",
-            {
-                params: { path: { library_id } },
-                body,
             },
         )
         return unwrap(response)
@@ -296,20 +266,6 @@ export class APIClient {
                         limit,
                     },
                 },
-            },
-        )
-        return unwrap(response)
-    }
-
-    async createLibrarySong(
-        library_id: number,
-        body: SongCreate,
-    ): Promise<SongRead> {
-        const response = await this._client.POST(
-            "/libraries/{library_id}/songs/create",
-            {
-                params: { path: { library_id } },
-                body,
             },
         )
         return unwrap(response)
@@ -446,5 +402,21 @@ export class APIClient {
         await this._client.DELETE("/sources/{source_id}", {
             params: { path: { source_id } },
         })
+    }
+
+    // -- Ingestion Routes -- //
+
+    async ingestSongs(
+        library_id: number,
+        body: BulkIngestSongs,
+    ): Promise<readonly SongRead[]> {
+        const response = await this._client.POST(
+            "/libraries/{library_id}/ingest/songs",
+            {
+                params: { path: { library_id } },
+                body,
+            },
+        )
+        return unwrap(response)
     }
 }

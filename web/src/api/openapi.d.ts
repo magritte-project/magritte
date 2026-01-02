@@ -56,23 +56,6 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
-    readonly "/libraries/{library_id}/albums/create": {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        readonly get?: never;
-        readonly put?: never;
-        /** Create a new album */
-        readonly post: operations["create_library_album_libraries__library_id__albums_create_post"];
-        readonly delete?: never;
-        readonly options?: never;
-        readonly head?: never;
-        readonly patch?: never;
-        readonly trace?: never;
-    };
     readonly "/libraries/{library_id}/albums/{album_id}": {
         readonly parameters: {
             readonly query?: never;
@@ -108,23 +91,6 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
-    readonly "/libraries/{library_id}/artists/create": {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        readonly get?: never;
-        readonly put?: never;
-        /** Create a new artist */
-        readonly post: operations["create_library_artist_libraries__library_id__artists_create_post"];
-        readonly delete?: never;
-        readonly options?: never;
-        readonly head?: never;
-        readonly patch?: never;
-        readonly trace?: never;
-    };
     readonly "/libraries/{library_id}/artists/{artist_id}": {
         readonly parameters: {
             readonly query?: never;
@@ -154,6 +120,23 @@ export interface paths {
         readonly get: operations["read_library_artists_libraries__library_id__artists_get"];
         readonly put?: never;
         readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/libraries/{library_id}/ingest/songs": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Bulk ingest new songs without uploading files */
+        readonly post: operations["ingest_songs_libraries__library_id__ingest_songs_post"];
         readonly delete?: never;
         readonly options?: never;
         readonly head?: never;
@@ -205,23 +188,6 @@ export interface paths {
         readonly get: operations["read_library_libraries__library_id__get"];
         readonly put?: never;
         readonly post?: never;
-        readonly delete?: never;
-        readonly options?: never;
-        readonly head?: never;
-        readonly patch?: never;
-        readonly trace?: never;
-    };
-    readonly "/libraries/{library_id}/songs/create": {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        readonly get?: never;
-        readonly put?: never;
-        /** Create a new song */
-        readonly post: operations["create_library_song_libraries__library_id__songs_create_post"];
         readonly delete?: never;
         readonly options?: never;
         readonly head?: never;
@@ -440,13 +406,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** AlbumCreate */
-        readonly AlbumCreate: {
-            /** Title */
-            readonly title: string;
-            /** Artist Id */
-            readonly artist_id: number | null;
-        };
         /** AlbumRead */
         readonly AlbumRead: {
             /** Id */
@@ -467,11 +426,6 @@ export interface components {
             readonly title: string | null;
             /** Artist Id */
             readonly artist_id: number | null;
-        };
-        /** ArtistCreate */
-        readonly ArtistCreate: {
-            /** Name */
-            readonly name: string;
         };
         /** ArtistRead */
         readonly ArtistRead: {
@@ -558,10 +512,87 @@ export interface components {
              */
             readonly client_secret?: string | null;
         };
+        /** BulkIngestSongs */
+        readonly BulkIngestSongs: {
+            /** Songs */
+            readonly songs: readonly components["schemas"]["IngestSong"][];
+        };
         /** HTTPValidationError */
         readonly HTTPValidationError: {
             /** Detail */
             readonly detail: readonly components["schemas"]["ValidationError"][];
+        };
+        /** IngestArtwork */
+        readonly IngestArtwork: {
+            readonly kind: components["schemas"]["ArtworkKind"];
+            /** Image Url */
+            readonly image_url: string;
+            /** Background Color */
+            readonly background_color: string | null;
+            /** Primary Color */
+            readonly primary_color: string | null;
+            /** Secondary Color */
+            readonly secondary_color: string | null;
+            /** Tertiary Color */
+            readonly tertiary_color: string | null;
+        };
+        /** IngestSong */
+        readonly IngestSong: {
+            /** Artist Name */
+            readonly artist_name: string | null;
+            /** Album Title */
+            readonly album_title: string | null;
+            /** Artworks */
+            readonly artworks: readonly components["schemas"]["IngestArtwork"][];
+            /** Sources */
+            readonly sources: readonly components["schemas"]["IngestSource"][];
+            /** Start Time */
+            readonly start_time: number;
+            /** End Time */
+            readonly end_time: number;
+            /** Title */
+            readonly title: string | null;
+            /** Album Artist */
+            readonly album_artist: string | null;
+            /** Composer */
+            readonly composer: string | null;
+            /** Genre */
+            readonly genre: string | null;
+            /** Release Date */
+            readonly release_date: string | null;
+            /** Track Number */
+            readonly track_number: number | null;
+            /** Track Total */
+            readonly track_total: number | null;
+            /** Disc Number */
+            readonly disc_number: number | null;
+            /** Disc Total */
+            readonly disc_total: number | null;
+            /** Lyrics */
+            readonly lyrics: string | null;
+            /** Rating */
+            readonly rating: number | null;
+            /** Bpm */
+            readonly bpm: number | null;
+            /** Comment */
+            readonly comment: string | null;
+            /** Grouping */
+            readonly grouping: string | null;
+            /** Mcn */
+            readonly mcn: string | null;
+            /** Isrc */
+            readonly isrc: string | null;
+            /** Music Brainz Release Id */
+            readonly music_brainz_release_id: string | null;
+            /** Music Brainz Recording Id */
+            readonly music_brainz_recording_id: string | null;
+        };
+        /** IngestSource */
+        readonly IngestSource: {
+            /** Url */
+            readonly url: string;
+            /** Mime Type */
+            readonly mime_type: string | null;
         };
         /** LibraryCreate */
         readonly LibraryCreate: {
@@ -688,8 +719,12 @@ export interface components {
             readonly disc_total: number | null;
             /** Lyrics */
             readonly lyrics: string | null;
+            /** Rating */
+            readonly rating: number | null;
             /** Bpm */
             readonly bpm: number | null;
+            /** Comment */
+            readonly comment: string | null;
             /** Grouping */
             readonly grouping: string | null;
             /** Mcn */
@@ -712,57 +747,6 @@ export interface components {
         readonly ServiceToken: {
             /** Bearer Token */
             readonly bearer_token: string;
-        };
-        /** SongCreate */
-        readonly SongCreate: {
-            /** Artist Id */
-            readonly artist_id: number | null;
-            /** Album Id */
-            readonly album_id: number | null;
-            /** Artwork Ids */
-            readonly artwork_ids: readonly number[];
-            /** Source Ids */
-            readonly source_ids: readonly number[];
-            /** Start Time */
-            readonly start_time: number;
-            /** End Time */
-            readonly end_time: number;
-            /** Title */
-            readonly title: string | null;
-            /** Album Artist */
-            readonly album_artist: string | null;
-            /** Composer */
-            readonly composer: string | null;
-            /** Genre */
-            readonly genre: string | null;
-            /** Release Date */
-            readonly release_date: string | null;
-            /** Track Number */
-            readonly track_number: number | null;
-            /** Track Total */
-            readonly track_total: number | null;
-            /** Disc Number */
-            readonly disc_number: number | null;
-            /** Disc Total */
-            readonly disc_total: number | null;
-            /** Lyrics */
-            readonly lyrics: string | null;
-            /** Rating */
-            readonly rating: number | null;
-            /** Bpm */
-            readonly bpm: number | null;
-            /** Comment */
-            readonly comment: string | null;
-            /** Grouping */
-            readonly grouping: string | null;
-            /** Mcn */
-            readonly mcn: string | null;
-            /** Isrc */
-            readonly isrc: string | null;
-            /** Music Brainz Release Id */
-            readonly music_brainz_release_id: string | null;
-            /** Music Brainz Recording Id */
-            readonly music_brainz_recording_id: string | null;
         };
         /** SongRead */
         readonly SongRead: {
@@ -1013,10 +997,8 @@ export interface components {
     headers: never;
     pathItems: never;
 }
-export type AlbumCreate = components['schemas']['AlbumCreate'];
 export type AlbumRead = components['schemas']['AlbumRead'];
 export type AlbumUpdate = components['schemas']['AlbumUpdate'];
-export type ArtistCreate = components['schemas']['ArtistCreate'];
 export type ArtistRead = components['schemas']['ArtistRead'];
 export type ArtistUpdate = components['schemas']['ArtistUpdate'];
 export type ArtworkCreate = components['schemas']['ArtworkCreate'];
@@ -1024,7 +1006,11 @@ export type ArtworkKind = components['schemas']['ArtworkKind'];
 export type ArtworkRead = components['schemas']['ArtworkRead'];
 export type ArtworkUpdate = components['schemas']['ArtworkUpdate'];
 export type BodySignInSignInPost = components['schemas']['Body_sign_in_sign_in_post'];
+export type BulkIngestSongs = components['schemas']['BulkIngestSongs'];
 export type HttpValidationError = components['schemas']['HTTPValidationError'];
+export type IngestArtwork = components['schemas']['IngestArtwork'];
+export type IngestSong = components['schemas']['IngestSong'];
+export type IngestSource = components['schemas']['IngestSource'];
 export type LibraryCreate = components['schemas']['LibraryCreate'];
 export type LibraryMediaReadAlbumRead = components['schemas']['LibraryMediaRead_AlbumRead_'];
 export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead_ArtistRead_'];
@@ -1038,7 +1024,6 @@ export type ServiceSearchResultsServiceSongRead = components['schemas']['Service
 export type ServiceSongRead = components['schemas']['ServiceSongRead'];
 export type ServiceSourceRead = components['schemas']['ServiceSourceRead'];
 export type ServiceToken = components['schemas']['ServiceToken'];
-export type SongCreate = components['schemas']['SongCreate'];
 export type SongRead = components['schemas']['SongRead'];
 export type SongUpdate = components['schemas']['SongUpdate'];
 export type SourceCreate = components['schemas']['SourceCreate'];
@@ -1182,41 +1167,6 @@ export interface operations {
             };
         };
     };
-    readonly create_library_album_libraries__library_id__albums_create_post: {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path: {
-                readonly library_id: number;
-            };
-            readonly cookie?: never;
-        };
-        readonly requestBody: {
-            readonly content: {
-                readonly "application/json": components["schemas"]["AlbumCreate"];
-            };
-        };
-        readonly responses: {
-            /** @description Successful Response */
-            readonly 200: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["AlbumRead"];
-                };
-            };
-            /** @description Validation Error */
-            readonly 422: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     readonly delete_library_album_libraries__library_id__albums__album_id__delete: {
         readonly parameters: {
             readonly query?: never;
@@ -1310,41 +1260,6 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["LibraryMediaRead_AlbumRead_"];
-                };
-            };
-            /** @description Validation Error */
-            readonly 422: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    readonly create_library_artist_libraries__library_id__artists_create_post: {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path: {
-                readonly library_id: number;
-            };
-            readonly cookie?: never;
-        };
-        readonly requestBody: {
-            readonly content: {
-                readonly "application/json": components["schemas"]["ArtistCreate"];
-            };
-        };
-        readonly responses: {
-            /** @description Successful Response */
-            readonly 200: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["ArtistRead"];
                 };
             };
             /** @description Validation Error */
@@ -1462,6 +1377,41 @@ export interface operations {
             };
         };
     };
+    readonly ingest_songs_libraries__library_id__ingest_songs_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["BulkIngestSongs"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": readonly components["schemas"]["SongRead"][];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly read_libraries_libraries__get: {
         readonly parameters: {
             readonly query?: never;
@@ -1533,41 +1483,6 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["LibraryRead"];
-                };
-            };
-            /** @description Validation Error */
-            readonly 422: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    readonly create_library_song_libraries__library_id__songs_create_post: {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path: {
-                readonly library_id: number;
-            };
-            readonly cookie?: never;
-        };
-        readonly requestBody: {
-            readonly content: {
-                readonly "application/json": components["schemas"]["SongCreate"];
-            };
-        };
-        readonly responses: {
-            /** @description Successful Response */
-            readonly 200: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["SongRead"];
                 };
             };
             /** @description Validation Error */

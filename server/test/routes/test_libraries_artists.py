@@ -15,87 +15,41 @@ async def throwaway_artist(
     session = sign_in("test", "password")
 
     response = client.post(
-        "/libraries/2/artists/create",
+        "/libraries/2/ingest/songs",
         json={
-            "name": faker.name(),
+            "songs": [
+                {
+                    "artist_name": faker.name(),
+                    "album_title": None,
+                    "artworks": [],
+                    "sources": [],
+                    "start_time": 0,
+                    "end_time": 0,
+                    "title": faker.sentence(nb_words=3),
+                    "album_artist": None,
+                    "composer": None,
+                    "genre": None,
+                    "release_date": None,
+                    "track_number": 1,
+                    "track_total": 10,
+                    "disc_number": 1,
+                    "disc_total": 1,
+                    "lyrics": None,
+                    "rating": None,
+                    "bpm": None,
+                    "comment": "throwaway_artist",
+                    "grouping": None,
+                    "mcn": None,
+                    "isrc": None,
+                    "music_brainz_release_id": None,
+                    "music_brainz_recording_id": None,
+                },
+            ],
         },
         headers={"Authorization": f"Bearer {session.access_token}"},
     )
-    return response.json().get("id")
-
-
-class TestCreateLibraryArtist:
-    @pytest.mark.asyncio
-    async def test_create(
-        self,
-        client: TestClient,
-        sign_in: SignIn,
-    ):
-        session = sign_in("test", "password")
-
-        response = client.post(
-            "/libraries/2/artists/create",
-            json={"name": "I am the greatest of all time"},
-            headers={"Authorization": f"Bearer {session.access_token}"},
-        )
-        response_json = response.json()
-        assert response.status_code == 200
-        assert response_json.get("name") == "I am the greatest of all time"
-
-    def test_handles_duplication(
-        self,
-        client: TestClient,
-        sign_in: SignIn,
-    ):
-        session = sign_in("test", "password")
-        first_response = client.post(
-            "/libraries/2/artists/create",
-            json={"name": "I am the greatest of all time"},
-            headers={"Authorization": f"Bearer {session.access_token}"},
-        )
-        first_response_json = first_response.json()
-        assert first_response.status_code == 200
-
-        second_response = client.post(
-            "/libraries/2/artists/create",
-            json={"name": "I am the greatest of all time"},
-            headers={"Authorization": f"Bearer {session.access_token}"},
-        )
-        second_response_json = second_response.json()
-        assert second_response.status_code == 200
-        assert second_response_json.get("name") == first_response_json.get("name")
-
-    @pytest.mark.asyncio
-    async def test_requires_library_add_permission(
-        self,
-        client: TestClient,
-        sign_in: SignIn,
-    ):
-        session = sign_in("test", "password")
-
-        response = client.post(
-            "/libraries/1/artists/create",
-            json={"name": "I am the greatest of all time"},
-            headers={"Authorization": f"Bearer {session.access_token}"},
-        )
-        assert response.status_code == 404
-        assert response.json().get("detail") == "Library not found"
-
-    @pytest.mark.asyncio
-    async def test_requires_library_to_exist(
-        self,
-        client: TestClient,
-        sign_in: SignIn,
-    ):
-        session = sign_in("test", "password")
-
-        response = client.post(
-            "/libraries/99999999/artists/create",
-            json={"name": "I am the greatest of all time"},
-            headers={"Authorization": f"Bearer {session.access_token}"},
-        )
-        assert response.status_code == 404
-        assert response.json().get("detail") == "Library not found"
+    assert response.status_code == 200
+    return response.json()[0].get("artist_id")
 
 
 class TestUpdateLibraryArtist:

@@ -1,5 +1,3 @@
-from random import randint
-
 import pytest
 import pytest_asyncio
 from faker import Faker
@@ -17,167 +15,41 @@ async def throwaway_song(
     session = sign_in("test", "password")
 
     response = client.post(
-        "/libraries/2/songs/create",
+        "/libraries/2/ingest/songs",
         json={
-            "artist_id": None,
-            "album_id": None,
-            "artwork_ids": [],
-            "source_ids": [],
-            "start_time": 0,
-            "end_time": randint(30, 300),
-            "title": faker.sentence(nb_words=3),
-            "album_artist": None,
-            "composer": None,
-            "genre": None,
-            "release_date": None,
-            "track_number": 1,
-            "track_total": 10,
-            "disc_number": 1,
-            "disc_total": 1,
-            "lyrics": None,
-            "rating": None,
-            "bpm": None,
-            "comment": "TestUpdateLibrarySong",
-            "grouping": None,
-            "mcn": None,
-            "isrc": None,
-            "music_brainz_release_id": None,
-            "music_brainz_recording_id": None,
+            "songs": [
+                {
+                    "artist_name": None,
+                    "album_title": None,
+                    "artworks": [],
+                    "sources": [],
+                    "start_time": 0,
+                    "end_time": 0,
+                    "title": faker.sentence(nb_words=3),
+                    "album_artist": None,
+                    "composer": None,
+                    "genre": None,
+                    "release_date": None,
+                    "track_number": 1,
+                    "track_total": 10,
+                    "disc_number": 1,
+                    "disc_total": 1,
+                    "lyrics": None,
+                    "rating": None,
+                    "bpm": None,
+                    "comment": "throwaway_artist",
+                    "grouping": None,
+                    "mcn": None,
+                    "isrc": None,
+                    "music_brainz_release_id": None,
+                    "music_brainz_recording_id": None,
+                },
+            ],
         },
         headers={"Authorization": f"Bearer {session.access_token}"},
     )
-    return response.json().get("id")
-
-
-class TestCreateLibrarySong:
-    @pytest.mark.asyncio
-    async def test_create(
-        self,
-        client: TestClient,
-        sign_in: SignIn,
-    ):
-        session = sign_in("test", "password")
-
-        response = client.post(
-            "/libraries/2/songs/create",
-            json={
-                "artist_id": None,
-                "album_id": None,
-                "artwork_ids": [],
-                "source_ids": [],
-                "start_time": 0,
-                "end_time": 300,
-                "title": "A treatise on the value of unit testing",
-                "album_artist": None,
-                "composer": None,
-                "genre": None,
-                "release_date": None,
-                "track_number": 1,
-                "track_total": 10,
-                "disc_number": 1,
-                "disc_total": 1,
-                "lyrics": None,
-                "rating": None,
-                "bpm": None,
-                "comment": "TestCreateLibrarySong",
-                "grouping": None,
-                "mcn": None,
-                "isrc": None,
-                "music_brainz_release_id": None,
-                "music_brainz_recording_id": None,
-            },
-            headers={"Authorization": f"Bearer {session.access_token}"},
-        )
-        response_json = response.json()
-        assert response.status_code == 200
-        assert response_json.get("title") == "A treatise on the value of unit testing"
-        assert response_json.get("track_number") == 1
-        assert response_json.get("track_total") == 10
-        assert response_json.get("disc_number") == 1
-        assert response_json.get("disc_total") == 1
-        assert response_json.get("comment") == "TestCreateLibrarySong"
-
-    @pytest.mark.asyncio
-    async def test_requires_library_add_permission(
-        self,
-        client: TestClient,
-        sign_in: SignIn,
-    ):
-        session = sign_in("test", "password")
-
-        response = client.post(
-            "/libraries/1/songs/create",
-            json={
-                "artist_id": None,
-                "album_id": None,
-                "artwork_ids": [],
-                "source_ids": [],
-                "start_time": 0,
-                "end_time": 0,
-                "title": None,
-                "album_artist": None,
-                "composer": None,
-                "genre": None,
-                "release_date": None,
-                "track_number": 1,
-                "track_total": 10,
-                "disc_number": 1,
-                "disc_total": 1,
-                "lyrics": None,
-                "rating": None,
-                "bpm": None,
-                "comment": None,
-                "grouping": None,
-                "mcn": None,
-                "isrc": None,
-                "music_brainz_release_id": None,
-                "music_brainz_recording_id": None,
-            },
-            headers={"Authorization": f"Bearer {session.access_token}"},
-        )
-        assert response.status_code == 404
-        assert response.json().get("detail") == "Library not found"
-
-    @pytest.mark.asyncio
-    async def test_requires_library_to_exist(
-        self,
-        client: TestClient,
-        sign_in: SignIn,
-    ):
-        session = sign_in("test", "password")
-
-        response = client.post(
-            "/libraries/99999999/songs/create",
-            json={
-                "artist_id": None,
-                "album_id": None,
-                "artwork_ids": [],
-                "source_ids": [],
-                "start_time": 0,
-                "end_time": 0,
-                "title": None,
-                "album_artist": None,
-                "composer": None,
-                "genre": None,
-                "release_date": None,
-                "track_number": 1,
-                "track_total": 10,
-                "disc_number": 1,
-                "disc_total": 1,
-                "lyrics": None,
-                "rating": None,
-                "bpm": None,
-                "comment": None,
-                "grouping": None,
-                "mcn": None,
-                "isrc": None,
-                "music_brainz_release_id": None,
-                "music_brainz_recording_id": None,
-            },
-            headers={"Authorization": f"Bearer {session.access_token}"},
-        )
-        assert response.status_code == 404
-        assert response.json().get("detail") == "Library not found"
+    assert response.status_code == 200
+    return response.json()[0].get("id")
 
 
 class TestUpdateLibrarySong:

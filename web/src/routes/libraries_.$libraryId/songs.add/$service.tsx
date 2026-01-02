@@ -1,8 +1,8 @@
+import useIngestSongs from "@/api/mutations/ingest"
 import { searchServiceSongs } from "@/api/queries/services"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import ThemedInput from "@/components/theme/ThemedInput"
-import useAddServiceSong from "@/hooks/addServiceSongHook"
 import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
 import { Queue } from "@/playback/queue"
@@ -27,9 +27,7 @@ export const Route = createFileRoute(
             searchServiceSongs(apiClient, service, currentQuery),
         )
 
-        const { addServiceSong } = useAddServiceSong({
-            libraryId: Number(libraryId),
-        })
+        const ingestSongs = useIngestSongs(Number(libraryId))
 
         return (
             <div className="flex flex-col gap-3 p-3">
@@ -76,7 +74,9 @@ export const Route = createFileRoute(
                                         className="cursor-pointer hover:bg-blue-100 active:bg-blue-300 disabled:bg-gray-100 disabled:cursor-not-allowed rounded-full p-1"
                                         onClick={async (e) => {
                                             e.stopPropagation()
-                                            await addServiceSong(song)
+                                            await ingestSongs.mutateAsync({
+                                                songs: [song],
+                                            })
                                         }}
                                     >
                                         <PlusIcon aria-label="Add" />
