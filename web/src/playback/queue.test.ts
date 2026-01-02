@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { Queue } from "./queue"
 import { ArrayQueueShard } from "./queueShards/array"
-import { uniqueQueueShardID } from "./queueShards/base"
 
 describe("Queue", () => {
     function stubItem(): { id: string } {
@@ -12,10 +11,10 @@ describe("Queue", () => {
         it("should return the shard which contains the item", async () => {
             const firstItem = stubItem()
             const secondItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), [firstItem]),
-                new ArrayQueueShard(uniqueQueueShardID(), [secondItem]),
-            ])
+            const subject = Queue.with(
+                ArrayQueueShard.of(firstItem),
+                ArrayQueueShard.of(secondItem),
+            )
             await expect(
                 subject.entryForItem(secondItem),
             ).resolves.toMatchObject({
@@ -27,9 +26,7 @@ describe("Queue", () => {
         it("should return null if the item is not in the queue", async () => {
             const firstItem = stubItem()
             const secondItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), [firstItem]),
-            ])
+            const subject = Queue.with(ArrayQueueShard.of(firstItem))
             await expect(subject.entryForItem(secondItem)).resolves.toBeNull()
         })
     })
@@ -37,9 +34,7 @@ describe("Queue", () => {
     describe("#firstItem", () => {
         it("should return the first item from the first shard", async () => {
             const onlyItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), [onlyItem]),
-            ])
+            const subject = Queue.with(ArrayQueueShard.of(onlyItem))
             await expect(subject.firstEntry()).resolves.toMatchObject({
                 shard: subject.shards[0],
                 item: onlyItem,
@@ -48,11 +43,11 @@ describe("Queue", () => {
 
         it("should search for the first non-empty shard", async () => {
             const onlyItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-                new ArrayQueueShard(uniqueQueueShardID(), [onlyItem]),
-            ])
+            const subject = Queue.with(
+                ArrayQueueShard.of(),
+                ArrayQueueShard.of(),
+                ArrayQueueShard.of(onlyItem),
+            )
             await expect(subject.firstEntry()).resolves.toMatchObject({
                 shard: subject.shards[2],
                 item: onlyItem,
@@ -60,7 +55,7 @@ describe("Queue", () => {
         })
 
         it("should return null if the queue is empty", async () => {
-            const subject = new Queue([])
+            const subject = Queue.with()
             await expect(subject.firstEntry()).resolves.toBeNull()
         })
     })
@@ -69,12 +64,9 @@ describe("Queue", () => {
         it("should return the preceding item from the shard", async () => {
             const firstItem = stubItem()
             const secondItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), [
-                    firstItem,
-                    secondItem,
-                ]),
-            ])
+            const subject = Queue.with(
+                ArrayQueueShard.of(firstItem, secondItem),
+            )
             await expect(
                 subject.entryPreceding({
                     shard: subject.shards[0],
@@ -89,10 +81,10 @@ describe("Queue", () => {
         it("should scan preceding shards for an item", async () => {
             const firstItem = stubItem()
             const secondItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), [firstItem]),
-                new ArrayQueueShard(uniqueQueueShardID(), [secondItem]),
-            ])
+            const subject = Queue.with(
+                ArrayQueueShard.of(firstItem),
+                ArrayQueueShard.of(secondItem),
+            )
             await expect(
                 subject.entryPreceding({
                     shard: subject.shards[1],
@@ -106,9 +98,7 @@ describe("Queue", () => {
 
         it("should return null if there is no preceeding item", async () => {
             const onlyItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), [onlyItem]),
-            ])
+            const subject = Queue.with(ArrayQueueShard.of(onlyItem))
             await expect(
                 subject.entryPreceding({
                     shard: subject.shards[0],
@@ -122,12 +112,9 @@ describe("Queue", () => {
         it("should return the following item from the shard", async () => {
             const firstItem = stubItem()
             const secondItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), [
-                    firstItem,
-                    secondItem,
-                ]),
-            ])
+            const subject = Queue.with(
+                ArrayQueueShard.of(firstItem, secondItem),
+            )
             await expect(
                 subject.entryFollowing({
                     shard: subject.shards[0],
@@ -142,10 +129,10 @@ describe("Queue", () => {
         it("should scan following shards for an item", async () => {
             const firstItem = stubItem()
             const secondItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), [firstItem]),
-                new ArrayQueueShard(uniqueQueueShardID(), [secondItem]),
-            ])
+            const subject = Queue.with(
+                ArrayQueueShard.of(firstItem),
+                ArrayQueueShard.of(secondItem),
+            )
             await expect(
                 subject.entryFollowing({
                     shard: subject.shards[0],
@@ -159,9 +146,7 @@ describe("Queue", () => {
 
         it("should return null if there is no preceeding item", async () => {
             const onlyItem = stubItem()
-            const subject = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), [onlyItem]),
-            ])
+            const subject = Queue.with(ArrayQueueShard.of(onlyItem))
             await expect(
                 subject.entryFollowing({
                     shard: subject.shards[0],
@@ -173,23 +158,18 @@ describe("Queue", () => {
 
     describe("#putShard", () => {
         it("should return a copy with the shard appended", async () => {
-            const original = new Queue([])
-            const copy = await original.putShard(
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-            )
+            const original = Queue.with()
+            const copy = await original.putShard(ArrayQueueShard.of())
             expect(original.shards).toHaveLength(0)
             expect(copy.shards).toHaveLength(1)
         })
 
         it("should return a copy with the shard copied", async () => {
-            const original = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-            ])
-            const copy = await original.putShard(
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-                1,
+            const original = Queue.with(
+                ArrayQueueShard.of(),
+                ArrayQueueShard.of(),
             )
+            const copy = await original.putShard(ArrayQueueShard.of(), 1)
             expect(original.shards).toHaveLength(2)
             expect(copy.shards).toHaveLength(3)
             expect(copy.shards[0].id).toStrictEqual(original.shards[0].id)
@@ -197,12 +177,12 @@ describe("Queue", () => {
         })
 
         it("should return a copy with the shard moved", async () => {
-            const specificShard = new ArrayQueueShard(uniqueQueueShardID(), [])
-            const original = new Queue([
+            const specificShard = ArrayQueueShard.of()
+            const original = Queue.with(
                 specificShard,
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-            ])
+                ArrayQueueShard.of(),
+                ArrayQueueShard.of(),
+            )
             const copy = await original.putShard(specificShard)
             expect(copy.shards[0].id).not.toStrictEqual(specificShard.id)
             expect(copy.shards[2].id).toStrictEqual(specificShard.id)
@@ -211,31 +191,23 @@ describe("Queue", () => {
 
     describe("#removeShard", () => {
         it("should return a copy with the shard removed by id", async () => {
-            const specificShard = new ArrayQueueShard(uniqueQueueShardID(), [])
-            const original = new Queue([
-                specificShard,
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-            ])
+            const specificShard = ArrayQueueShard.of()
+            const original = Queue.with(specificShard, ArrayQueueShard.of())
             const copy = await original.removeShard(specificShard.id)
             expect(original.shards).toHaveLength(2)
             expect(copy.shards).toHaveLength(1)
         })
 
         it("should return a copy with the shard removed by position", async () => {
-            const specificShard = new ArrayQueueShard(uniqueQueueShardID(), [])
-            const original = new Queue([
-                specificShard,
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-            ])
+            const specificShard = ArrayQueueShard.of()
+            const original = Queue.with(specificShard, ArrayQueueShard.of())
             const copy = await original.removeShard(0)
             expect(original.shards).toHaveLength(2)
             expect(copy.shards).toHaveLength(1)
         })
 
         it("should ignore shards that are not in the queue", async () => {
-            const original = new Queue([
-                new ArrayQueueShard(uniqueQueueShardID(), []),
-            ])
+            const original = Queue.with(ArrayQueueShard.of())
             const copy = await original.removeShard("does not exist")
             expect(original.shards).toHaveLength(1)
             expect(copy.shards).toHaveLength(1)
