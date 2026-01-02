@@ -1,21 +1,26 @@
 {
-    "short_name": "TanStack App",
-    "name": "Create TanStack App Sample",
+    "short_name": "Magritte",
+    "name": "Magritte",
     "icons": [
         {
             "src": "favicon.ico",
-            "sizes": "64x64 32x32 24x24 16x16",
+            "sizes": "128x128",
             "type": "image/x-icon"
         },
         {
-            "src": "logo192.png",
+            "src": "icon128.png",
             "type": "image/png",
-            "sizes": "192x192"
+            "sizes": "128x128"
         },
         {
-            "src": "logo512.png",
+            "src": "icon256.png",
             "type": "image/png",
-            "sizes": "512x512"
+            "sizes": "256x256"
+        },
+        {
+            "src": "icon384.png",
+            "type": "image/png",
+            "sizes": "384x384"
         }
     ],
     "start_url": ".",

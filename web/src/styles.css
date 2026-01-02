@@ -11,3 +11,23 @@ body {
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+#app:empty {
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: url(/icon128.png);
+    background-size: 128px 128px;
+}
+
+@media only screen and (min-resolution: 2dppx) {
+    #app:empty {
+        background-image: url(/icon256.png);
+    }
+}
+
+@media only screen and (min-resolution: 3dppx) {
+    #app:empty {
+        background-image: url(/icon384.png);
+    }
+}
