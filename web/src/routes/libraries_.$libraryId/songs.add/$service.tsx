@@ -1,9 +1,9 @@
-import useIngestSongs from "@/api/mutations/ingest"
 import { searchServiceSongs } from "@/api/queries/services"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import ThemedInput from "@/components/theme/ThemedInput"
 import useAPIClient from "@/hooks/apiClientHook"
+import useIngestSongs from "@/hooks/ingestSongsHook"
 import usePlayer from "@/hooks/playerHook"
 import { Queue } from "@/playback/queue"
 import { ArrayQueueShard } from "@/playback/queueShards/array"
@@ -17,7 +17,7 @@ export const Route = createFileRoute(
     "/libraries_/$libraryId/songs/add/$service",
 )({
     component: function ServiceComponent() {
-        const { libraryId, service } = Route.useParams()
+        const { service } = Route.useParams()
         const apiClient = useAPIClient()
         const player = usePlayer()
 
@@ -27,7 +27,7 @@ export const Route = createFileRoute(
             searchServiceSongs(apiClient, service, currentQuery),
         )
 
-        const ingestSongs = useIngestSongs(Number(libraryId))
+        const { isAdded, add } = useIngestSongs()
 
         return (
             <div className="flex flex-col gap-3 p-3">
@@ -38,7 +38,7 @@ export const Route = createFileRoute(
                     onChange={(e) => setQuery(e.currentTarget.value)}
                     placeholder="Search…"
                 />
-                <ol className="flex flex-col gap-2 min-h-64">
+                <ol className="flex flex-col gap-2 h-[50vh]">
                     {searchQuery.isSuccess &&
                         searchQuery.data.items.map((song) => (
                             <li key={`${song.id}`}>
@@ -69,18 +69,17 @@ export const Route = createFileRoute(
                                             {song.artist_name ?? "--"}
                                         </div>
                                     </div>
-                                    <AsyncButton
+                                    <button
                                         type="button"
                                         className="cursor-pointer hover:bg-blue-100 active:bg-blue-300 disabled:bg-gray-100 disabled:cursor-not-allowed rounded-full p-1"
                                         onClick={async (e) => {
                                             e.stopPropagation()
-                                            await ingestSongs.mutateAsync({
-                                                songs: [song],
-                                            })
+                                            add([song])
                                         }}
+                                        disabled={isAdded(song)}
                                     >
                                         <PlusIcon aria-label="Add" />
-                                    </AsyncButton>
+                                    </button>
                                 </AsyncButton>
                             </li>
                         ))}
