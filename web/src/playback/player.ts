@@ -64,7 +64,13 @@ export class Player {
             entry.item,
         )
         if (engine === null) {
-            return // TODO: handle error
+            this._events.dispatch({
+                type: "encounteredError",
+                error: new Error(
+                    `No engine available to play item ${entry.item}`,
+                ),
+            })
+            return
         }
         this._changeEngine(engine)
         this._playingEntry = entry
