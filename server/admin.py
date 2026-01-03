@@ -33,6 +33,44 @@ async def ingest_main(args: Namespace):
             )
 
 
+async def sync_main(args: Namespace):
+    from pathlib import Path
+
+    from config import config
+    from db import get_db_engine, get_db_session
+    from ingestion.files import try_ingest_path
+    from model.library import Library
+    from model.user import User
+
+    engine = await get_db_engine()
+    async for session in get_db_session(engine):
+        user = await User.read_by_username(args.username, session)
+        if user is None:
+            raise ValueError(f"No such user as '{args.username}'")
+
+        library = await Library.read_by_name(
+            args.library,
+            user.id,
+            session,
+            can_add=True,
+        )
+        if user is None:
+            raise ValueError(f"No such library as '{args.library}'")
+
+        if library.home_path is None:
+            raise ValueError(f"Library is streaming only '{args.library}'")
+
+        library_home_path = Path.from_uri(str(config.library_home)).joinpath(
+            library.home_path
+        )
+        await try_ingest_path(
+            path=str(library_home_path),
+            follow_links=False,
+            libraries=[library],
+            session=session,
+        )
+
+
 async def dump_openapi_main(args: Namespace):
     import json
 
@@ -101,6 +139,23 @@ def main():
     )
     parser_ingest.add_argument("paths", nargs="*")
     parser_ingest.set_defaults(func=ingest_main)
+
+    parser_sync = subparsers.add_parser(
+        "sync", help="Synchronize a library with its home files"
+    )
+    parser_sync.add_argument(
+        "--library",
+        "-l",
+        help="Name of the library to synchronize",
+        required=True,
+    )
+    parser_sync.add_argument(
+        "--username",
+        "-u",
+        help="Name of a user which has write access to the library",
+        required=True,
+    )
+    parser_sync.set_defaults(func=sync_main)
 
     parser_dump_openapi = subparsers.add_parser(
         "dump-openapi", help="Export the Magritte API definition"
