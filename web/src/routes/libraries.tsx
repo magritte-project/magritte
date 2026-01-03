@@ -1,6 +1,6 @@
 import type { JsonStructure } from "react-cmdk"
 
-import { BooksIcon, PlusIcon, VinylRecordIcon } from "@phosphor-icons/react"
+import { BooksIcon, FilesIcon, PlusIcon, VinylRecordIcon, WavesIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/libraries")({
                         <ThemedTabItemLink to="/libraries" icon={BooksIcon} label="Libraries" />
                     </PrimaryHeader>
                     <main className="flex flex-col text-center items-center justify-center gap-2 p-4 min-h-0 h-screen">
-                        <ol>
+                        <ol className="flex items-start gap-2 flex-wrap">
                             {libraries.map((library) => (
                                 <li
                                     key={`library-${library.id}`}
@@ -54,15 +54,26 @@ export const Route = createFileRoute("/libraries")({
                                         params={{
                                             libraryId: String(library.id),
                                         }}
-                                        className="flex flex-col items-center gap-3 p-2 rounded-sm hover:bg-blue-50"
+                                        className="flex flex-col items-center gap-3 p-2 rounded-sm hover:bg-blue-50 w-32"
                                     >
-                                        <div className="bg-cyan-400 rounded-full w-16 h-16 flex items-center justify-center">
-                                            <VinylRecordIcon
-                                                className="text-cyan-50"
-                                                size="2.5em"
-                                                weight="light"
-                                            />
-                                        </div>
+                                        {library.home_path !== null ? (
+                                            <div className="bg-cyan-400 rounded-full w-16 h-16 flex items-center justify-center">
+                                                <FilesIcon
+                                                    className="text-cyan-50"
+                                                    size="2.5em"
+                                                    weight="light"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="bg-teal-400 rounded-full w-16 h-16 flex items-center justify-center">
+                                                <WavesIcon
+                                                    className="text-cyan-50"
+                                                    size="2.5em"
+                                                    weight="light"
+                                                />
+                                            </div>
+                                        )}
+
                                         <div className="text-lg font-semibold">{library.name}</div>
                                     </Link>
                                 </li>

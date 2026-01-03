@@ -4,6 +4,7 @@ import { useCallback } from "react"
 
 import type { ThemedInputProps } from "@/components/theme/ThemedInput"
 
+import FieldInfo from "@/components/formComponents/FieldInfo"
 import ThemedInput from "@/components/theme/ThemedInput"
 import { useFieldContext } from "@/contexts/formContext"
 
@@ -21,13 +22,16 @@ export default function InputField({ id, ...rest }: InputFieldProps) {
         [field],
     )
     return (
-        <ThemedInput
-            id={id ?? field.name}
-            value={field.state.value}
-            name={field.name}
-            onChange={handleChange}
-            onBlur={field.handleBlur}
-            {...rest}
-        />
+        <>
+            <ThemedInput
+                id={id ?? field.name}
+                value={field.state.value}
+                name={field.name}
+                onChange={handleChange}
+                onBlur={field.handleBlur}
+                {...rest}
+            />
+            <FieldInfo field={field} />
+        </>
     )
 }
