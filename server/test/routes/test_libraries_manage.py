@@ -9,14 +9,15 @@ def test_create_and_read_library(client: TestClient, sign_in: SignIn):
     create_response = client.post(
         "/libraries/create",
         json={
-            "name": "test_create_library",
+            "name": "test_create_and_read_library",
+            "home_path": None,
         },
         headers={"Authorization": f"Bearer {session.access_token}"},
     )
     create_json = create_response.json()
     assert create_response.status_code == 200
     assert create_json.get("id") is not None
-    assert create_json.get("name") == "test_create_library"
+    assert create_json.get("name") == "test_create_and_read_library"
     library_id = create_json.get("id")
 
     read_response = client.get(
@@ -26,7 +27,22 @@ def test_create_and_read_library(client: TestClient, sign_in: SignIn):
     read_json = read_response.json()
     assert read_response.status_code == 200
     assert read_json.get("id") == library_id
-    assert read_json.get("name") == "test_create_library"
+    assert read_json.get("name") == "test_create_and_read_library"
+    assert read_json.get("home_path") is None
+
+
+def test_create_rejects_absolute_home_paths(client: TestClient, sign_in: SignIn):
+    session = sign_in("test", "password")
+
+    create_response = client.post(
+        "/libraries/create",
+        json={
+            "name": "test_create_rejects_absolute_home_paths",
+            "home_path": "/",
+        },
+        headers={"Authorization": f"Bearer {session.access_token}"},
+    )
+    assert create_response.status_code == 422
 
 
 def test_read_library_requires_library_to_exist(client: TestClient, sign_in: SignIn):
@@ -47,6 +63,7 @@ def test_read_library_requires_permission(client: TestClient, sign_in: SignIn):
         "/libraries/create",
         json={
             "name": "test_read_library_requires_permission",
+            "home_path": None,
         },
         headers={"Authorization": f"Bearer {creator_session.access_token}"},
     )
@@ -61,3 +78,28 @@ def test_read_library_requires_permission(client: TestClient, sign_in: SignIn):
     )
     assert read_response.status_code == 404
     assert read_response.json().get("detail") == "Library not found"
+
+
+def test_read_library_home_subpaths_requires_relative_path(
+    client: TestClient, sign_in: SignIn
+):
+    session = sign_in("test", "password")
+
+    response = client.get(
+        "/libraries/home-subpaths?relative_to=/",
+        headers={"Authorization": f"Bearer {session.access_token}"},
+    )
+    assert response.status_code == 400
+    assert response.json().get("detail") == "relative_to not relative"
+
+
+def test_read_library_home_subpaths_requires_libraries_write_scope(
+    client: TestClient, sign_in: SignIn
+):
+    session = sign_in("restricted", "password")
+
+    response = client.get(
+        "/libraries/home-subpaths?relative_to=.",
+        headers={"Authorization": f"Bearer {session.access_token}"},
+    )
+    assert response.status_code == 401

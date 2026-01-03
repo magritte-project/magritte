@@ -13,9 +13,11 @@ export const Route = createFileRoute("/libraries/add")({
     component: function LibrariesCreateComponent() {
         const navigate = useNavigate()
         const createLibraryMutation = useCreateLibrary()
+
         const form = useAppForm({
             defaultValues: {
                 name: "",
+                home_path: null as string | null,
             } satisfies LibraryCreate,
             onSubmit: async ({ value }) => {
                 try {
@@ -46,6 +48,20 @@ export const Route = createFileRoute("/libraries/add")({
                     >
                         {(field) => <field.InputField placeholder="Name" />}
                     </form.AppField>
+
+                    <form.AppField
+                        name="home_path"
+                        validators={{
+                            onChange: z
+                                .string()
+                                .startsWith(".", { error: "Must be relative path" })
+                                .nullable(),
+                        }}
+                    >
+                        {/* TODO: This should be a graphical chooser which uses readLibraryHomeSubpaths */}
+                        {(field) => <field.InputField placeholder="Home" />}
+                    </form.AppField>
+
                     <form.SubmitButton>Add</form.SubmitButton>
                 </AppForm>
             </Modal>

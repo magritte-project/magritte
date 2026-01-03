@@ -17,6 +17,10 @@ class Library(LibraryModel, table=True):
         min_length=1,
         description="The name of this library",
     )
+    home_path: str | None = Field(
+        unique=True,
+        description="The files for this library, if any. A path relative to library_home.",
+    )
     users: list[User] = Relationship(
         back_populates="libraries",
         link_model=UserLibraryLink,

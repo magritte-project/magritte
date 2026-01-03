@@ -11,6 +11,7 @@ import type {
     BodySignInSignInPost,
     BulkIngestSongs,
     LibraryCreate,
+    LibraryHomePathRead,
     LibraryMediaReadAlbumRead,
     LibraryMediaReadArtistRead,
     LibraryMediaReadSongRead,
@@ -143,6 +144,13 @@ export class APIClient {
 
     async readLibraries(): Promise<readonly LibraryRead[]> {
         const response = await this._client.GET("/libraries/")
+        return unwrap(response)
+    }
+
+    async readLibraryHomeSubpaths(relative_to: string): Promise<LibraryHomePathRead> {
+        const response = await this._client.GET("/libraries/home-subpaths", {
+            params: { query: { relative_to } },
+        })
         return unwrap(response)
     }
 

@@ -16,6 +16,13 @@ export function readLibrary(apiClient: APIClient, library_id: number) {
     })
 }
 
+export function readLibraryHomeSubpaths(apiClient: APIClient, relative_to: string) {
+    return queryOptions({
+        queryKey: ["readLibraryHomeSubpaths", relative_to],
+        queryFn: () => apiClient.readLibraryHomeSubpaths(relative_to),
+    })
+}
+
 export interface ReadLibraryAlbumsCriteria {
     readonly libraryId: number
     readonly artistId?: number

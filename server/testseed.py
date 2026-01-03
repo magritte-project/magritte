@@ -22,6 +22,13 @@ async def _seed_users(session: AsyncSession):
             scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
     )
+    session.add(
+        User(
+            username="restricted",
+            hashed_password=password_hash.hash("password", salt=config.salt),
+            scope=OAuth2Scope.to_str({OAuth2Scope.PROFILE, OAuth2Scope.LIBRARIES_READ}),
+        )
+    )
     await session.flush()
 
 
@@ -29,6 +36,7 @@ async def _seed_libraries(session: AsyncSession):
     session.add(
         Library(
             name="Empty",
+            home_path=None,
         )
     )
     await session.flush()
@@ -45,6 +53,7 @@ async def _seed_libraries(session: AsyncSession):
     session.add(
         Library(
             name="Scratch",
+            home_path=None,
         )
     )
     await session.flush()

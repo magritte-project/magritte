@@ -194,6 +194,23 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/libraries/home-subpaths": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read subpaths a library can be configured to use as a home */
+        readonly get: operations["read_library_home_subpaths_libraries_home_subpaths_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/libraries/create": {
         readonly parameters: {
             readonly query?: never;
@@ -581,6 +598,15 @@ export interface components {
         readonly LibraryCreate: {
             /** Name */
             readonly name: string;
+            /** Home Path */
+            readonly home_path: string | null;
+        };
+        /** LibraryHomePathRead */
+        readonly LibraryHomePathRead: {
+            /** Relative To */
+            readonly relative_to: string;
+            /** Subpaths */
+            readonly subpaths: readonly string[];
         };
         /** LibraryMediaRead[AlbumRead] */
         readonly LibraryMediaRead_AlbumRead_: {
@@ -621,6 +647,8 @@ export interface components {
             readonly id: number;
             /** Name */
             readonly name: string;
+            /** Home Path */
+            readonly home_path: string | null;
         };
         /**
          * OAuth2Scope
@@ -995,6 +1023,7 @@ export type IngestArtwork = components['schemas']['IngestArtwork'];
 export type IngestSong = components['schemas']['IngestSong'];
 export type IngestSource = components['schemas']['IngestSource'];
 export type LibraryCreate = components['schemas']['LibraryCreate'];
+export type LibraryHomePathRead = components['schemas']['LibraryHomePathRead'];
 export type LibraryMediaReadAlbumRead = components['schemas']['LibraryMediaRead_AlbumRead_'];
 export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead_ArtistRead_'];
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
@@ -1477,6 +1506,37 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": readonly components["schemas"]["LibraryRead"][];
+                };
+            };
+        };
+    };
+    readonly read_library_home_subpaths_libraries_home_subpaths_get: {
+        readonly parameters: {
+            readonly query: {
+                readonly relative_to: string;
+            };
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["LibraryHomePathRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
