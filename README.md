@@ -67,9 +67,18 @@ http://localhost:6479/
 To execute the tests:
 
 ```sh
-just test-server
-just test-web
+just test
 ```
+
+## Packaging
+
+The server and web app can be packaged together for execution outside of a development environment:
+
+```sh
+just package
+```
+
+The package recipe will produce `dist/` directories in both `server/` and `web/` and then combine them into a single `dist/` at the project root. The combined `dist/` is intended to be passed off to a deploy pipeline – it does not include the development `uv` virtual environment, nor the `.env` or `.tool-versions` from the root project.
 
 ## Data Architecture
 

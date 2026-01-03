@@ -17,3 +17,9 @@ format:
 
 check-types:
     pnpm tsc --noEmit
+
+clean:
+    pnpm clean
+
+package: clean
+    pnpm build

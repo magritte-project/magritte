@@ -12,16 +12,22 @@ uv sync
 
 ## Running
 
-The server can be manually run from this directory:
+The server can be manually run by invoking the FastAPI development server through `uv`:
 
 ```sh
-uv run fastapi dev main.py
+uv --directory "./server" run fastapi dev main.py
+```
+
+**Note**: To run the server after it has been packaged, invoke main.py directly through `uv`:
+
+```sh
+uv --directory "./dist" run --no-active python main.py
 ```
 
 ## Testing
 
-The tests can be run invoking `pytest` from this directory:
+The tests can be run invoking `pytest` through uv:
 
 ```sh
-uv run pytest
+uv --directory "./server" run pytest
 ```
