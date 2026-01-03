@@ -3,6 +3,7 @@ interface ViteTypeOptions {
 }
 
 interface ImportMetaEnv {
+    readonly VITE_ENV: "dev" | "ci" | "prod"
     readonly VITE_API_URL: string
 }
 

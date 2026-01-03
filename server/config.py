@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import AnyUrl, Field
 from pydantic_settings import SettingsConfigDict
 
@@ -5,6 +7,11 @@ from utilities.base_config import BaseConfig
 
 
 class Config(BaseConfig):
+    env: Literal["dev", "ci", "prod"] = Field(
+        default="dev",
+        description="The environment the server is running in",
+    )
+
     token_algorithm: str = Field(
         default="HS256",
         description="The algorithm to use when generating tokens",
