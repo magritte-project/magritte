@@ -4,7 +4,6 @@ import sys
 from mimetypes import guess_file_type
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col
 from tinytag import TinyTag, UnsupportedFormatError
 
 from ingestion.artwork import try_ingest_artwork
@@ -58,6 +57,29 @@ async def update_song_metadata(
         song.isrc = all_isrc[0]
 
 
+async def ensure_libraries_linked(
+    source: Source,
+    libraries: list[Library],
+    session: AsyncSession,
+):
+    songs: list[Song] = await source.awaitable_attrs.songs
+    for song in songs:
+        album: Album = await song.awaitable_attrs.album
+        if album is not None:
+            album.libraries = Library.combine(
+                libraries, await album.awaitable_attrs.libraries
+            )
+        artist: Artist = await song.awaitable_attrs.artist
+        if artist is not None:
+            artist.libraries = Library.combine(
+                libraries, await artist.awaitable_attrs.libraries
+            )
+        song.libraries = Library.combine(
+            libraries, await song.awaitable_attrs.libraries
+        )
+    await session.flush()
+
+
 async def try_ingest_file(
     path: str,
     libraries: list[Library],
@@ -69,12 +91,12 @@ async def try_ingest_file(
         return None
 
     file_url = pathlib.Path(path).as_uri()
-    already_exists = await Source.exists(
-        where=[col(Source.url) == file_url],
-        joins=[],
-        session=session,
+    existing_source = await Source.read_one(
+        file_url,
+        session,
     )
-    if already_exists:
+    if existing_source:
+        await ensure_libraries_linked(existing_source, libraries, session)
         raise FileExistsError("File has already been ingested")
 
     mime_type, _encoding = guess_file_type(path)

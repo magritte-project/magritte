@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Self
+from typing import Iterable, Self
 
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
@@ -179,3 +179,19 @@ class LibraryModel(SQLModel, AsyncAttrs):
                 return existing, False
             else:
                 raise e
+
+    @classmethod
+    def combine(cls, lhs: Iterable[Self], rhs: Iterable[Self]):
+        """
+        Merge a pair of iterables containing this model
+        into a list containing only unique items.
+
+        :param lhs: The first batch of models.
+        :param rhs: The second batch of models.
+        :returns: A list containing the unique models from both batches.
+        """
+        return [
+            *(
+                {model.id: model for model in lhs} | {model.id: model for model in rhs}
+            ).values()
+        ]
