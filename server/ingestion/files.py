@@ -38,7 +38,7 @@ async def update_song_metadata(
 
     song.artist = artist
     song.album = album
-    song.end_time = tags.duration
+    song.end_time = tags.duration or 0
     song.title = tags.title
     song.album_artist = tags.albumartist
     song.composer = tags.composer
@@ -109,7 +109,7 @@ async def try_ingest_file(
                 mime_type=mime_type,
             )
         ],
-        end_time=tags.duration,
+        end_time=tags.duration or 0,
     )
     session.add(new_song)
     await session.flush()

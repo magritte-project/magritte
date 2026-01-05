@@ -3,10 +3,10 @@ mod web
 
 bootstrap:
     # Add all required asdf plugins
-    asdf plugin add python
-    asdf plugin add uv
+    asdf plugin add just
     asdf plugin add nodejs
     asdf plugin add pnpm
+    asdf plugin add uv
     
     # Install project tooling
     asdf install

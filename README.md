@@ -12,7 +12,7 @@ Magritte is intended to be installed on an in-home server with a large storage m
 
 ### Known Working Configurations
 
-- macOS 15.5
+- macOS 15.5 - 26.2
 
 ## Front ends
 
@@ -21,30 +21,18 @@ Magritte is intended to be installed on an in-home server with a large storage m
 
 ## Installation
 
-Magritte uses [`just`](https://github.com/casey/just) to handle tasks and [`asdf`](https://asdf-vm.com/) to manage tooling. Once you've installed `just` and `asdf`, you can bootstrap your development environment:
+Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling and [`just`](https://just.systems/) to handle tasks. Follow the Getting Started directions to install `asdf` on your machine. After installing `asdf`, you can install `just` using `asdf`:
+
+```sh
+asdf plugin add just
+asdf install just
+```
+
+Once you've installed `just` and `asdf`, you can bootstrap your development environment:
 
 ```sh
 just bootstrap
 ```
-
-### Manual Installation
-
-After installing `asdf`, you will need to install all required plugins:
-
-```sh
-asdf plugin add python
-asdf plugin add uv
-asdf plugin add nodejs
-asdf plugin add pnpm
-```
-
-Once you've installed the plugins, you can install the tools:
-
-```sh
-asdf install
-```
-
-Next, follow the installation directions in the [server](/decarbonization/magritte/tree/main/server/README.md) and [server](/decarbonization/magritte/tree/main/web/README.md) README files.
 
 ### After Installation
 
