@@ -33,6 +33,11 @@ export class UserSessionManager {
         return this.current !== null
     }
 
+    hasScope(scope: OAuth2Scope): boolean {
+        const current = this.current
+        return current && current.scopes.includes(scope)
+    }
+
     _dispatchCurrentDidChange() {
         this._events.dispatch({ type: "currentDidChange", current: this.current })
     }

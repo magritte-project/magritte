@@ -7,6 +7,7 @@ import { useMemo } from "react"
 
 import { readLibraries } from "@/api/queries/libraries"
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
+import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
@@ -79,10 +80,12 @@ export const Route = createFileRoute("/libraries")({
                                 </li>
                             ))}
                         </ol>
-                        <ThemedLink to="/libraries/add" className="flex items-center gap-1">
-                            <PlusIcon weight="bold" />
-                            Add
-                        </ThemedLink>
+                        <ScopeRestricted expected={["library:write"]}>
+                            <ThemedLink to="/libraries/add" className="flex items-center gap-1">
+                                <PlusIcon weight="bold" />
+                                Add
+                            </ThemedLink>
+                        </ScopeRestricted>
                     </main>
                 </div>
                 <Outlet />

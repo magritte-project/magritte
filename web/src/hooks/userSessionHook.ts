@@ -28,7 +28,9 @@ export default function useUserSession(): UseUserSessionResult {
                         if (event.current === null) {
                             // NOTE: We must redirect before invalidating the queries
                             //       or we can end up in an infinite loop.
-                            navigate({ to: "/" })
+                            setTimeout(() => {
+                                navigate({ to: "/sign-in" })
+                            }, 16)
                         }
                         onStoreChange()
                         await queryClient.invalidateQueries()

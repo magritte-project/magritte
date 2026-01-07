@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import z from "zod"
 
 import type { LibraryCreate } from "@/api/openapi"
@@ -12,6 +12,11 @@ import Modal from "@/components/reusable/Modal"
 import { useAppForm } from "@/hooks/formHook"
 
 export const Route = createFileRoute("/libraries/add")({
+    beforeLoad({ context: { userSession } }) {
+        if (!userSession.hasScope("library:write")) {
+            throw redirect({ to: ".." })
+        }
+    },
     component: function LibrariesCreateComponent() {
         const navigate = useNavigate()
         const createLibraryMutation = useCreateLibrary()
