@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useRouteContext } from "@tanstack/react-router"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useSyncExternalStore } from "react"
 
 import type { Token } from "@/api/openapi"
 import type { UserSession } from "@/api/userSession"
@@ -20,18 +20,31 @@ export default function useUserSession(): UseUserSessionResult {
     })
     // biome-ignore lint/style/noNonNullAssertion: userSession is set at root level
     const userSession = context.userSession!
-    const [current, setCurrent] = useState(() => userSession.current)
+    const current = useSyncExternalStore(
+        (onStoreChange) => {
+            const subscription = userSession.$events.subscribe(async (event) => {
+                switch (event.type) {
+                    case "currentDidChange":
+                        if (event.current === null) {
+                            // NOTE: We must redirect before invalidating the queries
+                            //       or we can end up in an infinite loop.
+                            navigate({ to: "/" })
+                        }
+                        onStoreChange()
+                        await queryClient.invalidateQueries()
+                        break
+                    default:
+                        break
+                }
+            })
+            return () => subscription.unsubscribe()
+        },
+        () => {
+            return userSession.current
+        },
+    )
     const isSignedIn = current !== null
-    useEffect(() => {
-        const handleUserSessionChangeEventListener = async () => {
-            setCurrent(userSession.current)
-            queryClient.invalidateQueries()
-        }
-        userSession.addUserSessionChangeEventListener(handleUserSessionChangeEventListener)
-        return () => {
-            userSession.removeUserSessionChangeEventListener(handleUserSessionChangeEventListener)
-        }
-    }, [userSession, queryClient])
+
     const signIn = useCallback(
         async (token: Token) => {
             userSession.current = {
@@ -43,8 +56,7 @@ export default function useUserSession(): UseUserSessionResult {
     )
     const signOut = useCallback(async () => {
         userSession.current = null
-        navigate({ to: "/" })
-    }, [navigate, userSession])
+    }, [userSession])
 
     return { current: current, isSignedIn, signIn, signOut }
 }

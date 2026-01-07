@@ -1,14 +1,23 @@
-import type { OAuth2Scope } from "./openapi"
+import type { OAuth2Scope } from "@/api/openapi"
+
+import { createEvent, EventStream, type EventSink } from "@/utilities/events"
 
 export interface UserSession {
     readonly accessToken: string
     readonly scopes: readonly OAuth2Scope[]
 }
 
+export type UserSessionManagerEvent = { type: "currentDidChange"; current: UserSession | null }
+
 export class UserSessionManager {
+    private readonly _events: EventSink<UserSessionManagerEvent>
+
     constructor() {
         this._eventTarget = new EventTarget()
+        ;[this._events, this.$events] = createEvent<UserSessionManagerEvent>()
     }
+
+    readonly $events: EventStream<UserSessionManagerEvent>
 
     readonly _eventTarget: EventTarget
 
@@ -24,17 +33,33 @@ export class UserSessionManager {
         return this.current !== null
     }
 
-    dispatchUserSessionChangeEvent() {
-        this._eventTarget.dispatchEvent(new CustomEvent("onUserSessionChange"))
+    _dispatchCurrentDidChange() {
+        this._events.dispatch({ type: "currentDidChange", current: this.current })
     }
+}
 
-    addUserSessionChangeEventListener(callback: EventListenerOrEventListenerObject) {
-        this._eventTarget.addEventListener("onUserSessionChange", callback)
+function retrieveUserSession(storage: Storage): UserSession | null {
+    const accessToken = storage.getItem("userSession.accessToken")
+    if (accessToken === null) {
+        return null
     }
+    const scope = storage.getItem("userSession.scope") ?? ""
+    const scopes = scope.split(" ") as OAuth2Scope[]
+    return {
+        accessToken,
+        scopes,
+    }
+}
 
-    removeUserSessionChangeEventListener(callback: EventListenerOrEventListenerObject) {
-        this._eventTarget.removeEventListener("onUserSessionChange", callback)
+function storeUserSession(storage: Storage, userSession: UserSession | null): UserSession | null {
+    if (userSession != null) {
+        storage.setItem("userSession.accessToken", userSession.accessToken)
+        storage.setItem("userSession.scope", userSession.scopes.join(" "))
+    } else {
+        storage.removeItem("userSession.accessToken")
+        storage.removeItem("userSession.scope")
     }
+    return userSession
 }
 
 export class StorageUserSessionManager extends UserSessionManager {
@@ -43,31 +68,18 @@ export class StorageUserSessionManager extends UserSessionManager {
     constructor(storage: Storage) {
         super()
         this._storage = storage
+        this._current = retrieveUserSession(storage)
     }
 
     readonly _storage: Storage
+    _current: UserSession | null
 
     override get current(): UserSession | null {
-        const accessToken = this._storage.getItem("userSession.accessToken")
-        if (accessToken === null) {
-            return null
-        }
-        const scope = this._storage.getItem("userSession.scope") ?? ""
-        const scopes = scope.split(" ") as OAuth2Scope[]
-        return {
-            accessToken,
-            scopes,
-        }
+        return this._current
     }
 
     override set current(userSession: UserSession | null) {
-        if (userSession != null) {
-            this._storage.setItem("userSession.accessToken", userSession.accessToken)
-            this._storage.setItem("userSession.scope", userSession.scopes.join(" "))
-        } else {
-            this._storage.removeItem("userSession.accessToken")
-            this._storage.removeItem("userSession.scope")
-        }
-        this.dispatchUserSessionChangeEvent()
+        this._current = storeUserSession(this._storage, userSession)
+        this._dispatchCurrentDidChange()
     }
 }
