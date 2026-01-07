@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as LibrariesRouteImport } from './routes/libraries'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LibrariesAddRouteImport } from './routes/libraries.add'
 import { Route as LibrariesLibraryIdRouteRouteImport } from './routes/libraries_.$libraryId/route'
@@ -36,6 +37,11 @@ const SignInRoute = SignInRouteImport.update({
 const LibrariesRoute = LibrariesRouteImport.update({
   id: '/libraries',
   path: '/libraries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -96,6 +102,7 @@ const LibrariesLibraryIdSongsAddServiceRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
@@ -125,6 +133,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/libraries'
     | '/sign-in'
     | '/sign-up'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/libraries'
     | '/sign-in'
     | '/sign-up'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/libraries'
     | '/sign-in'
     | '/sign-up'
@@ -186,6 +198,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   LibrariesRoute: typeof LibrariesRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
@@ -213,6 +226,13 @@ declare module '@tanstack/react-router' {
       path: '/libraries'
       fullPath: '/libraries'
       preLoaderRoute: typeof LibrariesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -354,6 +374,7 @@ const LibrariesLibraryIdRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   LibrariesRoute: LibrariesRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,

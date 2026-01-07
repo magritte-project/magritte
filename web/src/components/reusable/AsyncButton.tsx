@@ -13,7 +13,7 @@ export interface AsyncButtonProps extends Omit<
     "onClick"
 > {
     readonly buttonComponent?: ButtonComponent
-    readonly onClick?: (event: React.MouseEvent<HTMLButtonElement>) => undefined | Promise<unknown>
+    readonly onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void | Promise<unknown>
     readonly onErrorCaught?: (error: unknown) => void
 }
 

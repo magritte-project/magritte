@@ -4,7 +4,7 @@ import { useCallback, type ReactNode } from "react"
 
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import UserSessionButton from "@/components/UserSessionButton"
+import UserButton from "@/components/UserButton"
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 
 export interface PrimaryHeaderProps {
@@ -30,7 +30,7 @@ export default function PrimaryHeader({ children }: PrimaryHeaderProps) {
                     <ThemedSubtleButton onClick={handleToggleCommandPalette}>
                         <CommandIcon /> K
                     </ThemedSubtleButton>
-                    <UserSessionButton />
+                    <UserButton />
                 </>
             }
         >

@@ -35,7 +35,7 @@ export class UserSessionManager {
 
     hasScope(scope: OAuth2Scope): boolean {
         const current = this.current
-        return current && current.scopes.includes(scope)
+        return current !== null && current.scopes.includes(scope)
     }
 
     _dispatchCurrentDidChange() {

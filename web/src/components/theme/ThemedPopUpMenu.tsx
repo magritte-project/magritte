@@ -2,13 +2,18 @@ import type { ReactNode } from "react"
 
 import { Menu, MenuItem, MenuItems } from "@headlessui/react"
 
+import type { OAuth2Scope } from "@/api/openapi"
+
 import AsyncButton from "@/components/reusable/AsyncButton"
+
+import ScopeRestricted from "../reusable/ScopeRestricted"
 
 export interface ThemedPopUpMenuItem {
     readonly key: string
     readonly label: ReactNode
     readonly disabled?: boolean
-    readonly onClick?: () => undefined | Promise<void>
+    readonly onClick?: () => void | Promise<unknown>
+    readonly requiresScopes?: readonly OAuth2Scope[]
 }
 
 export interface ThemedPopUpMenuProps {
@@ -22,19 +27,21 @@ export default function ThemedPopUpMenu({ button, items }: ThemedPopUpMenuProps)
             {button}
             <MenuItems
                 anchor="bottom"
-                className="bg-white rounded-md shadow-sm text-sm flex flex-col gap-2 z-100"
+                className="bg-white rounded-md shadow-sm text-sm flex flex-col z-100"
                 onClick={(e) => e.stopPropagation()}
             >
                 {items.map((item) => (
-                    <MenuItem key={item.key}>
-                        <AsyncButton
-                            type="button"
-                            className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white"
-                            onClick={item.onClick}
-                        >
-                            {item.label}
-                        </AsyncButton>
-                    </MenuItem>
+                    <ScopeRestricted key={item.key} expected={item.requiresScopes ?? []}>
+                        <MenuItem>
+                            <AsyncButton
+                                type="button"
+                                className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white"
+                                onClick={item.onClick}
+                            >
+                                {item.label}
+                            </AsyncButton>
+                        </MenuItem>
+                    </ScopeRestricted>
                 ))}
             </MenuItems>
         </Menu>
