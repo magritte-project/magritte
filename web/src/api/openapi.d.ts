@@ -402,6 +402,41 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/users/notifications": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read a page of the signed in user's notifications */
+        readonly get: operations["read_notifications_users_notifications_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/users/notifications/{notification_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read a single notification for the signed in user */
+        readonly get: operations["read_notification_users_notifications__notification_id__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        /** Update a single notification for the signed in user */
+        readonly patch: operations["update_notification_users_notifications__notification_id__patch"];
+        readonly trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -649,6 +684,35 @@ export interface components {
             readonly name: string;
             /** Home Path */
             readonly home_path: string | null;
+        };
+        /** NotificationRead */
+        readonly NotificationRead: {
+            /** Id */
+            readonly id: number;
+            /** Title */
+            readonly title: string;
+            /** Description */
+            readonly description: string | null;
+            /** Progress */
+            readonly progress: number | null;
+            /** Is Read */
+            readonly is_read: boolean;
+        };
+        /** NotificationUpdate */
+        readonly NotificationUpdate: {
+            /** Is Read */
+            readonly is_read: boolean | null;
+        };
+        /** NotificationsRead */
+        readonly NotificationsRead: {
+            /** Items */
+            readonly items: readonly components["schemas"]["NotificationRead"][];
+            /** Offset */
+            readonly offset: number;
+            /** Limit */
+            readonly limit: number;
+            /** Total */
+            readonly total: number;
         };
         /**
          * OAuth2Scope
@@ -1028,6 +1092,9 @@ export type LibraryMediaReadAlbumRead = components['schemas']['LibraryMediaRead_
 export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead_ArtistRead_'];
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
 export type LibraryRead = components['schemas']['LibraryRead'];
+export type NotificationRead = components['schemas']['NotificationRead'];
+export type NotificationUpdate = components['schemas']['NotificationUpdate'];
+export type NotificationsRead = components['schemas']['NotificationsRead'];
 export type OAuth2Scope = components['schemas']['OAuth2Scope'];
 export type ServiceArtworkRead = components['schemas']['ServiceArtworkRead'];
 export type ServiceFeature = components['schemas']['ServiceFeature'];
@@ -2003,6 +2070,106 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["UserProfile"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_notifications_users_notifications_get: {
+        readonly parameters: {
+            readonly query?: {
+                /** @description The page offset to read from */
+                readonly offset?: number;
+                /** @description How many items to read per page */
+                readonly limit?: number;
+            };
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["NotificationsRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_notification_users_notifications__notification_id__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly notification_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["NotificationRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly update_notification_users_notifications__notification_id__patch: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly notification_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["NotificationUpdate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["NotificationRead"];
                 };
             };
             /** @description Validation Error */

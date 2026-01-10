@@ -21,6 +21,7 @@ class LibraryModel(SQLModel, AsyncAttrs):
     creation_date: datetime = Field(
         sa_type=sa.TIMESTAMP,
         nullable=False,
+        default=None,
         sa_column_kwargs={
             "server_default": sa.text("CURRENT_TIMESTAMP"),
         },
@@ -30,6 +31,7 @@ class LibraryModel(SQLModel, AsyncAttrs):
     last_updated: datetime = Field(
         sa_type=sa.TIMESTAMP,
         nullable=False,
+        default=None,
         sa_column_kwargs={
             "server_default": sa.text("CURRENT_TIMESTAMP"),
             "server_onupdate": sa.text("CURRENT_TIMESTAMP"),
@@ -101,7 +103,7 @@ class LibraryModel(SQLModel, AsyncAttrs):
     async def read_many_with_total(
         cls,
         where: list[sa.ColumnExpressionArgument],
-        joins: list[tuple[type["LibraryModel"], sa.ColumnExpressionArgument]],
+        joins: list[tuple[type[SQLModel], sa.ColumnExpressionArgument]],
         order_by: list[sa.ColumnExpressionArgument],
         offset: int,
         limit: int,

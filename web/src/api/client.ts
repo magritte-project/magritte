@@ -16,6 +16,9 @@ import type {
     LibraryMediaReadArtistRead,
     LibraryMediaReadSongRead,
     LibraryRead,
+    NotificationRead,
+    NotificationUpdate,
+    NotificationsRead,
     ServiceRead,
     ServiceSearchResultsServiceSongRead,
     ServiceToken,
@@ -135,6 +138,31 @@ export class APIClient {
 
     async updateMe(body: UserProfileUpdate): Promise<UserProfile> {
         const response = await this._client.POST("/users/me", {
+            body,
+        })
+        return unwrap(response)
+    }
+
+    async readNotifications(offset?: number, limit?: number): Promise<NotificationsRead> {
+        const response = await this._client.GET("/users/notifications", {
+            params: { query: { offset, limit } },
+        })
+        return unwrap(response)
+    }
+
+    async readNotification(notification_id: number): Promise<NotificationRead> {
+        const response = await this._client.GET("/users/notifications/{notification_id}", {
+            params: { path: { notification_id } },
+        })
+        return unwrap(response)
+    }
+
+    async updateNotification(
+        notification_id: number,
+        body: NotificationUpdate,
+    ): Promise<NotificationRead> {
+        const response = await this._client.PATCH("/users/notifications/{notification_id}", {
+            params: { path: { notification_id } },
             body,
         })
         return unwrap(response)
