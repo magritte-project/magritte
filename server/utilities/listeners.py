@@ -33,6 +33,12 @@ class ListenerManager:
         if index is not None:
             del listeners[index]
 
+    async def send_message(self, user_ids: set[int], message: ListenerMessage):
+        for user_id in user_ids:
+            listeners = self._listeners.get(user_id, [])
+            for listener in listeners:
+                await listener.send_message(message)
+
 
 _listener_manager: ListenerManager | None = None
 

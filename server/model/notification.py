@@ -55,3 +55,7 @@ class Notification(LibraryModel, table=True):
                 col(cls.users).any(col(UserNotificationLink.user_id) == user_id),
             )
         )
+
+    @property
+    async def user_ids(self) -> set[int]:
+        return {user.id for user in await self.awaitable_attrs.users}
