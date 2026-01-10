@@ -6,8 +6,6 @@ from fastapi import (
     HTTPException,
     Query,
     Security,
-    WebSocket,
-    WebSocketDisconnect,
     status,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,7 +20,6 @@ from model.user import User, UserNotificationLink
 from schemas.auth import OAuth2Scope
 from schemas.notification import NotificationRead, NotificationsRead, NotificationUpdate
 from schemas.user import UserProfile, UserProfileUpdate
-from utilities.listeners import ListenerManager, get_listener_manager
 
 router = APIRouter(prefix="/users")
 
@@ -158,21 +155,3 @@ async def update_notification(
     await session.flush()
 
     return NotificationRead(**notification.model_dump())
-
-
-@router.websocket("/listen")
-async def listen(
-    websocket: WebSocket,
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
-    ],
-    listener_manager: Annotated[ListenerManager, Depends(get_listener_manager)],
-):
-    user_id = current_user.id
-    await listener_manager.connect(user_id, websocket)
-    try:
-        while True:
-            await websocket.receive_text()
-            # TODO: Implement logic to handle incoming messages
-    except WebSocketDisconnect:
-        listener_manager.disconnect(user_id, websocket)

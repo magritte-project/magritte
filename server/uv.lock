@@ -845,7 +845,6 @@ dependencies = [
     { name = "sqlmodel" },
     { name = "tinytag" },
     { name = "watchdog" },
-    { name = "websockets" },
 ]
 
 [package.dev-dependencies]
@@ -872,7 +871,6 @@ requires-dist = [
     { name = "sqlmodel", specifier = ">=0.0.25" },
     { name = "tinytag", specifier = ">=2.1.2" },
     { name = "watchdog", specifier = ">=6.0.0" },
-    { name = "websockets", specifier = ">=15.0.1" },
 ]
 
 [package.metadata.requires-dev]
