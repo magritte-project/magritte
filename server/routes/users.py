@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth import (
@@ -10,6 +10,7 @@ from db import get_db_session
 from model.user import User
 from schemas.auth import OAuth2Scope
 from schemas.user import UserProfile, UserProfileUpdate
+from utilities.listeners import ListenerManager, get_listener_manager
 
 router = APIRouter(prefix="/users")
 
@@ -46,3 +47,21 @@ async def update_me(
     await session.flush()
 
     return UserProfile(**current_user.model_dump())
+
+
+@router.websocket("/listen")
+async def listen(
+    websocket: WebSocket,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
+    ],
+    listener_manager: Annotated[ListenerManager, Depends(get_listener_manager)],
+):
+    user_id = current_user.id
+    await listener_manager.connect(user_id, websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+            # TODO: Implement logic to handle incoming messages
+    except WebSocketDisconnect:
+        listener_manager.disconnect(user_id, websocket)

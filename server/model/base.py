@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Iterable, Self
+from typing import Iterable, Self, Sequence
 
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncAttrs, AsyncSession
-from sqlmodel import Field, Sequence, SQLModel, col, func, select
+from sqlmodel import Field, SQLModel, col, func, select
 
 
 class LibraryModel(SQLModel, AsyncAttrs):
