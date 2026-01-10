@@ -1,3 +1,4 @@
+from asyncio import wait_for
 from typing import Annotated
 
 from fastapi import (
@@ -5,9 +6,11 @@ from fastapi import (
     Depends,
     HTTPException,
     Query,
+    Request,
     Security,
     status,
 )
+from fastapi_sse import sse_handler
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
 
@@ -19,7 +22,8 @@ from model.notification import Notification
 from model.user import User, UserNotificationLink
 from schemas.auth import OAuth2Scope
 from schemas.notification import NotificationRead, NotificationsRead, NotificationUpdate
-from schemas.user import UserProfile, UserProfileUpdate
+from schemas.user import UserEvent, UserProfile, UserProfileUpdate
+from utilities.user_events import UserEvents, get_user_event
 
 router = APIRouter(prefix="/users")
 
@@ -155,3 +159,33 @@ async def update_notification(
     await session.flush()
 
     return NotificationRead(**notification.model_dump())
+
+
+@router.get(
+    "/events",
+    response_model=UserEvent,
+    summary="Stream events for the signed in user",
+)
+@sse_handler()
+async def stream_user_events(
+    request: Request,
+    user_events: Annotated[UserEvents, Depends(get_user_event)],
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
+    ],
+):
+    current_user_id = current_user.id
+    event_queue = user_events.spin_up_queue(current_user_id)
+    try:
+        while True:
+            if await request.is_disconnected():
+                break
+
+            try:
+                event = await wait_for(event_queue.get(), timeout=2)
+                yield event
+                event_queue.task_done()
+            except TimeoutError:
+                pass
+    finally:
+        user_events.shutdown_queue(current_user_id, event_queue)

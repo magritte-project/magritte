@@ -23,3 +23,8 @@ class UserProfile(BaseModel):
 
 class UserProfileUpdate(BaseModel):
     preferred_name: str | None
+
+
+class UserEvent(BaseModel):
+    event_type: Literal["notifications_changed"]
+    ids: list[int]

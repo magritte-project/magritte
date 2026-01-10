@@ -19,6 +19,7 @@ export const Route = createFileRoute("/libraries")({
         const navigate = useNavigate()
         const apiClient = useAPIClient()
         const { data: libraries } = useSuspenseQuery(readLibraries(apiClient))
+
         const libraryItems = useMemo<JsonStructure>(() => {
             return [
                 {

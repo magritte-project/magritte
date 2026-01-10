@@ -437,6 +437,23 @@ export interface paths {
         readonly patch: operations["update_notification_users_notifications__notification_id__patch"];
         readonly trace?: never;
     };
+    readonly "/users/events": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Stream events for the signed in user */
+        readonly get: operations["stream_user_events_users_events_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1037,6 +1054,16 @@ export interface components {
              */
             readonly token_type: "bearer";
         };
+        /** UserEvent */
+        readonly UserEvent: {
+            /**
+             * Event Type
+             * @constant
+             */
+            readonly event_type: "notifications_changed";
+            /** Ids */
+            readonly ids: readonly number[];
+        };
         /** UserProfile */
         readonly UserProfile: {
             /** Username */
@@ -1109,6 +1136,7 @@ export type SourceCreate = components['schemas']['SourceCreate'];
 export type SourceRead = components['schemas']['SourceRead'];
 export type SourceUpdate = components['schemas']['SourceUpdate'];
 export type Token = components['schemas']['Token'];
+export type UserEvent = components['schemas']['UserEvent'];
 export type UserProfile = components['schemas']['UserProfile'];
 export type UserProfileUpdate = components['schemas']['UserProfileUpdate'];
 export type UserSignUp = components['schemas']['UserSignUp'];
@@ -2179,6 +2207,26 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly stream_user_events_users_events_get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["UserEvent"];
                 };
             };
         };

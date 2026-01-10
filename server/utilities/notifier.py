@@ -3,10 +3,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import get_db_session
 from model.notification import Notification
+from schemas.user import UserEvent
+from utilities.user_events import UserEvents, get_user_event
 
 
 class Notifier:
-    def __init__(self, session: AsyncSession):
+    def __init__(
+        self,
+        user_events: UserEvents,
+        session: AsyncSession,
+    ):
+        self._user_events = user_events
         self._session = session
 
     async def insert(
@@ -22,9 +29,17 @@ class Notifier:
     ):
         await self._session.commit()
         await self._session.refresh(notification)
+        await self._user_events.notify(
+            await notification.user_ids,
+            UserEvent(
+                event_type="notifications_changed",
+                ids=[notification.id],
+            ),
+        )
 
 
 def get_notifier(
+    user_events: UserEvents = Depends(get_user_event),
     session: AsyncSession = Depends(get_db_session),
 ):
-    return Notifier(session)
+    return Notifier(user_events, session)
