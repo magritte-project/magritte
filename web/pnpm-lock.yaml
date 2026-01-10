@@ -59,6 +59,9 @@ importers:
       openapi-fetch:
         specifier: ^0.15.0
         version: 0.15.0
+      parse-sse:
+        specifier: ^0.1.0
+        version: 0.1.0
       react:
         specifier: ^19.2.0
         version: 19.2.0
@@ -1751,6 +1754,10 @@ packages:
   parse-json@8.3.0:
     resolution: {integrity: sha512-ybiGyvspI+fAoRQbIPRddCcSTV9/LsJbf0e/S85VLowVGzRmokfneg2kwVW/KU5rOXrPSbF1qAKPMgNTqqROQQ==}
     engines: {node: '>=18'}
+
+  parse-sse@0.1.0:
+    resolution: {integrity: sha512-8bObUwtEuLp2Z1gP6iRVMBzmEqaU5ohmofa3WmZVFfFZFKRP/+c03y8NVYzzXmQMotQ6mDS5Mnyk6tT1gKOTcQ==}
+    engines: {node: '>=20'}
 
   parse5@8.0.0:
     resolution: {integrity: sha512-9m4m5GSgXjL4AjumKzq1Fgfp3Z8rsvjRNbnkVwfu2ImRqE5D0LnY2QfDen18FSY9C573YU5XxSapdHZTZ2WolA==}
@@ -3762,6 +3769,8 @@ snapshots:
       '@babel/code-frame': 7.27.1
       index-to-position: 1.2.0
       type-fest: 4.41.0
+
+  parse-sse@0.1.0: {}
 
   parse5@8.0.0:
     dependencies:
