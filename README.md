@@ -21,17 +21,10 @@ Magritte is intended to be installed on an in-home server with a large storage m
 
 ## Installation
 
-Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling and [`just`](https://just.systems/) to handle tasks. Follow the Getting Started directions to install `asdf` on your machine. After installing `asdf`, you can install `just` using `asdf`:
+Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling and [`just`](https://just.systems/) to handle tasks. Follow the Getting Started directions to install `asdf` on your machine. Once you've installed `asdf`, you can bootstrap your development environment:
 
 ```sh
-asdf plugin add just
-asdf install just
-```
-
-Once you've installed `just` and `asdf`, you can bootstrap your development environment:
-
-```sh
-just bootstrap
+./bootstrap
 ```
 
 ### After Installation

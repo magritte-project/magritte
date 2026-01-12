@@ -1,0 +1,28 @@
+#!/bin/sh
+
+if ! command -v asdf >/dev/null 2>&1; then
+    echo "Error: asdf not installed. Install <https://asdf-vm.com/> to continue." >&2
+    exit 1
+fi
+
+set -e
+
+# Add all required asdf plugins
+asdf plugin add just
+asdf plugin add nodejs
+asdf plugin add pnpm
+asdf plugin add uv
+
+# Install project tooling
+asdf install
+
+# Set up the environment files
+[ ! -e .env ] && cp "$PWD/.env.example" "$PWD/.env"
+[ ! -e server/.env ] && ln -s "$PWD/.env" "$PWD/server/.env"
+[ ! -e web/.env ] && ln -s "$PWD/.env" "$PWD/web/.env"
+
+# Create the database artwork directory
+[ ! -d db.artwork ] && mkdir db.artwork
+
+# Set up dependencies
+just sync-deps

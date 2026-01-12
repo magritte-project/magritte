@@ -1,26 +1,7 @@
 mod server
 mod web
 
-bootstrap:
-    # Add all required asdf plugins
-    asdf plugin add just
-    asdf plugin add nodejs
-    asdf plugin add pnpm
-    asdf plugin add uv
-    
-    # Install project tooling
-    asdf install
-    
-    # Set up the environment files
-    -[ ! -e .env ] && cp "$PWD/.env.example" "$PWD/.env"
-    -[ ! -e server/.env ] && ln -s "$PWD/.env" "$PWD/server/.env"
-    -[ ! -e web/.env ] && ln -s "$PWD/.env" "$PWD/web/.env"
-
-    # Set up server dependencies
-    @just server::sync-deps
-    
-    # Set up web dependencies
-    @just web::sync-deps
+sync-deps: server::sync-deps web::sync-deps
 
 [parallel]
 dev: server::dev web::dev
