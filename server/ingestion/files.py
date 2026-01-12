@@ -1,5 +1,4 @@
 import os
-import pathlib
 import sys
 from mimetypes import guess_file_type
 
@@ -13,6 +12,7 @@ from model.library import Library
 from model.song import Song
 from model.source import Source
 from schemas.artwork import ArtworkKind
+from utilities.files import path_as_file_uri
 
 
 async def update_song_metadata(
@@ -90,7 +90,7 @@ async def try_ingest_file(
     except UnsupportedFormatError:
         return None
 
-    file_url = pathlib.Path(path).as_uri()
+    file_url = path_as_file_uri(path)
     existing_source = await Source.read_one(
         file_url,
         session,

@@ -16,7 +16,9 @@ class EventImplementation<TEvent> {
     }
 
     unsubscribe(id: number): void {
-        this._subscriptions.delete(id)
+        if (!this._subscriptions.delete(id)) {
+            throw new Error(`No subscription with id ${id}`)
+        }
     }
 
     async dispatch(event: TEvent): Promise<void> {

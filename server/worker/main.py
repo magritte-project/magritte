@@ -38,6 +38,7 @@ def _path_str(path: str | bytes):
 
 
 async def _process_event(event: LibraryEvent | FileSystemEvent):
+    logging.debug(f"Library worker processing event: {event}")
     async with _db_session() as session:
         match event:
             case SyncLibraryEvent():

@@ -24,6 +24,9 @@ declare module "@tanstack/react-router" {
     interface StaticDataRouteOption {
         /** Controls whether a route suppresses the split in the normal root layout */
         hideSplit?: boolean
+
+        /** Whether a route does not require authentication */
+        noAuth?: boolean
     }
 }
 

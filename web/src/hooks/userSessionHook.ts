@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query"
-import { useNavigate, useRouteContext } from "@tanstack/react-router"
+import { useNavigate, useRouteContext, useRouter } from "@tanstack/react-router"
 import { useCallback, useSyncExternalStore } from "react"
 
 import type { Token } from "@/api/openapi"
@@ -13,6 +13,7 @@ export interface UseUserSessionResult {
 }
 
 export default function useUserSession(): UseUserSessionResult {
+    const router = useRouter()
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const context = useRouteContext({
@@ -25,7 +26,10 @@ export default function useUserSession(): UseUserSessionResult {
             const subscription = userSession.$events.subscribe(async (event) => {
                 switch (event.type) {
                     case "currentDidChange":
-                        if (event.current === null) {
+                        if (
+                            event.current === null &&
+                            !router.state.matches.some((match) => match.staticData.noAuth === true)
+                        ) {
                             // NOTE: We must redirect before invalidating the queries
                             //       or we can end up in an infinite loop.
                             setTimeout(() => {
@@ -33,7 +37,7 @@ export default function useUserSession(): UseUserSessionResult {
                             }, 16)
                         }
                         onStoreChange()
-                        await queryClient.invalidateQueries()
+                        queryClient.clear()
                         break
                     default:
                         break

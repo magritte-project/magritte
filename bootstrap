@@ -21,5 +21,8 @@ asdf install
 [ ! -e server/.env ] && ln -s "$PWD/.env" "$PWD/server/.env"
 [ ! -e web/.env ] && ln -s "$PWD/.env" "$PWD/web/.env"
 
+# Set up artwork store for default .env
+mkdir -p "server/db.artwork"
+
 # Set up dependencies
 just sync-deps

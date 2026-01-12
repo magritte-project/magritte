@@ -1,10 +1,9 @@
-import pathlib
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Field, Relationship, col, delete, select, update
 
 from model.base import LibraryModel
 from model.song import Song, SongSourceLink
+from utilities.files import path_as_file_uri
 
 
 class Source(LibraryModel, table=True):
@@ -66,7 +65,7 @@ class Source(LibraryModel, table=True):
         :param session: The DB to update the sources in.
         :param is_file: Whether the path refers to a file or a directory.
         """
-        file_url = pathlib.Path(path).as_uri()
+        file_url = path_as_file_uri(path)
         if is_file:
             which_urls = col(cls.url) == file_url
         else:
@@ -90,8 +89,8 @@ class Source(LibraryModel, table=True):
         session: AsyncSession,
         is_file: bool = True,
     ):
-        src_url = pathlib.Path(src_path).as_uri()
-        dest_url = pathlib.Path(dest_path).as_uri()
+        src_url = path_as_file_uri(src_path)
+        dest_url = path_as_file_uri(dest_path)
         if is_file:
             update_result = await session.execute(
                 update(Source)

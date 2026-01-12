@@ -1,6 +1,5 @@
 import mimetypes
 import os
-import pathlib
 import sys
 
 import tinytag
@@ -11,6 +10,7 @@ from sqlmodel import col, select
 from config import config
 from model.artwork import Artwork
 from schemas.artwork import ArtworkKind
+from utilities.files import path_as_file_uri
 
 
 def find_dominant_image_colors(path: str, palette_size: int, color_count: int):
@@ -88,7 +88,7 @@ async def try_ingest_artwork(
         secondary_color = None
         tertiary_color = None
 
-    image_url = pathlib.Path(image_path).as_uri()
+    image_url = path_as_file_uri(image_path)
     new_artwork = Artwork(
         kind=kind,
         image_hash=image_hash,
