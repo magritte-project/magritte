@@ -31,7 +31,7 @@ jobs:
         if: ${{ steps.asdf-tools-cache.outputs.cache-hit != 'true' }}
         uses: asdf-vm/actions/install@v4
       - name: Bootstrap
-        run: just bootstrap
+        run: ./bootstrap
       - name: Seed .env
         run: |
           ENV=ci
