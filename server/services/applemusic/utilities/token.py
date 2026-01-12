@@ -9,11 +9,10 @@ def create_developer_token(
     app_id: str,
     key_id: str,
     key_secret: str,
-    algorithm: str,
 ):
     expires_at = datetime.now() + expires_after
     headers = {
-        "alg": algorithm,
+        "alg": "ES256",
         "kid": key_id,
     }
     payload = {
@@ -25,6 +24,6 @@ def create_developer_token(
     return jwt.encode(
         payload,
         key_secret,
-        algorithm=algorithm,
+        algorithm="ES256",
         headers=headers,
     )

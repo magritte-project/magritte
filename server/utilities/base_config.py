@@ -1,14 +1,14 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
+
+from pydantic import BaseModel, ConfigDict
 
 
-class BaseConfig(BaseSettings):
+class BaseConfig(BaseModel):
     @classmethod
     def from_dot_env(cls):
-        return cls()
+        return cls.model_validate(os.environ)
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
+    model_config = ConfigDict(
         extra="ignore",
         json_schema_extra={"exclude": True},
     )

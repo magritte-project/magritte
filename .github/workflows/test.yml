@@ -36,12 +36,6 @@ jobs:
         run: |
           ENV=ci
           sed -i.bak "s#^\(ENV=\).*#\1${ENV//#/\\#}#" .env && rm .env.bak
-          SESSION_TOKEN_SECRET=$(./admin new-token-secret)
-          sed -i.bak "s#^\(SESSION_TOKEN_SECRET=\).*#\1${SESSION_TOKEN_SECRET//#/\\#}#" .env && rm .env.bak
-          FILE_TOKEN_SECRET=$(./admin new-token-secret)
-          sed -i.bak "s#^\(FILE_TOKEN_SECRET=\).*#\1${FILE_TOKEN_SECRET//#/\\#}#" .env && rm .env.bak
-          SALT=$(./admin new-password-salt)
-          sed -i.bak "s#^\(SALT=\).*#\1${SALT//#/\\#}#" .env && rm .env.bak
       - name: Lint
         run: just lint
       - name: Format

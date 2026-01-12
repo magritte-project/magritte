@@ -31,6 +31,8 @@ Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling and [`just`](http
 
 Bootstrapping the development environment creates a single `.env` file at the root project directory and symlinks it into the `server/` and `web/` subdirectories. Edit the entries the `.env` file to be suitable for your local working environment.
 
+__Note:__ You do not need to populate the session secrets or salt, as they are generated automatically when the server starts for the first time.
+
 ## Development
 
 Once you've installed all of the prerequisites, you can run the development API and web servers:

@@ -36,7 +36,6 @@ async def read_token():
         app_id=config.apple_music_app_id,
         key_id=config.apple_music_key_id,
         key_secret=config.apple_music_key_secret,
-        algorithm=config.algorithm,
     )
 
 
