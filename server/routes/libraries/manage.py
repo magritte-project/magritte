@@ -15,11 +15,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth import get_current_user
 from config import config
 from db import get_db_session
-from ingestion.watcher import LibraryWatcher, get_library_watcher
 from model.library import Library
 from model.user import User, UserLibraryLink
 from schemas.auth import OAuth2Scope
 from schemas.library import LibraryCreate, LibraryHomePathRead, LibraryRead
+from worker import sync_library
 
 router = APIRouter()
 
@@ -88,7 +88,6 @@ async def create_library(
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
     background_tasks: BackgroundTasks,
-    library_watcher: Annotated[LibraryWatcher | None, Depends(get_library_watcher)],
 ):
     new_library = Library(
         name=library_create.name,
@@ -108,8 +107,7 @@ async def create_library(
     )
     await session.flush()
 
-    if library_watcher is not None:
-        background_tasks.add_task(library_watcher.sync_library, new_library.id)
+    background_tasks.add_task(sync_library, new_library.id)
 
     return LibraryRead(**new_library.model_dump())
 

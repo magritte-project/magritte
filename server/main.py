@@ -2,14 +2,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from ingestion.watcher import library_watcher
 from routes import router
 from utilities.spa import SPAStaticFiles
+from worker import library_worker
 
 
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
-    with library_watcher():
+    with library_worker():
         yield
 
 
