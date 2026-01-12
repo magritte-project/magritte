@@ -3,6 +3,7 @@ import logging
 import multiprocessing
 import sys
 from contextlib import asynccontextmanager, contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 from typing import override
 
@@ -19,7 +20,18 @@ from watchdog.observers import Observer
 
 from config import config
 from db import get_db_engine, get_db_session
+from ingestion.files import try_ingest_path
+from model import Library
 from model.source import Source
+
+
+class _LibraryEvent:
+    pass
+
+
+@dataclass(frozen=True)
+class _SyncLibraryEvent(_LibraryEvent):
+    library_id: int
 
 
 @asynccontextmanager
@@ -37,9 +49,23 @@ def _path_str(path: str | bytes):
             return path.decode()
 
 
-async def _process_event(event: FileSystemEvent):
+async def _process_event(event: _LibraryEvent | FileSystemEvent):
     async with _db_session() as session:
         match event:
+            case _SyncLibraryEvent():
+                library = await session.get_one(Library, event.library_id)
+                if library.home_path is None:
+                    raise ValueError(f"Library is streaming only '{event.library_id}'")
+
+                library_home_path = Path.from_uri(str(config.library_home)).joinpath(
+                    library.home_path
+                )
+                await try_ingest_path(
+                    path=str(library_home_path),
+                    follow_links=False,
+                    libraries=[library],
+                    session=session,
+                )
             case DirDeletedEvent():
                 await Source.mark_invalid(
                     path=_path_str(event.dest_path),
@@ -70,7 +96,7 @@ async def _process_event(event: FileSystemEvent):
                 pass  # TODO: Update song(s) associated with this source
             case _:
                 print(
-                    f"*** Ignoring library file system event: {event}",
+                    f"*** Ignoring event: {event}",
                     file=sys.stderr,
                 )
 
@@ -78,7 +104,7 @@ async def _process_event(event: FileSystemEvent):
 def _worker_main(events: multiprocessing.Queue):
     logging.debug("Library watcher process started")
     while True:
-        event: FileSystemEvent = events.get()
+        event: _LibraryEvent | FileSystemEvent = events.get()
         asyncio.run(_process_event(event))
 
 
@@ -95,6 +121,32 @@ class _WorkerEventHandler(FileSystemEventHandler):
     @override
     def on_any_event(self, event):
         self._event_queue.put(event)
+
+
+class LibraryWatcher:
+    def __init__(
+        self,
+        event_queue: multiprocessing.Queue,
+    ):
+        self._event_queue: multiprocessing.Queue = event_queue
+        """
+        Queue used to forward file system events to the worker child process.
+        """
+
+    def sync_library(self, library_id: int):
+        """
+        Enqueue a request to sync a library.
+        """
+        self._event_queue.put(_SyncLibraryEvent(library_id))
+
+
+_library_watcher: LibraryWatcher | None = None
+
+
+def get_library_watcher() -> LibraryWatcher:
+    if _library_watcher is None:
+        raise RuntimeError("Watcher not initialized")
+    return _library_watcher
 
 
 @contextmanager
@@ -129,8 +181,11 @@ def library_watcher():
             )
             observer.start()
             try:
+                global _library_watcher
+                _library_watcher = LibraryWatcher(event_queue)
                 yield
             finally:
+                _library_watcher = None
                 observer.stop()
                 observer.join()
                 worker_process.terminate()

@@ -5,6 +5,7 @@ from .album import Album
 from .artist import Artist
 from .artwork import Artwork
 from .library import Library
+from .notification import Notification
 from .playback_event import PlaybackEvent
 from .song import Song
 from .source import Source
@@ -20,6 +21,7 @@ __all__ = [
     "Artist",
     "Artwork",
     "Library",
+    "Notification",
     "PlaybackEvent",
     "Song",
     "Source",
