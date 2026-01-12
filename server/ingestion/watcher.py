@@ -143,9 +143,7 @@ class LibraryWatcher:
 _library_watcher: LibraryWatcher | None = None
 
 
-def get_library_watcher() -> LibraryWatcher:
-    if _library_watcher is None:
-        raise RuntimeError("Watcher not initialized")
+def get_library_watcher() -> LibraryWatcher | None:
     return _library_watcher
 
 

@@ -88,7 +88,7 @@ async def create_library(
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
     background_tasks: BackgroundTasks,
-    library_watcher: Annotated[LibraryWatcher, Depends(get_library_watcher)],
+    library_watcher: Annotated[LibraryWatcher | None, Depends(get_library_watcher)],
 ):
     new_library = Library(
         name=library_create.name,
@@ -108,7 +108,8 @@ async def create_library(
     )
     await session.flush()
 
-    background_tasks.add_task(library_watcher.sync_library, new_library.id)
+    if library_watcher is not None:
+        background_tasks.add_task(library_watcher.sync_library, new_library.id)
 
     return LibraryRead(**new_library.model_dump())
 
