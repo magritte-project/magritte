@@ -27,6 +27,7 @@ import type {
     SourceCreate,
     SourceRead,
     SourceUpdate,
+    UserEventPreflight,
     UserProfile,
     UserProfileUpdate,
     UserSignUp,
@@ -165,6 +166,11 @@ export class APIClient {
             params: { path: { notification_id } },
             body,
         })
+        return unwrap(response)
+    }
+
+    async streamUserEventsPreflight(): Promise<UserEventPreflight> {
+        const response = await this._client.POST("/users/events/preflight")
         return unwrap(response)
     }
 

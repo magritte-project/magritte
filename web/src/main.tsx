@@ -3,6 +3,7 @@ import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
 import { APIClient } from "@/api/client"
+import { UserEvents } from "@/api/userEvents"
 import { StorageUserSessionManager } from "@/api/userSession.ts"
 import APIClientContextProvider from "@/contexts/providers/APIClientContextProvider"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
@@ -15,14 +16,17 @@ import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
-import { initializeServices } from "@/services/initialization"
 import "@/styles.css"
+import { initializeServices } from "@/services/initialization"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
 
 // Set up API client
 const apiClient = new APIClient(userSession)
+
+// Set up user events
+const userEvents = new UserEvents(apiClient, userSession)
 
 // Set up services
 await initializeServices(apiClient)
@@ -40,9 +44,10 @@ const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
 const router = createRouter({
     routeTree,
     context: {
+        player,
         userSession,
         apiClient,
-        player,
+        userEvents,
         ...TanStackQueryProviderContext,
     },
     defaultPreload: "intent",

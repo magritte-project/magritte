@@ -13,13 +13,10 @@ export class UserSessionManager {
     private readonly _events: EventSink<UserSessionManagerEvent>
 
     constructor() {
-        this._eventTarget = new EventTarget()
         ;[this._events, this.$events] = createEvent<UserSessionManagerEvent>()
     }
 
     readonly $events: EventStream<UserSessionManagerEvent>
-
-    readonly _eventTarget: EventTarget
 
     get current(): UserSession | null {
         throw new Error("Unimplemented")
@@ -77,7 +74,7 @@ export class StorageUserSessionManager extends UserSessionManager {
     }
 
     readonly _storage: Storage
-    _current: UserSession | null
+    private _current: UserSession | null
 
     override get current(): UserSession | null {
         return this._current

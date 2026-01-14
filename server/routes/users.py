@@ -176,7 +176,7 @@ async def stream_user_events_preflight(
     ],
 ):
     to_encode = dict[str, Any]()
-    to_encode["sub"] = current_user.id
+    to_encode["sub"] = current_user.username
     to_encode["exp"] = datetime.now(UTC) + timedelta(seconds=30)
     token = jwt.encode(to_encode, config.file_token_secret, config.token_algorithm)
     return UserEventPreflight(token=token)
@@ -196,13 +196,16 @@ async def stream_user_events(
             token, config.file_token_secret, algorithms=[config.token_algorithm]
         )
         subject = to_decode.get("sub")
-        if not isinstance(subject, int):
+        if not isinstance(subject, str):
             raise jwt.InvalidTokenError("Bad subject")
-        user = await session.get(User, subject)
+        user = await User.read_by_username(subject, session)
         if not user:
             raise jwt.InvalidTokenError("Invalid user")
     except (jwt.InvalidTokenError, ValidationError) as e:
-        raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION) from e
+        raise WebSocketException(
+            code=status.WS_1008_POLICY_VIOLATION,
+            reason="Could not validate credentials",
+        ) from e
 
     user_id = user.id
     await user_events.connect(user_id, websocket)

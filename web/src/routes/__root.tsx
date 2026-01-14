@@ -6,6 +6,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { z } from "zod"
 
 import type { APIClient } from "@/api/client"
+import type { UserEvents } from "@/api/userEvents"
 import type { UserSessionManager } from "@/api/userSession"
 import type { Player } from "@/playback/player"
 
@@ -17,6 +18,7 @@ export interface MagritteRouterContext {
     readonly queryClient: QueryClient
     readonly apiClient: APIClient
     readonly userSession: UserSessionManager
+    readonly userEvents: UserEvents
     readonly player: Player
 }
 
