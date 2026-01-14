@@ -1,29 +1,33 @@
-from asyncio import wait_for
-from typing import Annotated
+from datetime import UTC, datetime, timedelta
+from typing import Annotated, Any
 
+import jwt
 from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
     Query,
-    Request,
     Security,
+    WebSocket,
+    WebSocketDisconnect,
+    WebSocketException,
     status,
 )
-from fastapi_sse import sse_handler
+from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
 
 from auth import (
     get_current_user,
 )
+from config import config
 from db import get_db_session
 from model.notification import Notification
 from model.user import User, UserNotificationLink
 from schemas.auth import OAuth2Scope
 from schemas.notification import NotificationRead, NotificationsRead, NotificationUpdate
-from schemas.user import UserEvent, UserProfile, UserProfileUpdate
-from utilities.user_events import UserEvents, get_user_event
+from schemas.user import UserEventPreflight, UserProfile, UserProfileUpdate
+from utilities.user_events import UserEvents, get_user_events
 
 router = APIRouter(prefix="/users")
 
@@ -161,31 +165,50 @@ async def update_notification(
     return NotificationRead(**notification.model_dump())
 
 
-@router.get(
-    "/events",
-    response_model=UserEvent,
-    summary="Stream events for the signed in user",
+@router.post(
+    "/events/preflight",
+    response_model=UserEventPreflight,
+    summary="Prepare to stream events for the signed in user",
 )
-@sse_handler()
-async def stream_user_events(
-    request: Request,
-    user_events: Annotated[UserEvents, Depends(get_user_event)],
+async def stream_user_events_preflight(
     current_user: Annotated[
         User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
     ],
 ):
-    current_user_id = current_user.id
-    event_queue = user_events.spin_up_queue(current_user_id)
+    to_encode = dict[str, Any]()
+    to_encode["sub"] = current_user.id
+    to_encode["exp"] = datetime.now(UTC) + timedelta(seconds=30)
+    token = jwt.encode(to_encode, config.file_token_secret, config.token_algorithm)
+    return UserEventPreflight(token=token)
+
+
+@router.websocket(
+    "/events",
+)
+async def stream_user_events(
+    websocket: WebSocket,
+    token: Annotated[str, Query()],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    user_events: Annotated[UserEvents, Depends(get_user_events)],
+):
+    try:
+        to_decode = jwt.decode(
+            token, config.file_token_secret, algorithms=[config.token_algorithm]
+        )
+        subject = to_decode.get("sub")
+        if not isinstance(subject, int):
+            raise jwt.InvalidTokenError("Bad subject")
+        user = await session.get(User, subject)
+        if not user:
+            raise jwt.InvalidTokenError("Invalid user")
+    except (jwt.InvalidTokenError, ValidationError) as e:
+        raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION) from e
+
+    user_id = user.id
+    await user_events.connect(user_id, websocket)
     try:
         while True:
-            if await request.is_disconnected():
-                break
-
-            try:
-                event = await wait_for(event_queue.get(), timeout=2)
-                yield event
-                event_queue.task_done()
-            except TimeoutError:
-                pass
-    finally:
-        user_events.shutdown_queue(current_user_id, event_queue)
+            await websocket.receive_text()
+            # TODO: Handle incoming message
+    except WebSocketDisconnect:
+        user_events.disconnect(user_id, websocket)

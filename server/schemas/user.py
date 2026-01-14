@@ -25,6 +25,10 @@ class UserProfileUpdate(BaseModel):
     preferred_name: str | None
 
 
+class UserEventPreflight(BaseModel):
+    token: str
+
+
 class UserEvent(BaseModel):
     event_type: Literal["notifications_changed"]
     ids: list[int]

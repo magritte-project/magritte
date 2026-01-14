@@ -437,17 +437,17 @@ export interface paths {
         readonly patch: operations["update_notification_users_notifications__notification_id__patch"];
         readonly trace?: never;
     };
-    readonly "/users/events": {
+    readonly "/users/events/preflight": {
         readonly parameters: {
             readonly query?: never;
             readonly header?: never;
             readonly path?: never;
             readonly cookie?: never;
         };
-        /** Stream events for the signed in user */
-        readonly get: operations["stream_user_events_users_events_get"];
+        readonly get?: never;
         readonly put?: never;
-        readonly post?: never;
+        /** Prepare to stream events for the signed in user */
+        readonly post: operations["stream_user_events_preflight_users_events_preflight_post"];
         readonly delete?: never;
         readonly options?: never;
         readonly head?: never;
@@ -1054,15 +1054,10 @@ export interface components {
              */
             readonly token_type: "bearer";
         };
-        /** UserEvent */
-        readonly UserEvent: {
-            /**
-             * Event Type
-             * @constant
-             */
-            readonly event_type: "notifications_changed";
-            /** Ids */
-            readonly ids: readonly number[];
+        /** UserEventPreflight */
+        readonly UserEventPreflight: {
+            /** Token */
+            readonly token: string;
         };
         /** UserProfile */
         readonly UserProfile: {
@@ -1136,7 +1131,7 @@ export type SourceCreate = components['schemas']['SourceCreate'];
 export type SourceRead = components['schemas']['SourceRead'];
 export type SourceUpdate = components['schemas']['SourceUpdate'];
 export type Token = components['schemas']['Token'];
-export type UserEvent = components['schemas']['UserEvent'];
+export type UserEventPreflight = components['schemas']['UserEventPreflight'];
 export type UserProfile = components['schemas']['UserProfile'];
 export type UserProfileUpdate = components['schemas']['UserProfileUpdate'];
 export type UserSignUp = components['schemas']['UserSignUp'];
@@ -2211,7 +2206,7 @@ export interface operations {
             };
         };
     };
-    readonly stream_user_events_users_events_get: {
+    readonly stream_user_events_preflight_users_events_preflight_post: {
         readonly parameters: {
             readonly query?: never;
             readonly header?: never;
@@ -2226,7 +2221,7 @@ export interface operations {
                     readonly [name: string]: unknown;
                 };
                 content: {
-                    readonly "application/json": components["schemas"]["UserEvent"];
+                    readonly "application/json": components["schemas"]["UserEventPreflight"];
                 };
             };
         };

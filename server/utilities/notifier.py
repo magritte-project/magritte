@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db import get_db_session
 from model.notification import Notification
 from schemas.user import UserEvent
-from utilities.user_events import UserEvents, get_user_event
+from utilities.user_events import UserEvents, get_user_events
 
 
 class Notifier:
@@ -39,7 +39,7 @@ class Notifier:
 
 
 def get_notifier(
-    user_events: UserEvents = Depends(get_user_event),
+    user_events: UserEvents = Depends(get_user_events),
     session: AsyncSession = Depends(get_db_session),
 ):
     return Notifier(user_events, session)

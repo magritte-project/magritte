@@ -1,32 +1,30 @@
-from asyncio import Queue
+from fastapi import WebSocket
 
 from schemas.user import UserEvent
 
 
 class UserEvents:
     def __init__(self):
-        self._queues_by_user = dict[int, list[Queue[UserEvent]]]()
+        self._websockets_by_user = dict[int, list[WebSocket]]()
 
-    def spin_up_queue(self, user_id: int):
-        new_queue = Queue[UserEvent]()
-        self._queues_by_user.setdefault(user_id, []).append(new_queue)
-        return new_queue
+    async def connect(self, user_id: int, websocket: WebSocket):
+        await websocket.accept()
+        self._websockets_by_user.setdefault(user_id, []).append(websocket)
 
-    def shutdown_queue(self, user_id: int, queue: Queue[UserEvent]):
-        self._queues_by_user.get(user_id, []).remove(queue)
-        queue.shutdown(immediate=True)
+    def disconnect(self, user_id: int, websocket: WebSocket):
+        self._websockets_by_user.get(user_id, []).remove(websocket)
 
     async def notify(self, user_ids: set[int], event: UserEvent):
         for user_id in user_ids:
-            queues = self._queues_by_user.get(user_id, [])
-            for queue in queues:
-                queue.put_nowait(event)
+            websockets = self._websockets_by_user.get(user_id, [])
+            for websocket in websockets:
+                await websocket.send_json(event.model_dump())
 
 
 _manager: UserEvents | None = None
 
 
-async def get_user_event():
+async def get_user_events():
     global _manager
     if _manager is None:
         _manager = UserEvents()
