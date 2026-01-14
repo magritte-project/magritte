@@ -85,9 +85,8 @@ async def try_ingest_file(
     libraries: list[Library],
     session: AsyncSession,
 ):
-    try:
-        tags = TinyTag.get(path, image=True)
-    except UnsupportedFormatError:
+    mime_type, _encoding = guess_file_type(path)
+    if not mime_type or not mime_type.startswith("audio"):
         return None
 
     file_url = path_as_file_uri(path)
@@ -99,7 +98,10 @@ async def try_ingest_file(
         await ensure_libraries_linked(existing_source, libraries, session)
         raise FileExistsError("File has already been ingested")
 
-    mime_type, _encoding = guess_file_type(path)
+    try:
+        tags = TinyTag.get(path, image=True)
+    except UnsupportedFormatError:
+        tags = None
 
     new_song = Song(
         libraries=libraries,
@@ -109,12 +111,14 @@ async def try_ingest_file(
                 mime_type=mime_type,
             )
         ],
-        end_time=tags.duration or 0,
     )
     session.add(new_song)
     await session.flush()
 
-    await update_song_metadata(new_song, tags, libraries, session)
+    if tags:
+        await update_song_metadata(new_song, tags, libraries, session)
+    else:
+        new_song.title = path.stem
 
     return new_song
 
