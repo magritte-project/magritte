@@ -1,7 +1,6 @@
 import logging
 import multiprocessing
 from contextlib import contextmanager
-from pathlib import Path
 from typing import override
 
 from watchdog.events import (
@@ -56,7 +55,7 @@ def library_worker():
         and config.library_home.scheme == "file"
         and config.library_home.path != "/"
     ):
-        library_home_path = Path.from_uri(str(config.library_home))
+        library_home_path = config.library_home_path
         if library_home_path.exists() and library_home_path.is_dir():
             _event_queue = multiprocessing.Queue()
             worker_process = multiprocessing.Process(

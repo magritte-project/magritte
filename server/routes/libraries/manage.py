@@ -57,7 +57,7 @@ async def read_library_home_subpaths(
             detail="relative_to not relative",
         )
 
-    absolute_path = Path.from_uri(str(config.library_home)).joinpath(relative_to_path)
+    absolute_path = config.library_home_path.joinpath(relative_to_path)
     if absolute_path.is_symlink() or not absolute_path.is_dir():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

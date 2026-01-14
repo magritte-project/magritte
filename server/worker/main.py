@@ -3,7 +3,6 @@ import logging
 import multiprocessing
 import sys
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from watchdog.events import (
     DirDeletedEvent,
@@ -46,9 +45,7 @@ async def _process_event(event: LibraryEvent | FileSystemEvent):
                 if library.home_path is None:
                     raise ValueError(f"Library is streaming only '{event.library_id}'")
 
-                library_home_path = Path.from_uri(str(config.library_home)).joinpath(
-                    library.home_path
-                )
+                library_home_path = config.library_home_path.joinpath(library.home_path)
                 await try_ingest_path(
                     path=str(library_home_path),
                     follow_links=False,

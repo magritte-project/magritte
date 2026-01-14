@@ -21,7 +21,7 @@ async def ingest_main(args: Namespace):
             session,
             can_add=True,
         )
-        if user is None:
+        if library is None:
             raise ValueError(f"No such library as '{args.library}'")
 
         for path in args.paths:
@@ -34,8 +34,6 @@ async def ingest_main(args: Namespace):
 
 
 async def sync_main(args: Namespace):
-    from pathlib import Path
-
     from config import config
     from db import get_db_engine, get_db_session
     from ingestion.files import try_ingest_path
@@ -54,15 +52,13 @@ async def sync_main(args: Namespace):
             session,
             can_add=True,
         )
-        if user is None:
+        if library is None:
             raise ValueError(f"No such library as '{args.library}'")
 
         if library.home_path is None:
             raise ValueError(f"Library is streaming only '{args.library}'")
 
-        library_home_path = Path.from_uri(str(config.library_home)).joinpath(
-            library.home_path
-        )
+        library_home_path = config.library_home_path.joinpath(library.home_path)
         await try_ingest_path(
             path=str(library_home_path),
             follow_links=False,

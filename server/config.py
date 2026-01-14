@@ -1,3 +1,4 @@
+import pathlib
 from typing import Literal
 
 from pydantic import AnyUrl, Field
@@ -55,6 +56,13 @@ class Config(BaseConfig):
         alias="WATCH_LIBRARY",
         description="Whether the server should watch the library for changes",
     )
+
+    @property
+    def library_home_path(self) -> pathlib.Path:
+        """
+        A path pointing to where library files are stored and retrieved from
+        """
+        return pathlib.Path.from_uri(str(config.library_home))
 
 
 config = Config.from_dot_env()
