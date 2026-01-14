@@ -4,35 +4,6 @@ from argparse import ArgumentParser, Namespace
 from traceback import print_tb
 
 
-async def ingest_main(args: Namespace):
-    from db import get_db_engine, get_db_session
-    from ingestion.files import try_ingest_path
-    from model.library import Library
-    from model.user import User
-
-    engine = await get_db_engine()
-    async for session in get_db_session(engine):
-        user = await User.read_by_username(args.username, session)
-        if user is None:
-            raise ValueError(f"No such user as '{args.username}'")
-        library = await Library.read_by_name(
-            args.library,
-            user.id,
-            session,
-            can_add=True,
-        )
-        if library is None:
-            raise ValueError(f"No such library as '{args.library}'")
-
-        for path in args.paths:
-            await try_ingest_path(
-                path,
-                args.follow_links,
-                [library],
-                session,
-            )
-
-
 async def sync_main(args: Namespace):
     from config import config
     from db import get_db_engine, get_db_session
@@ -60,7 +31,7 @@ async def sync_main(args: Namespace):
 
         library_home_path = config.library_home_path.joinpath(library.home_path)
         await try_ingest_path(
-            path=str(library_home_path),
+            path=library_home_path,
             follow_links=False,
             libraries=[library],
             session=session,
@@ -116,25 +87,6 @@ def main():
         description="valid subcommands",
         required=True,
     )
-
-    parser_ingest = subparsers.add_parser(
-        "ingest", help="Add existing files to a Magritte instance"
-    )
-    parser_ingest.add_argument("--follow-links", action="store_true", default=False)
-    parser_ingest.add_argument(
-        "--library",
-        "-l",
-        help="Name of the library to add new songs to",
-        required=True,
-    )
-    parser_ingest.add_argument(
-        "--username",
-        "-u",
-        help="Name of the user to add the songs under",
-        required=True,
-    )
-    parser_ingest.add_argument("paths", nargs="*")
-    parser_ingest.set_defaults(func=ingest_main)
 
     parser_sync = subparsers.add_parser(
         "sync", help="Synchronize a library with its home files"

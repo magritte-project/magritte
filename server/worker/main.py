@@ -47,7 +47,7 @@ async def _process_event(event: LibraryEvent | FileSystemEvent):
 
                 library_home_path = config.library_home_path.joinpath(library.home_path)
                 await try_ingest_path(
-                    path=str(library_home_path),
+                    path=library_home_path,
                     follow_links=False,
                     libraries=[library],
                     session=session,

@@ -1,3 +1,5 @@
+from os import PathLike
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Field, Relationship, col, delete, select, update
 
@@ -54,7 +56,7 @@ class Source(LibraryModel, table=True):
     @classmethod
     async def mark_invalid(
         cls,
-        path: str,
+        path: PathLike,
         session: AsyncSession,
         is_file: bool = True,
     ):
@@ -84,8 +86,8 @@ class Source(LibraryModel, table=True):
     @classmethod
     async def move(
         cls,
-        src_path: str,
-        dest_path: str,
+        src_path: PathLike,
+        dest_path: PathLike,
         session: AsyncSession,
         is_file: bool = True,
     ):

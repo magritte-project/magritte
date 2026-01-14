@@ -13,7 +13,11 @@ from schemas.artwork import ArtworkKind
 from utilities.files import path_as_file_uri
 
 
-def find_dominant_image_colors(path: str, palette_size: int, color_count: int):
+def find_dominant_image_colors(
+    path: os.PathLike,
+    palette_size: int,
+    color_count: int,
+):
     with Image.open(path) as image:
         if image.has_transparency_data:
             # TODO: We can handle images with an alpha channel but no transparent pixels
@@ -33,7 +37,7 @@ def find_dominant_image_colors(path: str, palette_size: int, color_count: int):
             raise ValueError("Could not palletize image")
 
         indexed_colors = {index: color for color, index in palette.colors.items()}
-        color_counts = sorted(paletted_image.getcolors(), reverse=True)
+        color_counts = sorted(paletted_image.getcolors() or [], reverse=True)
         dominant_colors = list[tuple[int, ...]]()
         for _, index in color_counts[:color_count]:
             dominant_colors.append(indexed_colors[index])
@@ -63,7 +67,7 @@ async def try_ingest_artwork(
 
     extension = mimetypes.guess_extension(image.mime_type) if image.mime_type else None
     image_name = f"{image_hash}{extension}" if extension else image_hash
-    image_path = os.path.join(config.image_home, image_name)
+    image_path = config.image_home_path / image_name
 
     with open(image_path, "wb") as image_file:
         image_file.write(image.data)

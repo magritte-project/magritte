@@ -1,6 +1,6 @@
-import os
 import sys
 from mimetypes import guess_file_type
+from pathlib import Path
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from tinytag import TinyTag, UnsupportedFormatError
@@ -81,7 +81,7 @@ async def ensure_libraries_linked(
 
 
 async def try_ingest_file(
-    path: str,
+    path: Path,
     libraries: list[Library],
     session: AsyncSession,
 ):
@@ -120,23 +120,20 @@ async def try_ingest_file(
 
 
 async def try_ingest_path(
-    path: str,
+    path: Path,
     follow_links: bool,
     libraries: list[Library],
     session: AsyncSession,
 ):
-    if os.path.isfile(path):
+    if path.is_file():
         await try_ingest_file(path, libraries, session)
     else:
-        for dirpath, _, filenames in os.walk(
-            path,
-            followlinks=follow_links,
-        ):
+        for dirpath, _, filenames in path.walk(follow_symlinks=follow_links):
             for filename in filenames:
                 if filename.startswith("."):
                     continue
 
-                file_path = os.path.join(dirpath, filename)
+                file_path = dirpath / filename
                 try:
                     new_song = await try_ingest_file(
                         path=file_path,

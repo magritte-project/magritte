@@ -1,8 +1,9 @@
+from os import PathLike
 from pathlib import Path
 from urllib.request import pathname2url
 
 
-def path_as_file_uri(path: str):
+def path_as_file_uri(path: PathLike):
     """
     Converts a path to a file URI.
 
