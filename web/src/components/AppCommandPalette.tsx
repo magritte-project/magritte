@@ -14,7 +14,7 @@ import CommandPalette, { filterItems, getItemIndex, useHandleOpenCommandPalette 
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import usePlayer from "@/hooks/playerHook"
 import useUserSession from "@/hooks/userSessionHook"
-import getServiceCommands from "@/services/commands"
+import getServiceCommands from "@/services/initialization"
 
 import "react-cmdk/dist/cmdk.css"
 

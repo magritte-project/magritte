@@ -1,3 +1,5 @@
+import type { JsonStructure } from "react-cmdk"
+
 import type { APIClient } from "@/api/client"
 import type { InstanceStatusRead } from "@/api/openapi"
 
@@ -35,6 +37,14 @@ export function getServicesOfType<TType extends ServiceType>(
 
 export function isServiceInitialized(name: string) {
     return INITIALIZED_SERVICES.has(name)
+}
+
+export default function getServiceCommands(): JsonStructure {
+    const commands: JsonStructure = []
+    for (const service of INITIALIZED_SERVICES.values()) {
+        commands.push(...service.commands)
+    }
+    return commands
 }
 
 export async function initializeServices(apiClient: APIClient, instanceStatus: InstanceStatusRead) {
