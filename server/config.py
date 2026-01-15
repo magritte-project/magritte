@@ -62,7 +62,7 @@ class Config(BaseConfig):
         """
         A path pointing to where images are stored and retrieved from
         """
-        return pathlib.Path.from_uri(str(config.image_home))
+        return pathlib.Path(config.image_home)
 
     @property
     def library_home_path(self) -> pathlib.Path:
