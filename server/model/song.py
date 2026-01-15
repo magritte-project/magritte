@@ -104,7 +104,7 @@ class Song(LibraryModel, table=True):
     )
 
     end_time: float = Field(
-        default=None,
+        default=0,
         description="Where in the song to end playback",
     )
 
