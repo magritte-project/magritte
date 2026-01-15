@@ -33,6 +33,8 @@ import type {
 } from "@/api/openapi"
 import type { UserSessionManager } from "@/api/userSession"
 
+import { Coalesced } from "@/utilities/coalesced"
+
 export type ReadLibrarySongsSortBy = NonNullable<
     Required<paths["/libraries/{library_id}/songs"]["get"]["parameters"]["query"]>
 >["sort_by"]
@@ -62,10 +64,15 @@ function toFormData<TBody extends NonNullable<object>>(body: TBody) {
 
 export class APIClient {
     private readonly _client: Client<paths>
+    private readonly _instanceStatus: Coalesced<InstanceStatusRead>
 
     constructor(userSessionManager: UserSessionManager) {
         this._client = createClient<paths>({
             baseUrl: import.meta.env.VITE_API_URL,
+        })
+        this._instanceStatus = new Coalesced<InstanceStatusRead>(async () => {
+            const response = await this._client.GET("/status")
+            return unwrap(response)
         })
 
         const sessionMiddleware: Middleware = {
@@ -112,12 +119,14 @@ export class APIClient {
         this._client.use(sessionMiddleware)
     }
 
-    // -- Root Routes -- //
+    // -- Instance Status -- //
 
-    async readInstanceStatus(): Promise<InstanceStatusRead> {
-        const response = await this._client.GET("/status")
-        return unwrap(response)
+    /** Access the instance status of the API, fetching it if it's not already loaded */
+    async instanceStatus(): Promise<InstanceStatusRead> {
+        return this._instanceStatus.get()
     }
+
+    // -- Root Routes -- //
 
     async signUp(body: UserSignUp): Promise<UserProfile> {
         const response = await this._client.POST("/sign-up", {

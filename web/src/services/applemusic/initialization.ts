@@ -1,16 +1,8 @@
-import type { ServiceInitializerContext } from "@/services/types"
+import { loadScript } from "@/utilities/loadScript"
 
-import { loadScript } from "@/services/utilities"
-
-import { AppleMusicService } from "./service"
-
-export async function initializeAppleMusic({
-    apiClient,
-    instanceStatus,
-}: ServiceInitializerContext): Promise<AppleMusicService> {
-    if (!instanceStatus.available_functions.includes("apple_music_token")) {
-        throw new Error("Apple Music is not available")
-    }
+export async function initializeMusicKit(
+    config: MusicKit.Configuration,
+): Promise<MusicKit.Instance> {
     await loadScript("https://js-cdn.music.apple.com/musickit/v3/musickit.js")
     await new Promise<void>((resolve) => {
         if ("MusicKit" in window) {
@@ -21,15 +13,7 @@ export async function initializeAppleMusic({
             })
         }
     })
-    const tokenResult = (await apiClient.callFunction("apple_music_token")) as {
-        developer_token: string
-    }
-    await MusicKit.configure({
-        developerToken: tokenResult.developer_token,
-        app: {
-            name: "Magritte",
-        },
-    })
+    const instance = await MusicKit.configure(config)
     console.info("MusicKit ready")
-    return new AppleMusicService()
+    return instance
 }

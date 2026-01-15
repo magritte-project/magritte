@@ -38,8 +38,19 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs/add")({
             },
             [songs],
         )
-        const add = useCallback((newSongs: readonly IngestSong[]) => {
-            setSongs((oldSongs) => [...oldSongs, ...newSongs])
+        const add = useCallback((newSong: IngestSong) => {
+            setSongs((oldSongs) => [...oldSongs, newSong])
+        }, [])
+        const remove = useCallback((oldSong: IngestSong) => {
+            // TODO: This should really do a deep object equality check
+            setSongs((oldSongs) =>
+                oldSongs.filter(
+                    (candidate) =>
+                        candidate.title !== oldSong.title ||
+                        candidate.artist_name !== oldSong.artist_name ||
+                        candidate.album_title !== oldSong.album_title,
+                ),
+            )
         }, [])
         const flush = useCallback(async () => {
             await ingestSongs.mutateAsync({ songs })
@@ -48,7 +59,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs/add")({
 
         return (
             <Modal className="min-w-full md:min-w-[600px]" onDismiss={handleDismiss}>
-                <IngestSongsContextProvider value={{ isAdded, add, flush }}>
+                <IngestSongsContextProvider value={{ isAdded, add, remove, flush }}>
                     <ModalHeader
                         supplementaryEnd={
                             <AsyncButton

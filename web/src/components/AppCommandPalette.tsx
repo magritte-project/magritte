@@ -13,14 +13,15 @@ import CommandPalette, { filterItems, getItemIndex, useHandleOpenCommandPalette 
 
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import usePlayer from "@/hooks/playerHook"
+import useServiceRegistry from "@/hooks/serviceRegistryHook"
 import useUserSession from "@/hooks/userSessionHook"
-import getServiceCommands from "@/services/initialization"
 
 import "react-cmdk/dist/cmdk.css"
 
 export default function AppCommandPalette() {
     const [search, setSearch] = useState("")
     const { isSignedIn, signOut } = useUserSession()
+    const serviceRegistry = useServiceRegistry()
     const player = usePlayer()
 
     const navigate = useNavigate()
@@ -29,7 +30,7 @@ export default function AppCommandPalette() {
         [
             ...pages,
             // TODO: This is kind of a jank way to inject global actions...
-            ...getServiceCommands(),
+            ...serviceRegistry.commands,
             {
                 id: "playback",
                 heading: "Playback",

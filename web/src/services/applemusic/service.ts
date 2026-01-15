@@ -2,38 +2,46 @@ import type { JsonStructure } from "react-cmdk"
 
 import { SignInIcon, SignOutIcon } from "@phosphor-icons/react"
 
-import type { StreamingMusicService, StreamingMusicServiceSongsRead } from "@/services/types"
+import type {
+    MetaService,
+    ServiceConstructorOptions,
+    StreamingMusicService,
+    StreamingMusicServiceSongsRead,
+} from "@/services/base"
 
 import type { MusicSearchResponse } from "./models/search"
 
-export class AppleMusicService implements StreamingMusicService {
-    readonly type = "streamingMusic" as const
+import { initializeMusicKit } from "./initialization"
 
-    constructor() {}
+class AppleMusicService implements StreamingMusicService {
+    readonly type = "streamingMusic" as const
+    readonly name = "Apple Music"
+
+    constructor(private readonly musicKit: MusicKit.Instance) {}
 
     get commands(): JsonStructure {
         return [
             {
-                id: "applemusic",
-                heading: "Apple Music",
-                items: MusicKit.getInstance().isAuthorized
+                id: "AppleMusicService",
+                heading: this.name,
+                items: this.musicKit.isAuthorized
                     ? [
                           {
-                              id: "applemusic.unauthorize",
+                              id: "AppleMusicService.unauthorize",
                               icon: SignOutIcon,
                               children: "Unauthorize",
                               onClick: () => {
-                                  MusicKit.getInstance().unauthorize()
+                                  this.musicKit.unauthorize()
                               },
                           },
                       ]
                     : [
                           {
-                              id: "applemusic.authorize",
+                              id: "AppleMusicService.authorize",
                               icon: SignInIcon,
                               children: "Authorize",
                               onClick: () => {
-                                  MusicKit.getInstance().authorize()
+                                  this.musicKit.authorize()
                               },
                           },
                       ],
@@ -46,7 +54,7 @@ export class AppleMusicService implements StreamingMusicService {
         offset: number = 0,
         limit: number = 20,
     ): Promise<StreamingMusicServiceSongsRead> {
-        const { data: response } = await MusicKit.getInstance().api.music<MusicSearchResponse>(
+        const { data: response } = await this.musicKit.api.music<MusicSearchResponse>(
             "/v1/catalog/{{storefrontId}}/search",
             {
                 term: query,
@@ -112,4 +120,27 @@ export class AppleMusicService implements StreamingMusicService {
             limit: limit,
         }
     }
+}
+
+export const appleMusic: MetaService<"streamingMusic"> = {
+    type: "streamingMusic",
+    name: "Apple Music",
+    async construct({
+        apiClient,
+    }: ServiceConstructorOptions): Promise<StreamingMusicService | null> {
+        const instanceStatus = await apiClient.instanceStatus()
+        if (!instanceStatus.available_functions.includes("apple_music_token")) {
+            return null
+        }
+        const tokenResult = (await apiClient.callFunction("apple_music_token")) as {
+            developer_token: string
+        }
+        const musicKit = await initializeMusicKit({
+            developerToken: tokenResult.developer_token,
+            app: {
+                name: "Magritte",
+            },
+        })
+        return new AppleMusicService(musicKit)
+    },
 }

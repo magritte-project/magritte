@@ -1,21 +1,20 @@
 import type { JsonStructure } from "react-cmdk"
 
 import type { APIClient } from "@/api/client"
-import type { IngestSong, InstanceStatusRead } from "@/api/openapi"
-
-export interface ServiceInitializerContext {
-    readonly apiClient: APIClient
-    readonly instanceStatus: InstanceStatusRead
-}
-
-export type ServiceCommands = () => JsonStructure
+import type { IngestSong } from "@/api/openapi"
 
 export interface BaseService {
+    /** The unique name of the service, human readable */
+    readonly name: string
+
+    /** The commands the service adds to the instance */
     readonly commands: JsonStructure
 }
 
 export interface StreamingMusicService extends BaseService {
     readonly type: "streamingMusic"
+
+    /** Search this music service's catalog for songs */
     searchSongs(
         query: string,
         offset?: number,
@@ -33,10 +32,16 @@ export interface StreamingMusicServiceSongsRead {
     readonly limit: number
 }
 
+/** Union of all supported types of services */
 export type Service = StreamingMusicService
+
+/** All types of services */
 export type ServiceType = Service["type"]
+
+/** Utility to downcast `Service` to a specific subtype */
 export type ServiceOfType<TType extends ServiceType> = Extract<Service, { type: TType }>
 
+/** Attempt to cast a service down to a specific type */
 export function isServiceOfType<TType extends ServiceType>(
     service: Service,
     type: TType,
@@ -44,4 +49,18 @@ export function isServiceOfType<TType extends ServiceType>(
     return service.type === type
 }
 
-export type ServiceInitializer = (context: ServiceInitializerContext) => Promise<Service>
+/** Options passed when constructing services */
+export interface ServiceConstructorOptions {
+    readonly apiClient: APIClient
+}
+
+export interface MetaService<TType extends ServiceType> {
+    /** The type of service which can be constructed */
+    readonly type: TType
+
+    /** The unique name of the service, human readable */
+    readonly name: string
+
+    /** Attempt to construct a new service with the given options */
+    construct(context: ServiceConstructorOptions): Promise<ServiceOfType<TType> | null>
+}

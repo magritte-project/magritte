@@ -1,4 +1,4 @@
-import { RouterProvider, createRouter } from "@tanstack/react-router"
+import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
@@ -14,21 +14,22 @@ import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
-import { initializeServices } from "@/services/initialization"
+import { appleMusic } from "@/services/applemusic/service"
 import "@/styles.css"
+import { ServiceRegistry } from "@/services/registry"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
 
 // Set up API client
 const apiClient = new APIClient(userSession)
-const instanceStatus = await apiClient.readInstanceStatus()
+
+// Set up services
+const serviceRegistry = new ServiceRegistry({ apiClient })
+await serviceRegistry.addService(appleMusic)
 
 // Set up user events
 const userEvents = new UserEvents(apiClient, userSession)
-
-// Set up services
-await initializeServices(apiClient, instanceStatus)
 
 // Set up playback
 const player = new Player(
@@ -43,10 +44,11 @@ const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
 const router = createRouter({
     routeTree,
     context: {
-        player,
         userSession,
         apiClient,
+        serviceRegistry,
         userEvents,
+        player,
         ...TanStackQueryProviderContext,
     },
     defaultPreload: "intent",

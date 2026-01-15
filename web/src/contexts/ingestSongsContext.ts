@@ -4,7 +4,8 @@ import type { IngestSong } from "@/api/openapi"
 
 export interface IngestSongsContextType {
     readonly isAdded: (song: IngestSong) => boolean
-    readonly add: (newSongs: readonly IngestSong[]) => void
+    readonly add: (newSong: IngestSong) => void
+    readonly remove: (oldSong: IngestSong) => void
     readonly flush: () => Promise<void>
 }
 
