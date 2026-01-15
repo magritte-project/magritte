@@ -5,9 +5,7 @@ import ReactDOM from "react-dom/client"
 import { APIClient } from "@/api/client"
 import { UserEvents } from "@/api/userEvents"
 import { StorageUserSessionManager } from "@/api/userSession.ts"
-import APIClientContextProvider from "@/contexts/providers/APIClientContextProvider"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
-import PlayerContextProvider from "@/contexts/providers/PlayerContextProvider"
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import AppleMusicPlaybackEngine from "@/playback/engines/applemusic"
@@ -16,8 +14,8 @@ import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
-import "@/styles.css"
 import { initializeServices } from "@/services/initialization"
+import "@/styles.css"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
@@ -70,13 +68,9 @@ if (rootElement && !rootElement.innerHTML) {
     root.render(
         <StrictMode>
             <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-                <APIClientContextProvider value={apiClient}>
-                    <PlayerContextProvider value={player}>
-                        <AppCommandPaletteContextProvider>
-                            <RouterProvider router={router} />
-                        </AppCommandPaletteContextProvider>
-                    </PlayerContextProvider>
-                </APIClientContextProvider>
+                <AppCommandPaletteContextProvider>
+                    <RouterProvider router={router} />
+                </AppCommandPaletteContextProvider>
             </TanStackQueryProvider.Provider>
         </StrictMode>,
     )

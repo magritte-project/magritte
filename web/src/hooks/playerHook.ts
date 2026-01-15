@@ -1,13 +1,11 @@
-import { useContext } from "react"
+import { useRouteContext } from "@tanstack/react-router"
 
 import type { Player } from "@/playback/player"
 
-import { PlayerContext } from "@/contexts/playerContext"
-
 export default function usePlayer(): Player {
-    const player = useContext(PlayerContext)
-    if (player === undefined) {
-        throw new Error("usePlayer() used outside of <PlayerContextProvider>")
-    }
+    const player = useRouteContext({
+        from: "__root__",
+        select: (context) => context.player,
+    })
     return player
 }

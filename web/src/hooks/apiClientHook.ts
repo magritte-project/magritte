@@ -1,13 +1,11 @@
-import { useContext } from "react"
+import { useRouteContext } from "@tanstack/react-router"
 
 import type { APIClient } from "@/api/client"
 
-import { APIClientContext } from "@/contexts/apiClientContext"
-
 export default function useAPIClient(): APIClient {
-    const apiClient = useContext(APIClientContext)
-    if (apiClient === undefined) {
-        throw new Error("useAPIClient() used outside of <APIClientContextProvider>")
-    }
+    const apiClient = useRouteContext({
+        from: "__root__",
+        select: (context) => context.apiClient,
+    })
     return apiClient
 }

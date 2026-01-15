@@ -16,11 +16,10 @@ export default function useUserSession(): UseUserSessionResult {
     const router = useRouter()
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const context = useRouteContext({
-        strict: false,
+    const userSession = useRouteContext({
+        from: "__root__",
+        select: (context) => context.userSession,
     })
-    // biome-ignore lint/style/noNonNullAssertion: userSession is set at root level
-    const userSession = context.userSession!
     const current = useSyncExternalStore(
         (onStoreChange) => {
             const subscription = userSession.$events.subscribe(async (event) => {

@@ -23,7 +23,11 @@ class EventImplementation<TEvent> {
 
     async dispatch(event: TEvent): Promise<void> {
         for (const callback of this._subscriptions.values()) {
-            await callback(event)
+            try {
+                await callback(event)
+            } catch (error) {
+                console.error(`*** Unhandled error in event callback: ${error}`)
+            }
         }
     }
 }
