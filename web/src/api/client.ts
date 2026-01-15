@@ -179,6 +179,16 @@ export class APIClient {
         return unwrap(response)
     }
 
+    // -- Function Routes -- //
+
+    async callFunction(name: string, body: unknown = {}): Promise<unknown> {
+        const response = await this._client.POST("/functions/{name}", {
+            params: { path: { name } },
+            body,
+        })
+        return unwrap(response)
+    }
+
     // -- Library Routes -- //
 
     async readLibraries(): Promise<readonly LibraryRead[]> {

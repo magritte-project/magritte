@@ -27,4 +27,5 @@ class InstanceStatusRead(BaseModel):
     env: Literal["dev", "ci", "prod"]
     watch_library: bool
     first_setup_complete: bool
+    available_functions: list[str]
     available_services: list[ServiceRead]

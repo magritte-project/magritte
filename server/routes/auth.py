@@ -12,6 +12,7 @@ from auth import (
 )
 from config import config
 from db import get_db_session
+from functions import Functions, get_functions
 from model.user import User
 from schemas.auth import InstanceStatusRead
 from schemas.service import ServiceRead
@@ -29,6 +30,7 @@ router = APIRouter()
 async def read_instance_status(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     services: Annotated[list[Service], Depends(get_services)],
+    functions: Annotated[Functions, Depends(get_functions)],
 ):
     return InstanceStatusRead(
         env=config.env,
@@ -40,6 +42,7 @@ async def read_instance_status(
             joins=[],
             session=session,
         ),
+        available_functions=functions.available,
         available_services=[
             ServiceRead(
                 name=service.name,
