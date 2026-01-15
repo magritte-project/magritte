@@ -1,8 +1,14 @@
 import type { ServiceInitializerContext } from "@/services/types"
 
+import { AppleMusicService } from "./service"
+
 export async function initializeAppleMusic({
     apiClient,
-}: ServiceInitializerContext): Promise<void> {
+    instanceStatus,
+}: ServiceInitializerContext): Promise<AppleMusicService> {
+    if (!instanceStatus.available_functions.includes("apple_music_token")) {
+        throw new Error("Apple Music is not available")
+    }
     await new Promise<void>((resolve) => {
         if ("MusicKit" in window) {
             resolve()
@@ -22,4 +28,5 @@ export async function initializeAppleMusic({
         },
     })
     console.info("MusicKit ready")
+    return new AppleMusicService()
 }

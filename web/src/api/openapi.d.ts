@@ -314,40 +314,6 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
-    readonly "/services/{name}/token": {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        readonly get?: never;
-        readonly put?: never;
-        /** Get a bearer token for a specific service */
-        readonly post: operations["read_service_token_services__name__token_post"];
-        readonly delete?: never;
-        readonly options?: never;
-        readonly head?: never;
-        readonly patch?: never;
-        readonly trace?: never;
-    };
-    readonly "/services/{name}/search/songs": {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        /** Search a service's content */
-        readonly get: operations["search_service_songs_services__name__search_songs_get"];
-        readonly put?: never;
-        readonly post?: never;
-        readonly delete?: never;
-        readonly options?: never;
-        readonly head?: never;
-        readonly patch?: never;
-        readonly trace?: never;
-    };
     readonly "/sources/create": {
         readonly parameters: {
             readonly query?: never;
@@ -676,8 +642,6 @@ export interface components {
             readonly first_setup_complete: boolean;
             /** Available Functions */
             readonly available_functions: readonly string[];
-            /** Available Services */
-            readonly available_services: readonly components["schemas"]["ServiceRead"][];
         };
         /** LibraryCreate */
         readonly LibraryCreate: {
@@ -769,110 +733,6 @@ export interface components {
          * @enum {string}
          */
         readonly OAuth2Scope: "profile" | "library:read" | "library:write" | "admin";
-        /** ServiceArtworkRead */
-        readonly ServiceArtworkRead: {
-            readonly kind: components["schemas"]["ArtworkKind"];
-            /** Image Url */
-            readonly image_url: string;
-            /** Background Color */
-            readonly background_color: string | null;
-            /** Primary Color */
-            readonly primary_color: string | null;
-            /** Secondary Color */
-            readonly secondary_color: string | null;
-            /** Tertiary Color */
-            readonly tertiary_color: string | null;
-        };
-        /**
-         * ServiceFeature
-         * @enum {string}
-         */
-        readonly ServiceFeature: "read_token" | "search_songs";
-        /** ServiceRead */
-        readonly ServiceRead: {
-            /** Name */
-            readonly name: string;
-            /** Display Name */
-            readonly display_name: string;
-            /** Active */
-            readonly active: boolean;
-            /** Features */
-            readonly features: readonly components["schemas"]["ServiceFeature"][];
-        };
-        /** ServiceSearchResults[ServiceSongRead] */
-        readonly ServiceSearchResults_ServiceSongRead_: {
-            /** Items */
-            readonly items: readonly components["schemas"]["ServiceSongRead"][];
-            /** Offset */
-            readonly offset: number;
-            /** Limit */
-            readonly limit: number;
-        };
-        /** ServiceSongRead */
-        readonly ServiceSongRead: {
-            /** Id */
-            readonly id: string;
-            /** Start Time */
-            readonly start_time: number;
-            /** End Time */
-            readonly end_time: number;
-            /** Sources */
-            readonly sources: readonly components["schemas"]["ServiceSourceRead"][];
-            /** Artworks */
-            readonly artworks: readonly components["schemas"]["ServiceArtworkRead"][];
-            /** Title */
-            readonly title: string;
-            /** Artist Name */
-            readonly artist_name: string | null;
-            /** Album Title */
-            readonly album_title: string | null;
-            /** Album Artist */
-            readonly album_artist: string | null;
-            /** Composer */
-            readonly composer: string | null;
-            /** Genre */
-            readonly genre: string | null;
-            /** Release Date */
-            readonly release_date: string | null;
-            /** Track Number */
-            readonly track_number: number | null;
-            /** Track Total */
-            readonly track_total: number | null;
-            /** Disc Number */
-            readonly disc_number: number | null;
-            /** Disc Total */
-            readonly disc_total: number | null;
-            /** Lyrics */
-            readonly lyrics: string | null;
-            /** Rating */
-            readonly rating: number | null;
-            /** Bpm */
-            readonly bpm: number | null;
-            /** Comment */
-            readonly comment: string | null;
-            /** Grouping */
-            readonly grouping: string | null;
-            /** Mcn */
-            readonly mcn: string | null;
-            /** Isrc */
-            readonly isrc: string | null;
-            /** Music Brainz Release Id */
-            readonly music_brainz_release_id: string | null;
-            /** Music Brainz Recording Id */
-            readonly music_brainz_recording_id: string | null;
-        };
-        /** ServiceSourceRead */
-        readonly ServiceSourceRead: {
-            /** Url */
-            readonly url: string;
-            /** Mime Type */
-            readonly mime_type: string | null;
-        };
-        /** ServiceToken */
-        readonly ServiceToken: {
-            /** Bearer Token */
-            readonly bearer_token: string;
-        };
         /** SongRead */
         readonly SongRead: {
             /** Id */
@@ -1152,13 +1012,6 @@ export type NotificationRead = components['schemas']['NotificationRead'];
 export type NotificationUpdate = components['schemas']['NotificationUpdate'];
 export type NotificationsRead = components['schemas']['NotificationsRead'];
 export type OAuth2Scope = components['schemas']['OAuth2Scope'];
-export type ServiceArtworkRead = components['schemas']['ServiceArtworkRead'];
-export type ServiceFeature = components['schemas']['ServiceFeature'];
-export type ServiceRead = components['schemas']['ServiceRead'];
-export type ServiceSearchResultsServiceSongRead = components['schemas']['ServiceSearchResults_ServiceSongRead_'];
-export type ServiceSongRead = components['schemas']['ServiceSongRead'];
-export type ServiceSourceRead = components['schemas']['ServiceSourceRead'];
-export type ServiceToken = components['schemas']['ServiceToken'];
 export type SongRead = components['schemas']['SongRead'];
 export type SongUpdate = components['schemas']['SongUpdate'];
 export type SourceCreate = components['schemas']['SourceCreate'];
@@ -1881,72 +1734,6 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["LibraryMediaRead_SongRead_"];
-                };
-            };
-            /** @description Validation Error */
-            readonly 422: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    readonly read_service_token_services__name__token_post: {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path: {
-                readonly name: string;
-            };
-            readonly cookie?: never;
-        };
-        readonly requestBody?: never;
-        readonly responses: {
-            /** @description Successful Response */
-            readonly 200: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["ServiceToken"];
-                };
-            };
-            /** @description Validation Error */
-            readonly 422: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    readonly search_service_songs_services__name__search_songs_get: {
-        readonly parameters: {
-            readonly query: {
-                readonly query: string;
-                readonly offset?: number;
-                readonly limit?: number;
-            };
-            readonly header?: never;
-            readonly path: {
-                readonly name: string;
-            };
-            readonly cookie?: never;
-        };
-        readonly requestBody?: never;
-        readonly responses: {
-            /** @description Successful Response */
-            readonly 200: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["ServiceSearchResults_ServiceSongRead_"];
                 };
             };
             /** @description Validation Error */

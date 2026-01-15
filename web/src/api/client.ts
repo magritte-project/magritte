@@ -20,8 +20,6 @@ import type {
     NotificationRead,
     NotificationUpdate,
     NotificationsRead,
-    ServiceSearchResultsServiceSongRead,
-    ServiceToken,
     SongRead,
     SongUpdate,
     SourceCreate,
@@ -336,27 +334,6 @@ export class APIClient {
                     limit,
                 },
             },
-        })
-        return unwrap(response)
-    }
-
-    // -- Service Routes -- //
-
-    async readServiceToken(name: string): Promise<ServiceToken> {
-        const response = await this._client.POST("/services/{name}/token", {
-            params: { path: { name } },
-        })
-        return unwrap(response)
-    }
-
-    async searchServiceSongs(
-        name: string,
-        query: string,
-        offset?: number,
-        limit?: number,
-    ): Promise<ServiceSearchResultsServiceSongRead> {
-        const response = await this._client.GET("/services/{name}/search/songs", {
-            params: { path: { name }, query: { query, offset, limit } },
         })
         return unwrap(response)
     }

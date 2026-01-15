@@ -3,8 +3,6 @@ from typing import Literal, Self
 
 from pydantic import BaseModel
 
-from schemas.service import ServiceRead
-
 
 class OAuth2Scope(str, Enum):
     PROFILE = "profile"
@@ -28,4 +26,3 @@ class InstanceStatusRead(BaseModel):
     watch_library: bool
     first_setup_complete: bool
     available_functions: list[str]
-    available_services: list[ServiceRead]
