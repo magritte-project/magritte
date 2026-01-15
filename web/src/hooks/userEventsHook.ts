@@ -12,7 +12,7 @@ export interface UseUserEventsResult {
     readonly lastEvent: UserEvent | null
 }
 
-export default function useUserEvents({ onEvent }: UseUserEventsOptions): UseUserEventsResult {
+export default function useUserEvents({ onEvent }: UseUserEventsOptions = {}): UseUserEventsResult {
     const userEvents = useRouteContext({
         from: "__root__",
         select: (context) => context.userEvents,

@@ -8,7 +8,10 @@ type UserEventsState =
     | { type: "connecting" }
     | { type: "connected"; websocket: WebSocket }
 
-export type UserEvent = { event_type: "notifications_changed"; ids: readonly number[] }
+export type UserEvent = {
+    event_type: "notifications_changed" | "libraries_changed"
+    ids: readonly number[]
+}
 
 export class UserEvents {
     private readonly _events: EventSink<UserEvent>
@@ -40,20 +43,17 @@ export class UserEvents {
     async _syncWithUserSession() {
         if (this.userSession.current !== null) {
             if (this._state.type !== "notConnected") {
-                this.disconnect()
+                this._disconnect()
             }
-            await this.connect()
+            await this._connect()
         } else {
             if (this._state.type !== "notConnected") {
-                this.disconnect()
+                this._disconnect()
             }
         }
     }
 
-    async connect() {
-        if (this._state.type !== "notConnected") {
-            throw new Error("UserEvents already connected or connecting")
-        }
+    async _connect() {
         this._state = { type: "connecting" }
         const { token } = await this.apiClient.streamUserEventsPreflight()
         const websocket = new WebSocket(
@@ -66,11 +66,10 @@ export class UserEvents {
         console.debug("UserEvents connecting")
     }
 
-    disconnect() {
-        if (this._state.type !== "connected") {
-            throw new Error("UserEvents not connected")
+    _disconnect() {
+        if (this._state.type === "connected") {
+            this._state.websocket.close()
         }
-        this._state.websocket.close()
     }
 
     private _onOpen(websocket: WebSocket, event: Event) {
@@ -88,12 +87,14 @@ export class UserEvents {
         console.error("UserEvents error", event)
     }
 
-    private _onMessage(websocket: WebSocket, event: MessageEvent<UserEvent>) {
+    private _onMessage(websocket: WebSocket, event: MessageEvent<string>) {
         if (this._state.type !== "connected" || this._state.websocket !== websocket) {
             return
         }
         console.debug("UserEvents message", event.data)
-        this._events.dispatch(event.data)
+        if (typeof event.data === "string") {
+            this._events.dispatch(JSON.parse(event.data))
+        }
     }
 
     private _onClose(websocket: WebSocket, event: CloseEvent) {
