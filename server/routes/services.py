@@ -1,36 +1,16 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status
 
 from schemas.service import (
     ServiceFeature,
-    ServiceRead,
     ServiceSearchResults,
     ServiceSongRead,
     ServiceToken,
 )
-from services import Service, get_service, get_services
+from services import get_service
 
 router = APIRouter(prefix="/services")
-
-
-@router.get(
-    "/available",
-    response_model=list[ServiceRead],
-    summary="Read details about available services",
-)
-async def read_services(
-    services: list[Service] = Depends(get_services),
-):
-    return [
-        ServiceRead(
-            name=service.name,
-            display_name=service.display_name,
-            active=service.active,
-            features=list(service.features),
-        )
-        for service in services
-    ]
 
 
 @router.post(

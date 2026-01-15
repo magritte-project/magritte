@@ -22,12 +22,13 @@ const userSession = StorageUserSessionManager.local
 
 // Set up API client
 const apiClient = new APIClient(userSession)
+const instanceStatus = await apiClient.readInstanceStatus()
 
 // Set up user events
 const userEvents = new UserEvents(apiClient, userSession)
 
 // Set up services
-await initializeServices(apiClient)
+await initializeServices(apiClient, instanceStatus)
 
 // Set up playback
 const player = new Player(

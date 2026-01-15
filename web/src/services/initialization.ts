@@ -1,4 +1,5 @@
 import type { APIClient } from "@/api/client"
+import type { InstanceStatusRead } from "@/api/openapi"
 import type { ServiceInitializer } from "@/services/types"
 
 import { initializeAppleMusic } from "@/services/applemusic/initialization"
@@ -17,9 +18,8 @@ export function isServiceInitialized(name: string) {
     return INITIALIZED_SERVICES.has(name)
 }
 
-export async function initializeServices(apiClient: APIClient) {
-    const services = await apiClient.readAvailableServices()
-    for (const service of services) {
+export async function initializeServices(apiClient: APIClient, instanceStatus: InstanceStatusRead) {
+    for (const service of instanceStatus.available_services) {
         if (!service.active) {
             console.info(`Skipping inactive service: ${service.name}`)
             continue

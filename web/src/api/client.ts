@@ -10,6 +10,7 @@ import type {
     ArtworkUpdate,
     BodySignInSignInPost,
     BulkIngestSongs,
+    InstanceStatusRead,
     LibraryCreate,
     LibraryHomePathRead,
     LibraryMediaReadAlbumRead,
@@ -19,7 +20,6 @@ import type {
     NotificationRead,
     NotificationUpdate,
     NotificationsRead,
-    ServiceRead,
     ServiceSearchResultsServiceSongRead,
     ServiceToken,
     SongRead,
@@ -115,6 +115,11 @@ export class APIClient {
     }
 
     // -- Root Routes -- //
+
+    async readInstanceStatus(): Promise<InstanceStatusRead> {
+        const response = await this._client.GET("/status")
+        return unwrap(response)
+    }
 
     async signUp(body: UserSignUp): Promise<UserProfile> {
         const response = await this._client.POST("/sign-up", {
@@ -326,11 +331,6 @@ export class APIClient {
     }
 
     // -- Service Routes -- //
-
-    async readAvailableServices(): Promise<readonly ServiceRead[]> {
-        const response = await this._client.GET("/services/available")
-        return unwrap(response)
-    }
 
     async readServiceToken(name: string): Promise<ServiceToken> {
         const response = await this._client.POST("/services/{name}/token", {

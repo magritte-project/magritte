@@ -56,6 +56,23 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/status": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read the status of this instance */
+        readonly get: operations["read_instance_status_status_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/sign-up": {
         readonly parameters: {
             readonly query?: never;
@@ -272,23 +289,6 @@ export interface paths {
         };
         /** Read a page of songs in a library */
         readonly get: operations["read_library_songs_libraries__library_id__songs_get"];
-        readonly put?: never;
-        readonly post?: never;
-        readonly delete?: never;
-        readonly options?: never;
-        readonly head?: never;
-        readonly patch?: never;
-        readonly trace?: never;
-    };
-    readonly "/services/available": {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        /** Read details about available services */
-        readonly get: operations["read_services_services_available_get"];
         readonly put?: never;
         readonly post?: never;
         readonly delete?: never;
@@ -645,6 +645,20 @@ export interface components {
             readonly url: string;
             /** Mime Type */
             readonly mime_type: string | null;
+        };
+        /** InstanceStatusRead */
+        readonly InstanceStatusRead: {
+            /**
+             * Env
+             * @enum {string}
+             */
+            readonly env: "dev" | "ci" | "prod";
+            /** Watch Library */
+            readonly watch_library: boolean;
+            /** First Setup Complete */
+            readonly first_setup_complete: boolean;
+            /** Available Services */
+            readonly available_services: readonly components["schemas"]["ServiceRead"][];
         };
         /** LibraryCreate */
         readonly LibraryCreate: {
@@ -1108,6 +1122,7 @@ export type HttpValidationError = components['schemas']['HTTPValidationError'];
 export type IngestArtwork = components['schemas']['IngestArtwork'];
 export type IngestSong = components['schemas']['IngestSong'];
 export type IngestSource = components['schemas']['IngestSource'];
+export type InstanceStatusRead = components['schemas']['InstanceStatusRead'];
 export type LibraryCreate = components['schemas']['LibraryCreate'];
 export type LibraryHomePathRead = components['schemas']['LibraryHomePathRead'];
 export type LibraryMediaReadAlbumRead = components['schemas']['LibraryMediaRead_AlbumRead_'];
@@ -1265,6 +1280,26 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_instance_status_status_get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["InstanceStatusRead"];
                 };
             };
         };
@@ -1801,26 +1836,6 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    readonly read_services_services_available_get: {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        readonly requestBody?: never;
-        readonly responses: {
-            /** @description Successful Response */
-            readonly 200: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": readonly components["schemas"]["ServiceRead"][];
                 };
             };
         };

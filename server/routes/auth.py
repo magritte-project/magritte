@@ -4,15 +4,52 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import col
 
 from auth import (
     authenticate_user,
     create_user,
 )
+from config import config
 from db import get_db_session
+from model.user import User
+from schemas.auth import InstanceStatusRead
+from schemas.service import ServiceRead
 from schemas.user import Token, UserProfile, UserSignUp
+from services import Service, get_services
 
 router = APIRouter()
+
+
+@router.get(
+    "/status",
+    response_model=InstanceStatusRead,
+    summary="Read the status of this instance",
+)
+async def read_instance_status(
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    services: Annotated[list[Service], Depends(get_services)],
+):
+    return InstanceStatusRead(
+        env=config.env,
+        watch_library=config.watch_library,
+        first_setup_complete=await User.exists(
+            where=[
+                col(User.id) == 1,
+            ],
+            joins=[],
+            session=session,
+        ),
+        available_services=[
+            ServiceRead(
+                name=service.name,
+                display_name=service.display_name,
+                active=service.active,
+                features=list(service.features),
+            )
+            for service in services
+        ],
+    )
 
 
 @router.post(

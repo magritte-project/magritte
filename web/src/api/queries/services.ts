@@ -8,8 +8,10 @@ export function readAvailableServices(apiClient: APIClient) {
     return queryOptions({
         queryKey: ["readAvailableServices"],
         queryFn: async () => {
-            const allAvailableServices = await apiClient.readAvailableServices()
-            return allAvailableServices.filter((service) => isServiceInitialized(service.name))
+            const instanceStatus = await apiClient.readInstanceStatus()
+            return instanceStatus.available_services.filter((service) =>
+                isServiceInitialized(service.name),
+            )
         },
     })
 }
