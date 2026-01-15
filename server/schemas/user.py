@@ -30,5 +30,5 @@ class UserEventPreflight(BaseModel):
 
 
 class UserEvent(BaseModel):
-    event_type: Literal["notifications_changed"]
+    event_type: Literal["notifications_changed", "libraries_changed"]
     ids: list[int]
