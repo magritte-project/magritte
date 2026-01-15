@@ -9,6 +9,11 @@ export default defineConfig({
     plugins: [tanstackRouter({ autoCodeSplitting: true }), viteReact(), tailwindcss()],
     server: {
         proxy: {
+            "/api/users/events": {
+                target: "ws://localhost:6477",
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ""),
+            },
             "/api": {
                 target: "http://localhost:6477",
                 changeOrigin: true,

@@ -56,9 +56,8 @@ export class UserEvents {
         }
         this._state = { type: "connecting" }
         const { token } = await this.apiClient.streamUserEventsPreflight()
-        // TODO: Don't hardcode this
         const websocket = new WebSocket(
-            `ws://localhost:6477/users/events?token=${encodeURIComponent(token)}`,
+            `${import.meta.env.VITE_API_URL}/users/events?token=${encodeURIComponent(token)}`,
         )
         websocket.addEventListener("open", (event) => this._onOpen(websocket, event))
         websocket.addEventListener("error", (event) => this._onError(websocket, event))
