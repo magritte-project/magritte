@@ -10,6 +10,7 @@ import type { UserEvents } from "@/api/userEvents"
 import type { UserSessionManager } from "@/api/userSession"
 import type { Player } from "@/playback/player"
 import type { ServiceRegistry } from "@/services/registry"
+import type SplitRegistry from "@/splits/registry"
 
 import AppCommandPalette from "@/components/AppCommandPalette"
 import RootLayout from "@/components/RootLayout"
@@ -22,6 +23,7 @@ export interface MagritteRouterContext {
     readonly serviceRegistry: ServiceRegistry
     readonly userEvents: UserEvents
     readonly player: Player
+    readonly splitRegister: SplitRegistry
 }
 
 declare module "@tanstack/react-router" {

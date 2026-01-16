@@ -127,7 +127,7 @@ class AppleMusicService implements StreamingMusicService {
     }
 }
 
-export const appleMusic: MetaService<"streamingMusic"> = {
+export const AppleMusic: MetaService<"streamingMusic"> = {
     type: "streamingMusic",
     name: "Apple Music",
     async construct({

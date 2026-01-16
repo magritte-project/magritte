@@ -13,8 +13,9 @@ import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
-import { appleMusic } from "@/services/applemusic/service"
+import { AppleMusic } from "@/services/applemusic/service"
 import { ServiceRegistry } from "@/services/registry"
+import SplitRegistry from "@/splits/registry"
 import "@/styles.css"
 
 // Set up user session
@@ -25,7 +26,7 @@ const apiClient = new APIClient(userSession)
 
 // Set up services
 const serviceRegistry = new ServiceRegistry({ apiClient, userSession })
-await serviceRegistry.addService(appleMusic)
+await serviceRegistry.addService(AppleMusic) // TODO: Don't hard code this
 
 // Set up user events
 const userEvents = new UserEvents(apiClient, userSession)
@@ -38,6 +39,9 @@ const player = new Player(
     }),
 )
 
+// Set up splits
+const splitRegister = new SplitRegistry()
+
 // Create a new router instance
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
@@ -49,6 +53,7 @@ const router = createRouter({
         serviceRegistry,
         userEvents,
         player,
+        splitRegister,
         ...TanStackQueryProviderContext,
     },
     defaultPreload: "intent",
