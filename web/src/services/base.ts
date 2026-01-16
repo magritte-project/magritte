@@ -2,6 +2,7 @@ import type { JsonStructure } from "react-cmdk"
 
 import type { APIClient } from "@/api/client"
 import type { IngestSong } from "@/api/openapi"
+import type { PlaybackEngine } from "@/playback/engine"
 
 export interface BaseService {
     /** The unique name of the service, human readable */
@@ -13,6 +14,9 @@ export interface BaseService {
 
 export interface StreamingMusicService extends BaseService {
     readonly type: "streamingMusic"
+
+    /** Create playback engines for this service */
+    constructPlaybackEngines(): readonly PlaybackEngine[]
 
     /** Search this music service's catalog for songs */
     searchSongs(

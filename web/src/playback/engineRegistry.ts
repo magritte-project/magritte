@@ -1,11 +1,16 @@
 import type { PlaybackEngine } from "@/playback/engine"
 import type { PlayableItem } from "@/playback/item"
+import type { ServiceRegistry } from "@/services/registry"
 
 export default class PlaybackEngineRegistry {
     private _engines: PlaybackEngine[]
 
-    constructor() {
-        this._engines = []
+    constructor(serviceRegistry: ServiceRegistry) {
+        // TODO: This should observe service registry
+        const streamingMusicServices = serviceRegistry.services("streamingMusic")
+        this._engines = streamingMusicServices.flatMap((service) =>
+            service.constructPlaybackEngines(),
+        )
     }
 
     installPlaybackEngine(newEngine: PlaybackEngine): this {

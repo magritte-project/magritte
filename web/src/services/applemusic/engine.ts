@@ -13,8 +13,8 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
     private readonly _events: EventSink<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
-    constructor() {
-        this._musicKit = MusicKit.getInstance()
+    constructor(musicKit: MusicKit.Instance) {
+        this._musicKit = musicKit
         ;[this._events, this.$events] = createEvent()
 
         this._playingItem = null

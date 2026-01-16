@@ -8,15 +8,14 @@ import { StorageUserSessionManager } from "@/api/userSession.ts"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
-import AppleMusicPlaybackEngine from "@/playback/engines/applemusic"
 import WebPlaybackEngine from "@/playback/engines/web"
 import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
 import { appleMusic } from "@/services/applemusic/service"
-import "@/styles.css"
 import { ServiceRegistry } from "@/services/registry"
+import "@/styles.css"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
@@ -33,9 +32,9 @@ const userEvents = new UserEvents(apiClient, userSession)
 
 // Set up playback
 const player = new Player(
-    new PlaybackEngineRegistry()
-        .installPlaybackEngine(new WebPlaybackEngine(userSession))
-        .installPlaybackEngine(new AppleMusicPlaybackEngine()),
+    new PlaybackEngineRegistry(serviceRegistry).installPlaybackEngine(
+        new WebPlaybackEngine(userSession),
+    ),
 )
 
 // Create a new router instance

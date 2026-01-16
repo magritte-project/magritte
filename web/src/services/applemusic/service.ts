@@ -2,6 +2,7 @@ import type { JsonStructure } from "react-cmdk"
 
 import { SignInIcon, SignOutIcon } from "@phosphor-icons/react"
 
+import type { PlaybackEngine } from "@/playback/engine"
 import type {
     MetaService,
     ServiceConstructorOptions,
@@ -11,6 +12,7 @@ import type {
 
 import type { MusicSearchResponse } from "./models/search"
 
+import AppleMusicPlaybackEngine from "./engine"
 import { initializeMusicKit } from "./initialization"
 
 class AppleMusicService implements StreamingMusicService {
@@ -47,6 +49,10 @@ class AppleMusicService implements StreamingMusicService {
                       ],
             },
         ]
+    }
+
+    constructPlaybackEngines(): readonly PlaybackEngine[] {
+        return [new AppleMusicPlaybackEngine(this.musicKit)]
     }
 
     async searchSongs(
