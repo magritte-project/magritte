@@ -22,7 +22,7 @@ _storefront: str = os.environ.get("APPLE_MUSIC_STOREFRONT", "us")
 
 
 if not _team_id or not _app_id or not _key_id or not _key_secret:
-    raise ValueError("Apple Music not configured")
+    raise NotImplementedError()
 
 
 def handler(request: Request) -> Response:

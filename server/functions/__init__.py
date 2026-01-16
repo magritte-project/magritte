@@ -1,8 +1,7 @@
 import importlib
 import inspect
-import sys
+import logging
 from pathlib import Path
-from traceback import print_tb
 from types import ModuleType
 
 from fastapi import HTTPException, Request, Response, status
@@ -21,7 +20,9 @@ class Functions:
     @property
     def available(self) -> list[str]:
         """List of available functions"""
-        return list(self._modules.keys())
+        return list(
+            name for name, module in self._modules.items() if module is not None
+        )
 
     async def call(self, name: str, request: Request) -> Response:
         """
@@ -71,8 +72,9 @@ for subpath in serach_dir.iterdir():
             _loaded_modules[name] = importlib.import_module(
                 f".{name}", package=__package__
             )
+    except NotImplementedError:
+        _loaded_modules[name] = None
+        logging.info(f"Function '{name}' is disabled")
     except Exception as e:
         _loaded_modules[name] = None
-        print(f"*** Could not load function {name}: {str(e)}", file=sys.stderr)
-        if e.__traceback__:
-            print_tb(e.__traceback__, file=sys.stderr)
+        logging.error(f"*** Could not load function {name}: {str(e)}", stack_info=True)
