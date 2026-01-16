@@ -3,8 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import get_db_session
 from model.notification import Notification
-from schemas.user import UserEvent
-from utilities.user_events import UserEvents, get_user_events
+from utilities.user_events import UserEvent, UserEvents, UserEventType, get_user_events
 
 
 class Notifier:
@@ -32,7 +31,7 @@ class Notifier:
         await self._user_events.notify(
             await notification.user_ids,
             UserEvent(
-                event_type="notifications_changed",
+                event_type=UserEventType.NOTIFICATIONS_CHANGED,
                 ids=[notification.id],
             ),
         )

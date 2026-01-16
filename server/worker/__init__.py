@@ -2,8 +2,7 @@ import asyncio
 import logging
 import multiprocessing
 from contextlib import contextmanager
-from multiprocessing.connection import Connection
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from watchdog.events import (
     DirDeletedEvent,
@@ -16,19 +15,21 @@ from watchdog.events import (
 from watchdog.observers import Observer
 
 from config import config
-from schemas.user import UserEvent
 from utilities.user_events import get_user_events
 from worker.events import (
-    LibraryWorkerReply,
-    SynchedLibraryWorkerReply,
+    NotifyUsersParentRequest,
+    ParentRequest,
     SyncLibraryWorkerEvent,
 )
 from worker.main import worker_main
 
+if TYPE_CHECKING:
+    from multiprocessing.connection import Connection
+
 
 class _FileSystemEventForwarder(FileSystemEventHandler):
-    def __init__(self, conn):
-        self._conn = conn
+    def __init__(self, worker_connection: "Connection"):
+        self._conn: "Connection" = worker_connection
         """
         connection used to forward events to the worker child process.
         """
@@ -38,34 +39,31 @@ class _FileSystemEventForwarder(FileSystemEventHandler):
         self._conn.send(event)
 
 
-_worker_conn: Connection | None = None
+_worker_connection: "Connection | None" = None
 
 
-async def _process_reply(reply: LibraryWorkerReply):
-    logging.debug(f"Library worker event reply: {reply}")
-    match reply:
-        case SynchedLibraryWorkerReply():
+async def _process_parent_request(request: ParentRequest):
+    logging.debug(f"Library parent request: {request}")
+    match request:
+        case NotifyUsersParentRequest():
             user_events = await get_user_events()
-            await user_events.notify(
-                set(reply.affected_user_ids),
-                UserEvent(event_type="libraries_changed", ids=[reply.library_id]),
-            )
+            await user_events.notify(request.user_ids, request.event)
         case _:
-            logging.error(f"*** Ignoring reply: {reply}")
+            logging.error(f"*** Ignoring parent request: {request}")
 
 
 async def sync_library(library_id: int):
     """
     Enqueue a request to sync a library if the worker is initialized.
     """
-    if _worker_conn is not None:
-        _worker_conn.send(SyncLibraryWorkerEvent(library_id))
+    if _worker_connection is not None:
+        _worker_connection.send(SyncLibraryWorkerEvent(library_id))
 
 
 @contextmanager
 def library_worker():
-    global _worker_conn
-    if _worker_conn is not None:
+    global _worker_connection
+    if _worker_connection is not None:
         raise RuntimeError("Library worker already initialized")
 
     if (
@@ -75,22 +73,24 @@ def library_worker():
     ):
         library_home_path = config.library_home_path
         if library_home_path.exists() and library_home_path.is_dir():
-            parent_conn, child_conn = multiprocessing.Pipe()
+            parent_connection, child_connection = multiprocessing.Pipe()
 
-            _worker_conn = parent_conn  # pyright: ignore[reportAssignmentType]
+            _worker_connection = parent_connection
             loop = asyncio.get_event_loop()
             loop.add_reader(
-                parent_conn.fileno(),
-                lambda: loop.create_task(_process_reply(parent_conn.recv())),
+                parent_connection.fileno(),
+                lambda: loop.create_task(
+                    _process_parent_request(parent_connection.recv())
+                ),
             )
 
             worker_process = multiprocessing.Process(
                 target=worker_main,
-                args=(child_conn,),
+                args=(child_connection,),
             )
             worker_process.start()
 
-            event_handler = _FileSystemEventForwarder(parent_conn)
+            event_handler = _FileSystemEventForwarder(parent_connection)
             library_home_observer = Observer()
             library_home_observer.schedule(
                 event_handler,
@@ -111,9 +111,9 @@ def library_worker():
                 library_home_observer.stop()
                 library_home_observer.join()
                 worker_process.terminate()
-                loop.remove_reader(parent_conn.fileno())
-                parent_conn.close()
-                _worker_conn = None
+                loop.remove_reader(parent_connection.fileno())
+                parent_connection.close()
+                _worker_connection = None
         else:
             logging.warning(
                 f"*** library_home refers to directory that does not exist: {config.library_home}"

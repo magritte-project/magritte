@@ -27,8 +27,3 @@ class UserProfileUpdate(BaseModel):
 
 class UserEventPreflight(BaseModel):
     token: str
-
-
-class UserEvent(BaseModel):
-    event_type: Literal["notifications_changed", "libraries_changed"]
-    ids: list[int]

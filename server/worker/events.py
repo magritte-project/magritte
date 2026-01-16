@@ -1,28 +1,24 @@
 from dataclasses import dataclass
 
-
-class LibraryWorkerEvent:
-    """An event passed from the server to the worker"""
-
-    pass
+from utilities.user_events import UserEvent
 
 
 @dataclass(frozen=True)
-class SyncLibraryWorkerEvent(LibraryWorkerEvent):
+class SyncLibraryWorkerEvent:
     library_id: int
 
 
-class LibraryWorkerReply:
-    """
-    A reply to an event passed from the server to the worker
-
-    Not all events receive replies
-    """
-
-    pass
+LibraryWorkerEvent = SyncLibraryWorkerEvent
+"""An event passed from the server to the worker"""
 
 
 @dataclass(frozen=True)
-class SynchedLibraryWorkerReply(LibraryWorkerReply):
-    library_id: int
-    affected_user_ids: list[int]
+class NotifyUsersParentRequest:
+    user_ids: set[int]
+    event: UserEvent
+
+
+ParentRequest = NotifyUsersParentRequest
+"""
+A request passed from the worker back to the parent server
+"""

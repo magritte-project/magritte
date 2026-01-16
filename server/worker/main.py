@@ -1,8 +1,8 @@
 import asyncio
 import logging
 from contextlib import asynccontextmanager
-from multiprocessing.connection import Connection
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from watchdog.events import (
     DirDeletedEvent,
@@ -18,11 +18,15 @@ from db import get_db_engine, get_db_session
 from ingestion.files import try_ingest_path
 from model import Library
 from model.source import Source
+from utilities.user_events import UserEvent, UserEventType
 from worker.events import (
     LibraryWorkerEvent,
-    SynchedLibraryWorkerReply,
+    NotifyUsersParentRequest,
     SyncLibraryWorkerEvent,
 )
+
+if TYPE_CHECKING:
+    from multiprocessing.connection import Connection
 
 
 @asynccontextmanager
@@ -40,7 +44,10 @@ def _to_path(path: str | bytes):
             return Path(path.decode())
 
 
-async def _process_event(conn: Connection, event: LibraryWorkerEvent | FileSystemEvent):
+async def _process_event(
+    connection: "Connection",
+    event: LibraryWorkerEvent | FileSystemEvent,
+):
     logging.debug(f"Library worker processing event: {event}")
     async with _db_session() as session:
         match event:
@@ -56,12 +63,15 @@ async def _process_event(conn: Connection, event: LibraryWorkerEvent | FileSyste
                     libraries=[library],
                     session=session,
                 )
-                conn.send(
-                    SynchedLibraryWorkerReply(
-                        library_id=event.library_id,
-                        affected_user_ids=[
+                connection.send(
+                    NotifyUsersParentRequest(
+                        user_ids={
                             user.id for user in await library.awaitable_attrs.users
-                        ],
+                        },
+                        event=UserEvent(
+                            event_type=UserEventType.LIBRARIES_CHANGED,
+                            ids=[library.id],
+                        ),
                     )
                 )
             case DirDeletedEvent():
@@ -96,13 +106,13 @@ async def _process_event(conn: Connection, event: LibraryWorkerEvent | FileSyste
                 logging.error(f"*** Ignoring event: {event}")
 
 
-def worker_main(conn: Connection):
+def worker_main(connection: "Connection"):
     try:
         logging.debug("Library worker process started")
         while True:
-            event: LibraryWorkerEvent | FileSystemEvent = conn.recv()
-            asyncio.run(_process_event(conn, event))
+            event: LibraryWorkerEvent | FileSystemEvent = connection.recv()
+            asyncio.run(_process_event(connection, event))
     except KeyboardInterrupt:
         logging.debug("Library worker process interrupted")
     finally:
-        conn.close()
+        connection.close()

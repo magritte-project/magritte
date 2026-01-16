@@ -1,6 +1,19 @@
+import dataclasses
+from dataclasses import dataclass
+from enum import Enum
+
 from fastapi import WebSocket
 
-from schemas.user import UserEvent
+
+class UserEventType(str, Enum):
+    NOTIFICATIONS_CHANGED = "notifications_changed"
+    LIBRARIES_CHANGED = "libraries_changed"
+
+
+@dataclass(frozen=True)
+class UserEvent:
+    event_type: UserEventType
+    ids: list[int]
 
 
 class UserEvents:
@@ -18,7 +31,7 @@ class UserEvents:
         for user_id in user_ids:
             websockets = self._websockets_by_user.get(user_id, [])
             for websocket in websockets:
-                await websocket.send_json(event.model_dump())
+                await websocket.send_json(dataclasses.asdict(event))
 
 
 _manager: UserEvents | None = None
