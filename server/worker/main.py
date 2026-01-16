@@ -29,6 +29,10 @@ if TYPE_CHECKING:
     from multiprocessing.connection import Connection
 
 
+logging.basicConfig(level=config.logging_level)
+logger = logging.getLogger("LibraryWorker")
+
+
 @asynccontextmanager
 async def _db_session():
     engine = await get_db_engine()
@@ -48,7 +52,7 @@ async def _process_event(
     connection: "Connection",
     event: LibraryWorkerEvent | FileSystemEvent,
 ):
-    logging.debug(f"Library worker processing event: {event}")
+    logger.debug(f"Processing event: {event}")
     async with _db_session() as session:
         match event:
             case SyncLibraryWorkerEvent():
@@ -103,16 +107,16 @@ async def _process_event(
             case FileModifiedEvent():
                 pass  # TODO: Update song(s) associated with this source
             case _:
-                logging.error(f"*** Ignoring event: {event}")
+                logger.error(f"*** Ignoring event: {event}")
 
 
 def worker_main(connection: "Connection"):
     try:
-        logging.debug("Library worker process started")
+        logger.debug("Process started")
         while True:
             event: LibraryWorkerEvent | FileSystemEvent = connection.recv()
             asyncio.run(_process_event(connection, event))
     except KeyboardInterrupt:
-        logging.debug("Library worker process interrupted")
+        logger.debug("Process interrupted")
     finally:
         connection.close()

@@ -1,5 +1,6 @@
+import logging
 import pathlib
-from typing import Literal
+from typing import Literal, assert_never
 
 from pydantic import AnyUrl, Field
 
@@ -70,6 +71,19 @@ class Config(BaseConfig):
         A path pointing to where library files are stored and retrieved from
         """
         return pathlib.Path.from_uri(str(config.library_home))
+
+    @property
+    def logging_level(self):
+        """
+        The logging level to use for the current environment
+        """
+        match self.env:
+            case "dev" | "ci":
+                return logging.DEBUG
+            case "prod":
+                return logging.INFO
+            case _:
+                assert_never(self.env)
 
 
 config = Config.from_dot_env()
