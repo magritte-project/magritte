@@ -3,29 +3,55 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
 
 import { readLibraryAlbums } from "@/api/queries/libraries"
+import AppForm from "@/components/reusable/AppForm"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import TableFooter from "@/components/reusable/TableFooter"
 import useAPIClient from "@/hooks/apiClientHook"
+import { useAppForm } from "@/hooks/formHook"
 
 export const Route = createFileRoute("/libraries_/$libraryId/albums")({
     validateSearch: z.object({
+        query: z.string().optional(),
         artist_id: z.number().optional(),
         offset: z.number().optional(),
     }),
     component: function LibraryAlbumsComponent() {
         const { libraryId } = Route.useParams()
-        const { artist_id: artistId, offset } = Route.useSearch()
+        const { query, artist_id: artistId, offset } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
         const apiClient = useAPIClient()
         const { data: page } = useSuspenseQuery(
             readLibraryAlbums(apiClient, {
                 libraryId: Number(libraryId),
+                query,
                 artistId,
                 offset,
             }),
         )
+
+        const facetForm = useAppForm({
+            defaultValues: {
+                query,
+            },
+            onSubmit({ value }) {
+                navigate({ search: (oldSearch) => ({ ...oldSearch, ...value }) })
+            },
+        })
+
         return (
             <div className="m-2 flex flex-col gap-2">
+                <AppForm form={facetForm}>
+                    <facetForm.AppField name="query">
+                        {(field) => (
+                            <field.InputField
+                                className="w-full"
+                                type="search"
+                                placeholder="Filter Songs..."
+                            />
+                        )}
+                    </facetForm.AppField>
+                </AppForm>
+
                 {artistId !== undefined && (
                     <Link
                         to="/libraries/$libraryId/songs"

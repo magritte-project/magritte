@@ -144,6 +144,12 @@ async def read_library_songs(
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    query: Annotated[
+        str | None,
+        Query(
+            description="Query string to filter the songs by",
+        ),
+    ] = None,
     album_id: Annotated[
         int | None,
         Query(
@@ -175,6 +181,8 @@ async def read_library_songs(
         where_criteria.append(col(Song.album_id) == album_id)
     if artist_id is not None:
         where_criteria.append(col(Song.artist_id) == artist_id)
+    if query is not None:
+        where_criteria.append(Song.strs_ilike(query))
 
     total, songs = await Song.read_many_with_total(
         where=[

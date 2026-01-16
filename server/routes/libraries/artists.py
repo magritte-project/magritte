@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
+from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
 
@@ -101,6 +102,12 @@ async def read_library_artists(
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    query: Annotated[
+        str | None,
+        Query(
+            description="Query string to filter the artists by",
+        ),
+    ] = None,
     offset: Annotated[int, Query(description="The page offset to read from")] = 0,
     limit: Annotated[int, Query(description="How many items to read per page")] = 100,
 ):
@@ -109,9 +116,14 @@ async def read_library_artists(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
+    where_criteria = list[ColumnExpressionArgument]()
+    if query is not None:
+        where_criteria.append(Artist.strs_ilike(query))
+
     total, artists = await Artist.read_many_with_total(
         where=[
             col(Artist.libraries).any(col(Library.id) == library_id),
+            *where_criteria,
         ],
         joins=[],
         order_by=[

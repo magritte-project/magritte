@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel, col, delete, select
 
 from model.base import LibraryModel
@@ -40,6 +41,13 @@ class Artist(LibraryModel, table=True):
         back_populates="artists",
         link_model=ArtistLibraryLink,
     )
+
+    @override
+    @classmethod
+    def query_str_fields(cls) -> list[Mapped[str] | Mapped[str | None]]:
+        return [
+            col(cls.name),
+        ]
 
     @classmethod
     async def delete_orphans(cls, session: AsyncSession):

@@ -3,26 +3,52 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
 
 import { readLibraryArtists } from "@/api/queries/libraries"
+import AppForm from "@/components/reusable/AppForm"
 import TableFooter from "@/components/reusable/TableFooter"
 import useAPIClient from "@/hooks/apiClientHook"
+import { useAppForm } from "@/hooks/formHook"
 
 export const Route = createFileRoute("/libraries_/$libraryId/artists")({
     validateSearch: z.object({
+        query: z.string().optional(),
         offset: z.number().optional(),
     }),
     component: function LibraryArtistsComponent() {
         const { libraryId } = Route.useParams()
-        const { offset } = Route.useSearch()
+        const { query, offset } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
         const apiClient = useAPIClient()
         const { data: page } = useSuspenseQuery(
             readLibraryArtists(apiClient, {
                 libraryId: Number(libraryId),
+                query,
                 offset,
             }),
         )
+
+        const facetForm = useAppForm({
+            defaultValues: {
+                query,
+            },
+            onSubmit({ value }) {
+                navigate({ search: (oldSearch) => ({ ...oldSearch, ...value }) })
+            },
+        })
+
         return (
             <div className="m-2 flex flex-col gap-2">
+                <AppForm form={facetForm}>
+                    <facetForm.AppField name="query">
+                        {(field) => (
+                            <field.InputField
+                                className="w-full"
+                                type="search"
+                                placeholder="Filter Songs..."
+                            />
+                        )}
+                    </facetForm.AppField>
+                </AppForm>
+
                 <ol>
                     {page.items.map((artist) => (
                         <li

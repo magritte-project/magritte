@@ -25,6 +25,7 @@ export function readLibraryHomeSubpaths(apiClient: APIClient, relative_to: strin
 
 export interface ReadLibraryAlbumsCriteria {
     readonly libraryId: number
+    readonly query?: string
     readonly artistId?: number
     readonly offset?: number
     readonly limit?: number
@@ -35,6 +36,7 @@ export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlb
         queryKey: [
             "readLibraryAlbums",
             criteria.libraryId,
+            criteria.query,
             criteria.artistId,
             criteria.offset,
             criteria.limit,
@@ -42,6 +44,7 @@ export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlb
         queryFn: () =>
             apiClient.readLibraryAlbums(
                 criteria.libraryId,
+                criteria.query,
                 criteria.artistId,
                 criteria.offset,
                 criteria.limit,
@@ -51,20 +54,33 @@ export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlb
 
 export interface ReadLibraryArtistsCriteria {
     readonly libraryId: number
+    readonly query?: string
     readonly offset?: number
     readonly limit?: number
 }
 
 export function readLibraryArtists(apiClient: APIClient, criteria: ReadLibraryArtistsCriteria) {
     return queryOptions({
-        queryKey: ["readLibraryArtists", criteria.libraryId, criteria.offset, criteria.limit],
+        queryKey: [
+            "readLibraryArtists",
+            criteria.libraryId,
+            criteria.query,
+            criteria.offset,
+            criteria.limit,
+        ],
         queryFn: () =>
-            apiClient.readLibraryArtists(criteria.libraryId, criteria.offset, criteria.limit),
+            apiClient.readLibraryArtists(
+                criteria.libraryId,
+                criteria.query,
+                criteria.offset,
+                criteria.limit,
+            ),
     })
 }
 
 export interface ReadLibrarySongsCriteria {
     readonly libraryId: number
+    readonly query?: string
     readonly albumId?: number
     readonly artistId?: number
     readonly sortBy?: ReadLibrarySongsSortBy
@@ -77,6 +93,7 @@ export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySong
         queryKey: [
             "readLibrarySongs",
             criteria.libraryId,
+            criteria.query,
             criteria.albumId,
             criteria.artistId,
             criteria.offset,
@@ -85,6 +102,7 @@ export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySong
         queryFn: () =>
             apiClient.readLibrarySongs(
                 criteria.libraryId,
+                criteria.query,
                 criteria.albumId,
                 criteria.artistId,
                 criteria.sortBy,

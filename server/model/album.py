@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Iterable, Union
+from typing import TYPE_CHECKING, Iterable, Union, override
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Mapped
 from sqlmodel import (
     Field,
     Relationship,
@@ -70,6 +71,16 @@ class Album(LibraryModel, table=True):
                 if song_artwork.id not in all_artworks:
                     all_artworks[song_artwork.id] = song_artwork
         return all_artworks.values()
+
+    @override
+    @classmethod
+    def query_str_fields(cls) -> list[Mapped[str] | Mapped[str | None]]:
+        from .artist import Artist
+
+        return [
+            col(Artist.name),
+            col(cls.title),
+        ]
 
     @classmethod
     async def delete_orphans(cls, session: AsyncSession):

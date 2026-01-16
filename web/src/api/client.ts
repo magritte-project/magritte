@@ -248,6 +248,7 @@ export class APIClient {
 
     async readLibraryAlbums(
         library_id: number,
+        query?: string,
         artist_id?: number,
         offset?: number,
         limit?: number,
@@ -258,6 +259,7 @@ export class APIClient {
                     library_id,
                 },
                 query: {
+                    query,
                     artist_id,
                     offset,
                     limit,
@@ -287,6 +289,7 @@ export class APIClient {
 
     async readLibraryArtists(
         library_id: number,
+        query?: string,
         offset?: number,
         limit?: number,
     ): Promise<LibraryMediaReadArtistRead> {
@@ -296,6 +299,7 @@ export class APIClient {
                     library_id,
                 },
                 query: {
+                    query,
                     offset,
                     limit,
                 },
@@ -324,6 +328,7 @@ export class APIClient {
 
     async readLibrarySongs(
         library_id: number,
+        query?: string,
         album_id?: number,
         artist_id?: number,
         sort_by?: ReadLibrarySongsSortBy,
@@ -336,6 +341,7 @@ export class APIClient {
                     library_id,
                 },
                 query: {
+                    query,
                     album_id,
                     artist_id,
                     sort_by,

@@ -1348,6 +1348,8 @@ export interface operations {
     readonly read_library_albums_libraries__library_id__albums_get: {
         readonly parameters: {
             readonly query?: {
+                /** @description Query string to filter the albums by */
+                readonly query?: string | null;
                 /** @description ID of the artist to filter the songs by */
                 readonly artist_id?: number | null;
                 /** @description The page offset to read from */
@@ -1454,6 +1456,8 @@ export interface operations {
     readonly read_library_artists_libraries__library_id__artists_get: {
         readonly parameters: {
             readonly query?: {
+                /** @description Query string to filter the artists by */
+                readonly query?: string | null;
                 /** @description The page offset to read from */
                 readonly offset?: number;
                 /** @description How many items to read per page */
@@ -1708,6 +1712,8 @@ export interface operations {
     readonly read_library_songs_libraries__library_id__songs_get: {
         readonly parameters: {
             readonly query?: {
+                /** @description Query string to filter the songs by */
+                readonly query?: string | null;
                 /** @description ID of the album to filter the songs by */
                 readonly album_id?: number | null;
                 /** @description ID of the artist to filter the songs by */

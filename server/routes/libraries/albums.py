@@ -8,6 +8,7 @@ from sqlmodel import col
 from auth import get_current_user
 from db import get_db_session
 from model.album import Album
+from model.artist import Artist
 from model.library import Library
 from model.user import User
 from schemas.album import AlbumRead, AlbumUpdate
@@ -107,6 +108,12 @@ async def read_library_albums(
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    query: Annotated[
+        str | None,
+        Query(
+            description="Query string to filter the albums by",
+        ),
+    ] = None,
     artist_id: Annotated[
         int | None,
         Query(
@@ -124,13 +131,17 @@ async def read_library_albums(
     where_criteria = list[ColumnExpressionArgument]()
     if artist_id is not None:
         where_criteria.append(col(Album.artist_id) == artist_id)
+    if query is not None:
+        where_criteria.append(Album.strs_ilike(query))
 
     total, albums = await Album.read_many_with_total(
         where=[
             col(Album.libraries).any(col(Library.id) == library_id),
             *where_criteria,
         ],
-        joins=[],
+        joins=[
+            (Artist, col(Album.artist_id) == Artist.id),
+        ],
         order_by=[
             col(Album.title),
         ],

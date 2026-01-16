@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Union, assert_never
+from typing import TYPE_CHECKING, Any, Union, assert_never, override
 
 from pydantic import computed_field
 from sqlalchemy import UnaryExpression
@@ -193,6 +193,24 @@ class Song(LibraryModel, table=True):
     @property
     def album_title(self) -> str | None:
         return self.album.title if self.album else None
+
+    @override
+    @classmethod
+    def query_str_fields(cls) -> list[Mapped[str] | Mapped[str | None]]:
+        from .album import Album
+        from .artist import Artist
+
+        return [
+            col(Artist.name),
+            col(Album.title),
+            col(Song.title),
+            col(Song.album_artist),
+            col(Song.composer),
+            col(Song.genre),
+            col(Song.lyrics),
+            col(Song.comment),
+            col(Song.grouping),
+        ]
 
     @classmethod
     def _col_for_sort_key(cls, sort_key: SongSortKey) -> Mapped[Any]:

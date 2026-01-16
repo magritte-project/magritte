@@ -4,7 +4,8 @@ from typing import Iterable, Self, Sequence
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncAttrs, AsyncSession
-from sqlmodel import Field, SQLModel, col, func, select
+from sqlalchemy.orm import Mapped
+from sqlmodel import Field, SQLModel, and_, col, func, or_, select
 
 
 class LibraryModel(SQLModel, AsyncAttrs):
@@ -38,6 +39,36 @@ class LibraryModel(SQLModel, AsyncAttrs):
         },
         description="When this model was last updated",
     )
+
+    @classmethod
+    def query_str_fields(cls) -> list[Mapped[str] | Mapped[str | None]]:
+        """
+        Returns a list of string fields for this model
+        for query building purposes.
+        """
+        raise NotImplementedError()
+
+    @classmethod
+    def strs_ilike(cls, value: str):
+        """
+        Returns a where clause which matches any
+        string field containing the given value.
+
+        :param value: The value to search for.
+        :returns: The where clause.
+        """
+        escaped_value = (
+            value.replace("\\", r"\\").replace("%", r"\%").replace("_", r"\_")
+        )
+        return or_(
+            *(
+                and_(
+                    field.is_not(None),
+                    field.ilike(f"%{escaped_value}%", escape="\\"),
+                )
+                for field in cls.query_str_fields()
+            )
+        )
 
     @classmethod
     async def exists(
@@ -122,21 +153,20 @@ class LibraryModel(SQLModel, AsyncAttrs):
         and a page of models starting at `offset`.
         """
 
-        total = (
-            await session.scalar(
-                select(func.count(col(cls.id)))
-                .select_from(cls)
-                .where(
-                    *where,
-                )
+        what_total = (
+            select(func.count(col(cls.id)))
+            .select_from(cls)
+            .where(
+                *where,
             )
-            or 0
         )
         what_models = (
             select(cls).where(*where).order_by(*order_by).offset(offset).limit(limit)
         )
         for model, clause in joins:
+            what_total = what_total.join(model, clause)
             what_models = what_models.join(model, clause)
+        total = await session.scalar(what_total) or 0
         model_results = await session.execute(what_models)
         models = model_results.unique().scalars()
         return total, models

@@ -9,10 +9,12 @@ import type { SongRead } from "@/api/openapi"
 
 import { useDeleteLibrarySong } from "@/api/mutations/libraries"
 import { readLibrarySongs } from "@/api/queries/libraries"
+import AppForm from "@/components/reusable/AppForm"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedPopUpMenu from "@/components/theme/ThemedPopUpMenu"
 import useAPIClient from "@/hooks/apiClientHook"
+import { useAppForm } from "@/hooks/formHook"
 import usePlayer from "@/hooks/playerHook"
 import useQueueShardContext from "@/hooks/queueShardContextHook"
 import { Queue } from "@/playback/queue"
@@ -26,6 +28,7 @@ function formatDuration(seconds: number) {
 
 export const Route = createFileRoute("/libraries_/$libraryId/songs")({
     validateSearch: z.object({
+        query: z.string().optional(),
         album_id: z.number().optional(),
         artist_id: z.number().optional(),
         sort_by: z
@@ -67,6 +70,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
     component: function LibrarySongsComponent() {
         const { libraryId } = Route.useParams()
         const {
+            query,
             album_id: albumId,
             artist_id: artistId,
             sort_by: sortBy,
@@ -77,6 +81,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
         const { data: page } = useSuspenseQuery(
             readLibrarySongs(apiClient, {
                 libraryId: Number(libraryId),
+                query,
                 albumId,
                 artistId,
                 sortBy,
@@ -98,9 +103,29 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
         const queueShardContext = useQueueShardContext()
         const player = usePlayer()
 
+        const facetForm = useAppForm({
+            defaultValues: {
+                query,
+            },
+            onSubmit({ value }) {
+                navigate({ search: (oldSearch) => ({ ...oldSearch, ...value }) })
+            },
+        })
+
         return (
             <>
                 <div className="m-2 flex flex-col gap-2 cursor-default">
+                    <AppForm form={facetForm}>
+                        <facetForm.AppField name="query">
+                            {(field) => (
+                                <field.InputField
+                                    className="w-full"
+                                    type="search"
+                                    placeholder="Filter Songs..."
+                                />
+                            )}
+                        </facetForm.AppField>
+                    </AppForm>
                     <table>
                         <thead>
                             <tr className="text-left font-semibold text-sm">
