@@ -10,7 +10,7 @@ import type { PlayableItem } from "@/playback/item"
 import { type EventSink, type EventStream, createEvent } from "@/utilities/events"
 import { resolveUrl } from "@/utilities/resources"
 
-export default class WebPlaybackEngine implements PlaybackEngine {
+export default class BuiltInPlaybackEngine implements PlaybackEngine {
     private readonly _userSession: UserSessionManager
     private readonly _audio: HTMLAudioElement
     private readonly _events: EventSink<PlaybackEngineEvent>

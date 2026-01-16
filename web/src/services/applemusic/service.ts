@@ -18,8 +18,11 @@ import { initializeMusicKit } from "./initialization"
 class AppleMusicService implements StreamingMusicService {
     readonly type = "streamingMusic" as const
     readonly name = "Apple Music"
+    readonly playbackEngine: PlaybackEngine | null
 
-    constructor(private readonly musicKit: MusicKit.Instance) {}
+    constructor(private readonly musicKit: MusicKit.Instance) {
+        this.playbackEngine = new AppleMusicPlaybackEngine(this.musicKit)
+    }
 
     get commands(): JsonStructure {
         return [
@@ -49,10 +52,6 @@ class AppleMusicService implements StreamingMusicService {
                       ],
             },
         ]
-    }
-
-    constructPlaybackEngines(): readonly PlaybackEngine[] {
-        return [new AppleMusicPlaybackEngine(this.musicKit)]
     }
 
     async searchSongs(

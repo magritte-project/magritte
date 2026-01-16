@@ -12,14 +12,14 @@ export default function useServices<TType extends ServiceType>(
     //       the result of calling serviceRegistry.services is not
     //       guaranteed to be stable across renders.
     const [services, setServices] = useState<readonly ServiceOfType<TType>[]>(() =>
-        registry.services(type),
+        registry.getAllServices(type),
     )
     useEffect(() => {
         const subscription = registry.$events.subscribe(async (event) => {
             switch (event.type) {
                 case "serviceAdded":
                 case "serviceRemoved":
-                    setServices(registry.services(type))
+                    setServices(registry.getAllServices(type))
                     break
                 default:
                     break

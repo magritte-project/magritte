@@ -1,5 +1,7 @@
 import type { JsonStructure } from "react-cmdk"
 
+import type { PlaybackEngine } from "@/playback/engine"
+
 import {
     isServiceOfType,
     type MetaService,
@@ -11,8 +13,8 @@ import {
 import { createEvent, EventStream, type EventSink } from "@/utilities/events"
 
 export type ServiceRegistryEvent =
-    | { type: "serviceAdded"; name: string }
-    | { type: "serviceRemoved"; name: string }
+    | { type: "serviceAdded"; service: Service }
+    | { type: "serviceRemoved"; service: Service }
 
 /** Manages the lifecycle of services and provides a means to work with all services at once */
 export class ServiceRegistry {
@@ -36,7 +38,15 @@ export class ServiceRegistry {
         return commands
     }
 
-    services<TType extends ServiceType>(type: TType): ServiceOfType<TType>[] {
+    get playbackEngines(): readonly [string, PlaybackEngine][] {
+        const streamingMusicServices = this.getAllServices("streamingMusic")
+        return streamingMusicServices.flatMap((service) => {
+            const playbackEngine = service.playbackEngine
+            return playbackEngine ? [[service.name, playbackEngine]] : []
+        })
+    }
+
+    getAllServices<TType extends ServiceType>(type: TType): ServiceOfType<TType>[] {
         const services: ServiceOfType<TType>[] = []
         for (const service of this._services.values()) {
             if (isServiceOfType(service, type)) {
@@ -44,6 +54,17 @@ export class ServiceRegistry {
             }
         }
         return services
+    }
+
+    getService<TType extends ServiceType>(name: string, type: TType): ServiceOfType<TType> | null {
+        const service = this._services.get(name)
+        if (service === undefined) {
+            return null
+        }
+        if (!isServiceOfType(service, type)) {
+            return null
+        }
+        return service
     }
 
     async addService<TType extends ServiceType>(
@@ -55,7 +76,7 @@ export class ServiceRegistry {
         const service = await metaService.construct(this._options)
         if (service !== null) {
             this._services.set(metaService.name, service)
-            await this._events.dispatch({ type: "serviceAdded", name: metaService.name })
+            await this._events.dispatch({ type: "serviceAdded", service })
         }
         return service
     }
@@ -63,8 +84,12 @@ export class ServiceRegistry {
     async removeService<TType extends ServiceType>(
         metaService: MetaService<TType>,
     ): Promise<boolean> {
-        const deleted = this._services.delete(metaService.name)
-        await this._events.dispatch({ type: "serviceRemoved", name: metaService.name })
-        return deleted
+        const service = this._services.get(metaService.name)
+        if (service === undefined) {
+            return false
+        }
+        this._services.delete(metaService.name)
+        await this._events.dispatch({ type: "serviceRemoved", service })
+        return true
     }
 }

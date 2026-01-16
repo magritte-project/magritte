@@ -2,6 +2,7 @@ import type { JsonStructure } from "react-cmdk"
 
 import type { APIClient } from "@/api/client"
 import type { IngestSong } from "@/api/openapi"
+import type { UserSessionManager } from "@/api/userSession"
 import type { PlaybackEngine } from "@/playback/engine"
 
 export interface BaseService {
@@ -15,8 +16,8 @@ export interface BaseService {
 export interface StreamingMusicService extends BaseService {
     readonly type: "streamingMusic"
 
-    /** Create playback engines for this service */
-    constructPlaybackEngines(): readonly PlaybackEngine[]
+    /** This service's playback engine, if any */
+    readonly playbackEngine: PlaybackEngine | null
 
     /** Search this music service's catalog for songs */
     searchSongs(
@@ -56,6 +57,7 @@ export function isServiceOfType<TType extends ServiceType>(
 /** Options passed when constructing services */
 export interface ServiceConstructorOptions {
     readonly apiClient: APIClient
+    readonly userSession: UserSessionManager
 }
 
 export interface MetaService<TType extends ServiceType> {

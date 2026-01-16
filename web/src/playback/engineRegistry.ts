@@ -1,33 +1,53 @@
 import type { PlaybackEngine } from "@/playback/engine"
 import type { PlayableItem } from "@/playback/item"
-import type { ServiceRegistry } from "@/services/registry"
+import type { Service } from "@/services/base"
+
+import { ServiceRegistry } from "@/services/registry"
+
+export interface PlaybackEngineRegistryOptions {
+    readonly serviceRegistry: ServiceRegistry
+    readonly defaultEngine: PlaybackEngine
+}
 
 export default class PlaybackEngineRegistry {
-    private _engines: PlaybackEngine[]
+    private _engines: Map<string, PlaybackEngine>
+    private _defaultEngine: PlaybackEngine
 
-    constructor(serviceRegistry: ServiceRegistry) {
-        // TODO: This should observe service registry
-        const streamingMusicServices = serviceRegistry.services("streamingMusic")
-        this._engines = streamingMusicServices.flatMap((service) =>
-            service.constructPlaybackEngines(),
-        )
+    constructor({ serviceRegistry, defaultEngine }: PlaybackEngineRegistryOptions) {
+        this._engines = new Map(serviceRegistry.playbackEngines)
+        this._defaultEngine = defaultEngine
+
+        serviceRegistry.$events.subscribe((event) => {
+            switch (event.type) {
+                case "serviceAdded":
+                    this._onServiceAdded(event.service)
+                    break
+                case "serviceRemoved":
+                    this._onServiceRemoved(event.service)
+                    break
+                default:
+                    break
+            }
+        })
     }
 
-    installPlaybackEngine(newEngine: PlaybackEngine): this {
-        this._engines.push(newEngine)
-        return this
-    }
-
-    uninstallPlaybackEngine(oldEngine: PlaybackEngine): this {
-        const toRemove = this._engines.indexOf(oldEngine)
-        if (toRemove !== -1) {
-            this._engines.splice(toRemove, 1)
+    private _onServiceAdded(service: Service) {
+        const servicePlaybackEngine = service.playbackEngine
+        if (servicePlaybackEngine !== null) {
+            this._engines.set(service.name, servicePlaybackEngine)
         }
-        return this
+    }
+
+    private _onServiceRemoved(service: Service) {
+        this._engines.delete(service.name)
+    }
+
+    get engines(): readonly PlaybackEngine[] {
+        return [...this._engines.values(), this._defaultEngine]
     }
 
     async findPlaybackEngineFor(item: PlayableItem): Promise<PlaybackEngine | null> {
-        for (const engine of this._engines) {
+        for (const engine of this.engines) {
             if (await engine.canEnqueue(item)) {
                 return engine
             }
