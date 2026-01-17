@@ -13,6 +13,7 @@ Magritte is intended to be installed on an in-home server with a large storage m
 ### Known Working Configurations
 
 - macOS 15.5 - 26.2
+- Arch Linux
 
 ## Front ends
 
