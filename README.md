@@ -4,7 +4,7 @@ A home server to manage and listen to a household's music collections.
 
 [![Test](https://github.com/decarbonization/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/decarbonization/magritte/actions/workflows/test.yml)
 
-![Screenshot of the songs library view with a song playing](https://raw.githubusercontent.com/decarbonization/magritte/refs/heads/main/README/screenshot.png)
+![Screenshot of the songs library view with a song playing](https://github.com/decarbonization/magritte/blob/main/README/screenshot.png?raw=true)
 
 ## Scope
 
@@ -14,6 +14,7 @@ Magritte is intended to be installed on an in-home server with a large storage m
 
 - macOS 15.5 - 26.2
 - Arch Linux
+- Raspberry Pi OS (must be packaged first)
 
 ## Front ends
 
