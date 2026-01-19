@@ -2,6 +2,7 @@ import { CaretLeftIcon, CommandIcon } from "@phosphor-icons/react"
 import { useCanGoBack, useRouter } from "@tanstack/react-router"
 import { useCallback, type ReactNode } from "react"
 
+import NotificationsButton from "@/components/NotificationsButton"
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import UserButton from "@/components/UserButton"
@@ -30,6 +31,7 @@ export default function PrimaryHeader({ children }: PrimaryHeaderProps) {
                     <ThemedSubtleButton onClick={handleToggleCommandPalette}>
                         <CommandIcon /> K
                     </ThemedSubtleButton>
+                    <NotificationsButton />
                     <UserButton />
                 </>
             }

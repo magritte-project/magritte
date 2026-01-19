@@ -35,8 +35,9 @@ export default function ThemedPopUpMenu({ button, items }: ThemedPopUpMenuProps)
                         <MenuItem>
                             <AsyncButton
                                 type="button"
-                                className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white"
+                                className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white disabled:hover:bg-inherit disabled:hover:text-inherit disabled:opacity-70"
                                 onClick={item.onClick}
+                                disabled={item.disabled}
                             >
                                 {item.label}
                             </AsyncButton>
