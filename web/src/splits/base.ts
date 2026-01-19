@@ -4,9 +4,11 @@ import type { FunctionComponent } from "react"
 export type SplitLocation = "start" | "end"
 export type SplitInsertOrder = "first" | "last"
 
+export type SplitID = string
+
 export interface SplitDefinition {
     /** Unique identifier for the split */
-    readonly id: string
+    readonly id: SplitID
 
     /** The name of the split */
     readonly name: string

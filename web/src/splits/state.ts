@@ -1,10 +1,6 @@
-import type { SplitDefinition, SplitInsertOrder, SplitLocation } from "@/splits/base"
+import type { SplitID, SplitInsertOrder, SplitLocation } from "@/splits/base"
 
-function _insert(
-    oldSplits: readonly SplitDefinition[],
-    newSplit: SplitDefinition,
-    insertOrder: SplitInsertOrder,
-) {
+function _insert(oldSplits: readonly SplitID[], newSplit: SplitID, insertOrder: SplitInsertOrder) {
     switch (insertOrder) {
         case "first":
             return [newSplit, ...oldSplits]
@@ -14,34 +10,38 @@ function _insert(
 }
 
 export default class SplitState {
-    constructor(
-        readonly start: readonly SplitDefinition[] = [],
-        readonly end: readonly SplitDefinition[] = [],
-    ) {
-        this.allOpenIds = new Set<string>()
-        for (const split of start) {
-            this.allOpenIds.add(split.id)
-        }
-        for (const split of end) {
-            this.allOpenIds.add(split.id)
-        }
+    static parse(json: string): SplitState {
+        const { start, end } = JSON.parse(json)
+        return new SplitState(start, end)
     }
 
-    readonly allOpenIds: Set<string>
+    stringify(): string {
+        return JSON.stringify({ start: this.start, end: this.end })
+    }
+
+    constructor(
+        readonly start: readonly SplitID[] = [],
+        readonly end: readonly SplitID[] = [],
+    ) {}
+
+    has(splitID: SplitID): boolean {
+        return this.start.includes(splitID) || this.end.includes(splitID)
+    }
 
     add(
-        newSplit: SplitDefinition,
+        newSplitID: SplitID,
+        allowsMultiple: boolean,
         location: SplitLocation,
         insertOrder: SplitInsertOrder,
     ): SplitState {
-        if (!newSplit.allowsMultiple && this.allOpenIds.has(newSplit.id)) {
+        if (!allowsMultiple && this.has(newSplitID)) {
             return this
         }
         switch (location) {
             case "start":
-                return new SplitState(_insert(this.start, newSplit, insertOrder), this.end)
+                return new SplitState(_insert(this.start, newSplitID, insertOrder), this.end)
             case "end":
-                return new SplitState(this.start, _insert(this.end, newSplit, insertOrder))
+                return new SplitState(this.start, _insert(this.end, newSplitID, insertOrder))
         }
     }
 
