@@ -246,6 +246,13 @@ export class APIClient {
         })
     }
 
+    async readLibraryAlbum(library_id: number, album_id: number): Promise<AlbumRead> {
+        const response = await this._client.GET("/libraries/{library_id}/albums/{album_id}", {
+            params: { path: { library_id, album_id } },
+        })
+        return unwrap(response)
+    }
+
     async readLibraryAlbums(
         library_id: number,
         query?: string,
@@ -287,6 +294,13 @@ export class APIClient {
         })
     }
 
+    async readLibraryArtist(library_id: number, artist_id: number): Promise<ArtistRead> {
+        const response = await this._client.GET("/libraries/{library_id}/artists/{artist_id}", {
+            params: { path: { library_id, artist_id } },
+        })
+        return unwrap(response)
+    }
+
     async readLibraryArtists(
         library_id: number,
         query?: string,
@@ -324,6 +338,13 @@ export class APIClient {
         await this._client.DELETE("/libraries/{library_id}/songs/{song_id}", {
             params: { path: { library_id, song_id } },
         })
+    }
+
+    async readLibrarySong(library_id: number, song_id: number): Promise<SongRead> {
+        const response = await this._client.GET("/libraries/{library_id}/songs/{song_id}", {
+            params: { path: { library_id, song_id } },
+        })
+        return unwrap(response)
     }
 
     async readLibrarySongs(

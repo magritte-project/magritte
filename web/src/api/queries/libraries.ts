@@ -23,6 +23,13 @@ export function readLibraryHomeSubpaths(apiClient: APIClient, relative_to: strin
     })
 }
 
+export function readLibraryAlbum(apiClient: APIClient, libraryId: number, albumId: number) {
+    return queryOptions({
+        queryKey: ["readLibraryAlbum", libraryId, albumId],
+        queryFn: () => apiClient.readLibraryAlbum(libraryId, albumId),
+    })
+}
+
 export interface ReadLibraryAlbumsCriteria {
     readonly libraryId: number
     readonly query?: string
@@ -52,6 +59,13 @@ export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlb
     })
 }
 
+export function readLibraryArtist(apiClient: APIClient, libraryId: number, artistId: number) {
+    return queryOptions({
+        queryKey: ["readLibraryArtist", libraryId, artistId],
+        queryFn: () => apiClient.readLibraryArtist(libraryId, artistId),
+    })
+}
+
 export interface ReadLibraryArtistsCriteria {
     readonly libraryId: number
     readonly query?: string
@@ -75,6 +89,13 @@ export function readLibraryArtists(apiClient: APIClient, criteria: ReadLibraryAr
                 criteria.offset,
                 criteria.limit,
             ),
+    })
+}
+
+export function readLibrarySong(apiClient: APIClient, libraryId: number, songId: number) {
+    return queryOptions({
+        queryKey: ["readLibrarySong", libraryId, songId],
+        queryFn: () => apiClient.readLibrarySong(libraryId, songId),
     })
 }
 

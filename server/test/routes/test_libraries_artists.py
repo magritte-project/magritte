@@ -52,6 +52,71 @@ async def throwaway_artist(
     return response.json()[0].get("artist_id")
 
 
+class TestReadLibraryArtist:
+    @pytest.mark.asyncio
+    async def test_read(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        throwaway_artist: int,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            f"/libraries/2/artists/{throwaway_artist}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("id") == throwaway_artist
+
+    @pytest.mark.asyncio
+    async def test_requires_library_permission(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        throwaway_artist: int,
+    ):
+        session = sign_in("orphaned", "password")
+
+        response = client.get(
+            f"/libraries/2/artists/{throwaway_artist}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Library not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_library_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/libraries/99999999/artists/9999999",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Library not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_artist_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/libraries/2/artists/9999999",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Artist not found"
+
+
 class TestUpdateLibraryArtist:
     @pytest.mark.asyncio
     async def test_update(

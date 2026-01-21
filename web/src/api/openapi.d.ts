@@ -131,7 +131,8 @@ export interface paths {
             readonly path?: never;
             readonly cookie?: never;
         };
-        readonly get?: never;
+        /** Read an album */
+        readonly get: operations["read_library_album_libraries__library_id__albums__album_id__get"];
         readonly put?: never;
         readonly post?: never;
         /** Delete an album */
@@ -166,7 +167,8 @@ export interface paths {
             readonly path?: never;
             readonly cookie?: never;
         };
-        readonly get?: never;
+        /** Read an artist */
+        readonly get: operations["read_library_artist_libraries__library_id__artists__artist_id__get"];
         readonly put?: never;
         readonly post?: never;
         /** Delete an artist */
@@ -286,7 +288,8 @@ export interface paths {
             readonly path?: never;
             readonly cookie?: never;
         };
-        readonly get?: never;
+        /** Read a song */
+        readonly get: operations["read_library_song_libraries__library_id__songs__song_id__get"];
         readonly put?: never;
         readonly post?: never;
         /** Delete a song */
@@ -1277,6 +1280,38 @@ export interface operations {
             };
         };
     };
+    readonly read_library_album_libraries__library_id__albums__album_id__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+                readonly album_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["AlbumRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     readonly delete_library_album_libraries__library_id__albums__album_id__delete: {
         readonly parameters: {
             readonly query?: never;
@@ -1372,6 +1407,38 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["LibraryMediaRead_AlbumRead_"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_library_artist_libraries__library_id__artists__artist_id__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+                readonly artist_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ArtistRead"];
                 };
             };
             /** @description Validation Error */
@@ -1628,6 +1695,38 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["LibraryRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_library_song_libraries__library_id__songs__song_id__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+                readonly song_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["SongRead"];
                 };
             };
             /** @description Validation Error */

@@ -17,6 +17,39 @@ from schemas.library import LibraryMediaRead
 router = APIRouter()
 
 
+@router.get(
+    "/{library_id}/artists/{artist_id}",
+    response_model=ArtistRead,
+    summary="Read an artist",
+)
+async def read_library_artist(
+    library_id: int,
+    artist_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not await Library.can_user_access_by_id(
+        library_id,
+        current_user.id,
+        session,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    artist = await session.get(Artist, artist_id)
+    if not artist:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Artist not found"
+        )
+
+    return ArtistRead(
+        **artist.model_dump(),
+    )
+
+
 @router.patch(
     "/{library_id}/artists/{artist_id}",
     response_model=ArtistRead,

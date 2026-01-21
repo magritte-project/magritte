@@ -29,6 +29,13 @@ async def _seed_users(session: AsyncSession):
             scope=OAuth2Scope.to_str({OAuth2Scope.PROFILE, OAuth2Scope.LIBRARIES_READ}),
         )
     )
+    session.add(
+        User(
+            username="orphaned",
+            hashed_password=password_hash.hash("password", salt=config.salt),
+            scope=OAuth2Scope.to_str({*OAuth2Scope}),
+        )
+    )
     await session.flush()
 
 

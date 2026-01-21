@@ -52,6 +52,71 @@ async def throwaway_album(
     return response.json()[0].get("album_id")
 
 
+class TestReadLibraryAlbum:
+    @pytest.mark.asyncio
+    async def test_read(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        throwaway_album: int,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            f"/libraries/2/albums/{throwaway_album}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("id") == throwaway_album
+
+    @pytest.mark.asyncio
+    async def test_requires_library_permission(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        throwaway_album: int,
+    ):
+        session = sign_in("orphaned", "password")
+
+        response = client.get(
+            f"/libraries/2/albums/{throwaway_album}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Library not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_library_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/libraries/99999999/albums/9999999",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Library not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_album_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/libraries/2/albums/9999999",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Album not found"
+
+
 class TestUpdateLibraryAlbum:
     @pytest.mark.asyncio
     async def test_update(

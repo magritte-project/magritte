@@ -32,6 +32,47 @@ from schemas.source import SourceRead
 router = APIRouter()
 
 
+@router.get(
+    "/{library_id}/songs/{song_id}",
+    response_model=SongRead,
+    summary="Read a song",
+)
+async def read_library_song(
+    library_id: int,
+    song_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not await Library.can_user_access_by_id(
+        library_id,
+        current_user.id,
+        session,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    song = await session.get(Song, song_id)
+    if not song:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Song not found"
+        )
+
+    return SongRead(
+        **song.model_dump(),
+        artworks=[
+            ArtworkRead(**artwork.model_dump())
+            for artwork in await song.awaitable_attrs.artworks
+        ],
+        sources=[
+            SourceRead(**source.model_dump())
+            for source in await song.awaitable_attrs.sources
+        ],
+    )
+
+
 @router.patch(
     "/{library_id}/songs/{song_id}",
     response_model=SongRead,
