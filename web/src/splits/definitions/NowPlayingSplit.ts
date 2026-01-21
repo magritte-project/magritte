@@ -1,8 +1,8 @@
 import { WaveformIcon } from "@phosphor-icons/react"
 
-import NowPlaying from "@/components/NowPlaying"
+import type { SplitDefinition } from "@/splits/base"
 
-import type { SplitDefinition } from "../base"
+import NowPlaying from "@/components/NowPlaying"
 
 export const NowPlayingSplit: SplitDefinition = {
     id: "nowPlaying",
@@ -11,5 +11,6 @@ export const NowPlayingSplit: SplitDefinition = {
     minWidth: "16rem",
     preferredLocation: "end",
     allowsMultiple: false,
+    requiresParameters: false,
     component: NowPlaying,
 }

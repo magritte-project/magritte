@@ -23,7 +23,7 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
     const registry = useSplitRegistry()
     const [splits, setSplits] = useStorageValue(
         "splits",
-        () => new SplitState([], [NowPlayingSplit.id]),
+        () => new SplitState([], [{ id: NowPlayingSplit.id, parameters: [] }]),
         { parse: (json) => SplitState.parse(json), stringify: (state) => state.stringify() },
     )
 
@@ -38,6 +38,7 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
                 oldSplits.add(
                     newSplit.id,
                     newSplit.allowsMultiple,
+                    options.parameters ?? [],
                     options.preferredLocation ?? newSplit.preferredLocation,
                     options.insertOrder ?? "last",
                 ),
@@ -63,7 +64,7 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
             {
                 id: "splits",
                 heading: "Splits",
-                items: Array.from(registry.all(), (split) => ({
+                items: Array.from(registry.allOpenable(), (split) => ({
                     id: `splits.open[${split.id}]`,
                     icon: split.icon,
                     children: `Open ${split.name}`,

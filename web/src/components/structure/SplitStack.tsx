@@ -16,7 +16,7 @@ export default function SplitStack({ splits, location }: SplitStackProps) {
     const { closeSplit } = useSplits()
     return Array.from(
         registry.getAll(splits[location]),
-        ([{ id, minWidth, name, component: Component }, index]) => (
+        ([{ id, minWidth, name, component: Component }, parameters, index]) => (
             <div
                 key={`${id}-${index}`}
                 style={{ minWidth, width: minWidth }}
@@ -25,7 +25,7 @@ export default function SplitStack({ splits, location }: SplitStackProps) {
                 <DismissContextProvider value={() => closeSplit({ by: "index", location, index })}>
                     <div className="flex flex-col">
                         <SplitHeader title={name} />
-                        <Component />
+                        <Component parameters={parameters} />
                     </div>
                 </DismissContextProvider>
             </div>

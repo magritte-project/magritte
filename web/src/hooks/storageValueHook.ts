@@ -19,11 +19,14 @@ export default function useStorageValue<TValue>(
 ): UseStorageValueResult<TValue> {
     const [value, setTransientValue] = useState(() => {
         const storedValue = storage.getItem(key)
-        return storedValue
-            ? parse(storedValue)
-            : typeof defaultValue === "function"
-              ? (defaultValue as () => TValue)()
-              : defaultValue
+        if (storedValue !== null) {
+            try {
+                return parse(storedValue)
+            } catch (error) {
+                console.error("*** Could not parse value for ${key} from storage:", error)
+            }
+        }
+        return typeof defaultValue === "function" ? (defaultValue as () => TValue)() : defaultValue
     })
     const setValue = useCallback(
         (newValue: React.SetStateAction<TValue>) => {

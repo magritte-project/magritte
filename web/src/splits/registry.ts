@@ -1,6 +1,7 @@
-import type { SplitDefinition, SplitID } from "@/splits/base"
+import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
 
 import { NowPlayingSplit } from "@/splits/definitions/NowPlayingSplit"
+import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export type SplitRegistryEvent =
@@ -17,24 +18,31 @@ export default class SplitRegistry {
 
         // TODO: Don't hard code this
         this.registerSplit(NowPlayingSplit)
+        this.registerSplit(SongEditorSplit)
     }
 
-    readonly $events: EventStream<SplitRegistryEvent>
+    readonly $events: EventStream<SplitRegistryEvent>;
 
-    all(): Iterable<SplitDefinition> {
-        return this._splitDefinitions.values()
+    *allOpenable(): IterableIterator<SplitDefinition> {
+        for (const definition of this._splitDefinitions.values()) {
+            if (!definition.requiresParameters) {
+                yield definition
+            }
+        }
     }
 
     get(id: SplitID): SplitDefinition | undefined {
         return this._splitDefinitions.get(id)
     }
 
-    *getAll(ids: Iterable<SplitID>): IterableIterator<[SplitDefinition, number]> {
+    *getAll(
+        splits: Iterable<Split>,
+    ): IterableIterator<[SplitDefinition, readonly SplitParameter[], number]> {
         let index = 0
-        for (const id of ids) {
+        for (const { id, parameters } of splits) {
             const split = this.get(id)
             if (split) {
-                yield [split, index++]
+                yield [split, parameters, index++]
             }
         }
     }

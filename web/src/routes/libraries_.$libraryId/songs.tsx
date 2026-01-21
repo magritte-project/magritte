@@ -1,5 +1,6 @@
 import { MenuButton } from "@headlessui/react"
 import { DotsThreeCircleVerticalIcon, TrashIcon } from "@phosphor-icons/react"
+import { PencilIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"
@@ -17,8 +18,10 @@ import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"
 import usePlayer from "@/hooks/playerHook"
 import useQueueShardContext from "@/hooks/queueShardContextHook"
+import useSplits from "@/hooks/splitsHook"
 import { Queue } from "@/playback/queue"
 import { LibrarySongsQueueShard } from "@/playback/queueShards/librarySongs"
+import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 
 function formatDuration(seconds: number) {
     const minutes = Math.floor(seconds / 60)
@@ -88,6 +91,18 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                 offset,
             }),
         )
+
+        const { openSplit } = useSplits()
+        const handleEdit = useCallback(
+            (song: SongRead) => {
+                openSplit({
+                    id: SongEditorSplit.id,
+                    parameters: [Number(libraryId), song.id],
+                })
+            },
+            [libraryId, openSplit],
+        )
+
         const deleteLibrarySong = useDeleteLibrarySong(Number(libraryId))
         const handleRemove = useCallback(
             async (song: SongRead) => {
@@ -183,6 +198,15 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                                 </MenuButton>
                                             }
                                             items={[
+                                                {
+                                                    key: "edit",
+                                                    label: (
+                                                        <>
+                                                            <PencilIcon /> Edit
+                                                        </>
+                                                    ),
+                                                    onClick: () => handleEdit(song),
+                                                },
                                                 {
                                                     key: "remove",
                                                     label: (

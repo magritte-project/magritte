@@ -6,6 +6,17 @@ export type SplitInsertOrder = "first" | "last"
 
 export type SplitID = string
 
+export type SplitParameter = string | number | boolean | null
+
+export interface Split {
+    readonly id: SplitID
+    readonly parameters: readonly SplitParameter[]
+}
+
+export interface SplitComponentProps {
+    readonly parameters: readonly SplitParameter[]
+}
+
 export interface SplitDefinition {
     /** Unique identifier for the split */
     readonly id: SplitID
@@ -25,6 +36,9 @@ export interface SplitDefinition {
     /** Whether the split allows multiple instances */
     readonly allowsMultiple: boolean
 
+    /** Whether the split requires parameters to function */
+    readonly requiresParameters: boolean
+
     /** The component which renders the split */
-    readonly component: FunctionComponent
+    readonly component: FunctionComponent<SplitComponentProps>
 }

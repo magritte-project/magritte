@@ -1,6 +1,6 @@
-import type { SplitID, SplitInsertOrder, SplitLocation } from "@/splits/base"
+import type { Split, SplitID, SplitInsertOrder, SplitLocation, SplitParameter } from "@/splits/base"
 
-function _insert(oldSplits: readonly SplitID[], newSplit: SplitID, insertOrder: SplitInsertOrder) {
+function _insert(oldSplits: readonly Split[], newSplit: Split, insertOrder: SplitInsertOrder) {
     switch (insertOrder) {
         case "first":
             return [newSplit, ...oldSplits]
@@ -20,17 +20,27 @@ export default class SplitState {
     }
 
     constructor(
-        readonly start: readonly SplitID[] = [],
-        readonly end: readonly SplitID[] = [],
+        readonly start: readonly Split[] = [],
+        readonly end: readonly Split[] = [],
     ) {}
 
     has(splitID: SplitID): boolean {
-        return this.start.includes(splitID) || this.end.includes(splitID)
+        return (
+            this.start.some((split) => split.id === splitID) ||
+            this.end.some((split) => split.id === splitID)
+        )
+    }
+
+    *idsFor(location: SplitLocation): IterableIterator<SplitID> {
+        for (const split of this[location]) {
+            yield split.id
+        }
     }
 
     add(
         newSplitID: SplitID,
         allowsMultiple: boolean,
+        parameters: readonly SplitParameter[],
         location: SplitLocation,
         insertOrder: SplitInsertOrder,
     ): SplitState {
@@ -39,9 +49,15 @@ export default class SplitState {
         }
         switch (location) {
             case "start":
-                return new SplitState(_insert(this.start, newSplitID, insertOrder), this.end)
+                return new SplitState(
+                    _insert(this.start, { id: newSplitID, parameters }, insertOrder),
+                    this.end,
+                )
             case "end":
-                return new SplitState(this.start, _insert(this.end, newSplitID, insertOrder))
+                return new SplitState(
+                    this.start,
+                    _insert(this.end, { id: newSplitID, parameters }, insertOrder),
+                )
         }
     }
 
