@@ -2,30 +2,41 @@ import { queryOptions } from "@tanstack/react-query"
 
 import type { APIClient, ReadLibrarySongsSortBy } from "@/api/client"
 
+import {
+    libraries,
+    library,
+    libraryAlbum,
+    libraryAlbums,
+    libraryArtist,
+    libraryArtists,
+    librarySong,
+    librarySongs,
+} from "@/api/keys/libraries"
+
 export function readLibraries(apiClient: APIClient) {
     return queryOptions({
-        queryKey: ["readLibraries"],
+        queryKey: libraries(),
         queryFn: () => apiClient.readLibraries(),
     })
 }
 
 export function readLibrary(apiClient: APIClient, library_id: number) {
     return queryOptions({
-        queryKey: ["readLibrary", library_id],
+        queryKey: library(library_id),
         queryFn: () => apiClient.readLibrary(library_id),
     })
 }
 
 export function readLibraryHomeSubpaths(apiClient: APIClient, relative_to: string) {
     return queryOptions({
-        queryKey: ["readLibraryHomeSubpaths", relative_to],
+        queryKey: [...libraries(), "subpaths", relative_to],
         queryFn: () => apiClient.readLibraryHomeSubpaths(relative_to),
     })
 }
 
 export function readLibraryAlbum(apiClient: APIClient, libraryId: number, albumId: number) {
     return queryOptions({
-        queryKey: ["readLibraryAlbum", libraryId, albumId],
+        queryKey: libraryAlbum(libraryId, albumId),
         queryFn: () => apiClient.readLibraryAlbum(libraryId, albumId),
     })
 }
@@ -41,8 +52,7 @@ export interface ReadLibraryAlbumsCriteria {
 export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlbumsCriteria) {
     return queryOptions({
         queryKey: [
-            "readLibraryAlbums",
-            criteria.libraryId,
+            ...libraryAlbums(criteria.libraryId),
             criteria.query,
             criteria.artistId,
             criteria.offset,
@@ -61,7 +71,7 @@ export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlb
 
 export function readLibraryArtist(apiClient: APIClient, libraryId: number, artistId: number) {
     return queryOptions({
-        queryKey: ["readLibraryArtist", libraryId, artistId],
+        queryKey: libraryArtist(libraryId, artistId),
         queryFn: () => apiClient.readLibraryArtist(libraryId, artistId),
     })
 }
@@ -76,8 +86,7 @@ export interface ReadLibraryArtistsCriteria {
 export function readLibraryArtists(apiClient: APIClient, criteria: ReadLibraryArtistsCriteria) {
     return queryOptions({
         queryKey: [
-            "readLibraryArtists",
-            criteria.libraryId,
+            ...libraryArtists(criteria.libraryId),
             criteria.query,
             criteria.offset,
             criteria.limit,
@@ -94,7 +103,7 @@ export function readLibraryArtists(apiClient: APIClient, criteria: ReadLibraryAr
 
 export function readLibrarySong(apiClient: APIClient, libraryId: number, songId: number) {
     return queryOptions({
-        queryKey: ["readLibrarySong", libraryId, songId],
+        queryKey: librarySong(libraryId, songId),
         queryFn: () => apiClient.readLibrarySong(libraryId, songId),
     })
 }
@@ -112,8 +121,7 @@ export interface ReadLibrarySongsCriteria {
 export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySongsCriteria) {
     return queryOptions({
         queryKey: [
-            "readLibrarySongs",
-            criteria.libraryId,
+            ...librarySongs(criteria.libraryId),
             criteria.query,
             criteria.albumId,
             criteria.artistId,

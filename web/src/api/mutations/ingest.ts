@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import type { BulkIngestSongs } from "@/api/openapi"
 
-import { readLibraryAlbums, readLibraryArtists, readLibrarySongs } from "@/api/queries/libraries"
+import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import useAPIClient from "@/hooks/apiClientHook"
 
 export default function useIngestSongs(libraryId: number) {
@@ -12,19 +12,16 @@ export default function useIngestSongs(libraryId: number) {
         mutationFn: (body: BulkIngestSongs) => apiClient.ingestSongs(libraryId, body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
-                queryKey: readLibraryArtists(apiClient, {
-                    libraryId,
-                }).queryKey.slice(0, 3),
+                queryKey: libraryArtists(libraryId),
+                exact: false,
             })
             await queryClient.invalidateQueries({
-                queryKey: readLibraryAlbums(apiClient, {
-                    libraryId,
-                }).queryKey.slice(0, 3),
+                queryKey: libraryAlbums(libraryId),
+                exact: false,
             })
             await queryClient.invalidateQueries({
-                queryKey: readLibrarySongs(apiClient, {
-                    libraryId,
-                }).queryKey.slice(0, 3),
+                queryKey: librarySongs(libraryId),
+                exact: false,
             })
         },
     })

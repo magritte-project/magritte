@@ -2,9 +2,11 @@ import { queryOptions } from "@tanstack/react-query"
 
 import type { APIClient } from "@/api/client"
 
+import { userMeNotification, userMeNotifications, userMeProfile } from "@/api/keys/users"
+
 export function userProfile(apiClient: APIClient, enabled = true) {
     return queryOptions({
-        queryKey: ["readMe"],
+        queryKey: userMeProfile(),
         queryFn: () => apiClient.readMe(),
         enabled,
     })
@@ -17,7 +19,7 @@ export function readNotifications(
     enabled = true,
 ) {
     return queryOptions({
-        queryKey: ["readNotifications", offset, limit],
+        queryKey: [...userMeNotifications(), offset, limit],
         queryFn: () => apiClient.readNotifications(offset, limit),
         enabled,
     })
@@ -25,7 +27,7 @@ export function readNotifications(
 
 export function readNotification(apiClient: APIClient, notification_id: number, enabled = true) {
     return queryOptions({
-        queryKey: ["readNotification", notification_id],
+        queryKey: userMeNotification(notification_id),
         queryFn: () => apiClient.readNotification(notification_id),
         enabled,
     })

@@ -2,12 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import type { LibraryCreate } from "@/api/openapi"
 
-import {
-    readLibraries,
-    readLibraryAlbums,
-    readLibraryArtists,
-    readLibrarySongs,
-} from "@/api/queries/libraries"
+import { libraries, libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import useAPIClient from "@/hooks/apiClientHook"
 
 export function useCreateLibrary() {
@@ -16,7 +11,7 @@ export function useCreateLibrary() {
     return useMutation({
         mutationFn: (body: LibraryCreate) => apiClient.createLibrary(body),
         onSuccess: async () => {
-            await queryClient.invalidateQueries(readLibraries(apiClient))
+            await queryClient.invalidateQueries({ queryKey: libraries() })
         },
     })
 }
@@ -28,19 +23,13 @@ export function useDeleteLibrarySong(libraryId: number) {
         mutationFn: (songId: number) => apiClient.deleteLibrarySong(libraryId, songId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
-                queryKey: readLibraryAlbums(apiClient, {
-                    libraryId,
-                }).queryKey.slice(0, 3),
+                queryKey: libraryAlbums(libraryId),
             })
             await queryClient.invalidateQueries({
-                queryKey: readLibraryArtists(apiClient, {
-                    libraryId,
-                }).queryKey.slice(0, 3),
+                queryKey: libraryArtists(libraryId),
             })
             await queryClient.invalidateQueries({
-                queryKey: readLibrarySongs(apiClient, {
-                    libraryId,
-                }).queryKey.slice(0, 3),
+                queryKey: librarySongs(libraryId),
             })
         },
     })

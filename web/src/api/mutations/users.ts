@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import type { NotificationUpdate, UserProfileUpdate } from "@/api/openapi"
 
-import { readNotification, readNotifications, userProfile } from "@/api/queries/users"
+import { userMeNotification, userMeNotifications, userMeProfile } from "@/api/keys/users"
 import useAPIClient from "@/hooks/apiClientHook"
 
 export function useUpdateUserProfile() {
@@ -11,7 +11,7 @@ export function useUpdateUserProfile() {
     return useMutation({
         mutationFn: (data: UserProfileUpdate) => apiClient.updateMe(data),
         onSuccess: async () => {
-            await queryClient.invalidateQueries(userProfile(apiClient))
+            await queryClient.invalidateQueries({ queryKey: userMeProfile() })
         },
     })
 }
@@ -24,9 +24,10 @@ export function useUpdateNotification(notification_id: number) {
             apiClient.updateNotification(notification_id, body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
-                queryKey: readNotifications(apiClient).queryKey.slice(0, 1),
+                queryKey: userMeNotifications(),
+                exact: false,
             })
-            await queryClient.invalidateQueries(readNotification(apiClient, notification_id))
+            await queryClient.invalidateQueries({ queryKey: userMeNotification(notification_id) })
         },
     })
 }
