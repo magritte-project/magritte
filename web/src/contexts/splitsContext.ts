@@ -13,9 +13,18 @@ export interface OpenSplitOptions {
     readonly insertOrder?: SplitInsertOrder
 }
 
+export type CloseSplitOptions = {
+    readonly by: "index"
+    readonly location: SplitLocation
+    readonly index: number
+}
+
 export interface SplitsContextType {
     /** Request that a split be opened */
     readonly openSplit: (options: OpenSplitOptions) => boolean
+
+    /** Request that a split be closed */
+    readonly closeSplit: (options: CloseSplitOptions) => void
 }
 
 export const SplitsContext = createContext<SplitsContextType | undefined>(undefined)

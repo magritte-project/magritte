@@ -1,4 +1,4 @@
-import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon, XIcon } from "@phosphor-icons/react"
+import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 
 import type { PlayableItem } from "@/playback/item"
@@ -6,9 +6,6 @@ import type { PlayableItem } from "@/playback/item"
 import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import ThemedButton from "@/components/theme/ThemedButton"
-import ThemedHeader from "@/components/theme/ThemedHeader"
-import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import useDismiss from "@/hooks/dismissHook"
 import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
@@ -20,18 +17,8 @@ export default function NowPlaying() {
     const queue = useQueue()
     const playbackState = usePlaybackState()
     const playingItem = usePlayingItem()
-    const dismiss = useDismiss()
     return (
         <div className="flex flex-col">
-            <ThemedHeader
-                supplementaryStart={
-                    <ThemedSubtleButton type="button" onClick={dismiss}>
-                        <XIcon />
-                    </ThemedSubtleButton>
-                }
-            >
-                Now Playing
-            </ThemedHeader>
             <div className="flex flex-col gap-3 p-4">
                 <ArtworkImage
                     className="w-full aspect-square"

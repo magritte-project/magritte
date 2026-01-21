@@ -1,7 +1,7 @@
 import { Outlet, useRouterState } from "@tanstack/react-router"
 
-import ToastLayout from "@/components/ToastLayout"
-import SplitsContextProvider from "@/contexts/providers/SplitsContextProvider"
+import Splits from "@/components/structure/Splits"
+import ToastLayout from "@/components/structure/ToastLayout"
 
 export default function RootLayout() {
     const hideSplit = useRouterState({
@@ -9,9 +9,9 @@ export default function RootLayout() {
     })
     return (
         <ToastLayout>
-            <SplitsContextProvider hideSplit={hideSplit}>
+            <Splits hideSplit={hideSplit}>
                 <Outlet />
-            </SplitsContextProvider>
+            </Splits>
         </ToastLayout>
     )
 }

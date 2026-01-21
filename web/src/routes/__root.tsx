@@ -12,8 +12,8 @@ import type { Player } from "@/playback/player"
 import type { ServiceRegistry } from "@/services/registry"
 import type SplitRegistry from "@/splits/registry"
 
-import AppCommandPalette from "@/components/AppCommandPalette"
-import RootLayout from "@/components/RootLayout"
+import AppCommandPalette from "@/components/structure/AppCommandPalette"
+import RootLayout from "@/components/structure/RootLayout"
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
 
 export interface MagritteRouterContext {
