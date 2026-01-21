@@ -62,8 +62,11 @@ class Artist(LibraryModel, table=True):
 
     @classmethod
     async def read_or_insert(
-        cls, name: str, libraries: list["Library"], session: AsyncSession
+        cls, name: str | None, libraries: list["Library"], session: AsyncSession
     ):
+        if not name:
+            return None
+
         existing_artist = await session.scalar(
             select(cls).where(
                 col(cls.name) == name,

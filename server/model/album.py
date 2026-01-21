@@ -96,13 +96,19 @@ class Album(LibraryModel, table=True):
     @classmethod
     async def read_or_insert(
         cls,
-        title: str,
-        artist_id: int,
+        title: str | None,
+        artist_id: int | None,
         libraries: list["Library"],
         session: AsyncSession,
     ):
+        if not title:
+            return None
+
         existing_album = await session.scalar(
-            select(cls).where(col(cls.title) == title, col(cls.artist_id) == artist_id)
+            select(cls).where(
+                col(cls.title) == title,
+                col(cls.artist_id) == artist_id,
+            )
         )
         if existing_album:
             existing_library_ids = {

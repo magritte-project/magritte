@@ -1,0 +1,23 @@
+{
+  "albums": [],
+  "artists": [
+    {
+      "canonical": "Jesse & Joy",
+      "alternates": ["Jesse y Joy"]
+    },
+    { "canonical": "Kesha", "alternates": ["Ke$ha"] },
+    { "canonical": "Lights", "alternates": [] },
+    { "canonical": "P!nk", "alternates": ["Pink"] },
+    { "canonical": "The Beatles", "alternates": ["Beatles", "Beatles, The"] },
+    { "canonical": "The Eagles", "alternates": ["Eagles", "Eagles, The"] },
+    {
+      "canonical": "The Good, The Bad & The Queen",
+      "alternates": ["The Good, The Bad And The Queen"]
+    },
+    {
+      "canonical": "The Rolling Stones",
+      "alternates": ["Rolling Stones", "Rolling Stones, The"]
+    },
+    { "canonical": "The Who", "alternates": ["Who", "Who, The"] }
+  ]
+}

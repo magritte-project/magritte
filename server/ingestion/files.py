@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tinytag import TinyTag, UnsupportedFormatError
 
 from ingestion.artwork import try_ingest_artwork
+from ingestion.canon import Canonizer
 from model.album import Album
 from model.artist import Artist
 from model.library import Library
@@ -19,13 +20,16 @@ async def update_song_metadata(
     song: Song,
     tags: TinyTag,
     libraries: list[Library],
+    canonizer: Canonizer,
     session: AsyncSession,
 ):
-    artist_name = tags.artist or ""
+    artist_name = canonizer.fix_artist(tags.artist)
     artist = await Artist.read_or_insert(artist_name, libraries, session)
 
-    album_title = tags.album or ""
-    album = await Album.read_or_insert(album_title, artist.id, libraries, session)
+    album_title = canonizer.fix_album(tags.album)
+    album = await Album.read_or_insert(
+        album_title, artist.id if artist else None, libraries, session
+    )
 
     cover_image = tags.images.any
     if cover_image:
@@ -83,6 +87,7 @@ async def ensure_libraries_linked(
 async def try_ingest_file(
     path: Path,
     libraries: list[Library],
+    canonizer: Canonizer,
     session: AsyncSession,
 ):
     mime_type, _encoding = guess_file_type(path)
@@ -116,7 +121,7 @@ async def try_ingest_file(
     await session.flush()
 
     if tags:
-        await update_song_metadata(new_song, tags, libraries, session)
+        await update_song_metadata(new_song, tags, libraries, canonizer, session)
     else:
         new_song.title = path.stem
 
@@ -127,10 +132,11 @@ async def try_ingest_path(
     path: Path,
     follow_links: bool,
     libraries: list[Library],
+    canonizer: Canonizer,
     session: AsyncSession,
 ):
     if path.is_file():
-        await try_ingest_file(path, libraries, session)
+        await try_ingest_file(path, libraries, canonizer, session)
     else:
         for dirpath, _, filenames in path.walk(follow_symlinks=follow_links):
             for filename in filenames:
@@ -140,9 +146,7 @@ async def try_ingest_path(
                 file_path = dirpath / filename
                 try:
                     new_song = await try_ingest_file(
-                        path=file_path,
-                        libraries=libraries,
-                        session=session,
+                        file_path, libraries, canonizer, session
                     )
                     if not new_song:
                         continue

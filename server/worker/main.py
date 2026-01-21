@@ -15,6 +15,7 @@ from watchdog.events import (
 
 from config import config
 from db import get_db_engine, get_db_session
+from ingestion.canon import Canonizer
 from ingestion.files import try_ingest_path
 from model import Library
 from model.source import Source
@@ -61,10 +62,12 @@ async def _process_event(
                     raise ValueError(f"Library is streaming only '{event.library_id}'")
 
                 library_home_path = config.library_home_path.joinpath(library.home_path)
+                canonizer = Canonizer.from_file()
                 await try_ingest_path(
                     path=library_home_path,
                     follow_links=False,
                     libraries=[library],
+                    canonizer=canonizer,
                     session=session,
                 )
                 connection.send(
