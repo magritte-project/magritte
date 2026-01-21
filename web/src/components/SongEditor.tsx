@@ -10,6 +10,8 @@ import AppForm from "@/components/reusable/AppForm"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"
+import useToast from "@/hooks/toastHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export type SongEditorProps = SplitComponentProps
 
@@ -45,11 +47,20 @@ interface SongFormProps {
 }
 
 function SongForm({ libraryId, song }: SongFormProps) {
+    const { showToast } = useToast()
     const updateMutation = useUpdateLibrarySong(libraryId, song.id)
     const form = useAppForm({
         defaultValues: song,
-        onSubmit: async ({ value }) => {
-            await updateMutation.mutateAsync(value as unknown as SongUpdate)
+        onSubmit: async ({ value, formApi }) => {
+            try {
+                await updateMutation.mutateAsync(value as unknown as SongUpdate)
+                formApi.reset()
+            } catch (error) {
+                showToast({
+                    message: `Could not update song: ${getErrorMessage(error)}`,
+                    type: "error",
+                })
+            }
         },
     })
     return (

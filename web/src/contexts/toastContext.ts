@@ -11,4 +11,4 @@ export interface ToastContextType {
     showToast: (toast: Toast) => void
 }
 
-export const ToastContext = createContext<ToastContextType | null>(null)
+export const ToastContext = createContext<ToastContextType | undefined>(undefined)
