@@ -33,7 +33,6 @@ class LibraryPermissionCreate(BaseModel):
 
 
 class LibraryPermissionUpdate(BaseModel):
-    can_read: bool | None = None
     can_add: bool | None = None
     can_edit: bool | None = None
     can_remove: bool | None = None

@@ -1,6 +1,7 @@
 import type { JsonStructure } from "react-cmdk"
 
 import { BooksIcon, FilesIcon, PlusIcon, VinylRecordIcon, WavesIcon } from "@phosphor-icons/react"
+import { PencilIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
@@ -76,7 +77,26 @@ export const Route = createFileRoute("/libraries")({
                                             </div>
                                         )}
 
-                                        <div className="text-lg font-semibold">{library.name}</div>
+                                        <div className="flex items-center gap-1">
+                                            <div className="text-lg font-semibold">
+                                                {library.name}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="cursor-pointer text-blue-500"
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    e.stopPropagation()
+
+                                                    navigate({
+                                                        to: "/libraries/manage/$libraryId",
+                                                        params: { libraryId: String(library.id) },
+                                                    })
+                                                }}
+                                            >
+                                                <PencilIcon aria-label="Edit" weight="duotone" />
+                                            </button>
+                                        </div>
                                     </Link>
                                 </li>
                             ))}

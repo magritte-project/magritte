@@ -20,6 +20,9 @@ import { Route as LibrariesLibraryIdIndexRouteImport } from './routes/libraries_
 import { Route as LibrariesLibraryIdSongsRouteImport } from './routes/libraries_.$libraryId/songs'
 import { Route as LibrariesLibraryIdArtistsRouteImport } from './routes/libraries_.$libraryId/artists'
 import { Route as LibrariesLibraryIdAlbumsRouteImport } from './routes/libraries_.$libraryId/albums'
+import { Route as LibrariesManageLibraryIdRouteRouteImport } from './routes/libraries.manage.$libraryId/route'
+import { Route as LibrariesManageLibraryIdIndexRouteImport } from './routes/libraries.manage.$libraryId/index'
+import { Route as LibrariesManageLibraryIdPermissionsRouteImport } from './routes/libraries.manage.$libraryId/permissions'
 import { Route as LibrariesLibraryIdSongsAddRouteRouteImport } from './routes/libraries_.$libraryId/songs.add/route'
 import { Route as LibrariesLibraryIdSongsAddIndexRouteImport } from './routes/libraries_.$libraryId/songs.add/index'
 
@@ -80,6 +83,24 @@ const LibrariesLibraryIdAlbumsRoute =
     path: '/albums',
     getParentRoute: () => LibrariesLibraryIdRouteRoute,
   } as any)
+const LibrariesManageLibraryIdRouteRoute =
+  LibrariesManageLibraryIdRouteRouteImport.update({
+    id: '/manage/$libraryId',
+    path: '/manage/$libraryId',
+    getParentRoute: () => LibrariesRoute,
+  } as any)
+const LibrariesManageLibraryIdIndexRoute =
+  LibrariesManageLibraryIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => LibrariesManageLibraryIdRouteRoute,
+  } as any)
+const LibrariesManageLibraryIdPermissionsRoute =
+  LibrariesManageLibraryIdPermissionsRouteImport.update({
+    id: '/permissions',
+    path: '/permissions',
+    getParentRoute: () => LibrariesManageLibraryIdRouteRoute,
+  } as any)
 const LibrariesLibraryIdSongsAddRouteRoute =
   LibrariesLibraryIdSongsAddRouteRouteImport.update({
     id: '/add',
@@ -101,11 +122,14 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof SignUpRoute
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
+  '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRouteWithChildren
   '/libraries/$libraryId/': typeof LibrariesLibraryIdIndexRoute
   '/libraries/$libraryId/songs/add': typeof LibrariesLibraryIdSongsAddRouteRouteWithChildren
+  '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
+  '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
   '/libraries/$libraryId/songs/add/': typeof LibrariesLibraryIdSongsAddIndexRoute
 }
 export interface FileRoutesByTo {
@@ -119,6 +143,8 @@ export interface FileRoutesByTo {
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRouteWithChildren
   '/libraries/$libraryId': typeof LibrariesLibraryIdIndexRoute
+  '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
+  '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdIndexRoute
   '/libraries/$libraryId/songs/add': typeof LibrariesLibraryIdSongsAddIndexRoute
 }
 export interface FileRoutesById {
@@ -130,11 +156,14 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/libraries_/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
+  '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
   '/libraries_/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries_/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries_/$libraryId/songs': typeof LibrariesLibraryIdSongsRouteWithChildren
   '/libraries_/$libraryId/': typeof LibrariesLibraryIdIndexRoute
   '/libraries_/$libraryId/songs/add': typeof LibrariesLibraryIdSongsAddRouteRouteWithChildren
+  '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
+  '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
   '/libraries_/$libraryId/songs/add/': typeof LibrariesLibraryIdSongsAddIndexRoute
 }
 export interface FileRouteTypes {
@@ -147,11 +176,14 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/libraries/$libraryId'
     | '/libraries/add'
+    | '/libraries/manage/$libraryId'
     | '/libraries/$libraryId/albums'
     | '/libraries/$libraryId/artists'
     | '/libraries/$libraryId/songs'
     | '/libraries/$libraryId/'
     | '/libraries/$libraryId/songs/add'
+    | '/libraries/manage/$libraryId/permissions'
+    | '/libraries/manage/$libraryId/'
     | '/libraries/$libraryId/songs/add/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -165,6 +197,8 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId/artists'
     | '/libraries/$libraryId/songs'
     | '/libraries/$libraryId'
+    | '/libraries/manage/$libraryId/permissions'
+    | '/libraries/manage/$libraryId'
     | '/libraries/$libraryId/songs/add'
   id:
     | '__root__'
@@ -175,11 +209,14 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/libraries_/$libraryId'
     | '/libraries/add'
+    | '/libraries/manage/$libraryId'
     | '/libraries_/$libraryId/albums'
     | '/libraries_/$libraryId/artists'
     | '/libraries_/$libraryId/songs'
     | '/libraries_/$libraryId/'
     | '/libraries_/$libraryId/songs/add'
+    | '/libraries/manage/$libraryId/permissions'
+    | '/libraries/manage/$libraryId/'
     | '/libraries_/$libraryId/songs/add/'
   fileRoutesById: FileRoutesById
 }
@@ -271,6 +308,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibrariesLibraryIdAlbumsRouteImport
       parentRoute: typeof LibrariesLibraryIdRouteRoute
     }
+    '/libraries/manage/$libraryId': {
+      id: '/libraries/manage/$libraryId'
+      path: '/manage/$libraryId'
+      fullPath: '/libraries/manage/$libraryId'
+      preLoaderRoute: typeof LibrariesManageLibraryIdRouteRouteImport
+      parentRoute: typeof LibrariesRoute
+    }
+    '/libraries/manage/$libraryId/': {
+      id: '/libraries/manage/$libraryId/'
+      path: '/'
+      fullPath: '/libraries/manage/$libraryId/'
+      preLoaderRoute: typeof LibrariesManageLibraryIdIndexRouteImport
+      parentRoute: typeof LibrariesManageLibraryIdRouteRoute
+    }
+    '/libraries/manage/$libraryId/permissions': {
+      id: '/libraries/manage/$libraryId/permissions'
+      path: '/permissions'
+      fullPath: '/libraries/manage/$libraryId/permissions'
+      preLoaderRoute: typeof LibrariesManageLibraryIdPermissionsRouteImport
+      parentRoute: typeof LibrariesManageLibraryIdRouteRoute
+    }
     '/libraries_/$libraryId/songs/add': {
       id: '/libraries_/$libraryId/songs/add'
       path: '/add'
@@ -288,12 +346,32 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface LibrariesManageLibraryIdRouteRouteChildren {
+  LibrariesManageLibraryIdPermissionsRoute: typeof LibrariesManageLibraryIdPermissionsRoute
+  LibrariesManageLibraryIdIndexRoute: typeof LibrariesManageLibraryIdIndexRoute
+}
+
+const LibrariesManageLibraryIdRouteRouteChildren: LibrariesManageLibraryIdRouteRouteChildren =
+  {
+    LibrariesManageLibraryIdPermissionsRoute:
+      LibrariesManageLibraryIdPermissionsRoute,
+    LibrariesManageLibraryIdIndexRoute: LibrariesManageLibraryIdIndexRoute,
+  }
+
+const LibrariesManageLibraryIdRouteRouteWithChildren =
+  LibrariesManageLibraryIdRouteRoute._addFileChildren(
+    LibrariesManageLibraryIdRouteRouteChildren,
+  )
+
 interface LibrariesRouteChildren {
   LibrariesAddRoute: typeof LibrariesAddRoute
+  LibrariesManageLibraryIdRouteRoute: typeof LibrariesManageLibraryIdRouteRouteWithChildren
 }
 
 const LibrariesRouteChildren: LibrariesRouteChildren = {
   LibrariesAddRoute: LibrariesAddRoute,
+  LibrariesManageLibraryIdRouteRoute:
+    LibrariesManageLibraryIdRouteRouteWithChildren,
 }
 
 const LibrariesRouteWithChildren = LibrariesRoute._addFileChildren(
