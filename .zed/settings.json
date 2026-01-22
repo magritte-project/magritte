@@ -1,44 +1,84 @@
 {
-  "project_name": "Magritte",
-  "languages": {
-    "JavaScript": {
-      "format_on_save": "on",
-      "formatter": [
-        {
-          "language_server": {
-            "name": "oxfmt",
-          },
+    "project_name": "Magritte",
+    "tab_size": 4,
+    "languages": {
+        "JavaScript": {
+            "format_on_save": "on",
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt",
+                    },
+                },
+            ],
+            "code_actions_on_format": {
+                "source.fixAll.oxc": true,
+            },
         },
-      ],
-      "code_actions_on_format": {
-        "source.fixAll.oxc": true,
-      },
-    },
-    "TypeScript": {
-      "format_on_save": "on",
-      "formatter": [
-        {
-          "language_server": {
-            "name": "oxfmt",
-          },
+        "TypeScript": {
+            "format_on_save": "on",
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt",
+                    },
+                },
+            ],
+            "code_actions_on_format": {
+                "source.fixAll.oxc": true,
+            },
         },
-      ],
-      "code_actions_on_format": {
-        "source.fixAll.oxc": true,
-      },
-    },
-    "TSX": {
-      "format_on_save": "on",
-      "formatter": [
-        {
-          "language_server": {
-            "name": "oxfmt",
-          },
+        "TSX": {
+            "format_on_save": "on",
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt",
+                    },
+                },
+            ],
+            "code_actions_on_format": {
+                "source.fixAll.oxc": true,
+            },
         },
-      ],
-      "code_actions_on_format": {
-        "source.fixAll.oxc": true,
-      },
+        "HTML": {
+            "format_on_save": "on",
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt",
+                    },
+                },
+            ],
+            "code_actions_on_format": {
+                "source.fixAll.oxc": true,
+            },
+        },
+        "CSS": {
+            "format_on_save": "on",
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt",
+                    },
+                },
+            ],
+            "code_actions_on_format": {
+                "source.fixAll.oxc": true,
+            },
+        },
+        "JSON": {
+            "format_on_save": "on",
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt",
+                    },
+                },
+            ],
+            "code_actions_on_format": {
+                "source.fixAll.oxc": true,
+            },
+        },
     },
-  },
 }
