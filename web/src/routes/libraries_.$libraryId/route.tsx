@@ -94,24 +94,26 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
             >
                 <div>
                     <PrimaryHeader>
-                        <ThemedTabItemLink
-                            to="/libraries/$libraryId/artists"
-                            params={params}
-                            icon={MicrophoneIcon}
-                            label="Artists"
-                        />
-                        <ThemedTabItemLink
-                            to="/libraries/$libraryId/albums"
-                            params={params}
-                            icon={DiscIcon}
-                            label="Albums"
-                        />
-                        <ThemedTabItemLink
-                            to="/libraries/$libraryId/songs"
-                            params={params}
-                            icon={MusicNotesIcon}
-                            label="Songs"
-                        />
+                        <div className="flex items-center gap-0">
+                            <ThemedTabItemLink
+                                to="/libraries/$libraryId/artists"
+                                params={params}
+                                icon={MicrophoneIcon}
+                                label="Artists"
+                            />
+                            <ThemedTabItemLink
+                                to="/libraries/$libraryId/albums"
+                                params={params}
+                                icon={DiscIcon}
+                                label="Albums"
+                            />
+                            <ThemedTabItemLink
+                                to="/libraries/$libraryId/songs"
+                                params={params}
+                                icon={MusicNotesIcon}
+                                label="Songs"
+                            />
+                        </div>
                     </PrimaryHeader>
                     <main>
                         <Outlet />

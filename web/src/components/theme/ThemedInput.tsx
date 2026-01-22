@@ -9,9 +9,12 @@ export default function ThemedInput({ type = "text", className, ...rest }: Theme
         <input
             type={type}
             className={classNames(
-                "bg-white rounded-md p-2",
+                "bg-white rounded-lg p-2 min-w-0 w-auto",
                 "text-gray-950 placeholder:text-black/40",
-                "border-2 border-gray-300 focus:border-blue-500 outline-0",
+                "border border-gray-300 focus:border-blue-500 outline-0",
+                {
+                    "rounded-full! px-3!": type === "search",
+                },
                 className,
             )}
             {...rest}

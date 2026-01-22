@@ -1,4 +1,5 @@
 import { createLink, type LinkComponent } from "@tanstack/react-router"
+import classNames from "classnames"
 import React from "react"
 
 import type { ThemedTabItemLabelProps } from "@/components/theme/ThemedTabItemLabel"
@@ -16,7 +17,7 @@ const CreatedLinkComponent = createLink(BasicLinkComponent)
 
 const ThemedTabItemLink: LinkComponent<typeof BasicLinkComponent> = (props) => {
     return (
-        <CreatedLinkComponent {...props}>
+        <CreatedLinkComponent className={classNames("group", props.className)} {...props}>
             {({ isActive }) => (
                 <ThemedTabItemLabel isActive={isActive} icon={props.icon} label={props.label} />
             )}
