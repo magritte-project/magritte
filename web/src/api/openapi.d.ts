@@ -440,6 +440,40 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/users/all": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read details about users on this instance */
+        readonly get: operations["read_users_users_all_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/users/all/{id_or_username}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read details a users on this instance */
+        readonly get: operations["read_user_users_all__id_or_username__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -955,8 +989,10 @@ export interface components {
             /** Token */
             readonly token: string;
         };
-        /** UserProfile */
-        readonly UserProfile: {
+        /** UserProfileRead */
+        readonly UserProfileRead: {
+            /** Id */
+            readonly id: number;
             /** Username */
             readonly username: string;
             /** Preferred Name */
@@ -966,6 +1002,17 @@ export interface components {
         readonly UserProfileUpdate: {
             /** Preferred Name */
             readonly preferred_name: string | null;
+        };
+        /** UserProfilesRead */
+        readonly UserProfilesRead: {
+            /** Users */
+            readonly users: readonly components["schemas"]["UserProfileRead"][];
+            /** Offset */
+            readonly offset: number;
+            /** Limit */
+            readonly limit: number;
+            /** Total */
+            readonly total: number;
         };
         /** UserSignUp */
         readonly UserSignUp: {
@@ -1022,8 +1069,9 @@ export type SourceRead = components['schemas']['SourceRead'];
 export type SourceUpdate = components['schemas']['SourceUpdate'];
 export type Token = components['schemas']['Token'];
 export type UserEventPreflight = components['schemas']['UserEventPreflight'];
-export type UserProfile = components['schemas']['UserProfile'];
+export type UserProfileRead = components['schemas']['UserProfileRead'];
 export type UserProfileUpdate = components['schemas']['UserProfileUpdate'];
+export type UserProfilesRead = components['schemas']['UserProfilesRead'];
 export type UserSignUp = components['schemas']['UserSignUp'];
 export type ValidationError = components['schemas']['ValidationError'];
 export type $defs = Record<string, never>;
@@ -1198,7 +1246,7 @@ export interface operations {
                     readonly [name: string]: unknown;
                 };
                 content: {
-                    readonly "application/json": components["schemas"]["UserProfile"];
+                    readonly "application/json": components["schemas"]["UserProfileRead"];
                 };
             };
             /** @description Validation Error */
@@ -2029,7 +2077,7 @@ export interface operations {
                     readonly [name: string]: unknown;
                 };
                 content: {
-                    readonly "application/json": components["schemas"]["UserProfile"];
+                    readonly "application/json": components["schemas"]["UserProfileRead"];
                 };
             };
         };
@@ -2053,7 +2101,7 @@ export interface operations {
                     readonly [name: string]: unknown;
                 };
                 content: {
-                    readonly "application/json": components["schemas"]["UserProfile"];
+                    readonly "application/json": components["schemas"]["UserProfileRead"];
                 };
             };
             /** @description Validation Error */
@@ -2183,6 +2231,73 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["UserEventPreflight"];
+                };
+            };
+        };
+    };
+    readonly read_users_users_all_get: {
+        readonly parameters: {
+            readonly query?: {
+                /** @description Query string to filter the users by */
+                readonly query?: string | null;
+                /** @description The page offset to read from */
+                readonly offset?: number;
+                /** @description How many items to read per page */
+                readonly limit?: number;
+            };
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["UserProfilesRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_user_users_all__id_or_username__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly id_or_username: string;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["UserProfileRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -26,8 +26,9 @@ import type {
     SourceRead,
     SourceUpdate,
     UserEventPreflight,
-    UserProfile,
+    UserProfileRead,
     UserProfileUpdate,
+    UserProfilesRead,
     UserSignUp,
     paths,
 } from "@/api/openapi"
@@ -128,7 +129,7 @@ export class APIClient {
 
     // -- Root Routes -- //
 
-    async signUp(body: UserSignUp): Promise<UserProfile> {
+    async signUp(body: UserSignUp): Promise<UserProfileRead> {
         const response = await this._client.POST("/sign-up", {
             body,
         })
@@ -144,12 +145,12 @@ export class APIClient {
 
     // -- User Routes -- //
 
-    async readMe(): Promise<UserProfile> {
+    async readMe(): Promise<UserProfileRead> {
         const response = await this._client.GET("/users/me")
         return unwrap(response)
     }
 
-    async updateMe(body: UserProfileUpdate): Promise<UserProfile> {
+    async updateMe(body: UserProfileUpdate): Promise<UserProfileRead> {
         const response = await this._client.POST("/users/me", {
             body,
         })
@@ -183,6 +184,30 @@ export class APIClient {
 
     async streamUserEventsPreflight(): Promise<UserEventPreflight> {
         const response = await this._client.POST("/users/events/preflight")
+        return unwrap(response)
+    }
+
+    async readUsers(id_or_username: number | string): Promise<UserProfileRead> {
+        const response = await this._client.GET("/users/all/{id_or_username}", {
+            params: {
+                path: {
+                    id_or_username,
+                },
+            },
+        })
+        return unwrap(response)
+    }
+
+    async readUser(query?: string, offset?: number, limit?: number): Promise<UserProfilesRead> {
+        const response = await this._client.GET("/users/all", {
+            params: {
+                query: {
+                    query,
+                    offset,
+                    limit,
+                },
+            },
+        })
         return unwrap(response)
     }
 

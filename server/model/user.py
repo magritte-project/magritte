@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel, col, func, select
 
 from model.base import LibraryModel
@@ -91,12 +92,20 @@ class User(LibraryModel, table=True):
     def set_scopes(self, scopes: set[OAuth2Scope]):
         self.scope = OAuth2Scope.to_str(scopes)
 
+    @override
     @classmethod
-    async def count(self, session: AsyncSession):
+    def query_str_fields(cls) -> list[Mapped[str] | Mapped[str | None]]:
+        return [
+            col(User.username),
+            col(User.preferred_name),
+        ]
+
+    @classmethod
+    async def count(cls, session: AsyncSession):
         """
         Count the number of existing users.
         """
-        return await session.scalar(select(func.count()).select_from(self)) or 0
+        return await session.scalar(select(func.count()).select_from(cls)) or 0
 
     @classmethod
     async def read_by_username(cls, username: str, session: AsyncSession):

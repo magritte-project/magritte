@@ -14,8 +14,9 @@ from fastapi import (
     status,
 )
 from pydantic import ValidationError
+from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col
+from sqlmodel import col, select
 
 from auth import (
     get_current_user,
@@ -26,7 +27,12 @@ from model.notification import Notification
 from model.user import User, UserNotificationLink
 from schemas.auth import OAuth2Scope
 from schemas.notification import NotificationRead, NotificationsRead, NotificationUpdate
-from schemas.user import UserEventPreflight, UserProfile, UserProfileUpdate
+from schemas.user import (
+    UserEventPreflight,
+    UserProfileRead,
+    UserProfilesRead,
+    UserProfileUpdate,
+)
 from utilities.user_events import UserEvents, get_user_events
 
 router = APIRouter(prefix="/users")
@@ -34,7 +40,7 @@ router = APIRouter(prefix="/users")
 
 @router.get(
     "/me",
-    response_model=UserProfile,
+    response_model=UserProfileRead,
     summary="Read the signed in user's profile",
 )
 async def read_me(
@@ -42,12 +48,12 @@ async def read_me(
         User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
     ],
 ):
-    return UserProfile(**current_user.model_dump())
+    return UserProfileRead(**current_user.model_dump())
 
 
 @router.post(
     "/me",
-    response_model=UserProfile,
+    response_model=UserProfileRead,
     summary="Update the signed in user's profile",
 )
 async def update_me(
@@ -63,7 +69,7 @@ async def update_me(
 
     await session.flush()
 
-    return UserProfile(**current_user.model_dump())
+    return UserProfileRead(**current_user.model_dump())
 
 
 @router.get(
@@ -215,3 +221,71 @@ async def stream_user_events(
             # TODO: Handle incoming message
     except WebSocketDisconnect:
         user_events.disconnect(user_id, websocket)
+
+
+@router.get(
+    "/all",
+    response_model=UserProfilesRead,
+    summary="Read details about users on this instance",
+)
+async def read_users(
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    query: Annotated[
+        str | None,
+        Query(
+            description="Query string to filter the users by",
+        ),
+    ] = None,
+    offset: Annotated[int, Query(description="The page offset to read from")] = 0,
+    limit: Annotated[int, Query(description="How many items to read per page")] = 100,
+):
+    where_criteria = list[ColumnExpressionArgument]()
+    if query is not None:
+        where_criteria.append(User.strs_ilike(query))
+
+    total, users = await User.read_many_with_total(
+        where=[
+            *where_criteria,
+        ],
+        joins=[],
+        order_by=[col(User.last_updated).desc(), col(User.username).asc()],
+        offset=offset,
+        limit=limit,
+        session=session,
+    )
+    return UserProfilesRead(
+        users=[UserProfileRead(**user.model_dump()) for user in users],
+        offset=offset,
+        limit=limit,
+        total=total,
+    )
+
+
+@router.get(
+    "/all/{id_or_username}",
+    response_model=UserProfileRead,
+    summary="Read details a users on this instance",
+)
+async def read_user(
+    id_or_username: str,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    try:
+        user = await session.get(User, int(id_or_username))
+    except ValueError:
+        user = await session.scalar(
+            select(User).where(
+                col(User.username) == id_or_username,
+            )
+        )
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return UserProfileRead(**user.model_dump())

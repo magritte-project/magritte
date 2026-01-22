@@ -19,7 +19,7 @@ export function readNotifications(
     enabled = true,
 ) {
     return queryOptions({
-        queryKey: [...userMeNotifications(), offset, limit],
+        queryKey: userMeNotifications(offset, limit),
         queryFn: () => apiClient.readNotifications(offset, limit),
         enabled,
     })

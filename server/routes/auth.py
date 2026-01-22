@@ -15,7 +15,7 @@ from db import get_db_session
 from functions import Functions, get_functions
 from model.user import User
 from schemas.auth import InstanceStatusRead
-from schemas.user import Token, UserProfile, UserSignUp
+from schemas.user import Token, UserProfileRead, UserSignUp
 
 router = APIRouter()
 
@@ -45,7 +45,7 @@ async def read_instance_status(
 
 @router.post(
     "/sign-up",
-    response_model=UserProfile,
+    response_model=UserProfileRead,
     summary="Sign up a new user",
 )
 async def sign_up(
@@ -59,7 +59,7 @@ async def sign_up(
             session,
         )
         await session.flush()
-        return UserProfile(**new_user.model_dump())
+        return UserProfileRead(**new_user.model_dump())
     except IntegrityError as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

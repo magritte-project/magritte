@@ -51,13 +51,13 @@ export interface ReadLibraryAlbumsCriteria {
 
 export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlbumsCriteria) {
     return queryOptions({
-        queryKey: [
-            ...libraryAlbums(criteria.libraryId),
+        queryKey: libraryAlbums(
+            criteria.libraryId,
             criteria.query,
             criteria.artistId,
             criteria.offset,
             criteria.limit,
-        ],
+        ),
         queryFn: () =>
             apiClient.readLibraryAlbums(
                 criteria.libraryId,
@@ -85,12 +85,12 @@ export interface ReadLibraryArtistsCriteria {
 
 export function readLibraryArtists(apiClient: APIClient, criteria: ReadLibraryArtistsCriteria) {
     return queryOptions({
-        queryKey: [
-            ...libraryArtists(criteria.libraryId),
+        queryKey: libraryArtists(
+            criteria.libraryId,
             criteria.query,
             criteria.offset,
             criteria.limit,
-        ],
+        ),
         queryFn: () =>
             apiClient.readLibraryArtists(
                 criteria.libraryId,
@@ -120,14 +120,14 @@ export interface ReadLibrarySongsCriteria {
 
 export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySongsCriteria) {
     return queryOptions({
-        queryKey: [
-            ...librarySongs(criteria.libraryId),
+        queryKey: librarySongs(
+            criteria.libraryId,
             criteria.query,
             criteria.albumId,
             criteria.artistId,
             criteria.offset,
             criteria.limit,
-        ],
+        ),
         queryFn: () =>
             apiClient.readLibrarySongs(
                 criteria.libraryId,

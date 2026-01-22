@@ -16,9 +16,17 @@ class UserSignUp(BaseModel):
     password: str
 
 
-class UserProfile(BaseModel):
+class UserProfileRead(BaseModel):
+    id: int
     username: str
     preferred_name: str | None
+
+
+class UserProfilesRead(BaseModel):
+    users: list[UserProfileRead]
+    offset: int
+    limit: int
+    total: int
 
 
 class UserProfileUpdate(BaseModel):

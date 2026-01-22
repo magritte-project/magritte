@@ -10,8 +10,8 @@ export function userMeProfile() {
     return [...me(), "profile"] as const
 }
 
-export function userMeNotifications() {
-    return [...me(), "notifications"] as const
+export function userMeNotifications<Rest extends any[]>(...rest: Rest) {
+    return [...me(), "notifications", ...rest] as const
 }
 
 export function userMeNotification(notification_id: number) {

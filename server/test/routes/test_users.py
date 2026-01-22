@@ -229,3 +229,83 @@ class TestUpdateNotification:
         )
         assert response.status_code == 401
         assert response.json().get("detail") == "Not authenticated"
+
+
+class TestReadUsers:
+    @pytest.mark.asyncio
+    async def test_read(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/users/all",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("total") >= 4
+        assert all(
+            user.get("id") is not None and user.get("username") is not None
+            for user in response_json.get("users")
+        )
+
+    @pytest.mark.asyncio
+    async def test_requires_user(
+        self,
+        client: TestClient,
+    ):
+        response = client.get(
+            "/users/all",
+        )
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not authenticated"
+
+
+class TestReadUser:
+    @pytest.mark.asyncio
+    async def test_read_by_id(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/users/all/1",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("id") == 1
+        assert response_json.get("username") == "test"
+
+    @pytest.mark.asyncio
+    async def test_read_by_username(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/users/all/unlucky",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("id") == 2
+        assert response_json.get("username") == "unlucky"
+
+    @pytest.mark.asyncio
+    async def test_requires_user(
+        self,
+        client: TestClient,
+    ):
+        response = client.get(
+            "/users/all/1",
+        )
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not authenticated"
