@@ -1,11 +1,14 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
+import z from "zod"
 
 import type { BodySignInSignInPost } from "@/api/openapi"
 
 import { useSignIn } from "@/api/mutations/root"
+import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedLink from "@/components/theme/ThemedLink"
 import { useAppForm } from "@/hooks/formHook"
+import useToast from "@/hooks/toastHook"
 import useUserSession from "@/hooks/userSessionHook"
 
 export const Route = createFileRoute("/sign-in")({
@@ -16,6 +19,7 @@ export const Route = createFileRoute("/sign-in")({
     },
     component: function SignInComponent() {
         const navigate = useNavigate()
+        const { showToast } = useToast()
         const { signIn } = useUserSession()
         const signInMutation = useSignIn()
         const form = useAppForm({
@@ -31,23 +35,52 @@ export const Route = createFileRoute("/sign-in")({
                     await signIn(token)
                     navigate({ to: "/" })
                 } catch (e) {
-                    alert(`Could not sign in: ${e}`)
+                    showToast({ message: `Could not sign in: ${e}`, type: "error" })
                 }
             },
         })
 
         return (
-            <div className="p-4 text-center">
-                <AppForm form={form} className="flex flex-col items-center justify-center gap-2">
-                    <h1 className="font-bold text-lg">Sign In</h1>
-                    <form.AppField name="username">
-                        {(field) => <field.InputField placeholder="Username" />}
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <AppForm form={form} className="w-full max-w-sm flex flex-col gap-4">
+                    <header className="flex items-center gap-2">
+                        <img src="/icon.svg" alt="Magritte Logo" className="w-8 h-8" />
+                        <span className="font-semibold text-xl">Sign In</span>
+                    </header>
+                    <form.AppField
+                        name="username"
+                        validators={{
+                            onSubmit: z.string().min(1, { error: "Username is required" }),
+                        }}
+                    >
+                        {(field) => (
+                            <FieldDecoration field={field} label="Username">
+                                <field.InputField placeholder="Enter your username" />
+                            </FieldDecoration>
+                        )}
                     </form.AppField>
-                    <form.AppField name="password">
-                        {(field) => <field.InputField type="password" placeholder="Password" />}
+                    <form.AppField
+                        name="password"
+                        validators={{
+                            onSubmit: z
+                                .string()
+                                .min(8, { error: "Password is too short" })
+                                .max(100, { error: "Password is too long" }),
+                        }}
+                    >
+                        {(field) => (
+                            <FieldDecoration field={field} label="Password">
+                                <field.InputField
+                                    type="password"
+                                    placeholder="Enter your password"
+                                />
+                            </FieldDecoration>
+                        )}
                     </form.AppField>
-                    <form.SubmitButton />
-                    <ThemedLink to="/sign-up">Sign Up</ThemedLink>
+                    <form.SubmitButton>Sign In</form.SubmitButton>
+                    <span className="self-center text-center">
+                        Don't have an account? <ThemedLink to="/sign-up">Sign up</ThemedLink>
+                    </span>
                 </AppForm>
             </div>
         )

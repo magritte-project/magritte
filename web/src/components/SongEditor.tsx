@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
+import z from "zod"
 
 import type { SongRead, SongUpdate } from "@/api/openapi"
 import type { SplitComponentProps } from "@/splits/base"
 
 import { useUpdateLibrarySong } from "@/api/mutations/libraries"
 import { readLibrarySong } from "@/api/queries/libraries"
+import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPIClient from "@/hooks/apiClientHook"
@@ -67,185 +69,163 @@ function SongForm({ libraryId, song }: SongFormProps) {
         <AppForm form={form} className="p-2 flex flex-col gap-2">
             <form.AppField name="title">
                 {(field) => (
-                    <section>
-                        <label htmlFor="title" className="font-bold text-sm pb-1">
-                            Title
-                        </label>
+                    <FieldDecoration field={field} label="Title">
                         <field.InputField placeholder="Title" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="album_artist">
                 {(field) => (
-                    <section>
-                        <label htmlFor="album_artist" className="font-bold text-sm pb-1">
-                            Album Artist
-                        </label>
+                    <FieldDecoration field={field} label="Album Artist">
                         <field.InputField placeholder="Album Artist" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="composer">
                 {(field) => (
-                    <section>
-                        <label htmlFor="composer" className="font-bold text-sm pb-1">
-                            Composer
-                        </label>
+                    <FieldDecoration field={field} label="Composer">
                         <field.InputField placeholder="Composer" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="genre">
                 {(field) => (
-                    <section>
-                        <label htmlFor="genre" className="font-bold text-sm pb-1">
-                            Genre
-                        </label>
+                    <FieldDecoration field={field} label="Genre">
                         <field.InputField placeholder="Genre" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="release_date">
                 {(field) => (
-                    <section>
-                        <label htmlFor="release_date" className="font-bold text-sm pb-1">
-                            Release Date
-                        </label>
+                    <FieldDecoration field={field} label="Release Date">
                         <field.InputField placeholder="Release Date" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
-            <form.AppField name="track_number">
-                {(field) => (
-                    <section>
-                        <label htmlFor="track_number" className="font-bold text-sm pb-1">
-                            Track Number
-                        </label>
-                        <field.InputField type="number" placeholder="Track Number" />
-                    </section>
-                )}
-            </form.AppField>
-            <form.AppField name="track_total">
-                {(field) => (
-                    <section>
-                        <label htmlFor="track_total" className="font-bold text-sm pb-1">
-                            Track Total
-                        </label>
-                        <field.InputField type="number" placeholder="Track Total" />
-                    </section>
-                )}
-            </form.AppField>
-            <form.AppField name="disc_number">
-                {(field) => (
-                    <section>
-                        <label htmlFor="disc_number" className="font-bold text-sm pb-1">
-                            Disc Number
-                        </label>
-                        <field.InputField type="number" placeholder="Disc Number" />
-                    </section>
-                )}
-            </form.AppField>
-            <form.AppField name="disc_total">
-                {(field) => (
-                    <section>
-                        <label htmlFor="disc_total" className="font-bold text-sm pb-1">
-                            Disc Total
-                        </label>
-                        <field.InputField type="number" placeholder="Disc Total" />
-                    </section>
-                )}
-            </form.AppField>
+            <div className="flex items-center justify-evenly gap-2">
+                <form.AppField
+                    name="track_number"
+                    validators={{ onChange: z.number().gt(0).nullish() }}
+                >
+                    {(field) => (
+                        <FieldDecoration field={field} label="Track Number">
+                            <field.InputField
+                                className="w-full"
+                                type="number"
+                                placeholder="Track Number"
+                            />
+                        </FieldDecoration>
+                    )}
+                </form.AppField>
+                <form.AppField
+                    name="track_total"
+                    validators={{ onChange: z.number().gt(0).nullish() }}
+                >
+                    {(field) => (
+                        <FieldDecoration field={field} label="Track Total">
+                            <field.InputField
+                                className="w-full"
+                                type="number"
+                                placeholder="Track Total"
+                            />
+                        </FieldDecoration>
+                    )}
+                </form.AppField>
+            </div>
+            <div className="flex items-center justify-evenly gap-2">
+                <form.AppField
+                    name="disc_number"
+                    validators={{ onChange: z.number().gt(0).nullish() }}
+                >
+                    {(field) => (
+                        <FieldDecoration field={field} label="Disc Number">
+                            <field.InputField
+                                className="w-full"
+                                type="number"
+                                placeholder="Disc Number"
+                            />
+                        </FieldDecoration>
+                    )}
+                </form.AppField>
+                <form.AppField
+                    name="disc_total"
+                    validators={{ onChange: z.number().gt(0).nullish() }}
+                >
+                    {(field) => (
+                        <FieldDecoration field={field} label="Disc Total">
+                            <field.InputField
+                                className="w-full"
+                                type="number"
+                                placeholder="Disc Total"
+                            />
+                        </FieldDecoration>
+                    )}
+                </form.AppField>
+            </div>
             <form.AppField name="lyrics">
                 {(field) => (
-                    <section>
-                        <label htmlFor="lyrics" className="font-bold text-sm pb-1">
-                            Lyrics
-                        </label>
-                        <field.InputField placeholder="Lyrics" />
-                    </section>
+                    <FieldDecoration field={field} label="Lyrics">
+                        <field.TextareaField placeholder="Lyrics" />
+                    </FieldDecoration>
                 )}
             </form.AppField>
-            <form.AppField name="rating">
+            <form.AppField
+                name="rating"
+                validators={{ onChange: z.number().gte(0).lte(5).nullish() }}
+            >
                 {(field) => (
-                    <section>
-                        <label htmlFor="rating" className="font-bold text-sm pb-1">
-                            Rating
-                        </label>
+                    <FieldDecoration field={field} label="Rating">
                         <field.InputField placeholder="Rating" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
-            <form.AppField name="bpm">
+            <form.AppField name="bpm" validators={{ onChange: z.number().gt(0).nullish() }}>
                 {(field) => (
-                    <section>
-                        <label htmlFor="bpm" className="font-bold text-sm pb-1">
-                            BPM
-                        </label>
+                    <FieldDecoration field={field} label="BPM">
                         <field.InputField type="number" placeholder="BPM" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="comment">
                 {(field) => (
-                    <section>
-                        <label htmlFor="comment" className="font-bold text-sm pb-1">
-                            Comment
-                        </label>
-                        <field.InputField placeholder="Comment" />
-                    </section>
+                    <FieldDecoration field={field} label="Comment">
+                        <field.TextareaField placeholder="Comment" />
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="grouping">
                 {(field) => (
-                    <section>
-                        <label htmlFor="grouping" className="font-bold text-sm pb-1">
-                            Grouping
-                        </label>
+                    <FieldDecoration field={field} label="Grouping">
                         <field.InputField placeholder="Grouping" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="mcn">
                 {(field) => (
-                    <section>
-                        <label htmlFor="mcn" className="font-bold text-sm pb-1">
-                            MCN
-                        </label>
+                    <FieldDecoration field={field} label="MCN">
                         <field.InputField placeholder="MCN" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="isrc">
                 {(field) => (
-                    <section>
-                        <label htmlFor="isrc" className="font-bold text-sm pb-1">
-                            ISRC
-                        </label>
+                    <FieldDecoration field={field} label="ISRC">
                         <field.InputField placeholder="ISRC" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="music_brainz_release_id">
                 {(field) => (
-                    <section>
-                        <label htmlFor="music_brainz_release_id" className="font-bold text-sm pb-1">
-                            Music Brainz Release ID
-                        </label>
+                    <FieldDecoration field={field} label="Music Brainz Release ID">
                         <field.InputField placeholder="Music Brainz Release ID" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.AppField name="music_brainz_recording_id">
                 {(field) => (
-                    <section>
-                        <label
-                            htmlFor="music_brainz_recording_id"
-                            className="font-bold text-sm pb-1"
-                        >
-                            Music Brainz Recording ID
-                        </label>
+                    <FieldDecoration field={field} label="Music Brainz Recording ID">
                         <field.InputField placeholder="Music Brainz Recording ID" />
-                    </section>
+                    </FieldDecoration>
                 )}
             </form.AppField>
             <form.SubmitButton>Save</form.SubmitButton>
