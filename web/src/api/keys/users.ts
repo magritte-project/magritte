@@ -17,3 +17,7 @@ export function userMeNotifications<Rest extends any[]>(...rest: Rest) {
 export function userMeNotification(notification_id: number) {
     return [...userMeNotifications(), notification_id] as const
 }
+
+export function usersAll<Rest extends any[]>(...rest: Rest) {
+    return [...users(), "all", ...rest] as const
+}

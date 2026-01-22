@@ -9,6 +9,7 @@ import {
     libraryAlbums,
     libraryArtist,
     libraryArtists,
+    libraryPermissions,
     librarySong,
     librarySongs,
 } from "@/api/keys/libraries"
@@ -31,6 +32,13 @@ export function readLibraryHomeSubpaths(apiClient: APIClient, relative_to: strin
     return queryOptions({
         queryKey: [...libraries(), "subpaths", relative_to],
         queryFn: () => apiClient.readLibraryHomeSubpaths(relative_to),
+    })
+}
+
+export function readLibraryPermissions(apiClient: APIClient, libraryId: number) {
+    return queryOptions({
+        queryKey: libraryPermissions(libraryId),
+        queryFn: () => apiClient.readLibraryPermissions(libraryId),
     })
 }
 

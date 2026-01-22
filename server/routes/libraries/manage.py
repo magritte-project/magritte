@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Annotated
 
+import sqlalchemy as sa
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -11,6 +12,7 @@ from fastapi import (
     status,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import col, select
 
 from auth import get_current_user
 from config import config
@@ -18,7 +20,15 @@ from db import get_db_session
 from model.library import Library
 from model.user import User, UserLibraryLink
 from schemas.auth import OAuth2Scope
-from schemas.library import LibraryCreate, LibraryHomePathRead, LibraryRead
+from schemas.library import (
+    LibraryCreate,
+    LibraryHomePathRead,
+    LibraryPermissionCreate,
+    LibraryPermissionRead,
+    LibraryPermissionUpdate,
+    LibraryRead,
+    LibraryUpdate,
+)
 from worker import sync_library
 
 router = APIRouter()
@@ -112,6 +122,41 @@ async def create_library(
     return LibraryRead(**new_library.model_dump())
 
 
+@router.patch(
+    "/{library_id}",
+    response_model=LibraryRead,
+    summary="Update a library by its ID",
+)
+async def update_library(
+    library_id: int,
+    update_library: LibraryUpdate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    library = await Library.read_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_edit=True,
+    )
+    if not library:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    changes = update_library.model_dump(
+        exclude_unset=True,
+    )
+    for name, value in changes.items():
+        setattr(library, name, value)
+
+    await session.flush()
+
+    return LibraryRead(**library.model_dump())
+
+
 @router.get(
     "/{library_id}",
     response_model=LibraryRead,
@@ -120,7 +165,7 @@ async def create_library(
 async def read_library(
     library_id: int,
     current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
@@ -130,3 +175,215 @@ async def read_library(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
     return LibraryRead(**library.model_dump())
+
+
+@router.get(
+    "/{library_id}/permissions",
+    response_model=list[LibraryPermissionRead],
+    summary="Read a library's permissions",
+)
+async def read_library_permissions(
+    library_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    library = await Library.read_by_id(
+        library_id,
+        current_user.id,
+        session,
+    )
+    if not library:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    permissions = await session.execute(
+        sa.select(
+            col(User.id).label("user_id"),
+            col(User.username).label("username"),
+            col(UserLibraryLink.can_add).label("can_add"),
+            col(UserLibraryLink.can_edit).label("can_edit"),
+            col(UserLibraryLink.can_remove).label("can_remove"),
+        )
+        .where(
+            col(UserLibraryLink.library_id) == library_id,
+        )
+        .join(User, col(User.id) == col(UserLibraryLink.user_id))
+    )
+    return [
+        LibraryPermissionRead(**permission) for permission in permissions.mappings()
+    ]
+
+
+@router.post(
+    "/{library_id}/permission/create",
+    response_model=LibraryPermissionRead,
+    summary="Create library permission for a new user",
+)
+async def create_library_permission(
+    library_id: int,
+    create_permission: LibraryPermissionCreate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    library = await Library.read_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_edit=True,
+    )
+    if not library:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    user = await session.get(User, create_permission.user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    user_library_link = await session.scalar(
+        select(UserLibraryLink).where(
+            col(UserLibraryLink.library_id) == library_id,
+            col(UserLibraryLink.user_id) == create_permission.user_id,
+        )
+    )
+    if user_library_link:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Permission already exists"
+        )
+
+    user_library_link = UserLibraryLink(
+        user_id=user.id,
+        library_id=library_id,
+        can_add=create_permission.can_add,
+        can_edit=create_permission.can_edit,
+        can_remove=create_permission.can_remove,
+    )
+    session.add(user_library_link)
+    await session.flush()
+
+    return LibraryPermissionRead(
+        user_id=user.id,
+        username=user.username,
+        can_add=user_library_link.can_add,
+        can_edit=user_library_link.can_edit,
+        can_remove=user_library_link.can_remove,
+    )
+
+
+@router.patch(
+    "/{library_id}/permission/{user_id}",
+    response_model=LibraryPermissionRead,
+    summary="Update library permission for one user",
+)
+async def update_library_permission(
+    library_id: int,
+    user_id: int,
+    update_permission: LibraryPermissionUpdate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    library = await Library.read_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_edit=True,
+    )
+    if not library:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    if user_id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot update yourself",
+        )
+
+    user = await session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    user_library_link = await session.scalar(
+        select(UserLibraryLink).where(
+            col(UserLibraryLink.library_id) == library_id,
+            col(UserLibraryLink.user_id) == user_id,
+        )
+    )
+    if not user_library_link:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Permission not found"
+        )
+
+    if update_permission.can_add is not None:
+        user_library_link.can_add = update_permission.can_add
+    if update_permission.can_edit is not None:
+        user_library_link.can_edit = update_permission.can_edit
+    if update_permission.can_remove is not None:
+        user_library_link.can_remove = update_permission.can_remove
+
+    await session.flush()
+
+    return LibraryPermissionRead(
+        user_id=user.id,
+        username=user.username,
+        can_add=user_library_link.can_add,
+        can_edit=user_library_link.can_edit,
+        can_remove=user_library_link.can_remove,
+    )
+
+
+@router.delete(
+    "/{library_id}/permission/{user_id}",
+    summary="Delete library permission for one user",
+)
+async def delete_library_permission(
+    library_id: int,
+    user_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    library = await Library.read_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_edit=True,
+    )
+    if not library:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    if user_id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete yourself",
+        )
+
+    user_library_link = await session.scalar(
+        select(UserLibraryLink).where(
+            col(UserLibraryLink.library_id) == library_id,
+            col(UserLibraryLink.user_id) == user_id,
+        )
+    )
+    if not user_library_link:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Permission not found"
+        )
+
+    await session.delete(user_library_link)
+    await session.flush()
+
+    return {"message": "Permission deleted"}

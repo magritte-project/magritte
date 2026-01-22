@@ -16,7 +16,11 @@ import type {
     LibraryMediaReadAlbumRead,
     LibraryMediaReadArtistRead,
     LibraryMediaReadSongRead,
+    LibraryPermissionCreate,
+    LibraryPermissionRead,
+    LibraryPermissionUpdate,
     LibraryRead,
+    LibraryUpdate,
     NotificationRead,
     NotificationUpdate,
     NotificationsRead,
@@ -187,18 +191,18 @@ export class APIClient {
         return unwrap(response)
     }
 
-    async readUsers(id_or_username: number | string): Promise<UserProfileRead> {
+    async readUser(id_or_username: number | string): Promise<UserProfileRead> {
         const response = await this._client.GET("/users/all/{id_or_username}", {
             params: {
                 path: {
-                    id_or_username,
+                    id_or_username: String(id_or_username),
                 },
             },
         })
         return unwrap(response)
     }
 
-    async readUser(query?: string, offset?: number, limit?: number): Promise<UserProfilesRead> {
+    async readAllUsers(query?: string, offset?: number, limit?: number): Promise<UserProfilesRead> {
         const response = await this._client.GET("/users/all", {
             params: {
                 query: {
@@ -242,6 +246,18 @@ export class APIClient {
         return unwrap(response)
     }
 
+    async updateLibrary(library_id: number, update_library: LibraryUpdate): Promise<LibraryRead> {
+        const response = await this._client.PATCH("/libraries/{library_id}", {
+            params: {
+                path: {
+                    library_id,
+                },
+            },
+            body: update_library,
+        })
+        return unwrap(response)
+    }
+
     async readLibrary(library_id: number): Promise<LibraryRead> {
         const response = await this._client.GET("/libraries/{library_id}", {
             params: {
@@ -251,6 +267,61 @@ export class APIClient {
             },
         })
         return unwrap(response)
+    }
+
+    async readLibraryPermissions(library_id: number): Promise<readonly LibraryPermissionRead[]> {
+        const response = await this._client.GET("/libraries/{library_id}/permissions", {
+            params: {
+                path: {
+                    library_id,
+                },
+            },
+        })
+        return unwrap(response)
+    }
+
+    async createLibraryPermission(
+        library_id: number,
+        body: LibraryPermissionCreate,
+    ): Promise<LibraryPermissionRead> {
+        const response = await this._client.POST("/libraries/{library_id}/permission/create", {
+            params: {
+                path: {
+                    library_id,
+                },
+            },
+            body,
+        })
+        return unwrap(response)
+    }
+
+    async updateLibraryPermission(
+        library_id: number,
+        user_id: number,
+        body: LibraryPermissionUpdate,
+    ): Promise<LibraryPermissionRead> {
+        const response = await this._client.PATCH("/libraries/{library_id}/permission/{user_id}", {
+            params: {
+                path: {
+                    library_id,
+                    user_id,
+                },
+            },
+            body,
+        })
+        return unwrap(response)
+    }
+
+    async deleteLibraryPermission(library_id: number, user_id: number): Promise<void> {
+        const response = await this._client.DELETE("/libraries/{library_id}/permission/{user_id}", {
+            params: {
+                path: {
+                    library_id,
+                    user_id,
+                },
+            },
+        })
+        unwrap(response)
     }
 
     async updateLibraryAlbum(

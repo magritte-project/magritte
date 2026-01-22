@@ -278,7 +278,60 @@ export interface paths {
         readonly delete?: never;
         readonly options?: never;
         readonly head?: never;
+        /** Update a library by its ID */
+        readonly patch: operations["update_library_libraries__library_id__patch"];
+        readonly trace?: never;
+    };
+    readonly "/libraries/{library_id}/permissions": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read a library's permissions */
+        readonly get: operations["read_library_permissions_libraries__library_id__permissions_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
         readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/libraries/{library_id}/permission/create": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Create library permission for a new user */
+        readonly post: operations["create_library_permission_libraries__library_id__permission_create_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/libraries/{library_id}/permission/{user_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        readonly post?: never;
+        /** Delete library permission for one user */
+        readonly delete: operations["delete_library_permission_libraries__library_id__permission__user_id__delete"];
+        readonly options?: never;
+        readonly head?: never;
+        /** Update library permission for one user */
+        readonly patch: operations["update_library_permission_libraries__library_id__permission__user_id__patch"];
         readonly trace?: never;
     };
     readonly "/libraries/{library_id}/songs/{song_id}": {
@@ -727,6 +780,39 @@ export interface components {
             /** Total */
             readonly total: number;
         };
+        /** LibraryPermissionCreate */
+        readonly LibraryPermissionCreate: {
+            /** User Id */
+            readonly user_id: number;
+            /** Can Add */
+            readonly can_add: boolean;
+            /** Can Edit */
+            readonly can_edit: boolean;
+            /** Can Remove */
+            readonly can_remove: boolean;
+        };
+        /** LibraryPermissionRead */
+        readonly LibraryPermissionRead: {
+            /** User Id */
+            readonly user_id: number;
+            /** Username */
+            readonly username: string;
+            /** Can Add */
+            readonly can_add: boolean;
+            /** Can Edit */
+            readonly can_edit: boolean;
+            /** Can Remove */
+            readonly can_remove: boolean;
+        };
+        /** LibraryPermissionUpdate */
+        readonly LibraryPermissionUpdate: {
+            /** Can Add */
+            readonly can_add: boolean | null;
+            /** Can Edit */
+            readonly can_edit: boolean | null;
+            /** Can Remove */
+            readonly can_remove: boolean | null;
+        };
         /** LibraryRead */
         readonly LibraryRead: {
             /** Id */
@@ -735,6 +821,11 @@ export interface components {
             readonly name: string;
             /** Home Path */
             readonly home_path: string | null;
+        };
+        /** LibraryUpdate */
+        readonly LibraryUpdate: {
+            /** Name */
+            readonly name: string | null;
         };
         /** NotificationRead */
         readonly NotificationRead: {
@@ -1057,7 +1148,11 @@ export type LibraryHomePathRead = components['schemas']['LibraryHomePathRead'];
 export type LibraryMediaReadAlbumRead = components['schemas']['LibraryMediaRead_AlbumRead_'];
 export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead_ArtistRead_'];
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
+export type LibraryPermissionCreate = components['schemas']['LibraryPermissionCreate'];
+export type LibraryPermissionRead = components['schemas']['LibraryPermissionRead'];
+export type LibraryPermissionUpdate = components['schemas']['LibraryPermissionUpdate'];
 export type LibraryRead = components['schemas']['LibraryRead'];
+export type LibraryUpdate = components['schemas']['LibraryUpdate'];
 export type NotificationRead = components['schemas']['NotificationRead'];
 export type NotificationUpdate = components['schemas']['NotificationUpdate'];
 export type NotificationsRead = components['schemas']['NotificationsRead'];
@@ -1743,6 +1838,175 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["LibraryRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly update_library_libraries__library_id__patch: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["LibraryUpdate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["LibraryRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_library_permissions_libraries__library_id__permissions_get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": readonly components["schemas"]["LibraryPermissionRead"][];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly create_library_permission_libraries__library_id__permission_create_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["LibraryPermissionCreate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["LibraryPermissionRead"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly delete_library_permission_libraries__library_id__permission__user_id__delete: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+                readonly user_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly update_library_permission_libraries__library_id__permission__user_id__patch: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly library_id: number;
+                readonly user_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["LibraryPermissionUpdate"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["LibraryPermissionRead"];
                 };
             };
             /** @description Validation Error */

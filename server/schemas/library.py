@@ -15,10 +15,36 @@ class LibraryCreate(BaseModel):
         return home_path
 
 
+class LibraryUpdate(BaseModel):
+    name: str | None = None
+
+
 class LibraryRead(BaseModel):
     id: int
     name: str
     home_path: str | None
+
+
+class LibraryPermissionCreate(BaseModel):
+    user_id: int
+    can_add: bool
+    can_edit: bool
+    can_remove: bool
+
+
+class LibraryPermissionUpdate(BaseModel):
+    can_read: bool | None = None
+    can_add: bool | None = None
+    can_edit: bool | None = None
+    can_remove: bool | None = None
+
+
+class LibraryPermissionRead(BaseModel):
+    user_id: int
+    username: str
+    can_add: bool
+    can_edit: bool
+    can_remove: bool
 
 
 class LibraryMediaRead[Item: BaseModel](BaseModel):
