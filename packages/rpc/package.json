@@ -1,0 +1,27 @@
+{
+    "name": "@mono/rpc",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [],
+    "license": "ISC",
+    "author": "",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./src/index.ts",
+            "default": "./src/index.ts"
+        }
+    },
+    "scripts": {
+        "test": "vitest run",
+        "format": "oxfmt",
+        "lint": "oxlint",
+        "check": "oxlint && oxfmt --check"
+    },
+    "devDependencies": {
+        "oxfmt": "catalog:",
+        "oxlint": "catalog:",
+        "vitest": "catalog:"
+    },
+    "packageManager": "pnpm@10.24.0"
+}
