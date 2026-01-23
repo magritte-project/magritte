@@ -1,3 +1,3 @@
-export function greeting() {
-    return "hello, world"
-}
+export * from "@/base/object"
+export * from "@/base/version"
+export * from "@/base/protocol"

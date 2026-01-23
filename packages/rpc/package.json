@@ -18,6 +18,9 @@
         "lint": "oxlint",
         "check": "oxlint && oxfmt --check"
     },
+    "dependencies": {
+        "zod": "catalog:"
+    },
     "devDependencies": {
         "oxfmt": "catalog:",
         "oxlint": "catalog:",

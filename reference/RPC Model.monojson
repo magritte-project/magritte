@@ -1090,7 +1090,7 @@
       "alignment" : 0,
       "doc_ref" : "D9087392-A0DF-4114-82D4-AAF1AC711DDC",
       "object_id" : "5A1FB215-239D-43F4-A71A-AF4BDECC39E5",
-      "text" : "conformsTo(version, version)\n  protocol = this.protocols[name]\n  if protocol = null\n    return false\n  if not protocol.version.isCompatible(version)\n    return false\n  return true",
+      "text" : "conformsToProtocol(name, version)\n  protocol = this.protocols[name]\n  if protocol = null\n    return false\n  if not protocol.version.isCompatible(version)\n    return false\n  return true",
       "type_id" : 27
     },
     {
@@ -1621,7 +1621,7 @@
       "frame_anchor_ref" : "8B9B7022-18E6-4D93-8C75-D89A15E358AF",
       "frame_size" : "49,9",
       "model_text" : "5A1FB215-239D-43F4-A71A-AF4BDECC39E5",
-      "name" : "conformsTo(version, version)\n  protocol…",
+      "name" : "conformsToProtocol(name, version)\n …",
       "object_id" : "870FADFF-08D6-4E2C-A838-BE41EE3FCCA5",
       "origin" : "-44,70",
       "position_refs" : [
