@@ -30,7 +30,6 @@ if TYPE_CHECKING:
     from multiprocessing.connection import Connection
 
 
-logging.basicConfig(level=config.logging_level)
 logger = logging.getLogger("LibraryWorker")
 
 
@@ -114,6 +113,8 @@ async def _process_event(
 
 
 def worker_main(connection: "Connection"):
+    logging.basicConfig(level=config.logging_level)
+
     try:
         logger.debug("Process started")
         while True:
