@@ -22,7 +22,7 @@ export interface RPCObject {
      * @param parameters The parameters to pass to the method.
      * @returns The result of the method invocation.
      */
-    invoke(selector: string, parameters: unknown[]): Promise<unknown>
+    invoke(selector: string, parameters: unknown): Promise<unknown>
 
     /**
      * Checks if this object conforms to the given protocol.

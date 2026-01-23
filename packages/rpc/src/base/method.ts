@@ -9,3 +9,35 @@ export interface RPCMethod<
     readonly parameters: Parameters
     readonly result: Result
 }
+
+/** Creates a new method for a protocol. */
+export function method<
+    const Selector extends string,
+    const Parameters extends z4.$ZodType,
+    const Result extends z4.$ZodType,
+>(
+    selector: Selector,
+    parameters: Parameters,
+    result: Result,
+): RPCMethod<Selector, Parameters, Result> {
+    return {
+        selector,
+        parameters,
+        result,
+    }
+}
+
+/** @private */
+export type _AnyRPCMethod = RPCMethod<string, z4.$ZodType, z4.$ZodType>
+
+/** @private */
+export type _RPCMethodSelector<Method> =
+    Method extends RPCMethod<infer Selector, any, any> ? Selector : never
+
+/** @private */
+export type _RPCMethodParameters<Method> =
+    Method extends RPCMethod<any, infer Parameters, any> ? Parameters : never
+
+/** @private */
+export type _RPCMethodResult<Method> =
+    Method extends RPCMethod<any, any, infer Result> ? Result : never

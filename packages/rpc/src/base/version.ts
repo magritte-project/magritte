@@ -9,3 +9,8 @@ export function compare(a: Version, b: Version): number {
     if (a.minor !== b.minor) return a.minor - b.minor
     return a.patch - b.patch
 }
+
+/** Creates a version */
+export function version(major: number, minor: number = 0, patch: number = 0): Version {
+    return { major, minor, patch }
+}
