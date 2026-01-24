@@ -16,13 +16,20 @@ export interface RPCObject {
     find(address: readonly string[]): Promise<RPCObject | null>
 
     /**
-     * Invokes a method on this object.
+     * Invokes a method on a protocol supported by this object.
      *
+     * @param protocolName The name of the protocol the method belongs to.
+     * @param protocolVersion The version of the protocol.
      * @param selector The name of the method to invoke.
      * @param parameters The parameters to pass to the method.
      * @returns The result of the method invocation.
      */
-    invoke(selector: string, parameters: unknown): Promise<unknown>
+    invoke(
+        protocolName: string,
+        protocolVersion: Version,
+        selector: string,
+        parameters: unknown,
+    ): Promise<unknown>
 
     /**
      * Checks if this object conforms to the given protocol.

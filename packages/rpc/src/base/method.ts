@@ -27,6 +27,10 @@ export function method<
     }
 }
 
+export type RPCMethodImplementation<Method extends _AnyRPCMethod> = (
+    parameters: z4.infer<_RPCMethodParameters<Method>>,
+) => Promise<z4.infer<_RPCMethodResult<Method>>>
+
 /** @private */
 export type _AnyRPCMethod = RPCMethod<string, z4.$ZodType, z4.$ZodType>
 

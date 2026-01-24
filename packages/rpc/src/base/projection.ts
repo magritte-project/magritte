@@ -1,19 +1,10 @@
-import type z from "zod/v4"
-
-import type {
-    _AnyRPCMethod,
-    _RPCMethodParameters,
-    _RPCMethodResult,
-    _RPCMethodSelector,
-} from "@/base/method"
+import type { _AnyRPCMethod, _RPCMethodSelector, RPCMethodImplementation } from "@/base/method"
 import type { RPCObject } from "@/base/object"
 import type { RPCProtocol } from "@/base/protocol"
 
 /** Utility type which converts a tuple of RPC methods into an object type */
 export type RPCProjection<Methods extends readonly _AnyRPCMethod[]> = {
-    [Method in Methods[number] as _RPCMethodSelector<Method>]: (
-        parameters: z.infer<_RPCMethodParameters<Method>>,
-    ) => Promise<z.infer<_RPCMethodResult<Method>>>
+    [Method in Methods[number] as _RPCMethodSelector<Method>]: RPCMethodImplementation<Method>
 }
 
 /**
@@ -35,7 +26,7 @@ export async function tryProject<Methods extends readonly _AnyRPCMethod[]>(
     for (const method of protocol.methods) {
         const selector = method.selector
         projection[selector] = async (parameters: unknown) => {
-            return await object.invoke(selector, parameters)
+            return await object.invoke(protocol.name, protocol.version, selector, parameters)
         }
     }
     return projection as RPCProjection<Methods>

@@ -10,6 +10,10 @@ export function compare(a: Version, b: Version): number {
     return a.patch - b.patch
 }
 
+export function isCompatible(a: Version, b: Version): boolean {
+    return a.major === b.major && a.minor >= b.minor
+}
+
 /** Creates a version */
 export function version(major: number, minor: number = 0, patch: number = 0): Version {
     return { major, minor, patch }
