@@ -16,16 +16,20 @@ export class LocalObject implements RPCObject {
         this.subobjects = new Map(subobjects.map((subobject) => [subobject.name, subobject]))
     }
 
+    async getName(): Promise<string> {
+        return this.name
+    }
+
     async inspect({ recursive, ...rest }: RPCObjectInspectOptions = {}): Promise<
         readonly PRCObjectAddress[]
     > {
         const addresses: PRCObjectAddress[] = []
         for (const subobject of this.subobjects.values()) {
-            addresses.push([subobject.name])
+            addresses.push([await subobject.getName()])
             if (recursive) {
                 const subaddresses = await subobject.inspect({ recursive, ...rest })
                 for (const address of subaddresses) {
-                    addresses.push([subobject.name, ...address])
+                    addresses.push([await subobject.getName(), ...address])
                 }
             }
         }

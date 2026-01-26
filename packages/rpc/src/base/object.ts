@@ -9,7 +9,7 @@ export interface RPCObject {
     /**
      * The name of this object. Unique within its peers.
      */
-    readonly name: string
+    getName(): Promise<string>
 
     /**
      * Inspects this object's subobjects.
