@@ -1,64 +1,69 @@
-import { MenuButton } from "@headlessui/react"
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react"
 import { NotificationIcon } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 
 import { readNotifications } from "@/api/queries/users"
-import ThemedPopUpMenu, { type ThemedPopUpMenuItem } from "@/components/theme/ThemedPopUpMenu"
+import ThemedButton from "@/components/theme/ThemedButton"
+import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPIClient from "@/hooks/apiClientHook"
 import useUserSession from "@/hooks/userSessionHook"
 
+import NotificationListItem from "./NotificationListItem"
+
 export default function NotificationsButton() {
     const { isSignedIn } = useUserSession()
     const apiClient = useAPIClient()
-    const notificationsQuery = useQuery(readNotifications(apiClient))
+    const notifications = useQuery(readNotifications(apiClient))
 
-    const items = useMemo<readonly ThemedPopUpMenuItem[]>(() => {
-        const notifications = notificationsQuery?.data?.items ?? []
-        if (notifications.length > 0) {
-            return notifications.map((notification) => ({
-                key: `notifications[${notification.id}]`,
-                label: (
-                    <div className="flex flex-col gap-0.5">
-                        <div className="text-sm font-semibold text-black">{notification.title}</div>
-                        <div className="text-xs text-gray-500">{notification.description}</div>
-                    </div>
-                ),
-                onClick: () => {
-                    // Handle notification click
-                },
-            }))
-        } else {
-            return [
-                {
-                    key: "notifications[]",
-                    label: "No Notifications",
-                    onClick: () => {},
-                    disabled: true,
-                },
-            ]
-        }
-    }, [notificationsQuery?.data])
     const unreadCount = useMemo(() => {
-        const notifications = notificationsQuery?.data?.items ?? []
-        return notifications.reduce((acc, { is_read: isRead }) => (isRead ? acc : acc + 1), 0)
-    }, [notificationsQuery?.data])
+        const items = notifications?.data?.items ?? []
+        return items.reduce((acc, { is_read: isRead }) => (isRead ? acc : acc + 1), 0)
+    }, [notifications?.data])
 
     return (
         isSignedIn && (
-            <ThemedPopUpMenu
-                button={
-                    <ThemedSubtleButton
-                        buttonComponent={MenuButton}
-                        className="flex items-center gap-1"
-                    >
-                        <NotificationIcon aria-label="Notifications" />
-                        {Intl.NumberFormat().format(unreadCount)}
-                    </ThemedSubtleButton>
-                }
-                items={items}
-            />
+            <Popover className="relative">
+                <ThemedSubtleButton
+                    buttonComponent={PopoverButton}
+                    className="flex items-center gap-1"
+                >
+                    <NotificationIcon aria-label="Notifications" />
+                    {Intl.NumberFormat().format(unreadCount)}
+                </ThemedSubtleButton>
+                <PopoverPanel
+                    anchor="bottom"
+                    className="w-2xs bg-white rounded-md shadow-sm flex flex-col items-center"
+                >
+                    {notifications.isPending ? (
+                        <ThemedContentUnavailable variant="inline" />
+                    ) : notifications.isError ? (
+                        <ThemedContentUnavailable variant="inline" error={notifications.error} />
+                    ) : notifications.data.total === 0 ? (
+                        <div className="px-4 pt-2 flex flex-col items-center text-gray-500">
+                            No notifications
+                        </div>
+                    ) : (
+                        <>
+                            <ol className="px-4 flex flex-col">
+                                {notifications.data.items.map((notification) => (
+                                    <NotificationListItem
+                                        key={notification.id}
+                                        notification={notification}
+                                    />
+                                ))}
+                            </ol>
+                            <ThemedButton
+                                className="text-xs font-semibold mx-4 mt-0 mb-2"
+                                disabled={unreadCount === 0}
+                            >
+                                Mark All As Read
+                            </ThemedButton>
+                        </>
+                    )}
+                </PopoverPanel>
+            </Popover>
         )
     )
 }
