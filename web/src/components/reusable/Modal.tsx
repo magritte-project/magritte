@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 
 import { AnimatePresence, motion } from "motion/react"
 import { classNames } from "react-cmdk"
+import { createPortal } from "react-dom"
 
 import DismissContextProvider from "@/contexts/providers/DismissContextProvider"
 import useDismiss from "@/hooks/dismissHook"
@@ -15,12 +16,12 @@ export interface ModalProps {
 
 export default function Modal({ className, isPresented = true, onDismiss, children }: ModalProps) {
     const dismiss = useDismiss()
-    return (
+    return createPortal(
         <DismissContextProvider value={onDismiss ?? dismiss}>
-            <AnimatePresence>
+            <AnimatePresence mode="wait" key="Modal">
                 {isPresented && (
                     <motion.div
-                        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center"
+                        className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -41,6 +42,8 @@ export default function Modal({ className, isPresented = true, onDismiss, childr
                     </motion.div>
                 )}
             </AnimatePresence>
-        </DismissContextProvider>
+        </DismissContextProvider>,
+        document.getElementById("app-modals")!,
+        "Modal",
     )
 }

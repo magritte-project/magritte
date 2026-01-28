@@ -1,5 +1,6 @@
 import { AnimatePresence } from "motion/react"
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
+import { createPortal } from "react-dom"
 
 import type { Toast } from "@/contexts/toastContext"
 
@@ -30,14 +31,18 @@ export default function ToastLayout({ children }: ToastLayoutProps) {
     return (
         <>
             <ToastContextProvider value={{ showToast }}>{children}</ToastContextProvider>
-            <AnimatePresence>
-                {presentedToast && (
-                    <ToastNotification
-                        className="fixed bottom-4 left-1/2 -translate-1/2 max-w-lg"
-                        {...presentedToast}
-                    />
-                )}
-            </AnimatePresence>
+            {createPortal(
+                <AnimatePresence mode="wait" key="ToastLayout">
+                    {presentedToast && (
+                        <ToastNotification
+                            className="fixed bottom-4 left-1/2 -translate-1/2 max-w-lg"
+                            {...presentedToast}
+                        />
+                    )}
+                </AnimatePresence>,
+                document.getElementById("app-toasts")!,
+                "ToastLayout",
+            )}
         </>
     )
 }
