@@ -4,7 +4,7 @@ import { useCallback, useState } from "react"
 
 import type { IngestSong } from "@/api/openapi"
 
-import useIngestSongs from "@/api/mutations/ingest"
+import { useIngestSongs } from "@/api/mutations/ingest"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import Modal from "@/components/reusable/Modal"

@@ -531,4 +531,11 @@ export class APIClient {
         })
         return unwrap(response)
     }
+
+    async requestSyncLibrary(library_id: number): Promise<OperationResult> {
+        const response = await this._client.POST("/libraries/{library_id}/sync", {
+            params: { path: { library_id } },
+        })
+        return unwrap(response)
+    }
 }

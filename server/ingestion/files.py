@@ -1,7 +1,9 @@
 import sys
+from contextlib import asynccontextmanager
 from mimetypes import guess_file_type
 from pathlib import Path
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from tinytag import TinyTag, UnsupportedFormatError
 
@@ -10,13 +12,14 @@ from ingestion.canon import Canonizer
 from model.album import Album
 from model.artist import Artist
 from model.library import Library
+from model.notification import Notification
 from model.song import Song
 from model.source import Source
 from schemas.artwork import ArtworkKind
 from utilities.files import path_as_file_uri
 
 
-async def update_song_metadata(
+async def _update_song_metadata(
     song: Song,
     tags: TinyTag,
     libraries: list[Library],
@@ -84,7 +87,7 @@ async def ensure_libraries_linked(
     await session.flush()
 
 
-async def try_ingest_file(
+async def _try_ingest_file(
     path: Path,
     libraries: list[Library],
     canonizer: Canonizer,
@@ -121,11 +124,48 @@ async def try_ingest_file(
     await session.flush()
 
     if tags:
-        await update_song_metadata(new_song, tags, libraries, canonizer, session)
+        await _update_song_metadata(new_song, tags, libraries, canonizer, session)
     else:
         new_song.title = path.stem
 
     return new_song
+
+
+@asynccontextmanager
+async def _ingest_notifications(libraries: list[Library], session: AsyncSession):
+    notifications = list[Notification]()
+    for library in libraries:
+        notification = Notification(
+            title=f"Updating {library.name}",
+            is_locked=True,
+            users=await library.awaitable_attrs.users,
+        )
+        session.add(notification)
+        notifications.append(notification)
+
+    await session.commit()
+    for library in libraries:
+        await session.refresh(library)
+
+    try:
+        yield
+    except Exception as e:
+        if isinstance(e, IntegrityError):
+            await session.rollback()
+        for library, notification in zip(libraries, notifications):
+            await session.refresh(notification)
+            notification.title = f"Failed to update {library.name}"
+            notification.description = str(e)
+            notification.is_locked = False
+        await session.commit()
+        raise
+    else:
+        for library, notification in zip(libraries, notifications):
+            await session.refresh(notification)
+            notification.title = f"Updated {library.name}"
+            notification.is_locked = False
+            notification.is_read = True
+        await session.commit()
 
 
 async def try_ingest_path(
@@ -135,26 +175,27 @@ async def try_ingest_path(
     canonizer: Canonizer,
     session: AsyncSession,
 ):
-    if path.is_file():
-        await try_ingest_file(path, libraries, canonizer, session)
-    else:
-        for dirpath, _, filenames in path.walk(follow_symlinks=follow_links):
-            if dirpath.name.startswith("."):
-                continue
-
-            for filename in filenames:
-                if filename.startswith("."):
+    async with _ingest_notifications(libraries, session):
+        if path.is_file():
+            await _try_ingest_file(path, libraries, canonizer, session)
+        else:
+            for dirpath, _, filenames in path.walk(follow_symlinks=follow_links):
+                if dirpath.name.startswith("."):
                     continue
 
-                file_path = dirpath / filename
-                try:
-                    new_song = await try_ingest_file(
-                        file_path, libraries, canonizer, session
-                    )
-                    if not new_song:
+                for filename in filenames:
+                    if filename.startswith("."):
                         continue
-                    print(
-                        f"Added '{filename}': '{new_song.title}' from '{new_song.album_title}' by '{new_song.artist_name}'"
-                    )
-                except Exception as e:
-                    print(f"*** Skipping {file_path}: {e}", file=sys.stderr)
+
+                    file_path = dirpath / filename
+                    try:
+                        new_song = await _try_ingest_file(
+                            file_path, libraries, canonizer, session
+                        )
+                        if not new_song:
+                            continue
+                        print(
+                            f"Added '{filename}': '{new_song.title}' from '{new_song.album_title}' by '{new_song.artist_name}'"
+                        )
+                    except Exception as e:
+                        print(f"*** Skipping {file_path}: {e}", file=sys.stderr)

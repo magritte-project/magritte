@@ -1,39 +1,32 @@
 import { DiscIcon, MicrophoneIcon, MusicNotesIcon, PlusIcon } from "@phosphor-icons/react"
-import { useQueryClient } from "@tanstack/react-query"
+import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr"
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
+import { useCallback } from "react"
 
+import { useRequestSyncLibrary } from "@/api/mutations/ingest"
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
-import useUserEvents from "@/hooks/userEventsHook"
+import useToast from "@/hooks/toastHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries_/$libraryId")({
     component: function LibrariesLayoutComponent() {
         const params = Route.useParams()
         const navigate = useNavigate()
 
-        const queryClient = useQueryClient()
-        useUserEvents({
-            onEvent: async (event) => {
-                // TODO: This is nastier than it probably needs to be
-                if (event.event_type === "libraries_changed") {
-                    for (const libraryId of event.ids) {
-                        await queryClient.invalidateQueries({
-                            queryKey: ["readLibraryAlbums", libraryId],
-                            exact: false,
-                        })
-                        await queryClient.invalidateQueries({
-                            queryKey: ["readLibraryArtists", libraryId],
-                            exact: false,
-                        })
-                        await queryClient.invalidateQueries({
-                            queryKey: ["readLibrarySongs", libraryId],
-                            exact: false,
-                        })
-                    }
-                }
-            },
-        })
+        const { showToast } = useToast()
+        const syncLibraryMutation = useRequestSyncLibrary(Number(params.libraryId))
+        const handleSyncLibrary = useCallback(async () => {
+            try {
+                await syncLibraryMutation.mutateAsync()
+            } catch (error) {
+                showToast({
+                    message: `Failed to start library sync: ${getErrorMessage(error)}`,
+                    type: "error",
+                })
+            }
+        }, [syncLibraryMutation, showToast])
 
         return (
             <AppCommandsProvider
@@ -87,6 +80,13 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                         to: "/libraries/$libraryId/songs/add",
                                         params,
                                     }),
+                            },
+                            {
+                                id: `libraries.${params.libraryId}.add.sync`,
+                                icon: ArrowsClockwiseIcon,
+                                children: "Sync",
+                                onClick: handleSyncLibrary,
+                                disabled: syncLibraryMutation.isPending,
                             },
                         ],
                     },

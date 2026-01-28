@@ -48,6 +48,37 @@ def _to_path(path: str | bytes):
             return Path(path.decode())
 
 
+def _send_notifications_changed(
+    connection: "Connection",
+    user_ids_to_notify: set[int],
+):
+    connection.send(
+        NotifyUsersParentRequest(
+            user_ids=user_ids_to_notify,
+            event=UserEvent(
+                event_type=UserEventType.NOTIFICATIONS_CHANGED,
+                ids=[],
+            ),
+        )
+    )
+
+
+def _send_libraries_changed(
+    connection: "Connection",
+    user_ids_to_notify: set[int],
+    library_ids: list[int],
+):
+    connection.send(
+        NotifyUsersParentRequest(
+            user_ids=user_ids_to_notify,
+            event=UserEvent(
+                event_type=UserEventType.LIBRARIES_CHANGED,
+                ids=library_ids,
+            ),
+        )
+    )
+
+
 async def _process_event(
     connection: "Connection",
     event: LibraryWorkerEvent | FileSystemEvent,
@@ -60,26 +91,26 @@ async def _process_event(
                 if library.home_path is None:
                     raise ValueError(f"Library is streaming only '{event.library_id}'")
 
-                library_home_path = config.library_home_path.joinpath(library.home_path)
-                canonizer = Canonizer.from_file()
-                await try_ingest_path(
-                    path=library_home_path,
-                    follow_links=False,
-                    libraries=[library],
-                    canonizer=canonizer,
-                    session=session,
-                )
-                connection.send(
-                    NotifyUsersParentRequest(
-                        user_ids={
-                            user.id for user in await library.awaitable_attrs.users
-                        },
-                        event=UserEvent(
-                            event_type=UserEventType.LIBRARIES_CHANGED,
-                            ids=[library.id],
-                        ),
+                library_ids = [library.id]
+                user_ids_to_notify = {
+                    user.id for user in await library.awaitable_attrs.users
+                }
+                _send_notifications_changed(connection, user_ids_to_notify)
+                try:
+                    library_home_path = config.library_home_path.joinpath(
+                        library.home_path
                     )
-                )
+                    canonizer = Canonizer.from_file()
+                    await try_ingest_path(
+                        path=library_home_path,
+                        follow_links=False,
+                        libraries=[library],
+                        canonizer=canonizer,
+                        session=session,
+                    )
+                finally:
+                    _send_notifications_changed(connection, user_ids_to_notify)
+                    _send_libraries_changed(connection, user_ids_to_notify, library_ids)
             case DirDeletedEvent():
                 await Source.mark_invalid(
                     path=_to_path(event.dest_path),

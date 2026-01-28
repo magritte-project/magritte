@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Security, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Security, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import and_, col
 
@@ -15,9 +15,11 @@ from model.source import Source
 from model.user import User
 from schemas.artwork import ArtworkRead
 from schemas.auth import OAuth2Scope
+from schemas.base import OperationResult
 from schemas.ingest import BulkIngestSongs
 from schemas.song import SongRead
 from schemas.source import SourceRead
+from worker import sync_library
 
 router = APIRouter()
 
@@ -162,3 +164,36 @@ async def ingest_songs(
         )
         for new_song in new_songs
     ]
+
+
+@router.post(
+    "/{library_id}/sync",
+    response_model=OperationResult,
+    summary="Request that a library sync its songs with the file system",
+)
+async def request_sync_library(
+    library_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    background_tasks: BackgroundTasks,
+):
+    if not await Library.can_user_access_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_add=True,
+        can_edit=True,
+        can_remove=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    background_tasks.add_task(sync_library, library_id)
+
+    return OperationResult(
+        message="Sync request received",
+        row_count=1,
+    )

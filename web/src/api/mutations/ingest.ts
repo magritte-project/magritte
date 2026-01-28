@@ -5,7 +5,7 @@ import type { BulkIngestSongs } from "@/api/openapi"
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import useAPIClient from "@/hooks/apiClientHook"
 
-export default function useIngestSongs(libraryId: number) {
+export function useIngestSongs(libraryId: number) {
     const queryClient = useQueryClient()
     const apiClient = useAPIClient()
     return useMutation({
@@ -24,5 +24,12 @@ export default function useIngestSongs(libraryId: number) {
                 exact: false,
             })
         },
+    })
+}
+
+export function useRequestSyncLibrary(libraryId: number) {
+    const apiClient = useAPIClient()
+    return useMutation({
+        mutationFn: () => apiClient.requestSyncLibrary(libraryId),
     })
 }
