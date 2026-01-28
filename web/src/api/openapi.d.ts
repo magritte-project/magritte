@@ -476,6 +476,23 @@ export interface paths {
         readonly patch: operations["update_notification_users_notifications__notification_id__patch"];
         readonly trace?: never;
     };
+    readonly "/users/notifications/mark-all-read": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Mark all notifications as read for the signed in user */
+        readonly post: operations["mark_all_notifications_read_users_notifications_mark_all_read_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/users/events/preflight": {
         readonly parameters: {
             readonly query?: never;
@@ -861,6 +878,13 @@ export interface components {
          * @enum {string}
          */
         readonly OAuth2Scope: "profile" | "library:read" | "library:write" | "admin";
+        /** OperationResult */
+        readonly OperationResult: {
+            /** Message */
+            readonly message: string;
+            /** Row Count */
+            readonly row_count?: number | null;
+        };
         /** SongRead */
         readonly SongRead: {
             /** Id */
@@ -1157,6 +1181,7 @@ export type NotificationRead = components['schemas']['NotificationRead'];
 export type NotificationUpdate = components['schemas']['NotificationUpdate'];
 export type NotificationsRead = components['schemas']['NotificationsRead'];
 export type OAuth2Scope = components['schemas']['OAuth2Scope'];
+export type OperationResult = components['schemas']['OperationResult'];
 export type SongRead = components['schemas']['SongRead'];
 export type SongUpdate = components['schemas']['SongUpdate'];
 export type SourceCreate = components['schemas']['SourceCreate'];
@@ -1970,7 +1995,7 @@ export interface operations {
                     readonly [name: string]: unknown;
                 };
                 content: {
-                    readonly "application/json": unknown;
+                    readonly "application/json": components["schemas"]["OperationResult"];
                 };
             };
             /** @description Validation Error */
@@ -2475,6 +2500,26 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly mark_all_notifications_read_users_notifications_mark_all_read_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["OperationResult"];
                 };
             };
         };

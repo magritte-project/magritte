@@ -16,7 +16,7 @@ from fastapi import (
 from pydantic import ValidationError
 from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col, select
+from sqlmodel import col, select, update
 
 from auth import (
     get_current_user,
@@ -26,6 +26,7 @@ from db import get_db_session
 from model.notification import Notification
 from model.user import User, UserNotificationLink
 from schemas.auth import OAuth2Scope
+from schemas.base import OperationResult
 from schemas.notification import NotificationRead, NotificationsRead, NotificationUpdate
 from schemas.user import (
     UserEventPreflight,
@@ -169,6 +170,34 @@ async def update_notification(
     await session.flush()
 
     return NotificationRead(**notification.model_dump())
+
+
+@router.post(
+    "/notifications/mark-all-read",
+    response_model=OperationResult,
+    summary="Mark all notifications as read for the signed in user",
+)
+async def mark_all_notifications_read(
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    result = await session.execute(
+        update(Notification)
+        .where(
+            col(Notification.users).any(
+                col(UserNotificationLink.user_id) == current_user.id
+            ),
+            col(Notification.is_read).is_(False),
+            col(Notification.is_locked).is_(False),
+        )
+        .values(is_read=True)
+    )
+    await session.flush()
+    return OperationResult(
+        message="Notifications marked as read", row_count=result.rowcount
+    )
 
 
 @router.post(

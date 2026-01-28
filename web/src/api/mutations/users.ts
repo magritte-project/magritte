@@ -31,3 +31,17 @@ export function useUpdateNotification(notification_id: number) {
         },
     })
 }
+
+export function useMarkAllNotificationsRead() {
+    const queryClient = useQueryClient()
+    const apiClient = useAPIClient()
+    return useMutation({
+        mutationFn: () => apiClient.markAllNotificationsRead(),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: userMeNotifications(),
+                exact: false,
+            })
+        },
+    })
+}

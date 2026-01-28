@@ -24,6 +24,7 @@ import type {
     NotificationRead,
     NotificationUpdate,
     NotificationsRead,
+    OperationResult,
     SongRead,
     SongUpdate,
     SourceCreate,
@@ -186,6 +187,11 @@ export class APIClient {
         return unwrap(response)
     }
 
+    async markAllNotificationsRead(): Promise<OperationResult> {
+        const response = await this._client.POST("/users/notifications/mark-all-read")
+        return unwrap(response)
+    }
+
     async streamUserEventsPreflight(): Promise<UserEventPreflight> {
         const response = await this._client.POST("/users/events/preflight")
         return unwrap(response)
@@ -312,7 +318,7 @@ export class APIClient {
         return unwrap(response)
     }
 
-    async deleteLibraryPermission(library_id: number, user_id: number): Promise<void> {
+    async deleteLibraryPermission(library_id: number, user_id: number): Promise<OperationResult> {
         const response = await this._client.DELETE("/libraries/{library_id}/permission/{user_id}", {
             params: {
                 path: {
@@ -321,7 +327,7 @@ export class APIClient {
                 },
             },
         })
-        unwrap(response)
+        return unwrap(response)
     }
 
     async updateLibraryAlbum(

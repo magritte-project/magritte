@@ -20,6 +20,7 @@ from db import get_db_session
 from model.library import Library
 from model.user import User, UserLibraryLink
 from schemas.auth import OAuth2Scope
+from schemas.base import OperationResult
 from schemas.library import (
     LibraryCreate,
     LibraryHomePathRead,
@@ -345,6 +346,7 @@ async def update_library_permission(
 
 @router.delete(
     "/{library_id}/permission/{user_id}",
+    response_model=OperationResult,
     summary="Delete library permission for one user",
 )
 async def delete_library_permission(
@@ -386,4 +388,7 @@ async def delete_library_permission(
     await session.delete(user_library_link)
     await session.flush()
 
-    return {"message": "Permission deleted"}
+    return OperationResult(
+        message="Permission deleted",
+        row_count=1,
+    )
