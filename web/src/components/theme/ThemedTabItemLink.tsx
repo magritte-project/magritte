@@ -6,22 +6,28 @@ import type { ThemedTabItemLabelProps } from "@/components/theme/ThemedTabItemLa
 
 import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 
-type BasicLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
-    Omit<ThemedTabItemLabelProps, "isActive">
+interface BasicLinkProps
+    extends
+        React.AnchorHTMLAttributes<HTMLAnchorElement>,
+        Omit<ThemedTabItemLabelProps, "isActive"> {
+    readonly ref?: React.Ref<HTMLAnchorElement>
+}
 
-const BasicLinkComponent = React.forwardRef<HTMLAnchorElement, BasicLinkProps>((props, ref) => {
-    return <a ref={ref} {...props} />
+const BasicLink = createLink(function BasicLink(props: BasicLinkProps) {
+    return <a {...props} />
 })
 
-const CreatedLinkComponent = createLink(BasicLinkComponent)
-
-const ThemedTabItemLink: LinkComponent<typeof BasicLinkComponent> = (props) => {
+const ThemedTabItemLink: LinkComponent<typeof BasicLink> = (props) => {
     return (
-        <CreatedLinkComponent className={classNames("group", props.className)} {...props}>
-            {({ isActive }) => (
-                <ThemedTabItemLabel isActive={isActive} icon={props.icon} label={props.label} />
+        <BasicLink className={classNames("group", props.className)} {...props}>
+            {(state) => (
+                <ThemedTabItemLabel
+                    isActive={state.isActive}
+                    icon={props.icon}
+                    label={props.label}
+                />
             )}
-        </CreatedLinkComponent>
+        </BasicLink>
     )
 }
 

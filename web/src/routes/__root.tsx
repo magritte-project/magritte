@@ -3,7 +3,6 @@ import type { QueryClient } from "@tanstack/react-query"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { z } from "zod"
 
 import type { APIClient } from "@/api/client"
 import type { UserEvents } from "@/api/userEvents"
@@ -37,9 +36,6 @@ declare module "@tanstack/react-router" {
 }
 
 export const Route = createRootRouteWithContext<MagritteRouterContext>()({
-    validateSearch: z.object({
-        split_tab: z.enum(["now_playing", "search"]).optional(),
-    }),
     component: function RootComponent() {
         return (
             <>
