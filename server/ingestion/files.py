@@ -139,6 +139,9 @@ async def try_ingest_path(
         await try_ingest_file(path, libraries, canonizer, session)
     else:
         for dirpath, _, filenames in path.walk(follow_symlinks=follow_links):
+            if dirpath.name.startswith("."):
+                continue
+
             for filename in filenames:
                 if filename.startswith("."):
                     continue
