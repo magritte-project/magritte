@@ -12,6 +12,7 @@ import { useDeleteLibrarySong } from "@/api/mutations/libraries"
 import { readLibrarySongs } from "@/api/queries/libraries"
 import AppForm from "@/components/reusable/AppForm"
 import TableFooter from "@/components/reusable/TableFooter"
+import SongSortButton from "@/components/SongSortButton"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedPopUpMenu from "@/components/theme/ThemedPopUpMenu"
 import useAPIClient from "@/hooks/apiClientHook"
@@ -92,6 +93,19 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             }),
         )
 
+        const handleChangeSortBy = useCallback(
+            (newValue: React.SetStateAction<typeof sortBy>) => {
+                navigate({
+                    search: (oldValue) => {
+                        const sortBy =
+                            typeof newValue === "function" ? newValue(oldValue.sort_by) : newValue
+                        return { ...oldValue, sort_by: sortBy }
+                    },
+                })
+            },
+            [navigate],
+        )
+
         const { openSplit } = useSplits()
         const handleEdit = useCallback(
             (song: SongRead) => {
@@ -149,7 +163,9 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                 <th className="p-2">Artist</th>
                                 <th className="p-2">Album</th>
                                 <th className="p-2">Genre</th>
-                                <th className="p-2"></th>
+                                <th className="p-2">
+                                    <SongSortButton order={sortBy} setOrder={handleChangeSortBy} />
+                                </th>
                             </tr>
                         </thead>
                         <tbody>

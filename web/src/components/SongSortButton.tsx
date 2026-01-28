@@ -1,0 +1,68 @@
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react"
+import { FunnelSimpleIcon } from "@phosphor-icons/react/dist/ssr"
+import { useCallback } from "react"
+
+import Sort, { type SortableKey } from "@/components/reusable/Sort"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
+
+const KEYS = [
+    "artist_name",
+    "album_title",
+    "title",
+    "album_artist",
+    "composer",
+    "genre",
+    "release_date",
+    "track_number",
+    "track_total",
+    "disc_number",
+    "disc_total",
+    "rating",
+    "bpm",
+    "grouping",
+] as const
+
+type SongKey = (typeof KEYS)[number]
+
+export type SongSortKey = SortableKey<SongKey>
+
+const DEFAULT_ORDER: SongSortKey[] = [
+    "+artist_name",
+    "+album_title",
+    "+disc_number",
+    "+track_number",
+]
+
+export interface SongSortButtonProps {
+    readonly order?: SongSortKey[]
+    readonly setOrder: React.Dispatch<React.SetStateAction<SongSortKey[] | undefined>>
+}
+
+export default function SongSortButton({ order = DEFAULT_ORDER, setOrder }: SongSortButtonProps) {
+    const handleSetOrder = useCallback(
+        (newValue: React.SetStateAction<SongSortKey[]>) => {
+            if (typeof newValue === "function") {
+                setOrder((oldValue) => {
+                    return newValue(oldValue ?? DEFAULT_ORDER)
+                })
+            } else {
+                setOrder(newValue)
+            }
+        },
+        [setOrder],
+    )
+
+    return (
+        <Popover className="relative">
+            <ThemedSubtleButton buttonComponent={PopoverButton} className="flex items-center gap-1">
+                <FunnelSimpleIcon aria-label="Sort" />
+            </ThemedSubtleButton>
+            <PopoverPanel
+                anchor="bottom end"
+                className="w-3xs bg-white rounded-md shadow-sm flex flex-col p-4"
+            >
+                <Sort<SongKey> keys={KEYS} order={order} setOrder={handleSetOrder} />
+            </PopoverPanel>
+        </Popover>
+    )
+}
