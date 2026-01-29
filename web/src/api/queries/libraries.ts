@@ -133,6 +133,7 @@ export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySong
             criteria.query,
             criteria.albumId,
             criteria.artistId,
+            criteria.sortBy,
             criteria.offset,
             criteria.limit,
         ),

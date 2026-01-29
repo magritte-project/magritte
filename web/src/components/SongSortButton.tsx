@@ -2,8 +2,9 @@ import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react"
 import { FunnelSimpleIcon } from "@phosphor-icons/react/dist/ssr"
 import { useCallback } from "react"
 
-import Sort, { type SortableKey } from "@/components/reusable/Sort"
+import SortControl from "@/components/reusable/SortControl"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
+import { type SortableKey } from "@/utilities/sorting"
 
 const KEYS = [
     "artist_name",
@@ -23,6 +24,23 @@ const KEYS = [
 ] as const
 
 type SongKey = (typeof KEYS)[number]
+
+const KEY_LABELS: Record<SongKey, string> = {
+    artist_name: "Artist",
+    album_title: "Album",
+    title: "Title",
+    album_artist: "Album Artist",
+    composer: "Composer",
+    genre: "Genre",
+    release_date: "Release Date",
+    track_number: "Track Number",
+    track_total: "Track Total",
+    disc_number: "Disc Number",
+    disc_total: "Disc Total",
+    rating: "Rating",
+    bpm: "BPM",
+    grouping: "Grouping",
+}
 
 export type SongSortKey = SortableKey<SongKey>
 
@@ -61,7 +79,12 @@ export default function SongSortButton({ order = DEFAULT_ORDER, setOrder }: Song
                 anchor="bottom end"
                 className="w-3xs bg-white rounded-md shadow-sm flex flex-col p-4"
             >
-                <Sort<SongKey> keys={KEYS} order={order} setOrder={handleSetOrder} />
+                <SortControl<SongKey>
+                    keys={KEYS}
+                    labels={KEY_LABELS}
+                    order={order}
+                    setOrder={handleSetOrder}
+                />
             </PopoverPanel>
         </Popover>
     )

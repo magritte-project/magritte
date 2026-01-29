@@ -1,7 +1,7 @@
 import { MenuButton } from "@headlessui/react"
 import { DotsThreeCircleVerticalIcon, TrashIcon } from "@phosphor-icons/react"
 import { PencilIcon } from "@phosphor-icons/react/dist/ssr"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"
 import { z } from "zod"
@@ -82,7 +82,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
         } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
         const apiClient = useAPIClient()
-        const { data: page } = useSuspenseQuery(
+        const pageQuery = useQuery(
             readLibrarySongs(apiClient, {
                 libraryId: Number(libraryId),
                 query,
@@ -141,6 +141,10 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             },
         })
 
+        if (pageQuery.isError) {
+            return <ThemedContentUnavailable error={pageQuery.error} onRetry={pageQuery.refetch} />
+        }
+
         return (
             <>
                 <div className="m-2 flex flex-col gap-2 cursor-default">
@@ -155,7 +159,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                             )}
                         </facetForm.AppField>
                     </AppForm>
-                    <table>
+                    <table className="w-full">
                         <thead>
                             <tr className="text-left font-semibold text-sm">
                                 <th className="p-2">Title</th>
@@ -169,101 +173,102 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                             </tr>
                         </thead>
                         <tbody>
-                            {page.items.map((song) => (
-                                <tr
-                                    key={`song-${song.id}`}
-                                    className="cursor-pointer bg-gray-50 odd:bg-inherit hover:bg-blue-50"
-                                    onClick={() =>
-                                        player.replaceQueue({
-                                            newQueue: Queue.with(
-                                                new LibrarySongsQueueShard(
-                                                    queueShardContext,
-                                                    page,
-                                                    {
-                                                        libraryId: Number(libraryId),
-                                                        albumId,
-                                                        artistId,
-                                                        sortBy,
-                                                    },
+                            {pageQuery.isSuccess &&
+                                pageQuery.data.items.map((song) => (
+                                    <tr
+                                        key={`song-${song.id}`}
+                                        className="cursor-pointer bg-gray-50 odd:bg-inherit hover:bg-blue-50"
+                                        onClick={() =>
+                                            player.replaceQueue({
+                                                newQueue: Queue.with(
+                                                    new LibrarySongsQueueShard(
+                                                        queueShardContext,
+                                                        pageQuery.data,
+                                                        {
+                                                            libraryId: Number(libraryId),
+                                                            albumId,
+                                                            artistId,
+                                                            sortBy,
+                                                        },
+                                                    ),
                                                 ),
-                                            ),
-                                            startingItem: song,
-                                            playNow: true,
-                                        })
-                                    }
-                                    onKeyDown={() => {}}
-                                >
-                                    <td className="px-2 py-1">{song.title}</td>
-                                    <td className="px-2 py-1">
-                                        {formatDuration(song.end_time - song.start_time)}
-                                    </td>
-                                    <td className="px-2 py-1">{song.album_title}</td>
-                                    <td className="px-2 py-1">{song.artist_name}</td>
-                                    <td className="px-2 py-1">{song.genre}</td>
-                                    <td className="px-2 py-1">
-                                        <ThemedPopUpMenu
-                                            button={
-                                                <MenuButton
-                                                    className="text-blue-600 p-2"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    <DotsThreeCircleVerticalIcon
-                                                        weight="bold"
-                                                        aria-label="Actions"
-                                                    />
-                                                </MenuButton>
-                                            }
-                                            items={[
-                                                {
-                                                    key: "edit",
-                                                    label: (
-                                                        <>
-                                                            <PencilIcon /> Edit
-                                                        </>
-                                                    ),
-                                                    onClick: () => handleEdit(song),
-                                                },
-                                                {
-                                                    key: "remove",
-                                                    label: (
-                                                        <>
-                                                            <TrashIcon /> Remove
-                                                        </>
-                                                    ),
-                                                    onClick: () => handleRemove(song),
-                                                },
-                                            ]}
-                                        />
-                                    </td>
-                                </tr>
-                            ))}
+                                                startingItem: song,
+                                                playNow: true,
+                                            })
+                                        }
+                                        onKeyDown={() => {}}
+                                    >
+                                        <td className="px-2 py-1">{song.title}</td>
+                                        <td className="px-2 py-1">
+                                            {formatDuration(song.end_time - song.start_time)}
+                                        </td>
+                                        <td className="px-2 py-1">{song.album_title}</td>
+                                        <td className="px-2 py-1">{song.artist_name}</td>
+                                        <td className="px-2 py-1">{song.genre}</td>
+                                        <td className="px-2 py-1">
+                                            <ThemedPopUpMenu
+                                                button={
+                                                    <MenuButton
+                                                        className="text-blue-600 p-2"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <DotsThreeCircleVerticalIcon
+                                                            weight="bold"
+                                                            aria-label="Actions"
+                                                        />
+                                                    </MenuButton>
+                                                }
+                                                items={[
+                                                    {
+                                                        key: "edit",
+                                                        label: (
+                                                            <>
+                                                                <PencilIcon /> Edit
+                                                            </>
+                                                        ),
+                                                        onClick: () => handleEdit(song),
+                                                    },
+                                                    {
+                                                        key: "remove",
+                                                        label: (
+                                                            <>
+                                                                <TrashIcon /> Remove
+                                                            </>
+                                                        ),
+                                                        onClick: () => handleRemove(song),
+                                                    },
+                                                ]}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
-                    <TableFooter
-                        className="self-center"
-                        singularLabel="Song"
-                        pluralLabel="Songs"
-                        offset={page.offset}
-                        limit={page.limit}
-                        total={page.total}
-                        onChange={(offset, _limit) =>
-                            navigate({
-                                search: (oldSearch) => ({
-                                    ...oldSearch,
-                                    offset,
-                                }),
-                            })
-                        }
-                    />
+                    {pageQuery.isPending ? (
+                        <ThemedContentUnavailable />
+                    ) : (
+                        pageQuery.isSuccess && (
+                            <TableFooter
+                                className="self-center"
+                                singularLabel="Song"
+                                pluralLabel="Songs"
+                                offset={pageQuery.data.offset}
+                                limit={pageQuery.data.limit}
+                                total={pageQuery.data.total}
+                                onChange={(offset, _limit) =>
+                                    navigate({
+                                        search: (oldSearch) => ({
+                                            ...oldSearch,
+                                            offset,
+                                        }),
+                                    })
+                                }
+                            />
+                        )
+                    )}
                 </div>
                 <Outlet />
             </>
         )
-    },
-    pendingComponent() {
-        return <ThemedContentUnavailable />
-    },
-    errorComponent({ error, reset }) {
-        return <ThemedContentUnavailable error={error} onRetry={reset} />
     },
 })
