@@ -6,6 +6,7 @@ import type {
     PlaybackEngineState,
 } from "@/playback/engine"
 import type { PlayableItem } from "@/playback/item"
+import type { PlaybackModes } from "@/playback/modes"
 
 import { type EventSink, type EventStream, createEvent } from "@/utilities/events"
 import { resolveUrl } from "@/utilities/resources"
@@ -85,6 +86,10 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     readonly $events: EventStream<PlaybackEngineEvent>
+
+    async setPlaybackModes(_modes: PlaybackModes): Promise<void> {
+        /** Nothing to do in this engine */
+    }
 
     async canEnqueue(item: PlayableItem): Promise<boolean> {
         const sources = item.sources ?? []

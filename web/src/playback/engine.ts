@@ -1,4 +1,5 @@
 import type { PlayableItem } from "@/playback/item"
+import type { PlaybackModes } from "@/playback/modes"
 import type { EventStream } from "@/utilities/events"
 
 export type PlaybackEngineState = "playing" | "paused" | "stopped"
@@ -41,6 +42,9 @@ export interface PlaybackEngine {
 
     /** Events relating to the state of this playback engine */
     readonly $events: EventStream<PlaybackEngineEvent>
+
+    /** Set the playback modes for this engine */
+    setPlaybackModes(modes: PlaybackModes): Promise<void>
 
     /**
      * Check whether this playback engine can play a given item.

@@ -5,6 +5,7 @@ import type {
     PlaybackEngineState,
 } from "@/playback/engine"
 import type { PlayableItem } from "@/playback/item"
+import type { PlaybackModes } from "@/playback/modes"
 
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
@@ -80,6 +81,28 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
     }
 
     readonly $events: EventStream<PlaybackEngineEvent>
+
+    async setPlaybackModes(modes: PlaybackModes): Promise<void> {
+        switch (modes.repeat) {
+            case "off":
+                this._musicKit.repeatMode = MusicKit.PlayerRepeatMode.none
+                break
+            case "one":
+                this._musicKit.repeatMode = MusicKit.PlayerRepeatMode.one
+                break
+            case "all":
+                this._musicKit.repeatMode = MusicKit.PlayerRepeatMode.all
+                break
+        }
+        switch (modes.shuffle) {
+            case "off":
+                this._musicKit.shuffleMode = MusicKit.PlayerShuffleMode.off
+                break
+            case "on":
+                this._musicKit.shuffleMode = MusicKit.PlayerShuffleMode.songs
+                break
+        }
+    }
 
     async canEnqueue(item: PlayableItem): Promise<boolean> {
         const sources = item.sources ?? []

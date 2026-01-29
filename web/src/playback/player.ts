@@ -7,6 +7,7 @@ import type {
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
 import type { PlayableItem } from "@/playback/item"
 
+import { PlaybackModes } from "@/playback/modes"
 import { Queue, type QueueEntry } from "@/playback/queue"
 import {
     type EventSink,
@@ -15,7 +16,10 @@ import {
     createEvent,
 } from "@/utilities/events"
 
-export type PlayerEvent = PlaybackEngineEvent | { type: "queueDidChange" }
+export type PlayerEvent =
+    | PlaybackEngineEvent
+    | { type: "queueDidChange" }
+    | { type: "playbackModesDidChange"; modes: PlaybackModes }
 
 export interface ReplaceQueueOptions extends Omit<PlaybackEngineEnqueueOptions, "itemToPlay"> {
     readonly newQueue: Queue<PlayableItem>
@@ -25,6 +29,7 @@ export interface ReplaceQueueOptions extends Omit<PlaybackEngineEnqueueOptions, 
 export class Player {
     private readonly _engineRegistry: PlaybackEngineRegistry
     private readonly _events: EventSink<PlayerEvent>
+    private _modes: PlaybackModes
     private _activeEngineEventSubscription: EventSubscription<PlaybackEngineEvent> | null
     private _activeEngine: PlaybackEngine | null
     private _queue: Queue<PlayableItem>
@@ -33,23 +38,25 @@ export class Player {
     constructor(engineRegistry: PlaybackEngineRegistry) {
         this._engineRegistry = engineRegistry
         ;[this._events, this.$events] = createEvent()
+        this._modes = PlaybackModes.default
         this._activeEngineEventSubscription = null
         this._activeEngine = null
         this._queue = new Queue()
         this._playingEntry = null
     }
 
-    private _changeEngine(newEngine: PlaybackEngine | null) {
+    private async _changeEngine(newEngine: PlaybackEngine | null): Promise<void> {
         if (this._activeEngine === newEngine) {
             return
         }
         if (this._activeEngine !== null) {
-            this._activeEngine.stop()
+            await this._activeEngine.stop()
             this._activeEngineEventSubscription?.unsubscribe()
             this._activeEngineEventSubscription = null
         }
         this._activeEngine = newEngine
         if (newEngine !== null) {
+            await newEngine.setPlaybackModes(this._modes)
             this._activeEngineEventSubscription = newEngine.$events.subscribe((e) =>
                 this._handleEngineEvent(e),
             )
@@ -133,6 +140,14 @@ export class Player {
 
     /** Events relating to the state of playback */
     readonly $events: EventStream<PlayerEvent>
+
+    async setPlaybackModes(modes: PlaybackModes): Promise<void> {
+        this._modes = modes
+        if (this._activeEngine !== null) {
+            await this._activeEngine.setPlaybackModes(modes)
+        }
+        await this._events.dispatch({ type: "playbackModesDidChange", modes })
+    }
 
     async replaceQueue({ newQueue, startingItem, ...options }: ReplaceQueueOptions): Promise<void> {
         await this._activeEngine?.stop()
