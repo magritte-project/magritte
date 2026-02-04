@@ -1,26 +1,29 @@
 import type { QueryClient } from "@tanstack/react-query"
 
 import type { APIClient } from "@/api/client"
-import type { PlaybackModes } from "@/playback/modes"
 import type { EventStream } from "@/utilities/events"
 
 export type QueueEvent = { type: "queueDidChange" }
 
-export interface QueueItemContext<ItemID> {
-    /** Get the current playback modes */
-    getPlaybackModes(): Promise<PlaybackModes>
+export interface RandomItemContext<Item extends { id: unknown }> {
+    /** Retrieve the number of played items */
+    getNumberOfPlayedItems(): Promise<number>
 
     /** Check whether an item has already been played */
-    hasPlayedItem(itemId: ItemID): Promise<boolean>
+    hasPlayedItem(item: Item): Promise<boolean>
+
+    /** Get a random index */
+    randomIndex(length: number): Promise<number>
 }
 
 export interface Queue<Item extends { id: unknown }> {
     readonly $events: EventStream<QueueEvent>
     hasItem(item: Item): Promise<boolean>
-    firstItem(context: QueueItemContext<Item["id"]>): Promise<Item | null>
-    lastItem(context: QueueItemContext<Item["id"]>): Promise<Item | null>
-    itemPreceding(item: Item, context: QueueItemContext<Item["id"]>): Promise<Item | null>
-    itemFollowing(item: Item, context: QueueItemContext<Item["id"]>): Promise<Item | null>
+    firstItem(): Promise<Item | null>
+    lastItem(): Promise<Item | null>
+    randomItem(context: RandomItemContext<Item>): Promise<Item | null>
+    itemPreceding(item: Item): Promise<Item | null>
+    itemFollowing(item: Item): Promise<Item | null>
 }
 
 export interface QueueContext {

@@ -4,6 +4,7 @@ import { useCallback } from "react"
 
 import SortControl from "@/components/reusable/SortControl"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
+import { resolveNewValue } from "@/utilities/react"
 import { type SortableKey } from "@/utilities/sorting"
 
 const KEYS = [
@@ -59,13 +60,9 @@ export interface SongSortButtonProps {
 export default function SongSortButton({ order = DEFAULT_ORDER, setOrder }: SongSortButtonProps) {
     const handleSetOrder = useCallback(
         (newValue: React.SetStateAction<SongSortKey[]>) => {
-            if (typeof newValue === "function") {
-                setOrder((oldValue) => {
-                    return newValue(oldValue ?? DEFAULT_ORDER)
-                })
-            } else {
-                setOrder(newValue)
-            }
+            setOrder((oldValue) => {
+                return resolveNewValue(oldValue ?? DEFAULT_ORDER, newValue)
+            })
         },
         [setOrder],
     )

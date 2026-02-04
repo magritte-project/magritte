@@ -3,7 +3,7 @@ import type { QueryClient } from "@tanstack/react-query"
 import type { APIClient } from "@/api/client"
 import type { LibraryMediaReadSongRead } from "@/api/openapi"
 import type { PlayableItem } from "@/playback/item"
-import type { Queue, QueueContext, QueueEvent, QueueItemContext } from "@/playback/queue/base"
+import type { Queue, QueueContext, QueueEvent, RandomItemContext } from "@/playback/queue/base"
 
 import { readLibrarySongs, type ReadLibrarySongsCriteria } from "@/api/queries/libraries"
 import { createEvent, type EventStream } from "@/utilities/events"
@@ -104,7 +104,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         return false
     }
 
-    async firstItem(_context: QueueItemContext<PlayableItem["id"]>): Promise<PlayableItem | null> {
+    async firstItem(): Promise<PlayableItem | null> {
         const firstPage = await this._pageAt(0)
         if (firstPage.items.length > 0) {
             return firstPage.items[0]
@@ -113,7 +113,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         }
     }
 
-    async lastItem(_context: QueueItemContext<PlayableItem["id"]>): Promise<PlayableItem | null> {
+    async lastItem(): Promise<PlayableItem | null> {
         const lastPage = await this._pageAt(this._lastPageOffset)
         if (lastPage.items.length > 0) {
             return lastPage.items[0]
@@ -122,10 +122,25 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         }
     }
 
-    async itemPreceding(
-        item: PlayableItem,
-        _context: QueueItemContext<PlayableItem["id"]>,
-    ): Promise<PlayableItem | null> {
+    async randomItem({
+        getNumberOfPlayedItems,
+        hasPlayedItem,
+        randomIndex,
+    }: RandomItemContext<PlayableItem>): Promise<PlayableItem | null> {
+        const maxAttempts = Math.max(0, this._total - (await getNumberOfPlayedItems()))
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            const offset = await randomIndex(this._pages.size)
+            const page = await this._pageAt(offset)
+            const index = await randomIndex(page.items.length)
+            const item = page.items[index]
+            if (!(await hasPlayedItem(item))) {
+                return item
+            }
+        }
+        return null
+    }
+
+    async itemPreceding(item: PlayableItem): Promise<PlayableItem | null> {
         const [offset, index] = await this._pageOffsetAndIndexForItem(item)
         if (offset === -1 || index === -1) {
             throw new Error(`Could not find item ${item.id}`)
@@ -142,10 +157,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         }
     }
 
-    async itemFollowing(
-        item: PlayableItem,
-        _context: QueueItemContext<PlayableItem["id"]>,
-    ): Promise<PlayableItem | null> {
+    async itemFollowing(item: PlayableItem): Promise<PlayableItem | null> {
         const [offset, index] = await this._pageOffsetAndIndexForItem(item)
         if (offset === -1 || index === -1) {
             throw new Error(`Could not find item ${item.id}`)

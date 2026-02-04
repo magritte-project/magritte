@@ -22,6 +22,7 @@ import useQueueContext from "@/hooks/queueContextHook"
 import useSplits from "@/hooks/splitsHook"
 import LibraryQueue from "@/playback/queue/library"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
+import { resolveNewValue } from "@/utilities/react"
 
 function formatDuration(seconds: number) {
     const minutes = Math.floor(seconds / 60)
@@ -96,8 +97,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             (newValue: React.SetStateAction<typeof sortBy>) => {
                 navigate({
                     search: (oldValue) => {
-                        const sortBy =
-                            typeof newValue === "function" ? newValue(oldValue.sort_by) : newValue
+                        const sortBy = resolveNewValue(oldValue.sort_by, newValue)
                         return { ...oldValue, sort_by: sortBy }
                     },
                 })

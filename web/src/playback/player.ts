@@ -8,14 +8,16 @@ import type PlaybackEngineRegistry from "@/playback/engineRegistry"
 import type { PlayableItem } from "@/playback/item"
 
 import { PlaybackModes } from "@/playback/modes"
-import { type Queue, type QueueItemContext } from "@/playback/queue/base"
+import { type Queue, type RandomItemContext } from "@/playback/queue/base"
 import EmptyQueue from "@/playback/queue/empty"
+import { CountingStack, type ReadonlyCountingStack } from "@/utilities/countingStack"
 import {
     type EventSink,
     type EventStream,
     type EventSubscription,
     createEvent,
 } from "@/utilities/events"
+import { resolveNewValue } from "@/utilities/react"
 
 export type PlayerEvent =
     | PlaybackEngineEvent
@@ -30,6 +32,8 @@ export interface ReplaceQueueOptions extends Omit<PlaybackEngineEnqueueOptions, 
 export class Player {
     private readonly _engineRegistry: PlaybackEngineRegistry
     private readonly _events: EventSink<PlayerEvent>
+    private readonly _playedItems: CountingStack<PlayableItem, "id">
+    private readonly _shuffleContext: ShuffleContext
     private _modes: PlaybackModes
     private _activeEngineEventSubscription: EventSubscription<PlaybackEngineEvent> | null
     private _activeEngine: PlaybackEngine | null
@@ -39,21 +43,13 @@ export class Player {
     constructor(engineRegistry: PlaybackEngineRegistry) {
         this._engineRegistry = engineRegistry
         ;[this._events, this.$events] = createEvent()
+        this._playedItems = new CountingStack("id")
+        this._shuffleContext = new ShuffleContext(this._playedItems)
         this._modes = PlaybackModes.default
         this._activeEngineEventSubscription = null
         this._activeEngine = null
         this._queue = new EmptyQueue()
         this._playingItem = null
-    }
-
-    private get _queueItemContext(): QueueItemContext<PlayableItem> {
-        return {
-            getPlaybackModes: async () => this._modes,
-            hasPlayedItem: async (_itemId: PlayableItem) => {
-                // TODO: Implement this
-                return false
-            },
-        }
     }
 
     private async _changeEngine(newEngine: PlaybackEngine | null): Promise<void> {
@@ -94,6 +90,51 @@ export class Player {
         })
     }
 
+    private async _dequeuePreviousItem(): Promise<PlayableItem | null> {
+        if (this._playingItem === null) {
+            return await this.queue.firstItem()
+        }
+        if (this._modes.repeat === "one") {
+            return this._playingItem
+        } else {
+            const previousItem =
+                this._modes.shuffle === "on"
+                    ? (this._playedItems.pop() ?? null)
+                    : await this._queue.itemPreceding(this._playingItem)
+            if (previousItem === null && this._modes.repeat === "all") {
+                this._playedItems.clear() // TODO: ew??
+                return await this.queue.lastItem()
+            } else {
+                return previousItem
+            }
+        }
+    }
+
+    private async _dequeueNextItem(): Promise<PlayableItem | null> {
+        if (this._playingItem === null) {
+            return this._modes.shuffle === "on"
+                ? await this._queue.randomItem(this._shuffleContext)
+                : await this.queue.firstItem()
+        }
+
+        if (this._modes.repeat === "one") {
+            return this._playingItem
+        } else {
+            this._playedItems.push(this._playingItem)
+
+            const nextItem =
+                this._modes.shuffle === "on"
+                    ? await this._queue.randomItem(this._shuffleContext)
+                    : await this._queue.itemFollowing(this._playingItem)
+            if (nextItem === null && this._modes.repeat === "all") {
+                this._playedItems.clear() // TODO: ew??
+                return await this.queue.firstItem()
+            } else {
+                return nextItem
+            }
+        }
+    }
+
     private async _handleEngineEvent(event: PlaybackEngineEvent): Promise<void> {
         switch (event.type) {
             case "playbackStateDidChange":
@@ -102,13 +143,7 @@ export class Player {
                 this._events.dispatch(event)
                 break
             case "endOfAudio": {
-                if (this._playingItem === null) {
-                    return
-                }
-                const nextItem = await this._queue.itemFollowing(
-                    this._playingItem,
-                    this._queueItemContext,
-                )
+                const nextItem = await this._dequeueNextItem()
                 if (nextItem === null) {
                     await this.stop()
                     this._events.dispatch(event)
@@ -122,6 +157,10 @@ export class Player {
 
     get playingItem(): PlayableItem | null {
         return this._playingItem
+    }
+
+    get playbackModes(): PlaybackModes {
+        return this._modes
     }
 
     get playbackState(): PlaybackEngineState {
@@ -155,7 +194,10 @@ export class Player {
     /** Events relating to the state of playback */
     readonly $events: EventStream<PlayerEvent>
 
-    async setPlaybackModes(modes: PlaybackModes): Promise<void> {
+    async setPlaybackModes(
+        newModes: PlaybackModes | ((prevState: PlaybackModes) => PlaybackModes),
+    ): Promise<void> {
+        const modes = resolveNewValue(this._modes, newModes)
         this._modes = modes
         if (this._activeEngine !== null) {
             await this._activeEngine.setPlaybackModes(modes)
@@ -164,12 +206,12 @@ export class Player {
     }
 
     async replaceQueue({ newQueue, startingItem, ...options }: ReplaceQueueOptions): Promise<void> {
-        await this._activeEngine?.stop()
+        await this.stop()
 
         // TODO: Observe queue events
         this._queue = newQueue
         this._events.dispatch({ type: "queueDidChange" })
-        const item = startingItem ?? (await newQueue.firstItem(this._queueItemContext))
+        const item = startingItem ?? (await this._dequeueNextItem())
         if (item === null) {
             return // shrug
         }
@@ -182,47 +224,23 @@ export class Player {
             await this.seek(0)
             return true
         }
-        if (this._playingItem === null) {
-            const firstItem = await this._queue.firstItem(this._queueItemContext)
-            if (firstItem !== null) {
-                await this._playItem(firstItem, { playNow: true })
-                return true
-            }
+        const precedingItem = await this._dequeuePreviousItem()
+        if (precedingItem === null) {
+            await this.stop()
             return false
-        } else {
-            const previousItem = await this._queue.itemPreceding(
-                this._playingItem,
-                this._queueItemContext,
-            )
-            if (previousItem === null) {
-                await this.stop()
-                return false
-            }
-            await this._playItem(previousItem, { playNow: true })
-            return true
         }
+        await this._playItem(precedingItem, { playNow: true })
+        return true
     }
 
     async skipNext(): Promise<boolean> {
-        if (this._playingItem === null) {
-            const firstItem = await this._queue.firstItem(this._queueItemContext)
-            if (firstItem !== null) {
-                await this._playItem(firstItem, { playNow: true })
-                return true
-            }
+        const followingItem = await this._dequeueNextItem()
+        if (followingItem === null) {
+            await this.stop()
             return false
-        } else {
-            const followingItem = await this._queue.itemFollowing(
-                this._playingItem,
-                this._queueItemContext,
-            )
-            if (followingItem === null) {
-                await this.stop()
-                return false
-            }
-            await this._playItem(followingItem, { playNow: true })
-            return true
         }
+        await this._playItem(followingItem, { playNow: true })
+        return true
     }
 
     async seek(newTime: number): Promise<void> {
@@ -239,6 +257,27 @@ export class Player {
 
     async stop(): Promise<void> {
         this._playingItem = null
+        this._playedItems.clear()
         await this._activeEngine?.stop()
+    }
+}
+
+class ShuffleContext implements RandomItemContext<PlayableItem> {
+    private readonly _playedItems: ReadonlyCountingStack<PlayableItem, "id">
+
+    constructor(playedItems: ReadonlyCountingStack<PlayableItem, "id">) {
+        this._playedItems = playedItems
+    }
+
+    async getNumberOfPlayedItems(): Promise<number> {
+        return this._playedItems.size
+    }
+
+    async hasPlayedItem(item: PlayableItem): Promise<boolean> {
+        return this._playedItems.has(item.id)
+    }
+
+    async randomIndex(length: number): Promise<number> {
+        return Math.floor(Math.random() * length)
     }
 }

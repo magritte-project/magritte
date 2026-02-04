@@ -13,8 +13,28 @@ export class PlaybackModes {
         return new PlaybackModes(repeat, this.shuffle)
     }
 
+    withNextRepeat(): PlaybackModes {
+        switch (this.repeat) {
+            case "off":
+                return this.withRepeat("one")
+            case "one":
+                return this.withRepeat("all")
+            case "all":
+                return this.withRepeat("off")
+        }
+    }
+
     withShuffle(shuffle: ShuffleMode): PlaybackModes {
         return new PlaybackModes(this.repeat, shuffle)
+    }
+
+    withNextShuffle(): PlaybackModes {
+        switch (this.shuffle) {
+            case "off":
+                return this.withShuffle("on")
+            case "on":
+                return this.withShuffle("off")
+        }
     }
 
     toString(): string {

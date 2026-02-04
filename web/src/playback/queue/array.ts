@@ -1,4 +1,4 @@
-import type { Queue, QueueEvent, QueueItemContext } from "@/playback/queue/base"
+import type { Queue, QueueEvent, RandomItemContext } from "@/playback/queue/base"
 
 import { createEvent, EventSink, type EventStream } from "@/utilities/events"
 
@@ -21,21 +21,38 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
         return this._items.some((candidate) => candidate.id === item.id)
     }
 
-    async firstItem(_context: QueueItemContext<Item["id"]>): Promise<Item | null> {
+    async firstItem(): Promise<Item | null> {
         if (this._items.length === 0) {
             return null
         }
         return this._items[0]
     }
 
-    async lastItem(_context: QueueItemContext<Item["id"]>): Promise<Item | null> {
+    async lastItem(): Promise<Item | null> {
         if (this._items.length === 0) {
             return null
         }
         return this._items[this._items.length - 1]
     }
 
-    async itemPreceding(item: Item, _context: QueueItemContext<Item["id"]>): Promise<Item | null> {
+    async randomItem({
+        getNumberOfPlayedItems,
+        hasPlayedItem,
+        randomIndex,
+    }: RandomItemContext<Item>): Promise<Item | null> {
+        const numberOfItems = this._items.length
+        const maxAttempts = Math.max(0, numberOfItems - (await getNumberOfPlayedItems()))
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            const index = await randomIndex(numberOfItems)
+            const item = this._items[index]
+            if (!(await hasPlayedItem(item))) {
+                return item
+            }
+        }
+        return null
+    }
+
+    async itemPreceding(item: Item): Promise<Item | null> {
         const itemIndex = this._items.findIndex((candidate) => candidate.id === item.id)
         if (itemIndex === -1 || itemIndex === 0) {
             return null
@@ -43,7 +60,7 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
         return this._items[itemIndex - 1]
     }
 
-    async itemFollowing(item: Item, _context: QueueItemContext<Item["id"]>): Promise<Item | null> {
+    async itemFollowing(item: Item): Promise<Item | null> {
         const itemIndex = this._items.findIndex((candidate) => candidate.id === item.id)
         if (itemIndex === -1 || itemIndex === this._items.length - 1) {
             return null

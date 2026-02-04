@@ -1,11 +1,15 @@
 import {
+    ArrowsLeftRightIcon,
     PauseIcon,
     PlayIcon,
     PlusIcon,
+    RepeatOnceIcon,
     SignInIcon,
     SignOutIcon,
     SkipBackIcon,
     SkipForwardIcon,
+    RepeatIcon,
+    ShuffleIcon,
 } from "@phosphor-icons/react"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
@@ -14,9 +18,9 @@ import CommandPalette, { filterItems, getItemIndex, useHandleOpenCommandPalette 
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import usePlayer from "@/hooks/playerHook"
 import useServiceRegistry from "@/hooks/serviceRegistryHook"
-import useUserSession from "@/hooks/userSessionHook"
 
 import "react-cmdk/dist/cmdk.css"
+import useUserSession from "@/hooks/userSessionHook"
 
 export default function AppCommandPalette() {
     const [search, setSearch] = useState("")
@@ -55,6 +59,56 @@ export default function AppCommandPalette() {
                         children: "Skip Next",
                         onClick: () => player.skipNext(),
                         disabled: player.playbackState === "stopped",
+                    },
+                    {
+                        id: "playback.repeatOff",
+                        icon: RepeatIcon,
+                        children: "Repeat Off",
+                        onClick: () =>
+                            player.setPlaybackModes((playbackModes) =>
+                                playbackModes.withRepeat("off"),
+                            ),
+                        disabled: player.playbackModes.repeat === "off",
+                    },
+                    {
+                        id: "playback.repeatAll",
+                        icon: RepeatIcon,
+                        children: "Repeat All",
+                        onClick: () =>
+                            player.setPlaybackModes((playbackModes) =>
+                                playbackModes.withRepeat("all"),
+                            ),
+                        disabled: player.playbackModes.repeat === "all",
+                    },
+                    {
+                        id: "playback.repeatOne",
+                        icon: RepeatOnceIcon,
+                        children: "Repeat One",
+                        onClick: () =>
+                            player.setPlaybackModes((playbackModes) =>
+                                playbackModes.withRepeat("one"),
+                            ),
+                        disabled: player.playbackModes.repeat === "one",
+                    },
+                    {
+                        id: "playback.shuffleOff",
+                        icon: ArrowsLeftRightIcon,
+                        children: "Shuffle Off",
+                        onClick: () =>
+                            player.setPlaybackModes((playbackModes) =>
+                                playbackModes.withShuffle("off"),
+                            ),
+                        disabled: player.playbackModes.shuffle === "off",
+                    },
+                    {
+                        id: "playback.shuffleOn",
+                        icon: ShuffleIcon,
+                        children: "Shuffle On",
+                        onClick: () =>
+                            player.setPlaybackModes((playbackModes) =>
+                                playbackModes.withShuffle("on"),
+                            ),
+                        disabled: player.playbackModes.shuffle === "on",
                     },
                 ],
             },

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 
 import ArrayQueue from "./array"
-import { mockQueueItemContext, mockTestItem, type TestItem } from "./testing"
+import { mockTestItem, type TestItem } from "./testing"
 
 const mockItems: readonly TestItem[] = [mockTestItem(), mockTestItem(), mockTestItem()]
 
@@ -9,58 +9,50 @@ describe("ArrayQueue", () => {
     describe("hasItem", () => {
         it("should return true for items it contains", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
-            expect(subject.hasItem(mockItems[0])).resolves.toBe(true)
+            await expect(subject.hasItem(mockItems[0])).resolves.toBe(true)
         })
 
         it("should return false for items it does not contain", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
-            expect(subject.hasItem(mockTestItem())).resolves.toBe(false)
+            await expect(subject.hasItem(mockTestItem())).resolves.toBe(false)
         })
     })
 
     describe("#firstItem", () => {
         it("should return its first item", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
-            expect(subject.firstItem(mockQueueItemContext)).resolves.toStrictEqual(mockItems[0])
+            await expect(subject.firstItem()).resolves.toStrictEqual(mockItems[0])
         })
     })
 
     describe("#lastItem", () => {
         it("should return its last item", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
-            expect(subject.lastItem(mockQueueItemContext)).resolves.toStrictEqual(
-                mockItems[mockItems.length - 1],
-            )
+            await expect(subject.lastItem()).resolves.toStrictEqual(mockItems[mockItems.length - 1])
         })
     })
 
     describe("#itemPreceding", () => {
         it("should return the preceding item", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
-            expect(
-                subject.itemPreceding(mockItems[1], mockQueueItemContext),
-            ).resolves.toStrictEqual(mockItems[0])
+            await expect(subject.itemPreceding(mockItems[1])).resolves.toStrictEqual(mockItems[0])
         })
 
         it("should return null for the first item", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
-            expect(subject.itemPreceding(mockItems[0], mockQueueItemContext)).resolves.toBeNull()
+            await expect(subject.itemPreceding(mockItems[0])).resolves.toBeNull()
         })
     })
 
     describe("#itemFollowing", () => {
         it("should return the following item", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
-            expect(
-                subject.itemFollowing(mockItems[0], mockQueueItemContext),
-            ).resolves.toStrictEqual(mockItems[1])
+            await expect(subject.itemFollowing(mockItems[0])).resolves.toStrictEqual(mockItems[1])
         })
 
         it("should return null for the last item", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
-            expect(
-                subject.itemFollowing(mockItems[mockItems.length - 1], mockQueueItemContext),
-            ).resolves.toBeNull()
+            await expect(subject.itemFollowing(mockItems[mockItems.length - 1])).resolves.toBeNull()
         })
     })
 
@@ -70,8 +62,8 @@ describe("ArrayQueue", () => {
             const newItem1 = mockTestItem()
             const newItem2 = mockTestItem()
             await subject.push(newItem1, newItem2)
-            expect(subject.hasItem(newItem1)).resolves.toBe(true)
-            expect(subject.hasItem(newItem2)).resolves.toBe(true)
+            await expect(subject.hasItem(newItem1)).resolves.toBe(true)
+            await expect(subject.hasItem(newItem2)).resolves.toBe(true)
         })
 
         it("should dispatch an event", async () => {
@@ -87,7 +79,7 @@ describe("ArrayQueue", () => {
         it("should remove the item at the specified index", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
             const removedItem = await subject.removeAt(0)
-            expect(subject.hasItem(removedItem)).resolves.toBe(false)
+            await expect(subject.hasItem(removedItem)).resolves.toBe(false)
         })
 
         it("should dispatch an event", async () => {

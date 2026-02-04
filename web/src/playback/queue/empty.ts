@@ -1,4 +1,4 @@
-import type { Queue, QueueEvent, QueueItemContext } from "@/playback/queue/base"
+import type { Queue, QueueEvent, RandomItemContext } from "@/playback/queue/base"
 
 import { createEvent, type EventStream } from "@/utilities/events"
 
@@ -13,19 +13,23 @@ export default class EmptyQueue<Item extends { id: unknown }> implements Queue<I
         return false
     }
 
-    async firstItem(_context: QueueItemContext<Item["id"]>): Promise<Item | null> {
+    async firstItem(): Promise<Item | null> {
         return null
     }
 
-    async lastItem(_context: QueueItemContext<Item["id"]>): Promise<Item | null> {
+    async lastItem(): Promise<Item | null> {
         return null
     }
 
-    async itemPreceding(_item: Item, _context: QueueItemContext<Item["id"]>): Promise<Item | null> {
+    async randomItem(_context: RandomItemContext<Item>): Promise<Item | null> {
         return null
     }
 
-    async itemFollowing(_item: Item, _context: QueueItemContext<Item["id"]>): Promise<Item | null> {
+    async itemPreceding(_item: Item): Promise<Item | null> {
+        return null
+    }
+
+    async itemFollowing(_item: Item): Promise<Item | null> {
         return null
     }
 }
