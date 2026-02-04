@@ -20,7 +20,7 @@ export default function usePlayingItem(): PlayableItem | null {
             return () => subscription.unsubscribe()
         },
         () => {
-            return player.playingEntry?.item ?? null
+            return player.playingItem
         },
     )
     return playingItem

@@ -1,12 +1,14 @@
 import type { QueryClient } from "@tanstack/react-query"
 
 import type { APIClient } from "@/api/client"
-import type { LibraryMediaReadSongRead, SongRead } from "@/api/openapi"
-import type { QueueShard, QueueShardContext, QueueShardID } from "@/playback/queueShards/base"
+import type { LibraryMediaReadSongRead } from "@/api/openapi"
+import type { PlayableItem } from "@/playback/item"
+import type { Queue, QueueContext, QueueEvent, QueueItemContext } from "@/playback/queue/base"
 
-import { type ReadLibrarySongsCriteria, readLibrarySongs } from "@/api/queries/libraries"
+import { readLibrarySongs, type ReadLibrarySongsCriteria } from "@/api/queries/libraries"
+import { createEvent, type EventStream } from "@/utilities/events"
 
-export class LibrarySongsQueueShard implements QueueShard<SongRead> {
+export default class LibraryQueue implements Queue<PlayableItem> {
     private readonly _apiClient: APIClient
     private readonly _queryClient: QueryClient
     private readonly _criteria: Omit<ReadLibrarySongsCriteria, "offset" | "limit">
@@ -15,10 +17,14 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
     private _total: number
 
     constructor(
-        context: QueueShardContext,
+        context: QueueContext,
         initialPage: LibraryMediaReadSongRead,
         criteria: ReadLibrarySongsCriteria,
     ) {
+        ;[, this.$events] = createEvent<QueueEvent>()
+
+        // TODO: Wire up events
+
         this._apiClient = context.apiClient
         this._queryClient = context.queryClient
         this._criteria = { ...criteria }
@@ -77,7 +83,7 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
         }
     }
 
-    private async _pageOffsetAndIndexForItem(item: SongRead): Promise<[number, number]> {
+    private async _pageOffsetAndIndexForItem(item: PlayableItem): Promise<[number, number]> {
         for await (const [offset, page] of this._allPages()) {
             const index = page.items.findIndex((candidate) => candidate.id === item.id)
             if (index !== -1) {
@@ -87,15 +93,9 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
         return [-1, -1]
     }
 
-    get id(): QueueShardID {
-        return `queue.shards[library${JSON.stringify(this._criteria)}]`
-    }
+    readonly $events: EventStream<QueueEvent>
 
-    get length(): number {
-        return this._total
-    }
-
-    async containsItem(item: SongRead): Promise<boolean> {
+    async hasItem(item: PlayableItem): Promise<boolean> {
         for await (const [, page] of this._allPages()) {
             if (page.items.some((candidate) => candidate.id === item.id)) {
                 return true
@@ -104,7 +104,7 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
         return false
     }
 
-    async firstItem(): Promise<SongRead | null> {
+    async firstItem(_context: QueueItemContext<PlayableItem["id"]>): Promise<PlayableItem | null> {
         const firstPage = await this._pageAt(0)
         if (firstPage.items.length > 0) {
             return firstPage.items[0]
@@ -113,7 +113,7 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
         }
     }
 
-    async lastItem(): Promise<SongRead | null> {
+    async lastItem(_context: QueueItemContext<PlayableItem["id"]>): Promise<PlayableItem | null> {
         const lastPage = await this._pageAt(this._lastPageOffset)
         if (lastPage.items.length > 0) {
             return lastPage.items[0]
@@ -122,7 +122,10 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
         }
     }
 
-    async itemPreceding(item: SongRead): Promise<SongRead | null> {
+    async itemPreceding(
+        item: PlayableItem,
+        _context: QueueItemContext<PlayableItem["id"]>,
+    ): Promise<PlayableItem | null> {
         const [offset, index] = await this._pageOffsetAndIndexForItem(item)
         if (offset === -1 || index === -1) {
             throw new Error(`Could not find item ${item.id}`)
@@ -139,7 +142,10 @@ export class LibrarySongsQueueShard implements QueueShard<SongRead> {
         }
     }
 
-    async itemFollowing(item: SongRead): Promise<SongRead | null> {
+    async itemFollowing(
+        item: PlayableItem,
+        _context: QueueItemContext<PlayableItem["id"]>,
+    ): Promise<PlayableItem | null> {
         const [offset, index] = await this._pageOffsetAndIndexForItem(item)
         if (offset === -1 || index === -1) {
             throw new Error(`Could not find item ${item.id}`)

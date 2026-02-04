@@ -12,8 +12,7 @@ import ThemedInput from "@/components/theme/ThemedInput"
 import useIngestSongs from "@/hooks/ingestSongsHook"
 import usePlayer from "@/hooks/playerHook"
 import useServices from "@/hooks/servicesHook"
-import { Queue } from "@/playback/queue"
-import { ArrayQueueShard } from "@/playback/queueShards/array"
+import ArrayQueue from "@/playback/queue/array"
 
 export const Route = createFileRoute("/libraries_/$libraryId/songs/add/")({
     component: function ServiceComponent() {
@@ -63,9 +62,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs/add/")({
                                                 className="flex-1 flex items-center gap-2 text-start"
                                                 onClick={() =>
                                                     player.replaceQueue({
-                                                        newQueue: Queue.with(
-                                                            ArrayQueueShard.of(song),
-                                                        ),
+                                                        newQueue: ArrayQueue.of(song),
                                                         startingItem: song,
                                                         playNow: true,
                                                     })

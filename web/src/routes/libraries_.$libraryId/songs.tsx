@@ -18,10 +18,9 @@ import ThemedPopUpMenu from "@/components/theme/ThemedPopUpMenu"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"
 import usePlayer from "@/hooks/playerHook"
-import useQueueShardContext from "@/hooks/queueShardContextHook"
+import useQueueContext from "@/hooks/queueContextHook"
 import useSplits from "@/hooks/splitsHook"
-import { Queue } from "@/playback/queue"
-import { LibrarySongsQueueShard } from "@/playback/queueShards/librarySongs"
+import LibraryQueue from "@/playback/queue/library"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 
 function formatDuration(seconds: number) {
@@ -129,7 +128,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             [deleteLibrarySong],
         )
 
-        const queueShardContext = useQueueShardContext()
+        const queueShardContext = useQueueContext()
         const player = usePlayer()
 
         const facetForm = useAppForm({
@@ -180,18 +179,17 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                         className="cursor-pointer bg-gray-50 odd:bg-inherit hover:bg-blue-50"
                                         onClick={() =>
                                             player.replaceQueue({
-                                                newQueue: Queue.with(
-                                                    new LibrarySongsQueueShard(
-                                                        queueShardContext,
-                                                        pageQuery.data,
-                                                        {
-                                                            libraryId: Number(libraryId),
-                                                            albumId,
-                                                            artistId,
-                                                            sortBy,
-                                                        },
-                                                    ),
+                                                newQueue: new LibraryQueue(
+                                                    queueShardContext,
+                                                    pageQuery.data,
+                                                    {
+                                                        libraryId: Number(libraryId),
+                                                        albumId,
+                                                        artistId,
+                                                        sortBy,
+                                                    },
                                                 ),
+
                                                 startingItem: song,
                                                 playNow: true,
                                             })

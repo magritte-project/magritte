@@ -8,7 +8,8 @@ import type PlaybackEngineRegistry from "@/playback/engineRegistry"
 import type { PlayableItem } from "@/playback/item"
 
 import { PlaybackModes } from "@/playback/modes"
-import { Queue, type QueueEntry } from "@/playback/queue"
+import { type Queue, type QueueItemContext } from "@/playback/queue/base"
+import EmptyQueue from "@/playback/queue/empty"
 import {
     type EventSink,
     type EventStream,
@@ -33,7 +34,7 @@ export class Player {
     private _activeEngineEventSubscription: EventSubscription<PlaybackEngineEvent> | null
     private _activeEngine: PlaybackEngine | null
     private _queue: Queue<PlayableItem>
-    private _playingEntry: QueueEntry<PlayableItem> | null
+    private _playingItem: PlayableItem | null
 
     constructor(engineRegistry: PlaybackEngineRegistry) {
         this._engineRegistry = engineRegistry
@@ -41,8 +42,18 @@ export class Player {
         this._modes = PlaybackModes.default
         this._activeEngineEventSubscription = null
         this._activeEngine = null
-        this._queue = new Queue()
-        this._playingEntry = null
+        this._queue = new EmptyQueue()
+        this._playingItem = null
+    }
+
+    private get _queueItemContext(): QueueItemContext<PlayableItem> {
+        return {
+            getPlaybackModes: async () => this._modes,
+            hasPlayedItem: async (_itemId: PlayableItem) => {
+                // TODO: Implement this
+                return false
+            },
+        }
     }
 
     private async _changeEngine(newEngine: PlaybackEngine | null): Promise<void> {
@@ -63,22 +74,22 @@ export class Player {
         }
     }
 
-    private async _playEntry(
-        entry: QueueEntry<PlayableItem>,
+    private async _playItem(
+        item: PlayableItem,
         options: Omit<PlaybackEngineEnqueueOptions, "itemToPlay">,
     ): Promise<void> {
-        const engine = await this._engineRegistry.findPlaybackEngineFor(entry.item)
+        const engine = await this._engineRegistry.findPlaybackEngineFor(item)
         if (engine === null) {
             this._events.dispatch({
                 type: "encounteredError",
-                error: new Error(`No engine available to play item ${entry.item}`),
+                error: new Error(`No engine available to play item ${item}`),
             })
             return
         }
         this._changeEngine(engine)
-        this._playingEntry = entry
+        this._playingItem = item
         await engine.enqueue({
-            itemToPlay: entry.item,
+            itemToPlay: item,
             ...options,
         })
     }
@@ -91,23 +102,26 @@ export class Player {
                 this._events.dispatch(event)
                 break
             case "endOfAudio": {
-                if (this._playingEntry === null) {
+                if (this._playingItem === null) {
                     return
                 }
-                const nextEntry = await this._queue.entryFollowing(this._playingEntry)
-                if (nextEntry === null) {
+                const nextItem = await this._queue.itemFollowing(
+                    this._playingItem,
+                    this._queueItemContext,
+                )
+                if (nextItem === null) {
                     await this.stop()
                     this._events.dispatch(event)
                     return
                 }
-                await this._playEntry(nextEntry, { playNow: true })
+                await this._playItem(nextItem, { playNow: true })
                 break
             }
         }
     }
 
-    get playingEntry(): QueueEntry<PlayableItem> | null {
-        return this._playingEntry
+    get playingItem(): PlayableItem | null {
+        return this._playingItem
     }
 
     get playbackState(): PlaybackEngineState {
@@ -152,15 +166,14 @@ export class Player {
     async replaceQueue({ newQueue, startingItem, ...options }: ReplaceQueueOptions): Promise<void> {
         await this._activeEngine?.stop()
 
+        // TODO: Observe queue events
         this._queue = newQueue
         this._events.dispatch({ type: "queueDidChange" })
-        const startingEntry = startingItem
-            ? await newQueue.entryForItem(startingItem)
-            : await newQueue.firstEntry()
-        if (startingEntry === null) {
+        const item = startingItem ?? (await newQueue.firstItem(this._queueItemContext))
+        if (item === null) {
             return // shrug
         }
-        await this._playEntry(startingEntry, options)
+        await this._playItem(item, options)
     }
 
     async skipPrevious(): Promise<boolean> {
@@ -169,39 +182,45 @@ export class Player {
             await this.seek(0)
             return true
         }
-        if (this._playingEntry === null) {
-            const firstEntry = await this._queue.firstEntry()
-            if (firstEntry !== null) {
-                await this._playEntry(firstEntry, { playNow: true })
+        if (this._playingItem === null) {
+            const firstItem = await this._queue.firstItem(this._queueItemContext)
+            if (firstItem !== null) {
+                await this._playItem(firstItem, { playNow: true })
                 return true
             }
             return false
         } else {
-            const previousEntry = await this._queue.entryPreceding(this._playingEntry)
-            if (previousEntry === null) {
+            const previousItem = await this._queue.itemPreceding(
+                this._playingItem,
+                this._queueItemContext,
+            )
+            if (previousItem === null) {
                 await this.stop()
                 return false
             }
-            await this._playEntry(previousEntry, { playNow: true })
+            await this._playItem(previousItem, { playNow: true })
             return true
         }
     }
 
     async skipNext(): Promise<boolean> {
-        if (this._playingEntry === null) {
-            const firstEntry = await this._queue.firstEntry()
-            if (firstEntry !== null) {
-                await this._playEntry(firstEntry, { playNow: true })
+        if (this._playingItem === null) {
+            const firstItem = await this._queue.firstItem(this._queueItemContext)
+            if (firstItem !== null) {
+                await this._playItem(firstItem, { playNow: true })
                 return true
             }
             return false
         } else {
-            const followingEntry = await this._queue.entryFollowing(this._playingEntry)
-            if (followingEntry === null) {
+            const followingItem = await this._queue.itemFollowing(
+                this._playingItem,
+                this._queueItemContext,
+            )
+            if (followingItem === null) {
                 await this.stop()
                 return false
             }
-            await this._playEntry(followingEntry, { playNow: true })
+            await this._playItem(followingItem, { playNow: true })
             return true
         }
     }
@@ -219,7 +238,7 @@ export class Player {
     }
 
     async stop(): Promise<void> {
-        this._playingEntry = null
+        this._playingItem = null
         await this._activeEngine?.stop()
     }
 }

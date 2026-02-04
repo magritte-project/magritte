@@ -1,10 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query"
 
-import type { QueueShardContext } from "@/playback/queueShards/base"
+import type { QueueContext } from "@/playback/queue/base"
 
 import useAPIClient from "@/hooks/apiClientHook"
 
-export default function useQueueShardContext(): QueueShardContext {
+export default function useQueueContext(): QueueContext {
     const apiClient = useAPIClient()
     const queryClient = useQueryClient()
     return {
