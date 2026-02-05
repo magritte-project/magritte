@@ -67,7 +67,7 @@ async def try_ingest_artwork(
 
     extension = mimetypes.guess_extension(image.mime_type) if image.mime_type else None
     image_name = f"{image_hash}{extension}" if extension else image_hash
-    image_path = config.image_home_path / image_name
+    image_path = config.artwork_home_path / image_name
 
     with open(image_path, "wb") as image_file:
         image_file.write(image.data)

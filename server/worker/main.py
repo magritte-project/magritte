@@ -97,7 +97,7 @@ async def _process_event(
                 }
                 _send_notifications_changed(connection, user_ids_to_notify)
                 try:
-                    library_home_path = config.library_home_path.joinpath(
+                    library_home_path = config.music_home_path.joinpath(
                         library.home_path
                     )
                     canonizer = Canonizer.from_file()

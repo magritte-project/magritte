@@ -66,60 +66,51 @@ def library_worker():
     if _worker_connection is not None:
         raise RuntimeError("Library worker already initialized")
 
-    if (
-        config.watch_library
-        and config.library_home.scheme == "file"
-        and config.library_home.path != "/"
-    ):
-        library_home_path = config.library_home_path
-        if library_home_path.exists() and library_home_path.is_dir():
-            parent_connection, child_connection = multiprocessing.Pipe()
+    library_home_path = config.music_home_path
+    if library_home_path.exists() and library_home_path.is_dir():
+        parent_connection, child_connection = multiprocessing.Pipe()
 
-            _worker_connection = parent_connection
-            loop = asyncio.get_event_loop()
-            loop.add_reader(
-                parent_connection.fileno(),
-                lambda: loop.create_task(
-                    _process_parent_request(parent_connection.recv())
-                ),
-            )
+        _worker_connection = parent_connection
+        loop = asyncio.get_event_loop()
+        loop.add_reader(
+            parent_connection.fileno(),
+            lambda: loop.create_task(_process_parent_request(parent_connection.recv())),
+        )
 
-            worker_process = multiprocessing.Process(
-                target=worker_main,
-                args=(child_connection,),
-            )
-            worker_process.start()
+        worker_process = multiprocessing.Process(
+            target=worker_main,
+            args=(child_connection,),
+        )
+        worker_process.start()
 
-            event_handler = _FileSystemEventForwarder(parent_connection)
-            library_home_observer = Observer()
-            library_home_observer.schedule(
-                event_handler,
-                str(library_home_path),
-                recursive=True,
-                event_filter=[
-                    DirDeletedEvent,
-                    DirMovedEvent,
-                    FileDeletedEvent,
-                    FileModifiedEvent,
-                    FileMovedEvent,
-                ],
-            )
-            library_home_observer.start()
-            try:
-                yield
-            finally:
-                library_home_observer.stop()
-                library_home_observer.join()
-                worker_process.terminate()
-                loop.remove_reader(parent_connection.fileno())
-                parent_connection.close()
-                _worker_connection = None
-        else:
-            logging.warning(
-                f"*** library_home refers to directory that does not exist: {config.library_home}"
-            )
+        event_handler = _FileSystemEventForwarder(parent_connection)
+        library_home_observer = Observer()
+        library_home_observer.schedule(
+            event_handler,
+            str(library_home_path),
+            recursive=True,
+            event_filter=[
+                DirDeletedEvent,
+                DirMovedEvent,
+                FileDeletedEvent,
+                FileModifiedEvent,
+                FileMovedEvent,
+            ],
+        )
+        library_home_observer.start()
+        try:
             yield
+        finally:
+            library_home_observer.stop()
+            library_home_observer.join()
+            worker_process.terminate()
+            loop.remove_reader(parent_connection.fileno())
+            parent_connection.close()
+            _worker_connection = None
     else:
+        logging.warning(
+            f"*** music_home refers to directory that does not exist: {config.music_home}"
+        )
         yield
 
 

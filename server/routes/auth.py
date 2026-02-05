@@ -31,7 +31,6 @@ async def read_instance_status(
 ):
     return InstanceStatusRead(
         env=config.env,
-        watch_library=config.watch_library,
         first_setup_complete=await User.exists(
             where=[
                 col(User.id) == 1,

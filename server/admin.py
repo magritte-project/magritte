@@ -31,7 +31,7 @@ async def sync_main(args: Namespace):
         if library.home_path is None:
             raise ValueError(f"Library is streaming only '{args.library}'")
 
-        library_home_path = config.library_home_path.joinpath(library.home_path)
+        library_home_path = config.music_home_path.joinpath(library.home_path)
         canonizer = Canonizer.from_file()
         await try_ingest_path(
             path=library_home_path,

@@ -760,8 +760,6 @@ export interface components {
              * @enum {string}
              */
             readonly env: "dev" | "ci" | "prod";
-            /** Watch Library */
-            readonly watch_library: boolean;
             /** First Setup Complete */
             readonly first_setup_complete: boolean;
             /** Available Functions */
