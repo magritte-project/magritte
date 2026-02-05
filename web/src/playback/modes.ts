@@ -16,10 +16,10 @@ export class PlaybackModes {
     withNextRepeat(): PlaybackModes {
         switch (this.repeat) {
             case "off":
-                return this.withRepeat("one")
-            case "one":
                 return this.withRepeat("all")
             case "all":
+                return this.withRepeat("one")
+            case "one":
                 return this.withRepeat("off")
         }
     }

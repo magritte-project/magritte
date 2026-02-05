@@ -7,7 +7,6 @@ import SplitsContextProvider from "@/contexts/providers/SplitsContextProvider"
 import { type CloseSplitOptions, type OpenSplitOptions } from "@/contexts/splitsContext"
 import useSplitRegistry from "@/hooks/splitsRegistryHook"
 import useStorageValue from "@/hooks/storageValueHook"
-import { NowPlayingSplit } from "@/splits/definitions/NowPlayingSplit"
 import SplitState from "@/splits/state"
 
 import SplitStack from "./SplitStack"
@@ -21,11 +20,10 @@ export interface SplitsProps {
 
 export default function Splits({ hideSplit, children }: SplitsProps) {
     const registry = useSplitRegistry()
-    const [splits, setSplits] = useStorageValue(
-        "splits",
-        () => new SplitState([], [{ id: NowPlayingSplit.id, parameters: [] }]),
-        { parse: (json) => SplitState.parse(json), stringify: (state) => state.stringify() },
-    )
+    const [splits, setSplits] = useStorageValue("splits", () => new SplitState([], []), {
+        parse: (json) => SplitState.parse(json),
+        stringify: (state) => state.stringify(),
+    })
 
     const openSplit = useCallback(
         (options: OpenSplitOptions) => {
@@ -82,7 +80,7 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
             <AppCommandsProvider items={splitItems}>
                 <Split mode="horizontal" lineBar className="min-h-screen">
                     <SplitStack splits={splits} location="start" />
-                    <div className="flex-1">{children}</div>
+                    <div className="flex-1 pb-32">{children}</div>
                     <SplitStack splits={splits} location="end" />
                 </Split>
             </AppCommandsProvider>

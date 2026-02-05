@@ -23,7 +23,7 @@ export default function SplitStack({ splits, location }: SplitStackProps) {
                 data-testid={`splits[${location}, ${id}]`}
             >
                 <DismissContextProvider value={() => closeSplit({ by: "index", location, index })}>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col pb-32">
                         <SplitHeader title={name} />
                         <Component parameters={parameters} />
                     </div>

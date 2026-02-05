@@ -4,6 +4,7 @@ import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"
 
 import { useRequestSyncLibrary } from "@/api/mutations/ingest"
+import NowPlayingBlob from "@/components/chrome/NowPlayingBlob"
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
@@ -119,6 +120,7 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                         <Outlet />
                     </main>
                 </div>
+                <NowPlayingBlob />
             </AppCommandsProvider>
         )
     },
