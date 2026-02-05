@@ -17,6 +17,14 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
 
     readonly $events: EventStream<QueueEvent>
 
+    get length(): number {
+        return this._items.length
+    }
+
+    get items(): readonly Item[] {
+        return this._items
+    }
+
     async hasItem(item: Item): Promise<boolean> {
         return this._items.some((candidate) => candidate.id === item.id)
     }
@@ -80,5 +88,10 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
         const removed = this._items.splice(index, 1)
         await this._events.dispatch({ type: "queueDidChange" })
         return removed[0]
+    }
+
+    async clear(): Promise<void> {
+        this._items.length = 0
+        await this._events.dispatch({ type: "queueDidChange" })
     }
 }

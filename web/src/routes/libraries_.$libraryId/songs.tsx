@@ -105,6 +105,17 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             [navigate],
         )
 
+        const handleSongDrag = useCallback(
+            (e: React.DragEvent<HTMLTableRowElement>, song: SongRead) => {
+                e.dataTransfer.setData(
+                    "text/plain",
+                    `${song.title} - ${song.album_title} - ${song.artist_name}`,
+                )
+                e.dataTransfer.setData("x-magritte/song", JSON.stringify(song))
+            },
+            [],
+        )
+
         const { openSplit } = useSplits()
         const handleEdit = useCallback(
             (song: SongRead) => {
@@ -177,6 +188,8 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                     <tr
                                         key={`song-${song.id}`}
                                         className="cursor-pointer bg-gray-50 odd:bg-inherit hover:bg-blue-50"
+                                        draggable={true}
+                                        onDragStart={(e) => handleSongDrag(e, song)}
                                         onClick={() =>
                                             player.replaceQueue({
                                                 newQueue: new LibraryQueue(

@@ -86,7 +86,8 @@ export default function TransportControls() {
                                     exit={{ opacity: 0, y: 10 }}
                                     className="text-sm"
                                 >
-                                    {playingItem?.album_title ?? "--"} by{" "}
+                                    {playingItem?.album_title ?? "--"}{" "}
+                                    <span className="text-gray-500">by</span>{" "}
                                     {playingItem?.artist_name ?? "--"}
                                 </motion.div>
                             )}
