@@ -53,7 +53,7 @@ export default function TransportControls() {
             onMouseLeave={handleMouseLeave}
         >
             <div className="relative isolate">
-                <div className="absolute inset-0 backdrop-blur-sm mask-[linear-gradient(transparent,black,black)] -z-10" />
+                <div className="absolute inset-0 backdrop-blur-lg mask-[radial-gradient(50%_100%_at_bottom_center,black,black,transparent)] -z-10" />
                 <div className="p-4 flex flex-col items-center gap-2">
                     <AnimatePresence initial={false}>
                         {debouncedIsExpanded && (
