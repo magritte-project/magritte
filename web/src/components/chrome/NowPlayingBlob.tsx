@@ -55,21 +55,21 @@ export default function TransportControls() {
             <div className="relative isolate">
                 <div className="absolute inset-0 backdrop-blur-lg mask-[radial-gradient(50%_100%_at_bottom_center,black,black,transparent)] -z-10" />
                 <div className="p-4 flex flex-col items-center gap-2">
+                    {debouncedIsExpanded && (
+                        <motion.div
+                            key="artwork"
+                            initial={{ opacity: 0, scale: 0.9, y: 9 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 9 }}
+                        >
+                            <ArtworkImage
+                                className="w-3xs aspect-square"
+                                artworks={playingItem?.artworks}
+                                itemTitle={playingItem?.title}
+                            />
+                        </motion.div>
+                    )}
                     <AnimatePresence initial={false}>
-                        {debouncedIsExpanded && (
-                            <motion.div
-                                key="artwork"
-                                initial={{ opacity: 0, scale: 0.9, y: 9 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.9, y: 9 }}
-                            >
-                                <ArtworkImage
-                                    className="w-3xs aspect-square"
-                                    artworks={playingItem?.artworks}
-                                    itemTitle={playingItem?.title}
-                                />
-                            </motion.div>
-                        )}
                         <motion.div
                             layout
                             key="playingItem"
@@ -79,29 +79,16 @@ export default function TransportControls() {
                                 {playingItem ? (playingItem.title ?? "--") : "Nothing Playing"}
                             </motion.div>
                             {debouncedIsExpanded && (
-                                <motion.div
-                                    key="details"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="text-sm"
-                                >
-                                    {playingItem?.album_title ?? "--"}{" "}
-                                    <span className="text-gray-500">by</span>{" "}
-                                    {playingItem?.artist_name ?? "--"}
-                                </motion.div>
+                                <>
+                                    <div className="text-sm">
+                                        {playingItem?.album_title ?? "--"}{" "}
+                                        <span className="text-gray-500">by</span>{" "}
+                                        {playingItem?.artist_name ?? "--"}
+                                    </div>
+                                    <NowPlayingScrubber />
+                                </>
                             )}
                         </motion.div>
-                        {debouncedIsExpanded && (
-                            <motion.div
-                                key="scrubber"
-                                initial={{ opacity: 0, y: 3 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 3 }}
-                            >
-                                <NowPlayingScrubber />
-                            </motion.div>
-                        )}
                         <motion.div
                             key="controls"
                             layout
