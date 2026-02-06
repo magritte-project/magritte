@@ -90,6 +90,20 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
         return removed[0]
     }
 
+    async move(source: number, destination: number): Promise<void> {
+        if (
+            source < 0 ||
+            source >= this._items.length ||
+            destination < 0 ||
+            destination > this._items.length
+        ) {
+            throw new Error("Invalid index")
+        }
+        const item = this._items.splice(source, 1)[0]
+        this._items.splice(destination, 0, item)
+        await this._events.dispatch({ type: "queueDidChange" })
+    }
+
     async clear(): Promise<void> {
         this._items.length = 0
         await this._events.dispatch({ type: "queueDidChange" })

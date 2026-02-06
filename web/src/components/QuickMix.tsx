@@ -1,6 +1,6 @@
 import { CassetteTapeIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import classNames from "classnames"
-import { useCallback, useMemo, useSyncExternalStore } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import type { SongRead } from "@/api/openapi"
 
@@ -17,22 +17,26 @@ export default function QuickMix() {
     const playingItem = usePlayingItem()
 
     const queue = useMemo(() => new ArrayQueue<PlayableItem>(), [])
-    const length = useSyncExternalStore(
-        (onStoreChange) => {
-            const subscription = queue.$events.subscribe(onStoreChange)
-            return () => subscription.unsubscribe()
-        },
-        () => queue.length,
-    )
-    const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    const [queueItems, setQueueItems] = useState<readonly PlayableItem[]>(() => queue.items)
+
+    useEffect(() => {
+        const subscription = queue.$events.subscribe(() => {
+            setQueueItems([...queue.items])
+        })
+        return () => subscription.unsubscribe()
+    }, [queue])
+    const handleContainerDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         if (!e.dataTransfer.types.includes("x-magritte/song")) {
             return
         }
         e.preventDefault()
         e.dataTransfer.dropEffect = "copy"
     }, [])
-    const handleDrop = useCallback(
+    const handleContainerDrop = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
+            if (!e.dataTransfer.types.includes("x-magritte/song")) {
+                return
+            }
             e.preventDefault()
             const songJson = e.dataTransfer.getData("x-magritte/song")
             const song = JSON.parse(songJson) as SongRead
@@ -43,21 +47,57 @@ export default function QuickMix() {
     const handleClear = useCallback(async () => {
         await queue.clear()
     }, [queue])
+    const handleItemDragStart = useCallback((e: React.DragEvent<HTMLLIElement>, source: number) => {
+        e.dataTransfer.setData("x-magritte/order", String(source))
+        e.dataTransfer.effectAllowed = "move"
+    }, [])
+    const handleItemDragOver = useCallback((e: React.DragEvent<HTMLLIElement>) => {
+        if (!e.dataTransfer.types.includes("x-magritte/order")) {
+            return
+        }
+        e.preventDefault()
+        e.currentTarget.dataset.dragOver = ""
+    }, [])
+    const handleItemDragLeave = useCallback((e: React.DragEvent<HTMLLIElement>) => {
+        if (!e.dataTransfer.types.includes("x-magritte/order")) {
+            return
+        }
+        e.preventDefault()
+        delete e.currentTarget.dataset.dragOver
+    }, [])
+    const handleItemDrop = useCallback(
+        (e: React.DragEvent<HTMLLIElement>, destination: number) => {
+            if (!e.dataTransfer.types.includes("x-magritte/order")) {
+                return
+            }
+            e.preventDefault()
+            const source = Number(e.dataTransfer.getData("x-magritte/order"))
+            queue.move(source, destination)
+            delete e.currentTarget.dataset.dragOver
+        },
+        [queue],
+    )
+
     return (
-        <div className="min-h-screen" onDragOver={handleDragOver} onDrop={handleDrop}>
+        <div
+            className="min-h-screen"
+            onDragOver={handleContainerDragOver}
+            onDrop={handleContainerDrop}
+        >
             <header className="flex items-center gap-3 p-3">
                 <span className="flex-1 font-bold text-xl">
-                    {new Intl.NumberFormat().format(length)} {length === 1 ? "Item" : "Items"}
+                    {new Intl.NumberFormat().format(queueItems.length)}{" "}
+                    {queueItems.length === 1 ? "Item" : "Items"}
                 </span>
                 <ThemedSubtleButton
                     buttonComponent={AsyncButton}
                     onClick={handleClear}
-                    disabled={length === 0}
+                    disabled={queueItems.length === 0}
                 >
                     <TrashIcon aria-label="Clear" />
                 </ThemedSubtleButton>
             </header>
-            {length === 0 ? (
+            {queueItems.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-3 text-center p-3">
                     <CassetteTapeIcon weight="duotone" size="3rem" />
                     <span className="text-gray-500">
@@ -66,10 +106,10 @@ export default function QuickMix() {
                 </div>
             ) : (
                 <ol className="flex flex-col gap-1">
-                    {queue.items.map((item) => (
+                    {queueItems.map((item, index) => (
                         <li
                             key={`quickMix.items[${item.id}]`}
-                            className="px-2 py-1 text-sm cursor-pointer hover:bg-blue-50"
+                            className="px-2 py-1 text-sm cursor-pointer hover:bg-blue-50 data-drag-over:border-b-2 border-blue-100"
                             onClick={() =>
                                 player.replaceQueue({
                                     newQueue: queue,
@@ -78,6 +118,11 @@ export default function QuickMix() {
                                 })
                             }
                             onKeyDown={() => {}}
+                            draggable={true}
+                            onDragStart={(e) => handleItemDragStart(e, index)}
+                            onDragOver={handleItemDragOver}
+                            onDragLeave={handleItemDragLeave}
+                            onDrop={(e) => handleItemDrop(e, index)}
                         >
                             <div className="flex items-center gap-2">
                                 <ArtworkImage
