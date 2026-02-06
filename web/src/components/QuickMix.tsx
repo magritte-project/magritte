@@ -44,9 +44,29 @@ export default function QuickMix() {
         },
         [queue],
     )
+
+    const handleClearDragOver = useCallback((e: React.DragEvent<HTMLButtonElement>) => {
+        if (!e.dataTransfer.types.includes("x-magritte/order")) {
+            return
+        }
+        e.preventDefault()
+        e.dataTransfer.dropEffect = "move"
+    }, [])
+    const handleClearDrop = useCallback(
+        async (e: React.DragEvent<HTMLButtonElement>) => {
+            if (!e.dataTransfer.types.includes("x-magritte/order")) {
+                return
+            }
+            e.preventDefault()
+            const source = Number(e.dataTransfer.getData("x-magritte/order"))
+            await queue.removeAt(source)
+        },
+        [queue],
+    )
     const handleClear = useCallback(async () => {
         await queue.clear()
     }, [queue])
+
     const handleItemDragStart = useCallback((e: React.DragEvent<HTMLLIElement>, source: number) => {
         e.dataTransfer.setData("x-magritte/order", String(source))
         e.dataTransfer.effectAllowed = "move"
@@ -66,13 +86,13 @@ export default function QuickMix() {
         delete e.currentTarget.dataset.dragOver
     }, [])
     const handleItemDrop = useCallback(
-        (e: React.DragEvent<HTMLLIElement>, destination: number) => {
+        async (e: React.DragEvent<HTMLLIElement>, destination: number) => {
             if (!e.dataTransfer.types.includes("x-magritte/order")) {
                 return
             }
             e.preventDefault()
             const source = Number(e.dataTransfer.getData("x-magritte/order"))
-            queue.move(source, destination)
+            await queue.move(source, destination)
             delete e.currentTarget.dataset.dragOver
         },
         [queue],
@@ -93,6 +113,8 @@ export default function QuickMix() {
                     buttonComponent={AsyncButton}
                     onClick={handleClear}
                     disabled={queueItems.length === 0}
+                    onDragOver={handleClearDragOver}
+                    onDrop={handleClearDrop}
                 >
                     <TrashIcon aria-label="Clear" />
                 </ThemedSubtleButton>
