@@ -11,6 +11,14 @@ import type { PlaybackModes } from "@/playback/modes"
 import { type EventSink, type EventStream, createEvent } from "@/utilities/events"
 import { resolveUrl } from "@/utilities/resources"
 
+function _findBestUrl(item: PlayableItem): string | undefined {
+    const sources = item.sources
+    if (sources === undefined) {
+        return undefined
+    }
+    return sources.find((source) => source.url.startsWith("magritte://"))?.url
+}
+
 export default class BuiltInPlaybackEngine implements PlaybackEngine {
     private readonly _userSession: UserSessionManager
     private readonly _audio: HTMLAudioElement
@@ -52,7 +60,13 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     private _handleError(_event: Event) {
-        this._events.dispatch({ type: "encounteredError", error: new Error() })
+        const mediaError = this._audio.error
+        this._events.dispatch({
+            type: "encounteredError",
+            error: new Error(
+                mediaError ? `${mediaError.message} (${mediaError.code})` : "Unknown error",
+            ),
+        })
     }
 
     private _handlePause(_event: Event) {
@@ -92,20 +106,12 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     async canEnqueue(item: PlayableItem): Promise<boolean> {
-        const sources = item.sources ?? []
-        // TODO: this is nasty
-        return sources.some(
-            (source) =>
-                this._audio.canPlayType(source.mime_type ?? "") &&
-                source.url.startsWith("magritte://"),
-        )
+        return _findBestUrl(item) !== undefined
     }
 
     async enqueue({ itemToPlay, playNow }: PlaybackEngineEnqueueOptions): Promise<void> {
-        const sources = itemToPlay.sources ?? []
-        const source = sources.find((source) => source.url.startsWith("magritte://"))
-        const audioSrc = source?.url ? resolveUrl(source.url, this._userSession.current) : null
-        if (source === undefined || !audioSrc) {
+        const audioSrc = resolveUrl(_findBestUrl(itemToPlay), this._userSession.current)
+        if (audioSrc === undefined) {
             throw new Error("No compatible source in song")
         }
         this._audio.src = audioSrc
