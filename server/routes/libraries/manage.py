@@ -77,9 +77,15 @@ async def read_library_home_subpaths(
 
     subpaths = list[str]()
     for dir_entry in absolute_path.iterdir():
-        if dir_entry.is_symlink() or not dir_entry.is_dir():
+        if (
+            dir_entry.is_symlink()
+            or not dir_entry.is_dir()
+            or dir_entry.name.startswith(".")
+        ):
             continue
         subpaths.append(dir_entry.name)
+
+    subpaths.sort()
 
     return LibraryHomePathRead(
         relative_to=relative_to_path.as_posix(),
