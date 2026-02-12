@@ -1,6 +1,5 @@
 import sys
 from contextlib import asynccontextmanager
-from mimetypes import guess_file_type
 from pathlib import Path
 
 from sqlalchemy.exc import IntegrityError
@@ -9,6 +8,7 @@ from tinytag import TinyTag, UnsupportedFormatError
 
 from ingestion.artwork import try_ingest_artwork
 from ingestion.canon import Canonizer
+from ingestion.types import get_mime_types
 from model.album import Album
 from model.artist import Artist
 from model.library import Library
@@ -93,7 +93,7 @@ async def _try_ingest_file(
     canonizer: Canonizer,
     session: AsyncSession,
 ):
-    mime_type, _encoding = guess_file_type(path)
+    mime_type, _encoding = get_mime_types().guess_file_type(path)
     if not mime_type or not mime_type.startswith("audio"):
         return None
 
