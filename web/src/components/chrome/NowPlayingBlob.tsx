@@ -1,45 +1,97 @@
-import {
-    PauseIcon,
-    PlayIcon,
-    RepeatIcon,
-    RepeatOnceIcon,
-    ShuffleIcon,
-    SkipBackIcon,
-    SkipForwardIcon,
-} from "@phosphor-icons/react"
+import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon } from "@phosphor-icons/react"
 import { useDebounce } from "@uidotdev/usehooks"
 import classNames from "classnames"
 import { AnimatePresence, motion } from "motion/react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 
 import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import AsyncButton from "@/components/reusable/AsyncButton"
-import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import usePlaybackModes from "@/hooks/playbackModesHook"
 import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
 
+type GestureState =
+    | {
+          isTracking: false
+          initialScreenX: null
+          initialScreenY: null
+      }
+    | {
+          isTracking: true
+          initialScreenX: number
+          initialScreenY: number
+      }
+
+function parseTranslate(translate: string) {
+    if (translate === "none") {
+        return { translateX: 0, translateY: 0 }
+    }
+    const [translateX, translateY] = translate
+        .split(" ")
+        .map((value) => parseInt(value.replace("px", "")))
+    return { translateX, translateY }
+}
+
 export default function TransportControls() {
     const player = usePlayer()
     const playbackState = usePlaybackState()
-    const playbackModes = usePlaybackModes()
     const playingItem = usePlayingItem()
     const playingItemArtwork = useMemo(() => {
         return playingItem?.artworks?.[0]
     }, [playingItem])
 
-    const handleShuffleClick = useCallback(async () => {
-        await player.setPlaybackModes((playbackModes) => playbackModes.withNextShuffle())
-    }, [player])
-    const handleRepeatClick = useCallback(async () => {
-        await player.setPlaybackModes((playbackModes) => playbackModes.withNextRepeat())
-    }, [player])
+    const gestureStateRef = useRef<GestureState>({
+        isTracking: false,
+        initialScreenX: null,
+        initialScreenY: null,
+    })
+    const handleMouseDown = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        gestureStateRef.current = {
+            isTracking: true,
+            initialScreenX: e.screenX,
+            initialScreenY: e.screenY,
+        }
+        const buttonElement = e.currentTarget
+        buttonElement.style.translate = "none"
+    }, [])
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!gestureStateRef.current.isTracking) {
+            return
+        }
+        const buttonElement = e.currentTarget
+        const deltaX = e.screenX - gestureStateRef.current.initialScreenX
+        const deltaY = e.screenY - gestureStateRef.current.initialScreenY
+        const translateX = Math.max(-50, Math.min(deltaX, 50))
+        buttonElement.style.translate = `${translateX}px 0px`
+    }, [])
+    const handleMouseUp = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            const buttonElement = e.currentTarget
+            gestureStateRef.current = {
+                isTracking: false,
+                initialScreenX: null,
+                initialScreenY: null,
+            }
+
+            const { translateX } = parseTranslate(buttonElement.style.translate)
+            if (translateX > 0) {
+                e.stopPropagation()
+                e.preventDefault()
+                player.skipNext()
+            } else if (translateX < 0) {
+                e.stopPropagation()
+                e.preventDefault()
+                player.skipPrevious()
+            }
+            buttonElement.style.translate = "none"
+        },
+        [player],
+    )
 
     const [isExpanded, setIsExpanded] = useState(false)
     const handleMouseEnter = useCallback(() => {
-        setIsExpanded(true)
+        // setIsExpanded(true)
     }, [])
     const handleMouseLeave = useCallback(() => {
         setIsExpanded(false)
@@ -55,20 +107,6 @@ export default function TransportControls() {
             <div className="relative isolate">
                 <div className="absolute inset-0 backdrop-blur-lg mask-[radial-gradient(50%_100%_at_bottom_center,black,black,transparent)] -z-10" />
                 <div className="p-4 flex flex-col items-center gap-2">
-                    {debouncedIsExpanded && (
-                        <motion.div
-                            key="artwork"
-                            initial={{ opacity: 0, scale: 0.9, y: 9 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 9 }}
-                        >
-                            <ArtworkImage
-                                className="w-3xs aspect-square"
-                                artworks={playingItem?.artworks}
-                                itemTitle={playingItem?.title}
-                            />
-                        </motion.div>
-                    )}
                     <AnimatePresence initial={false}>
                         <motion.div
                             layout
@@ -95,26 +133,10 @@ export default function TransportControls() {
                             className="text-2xl flex items-center gap-2"
                         >
                             <AsyncButton
-                                buttonComponent={ThemedSubtleButton}
-                                className={classNames({
-                                    "text-blue-500": playbackModes.shuffle === "on",
-                                    "text-gray-500": playbackModes.shuffle === "off",
-                                })}
-                                onClick={handleShuffleClick}
-                            >
-                                <ShuffleIcon
-                                    weight={playbackModes.shuffle === "on" ? "bold" : "regular"}
-                                    aria-label={
-                                        playbackModes.shuffle === "on"
-                                            ? "Shuffle on"
-                                            : "Shuffle off"
-                                    }
-                                />
-                            </AsyncButton>
-                            <AsyncButton
                                 className={classNames(
                                     "p-2 rounded-full active:bg-black/10",
                                     "font-bold text-gray-800 disabled:text-gray-300",
+                                    { hidden: !debouncedIsExpanded },
                                 )}
                                 style={
                                     playingItemArtwork
@@ -128,34 +150,50 @@ export default function TransportControls() {
                                 <SkipBackIcon weight="fill" aria-label="Play" />
                             </AsyncButton>
                             <AsyncButton
-                                className={classNames(
-                                    "bg-blue-500 text-slate-50 active:text-white font-bold",
-                                    "p-4 rounded-full drop-shadow-sm",
-                                )}
-                                style={
-                                    playingItemArtwork
-                                        ? {
-                                              backgroundColor: `${playingItemArtwork.background_color}`,
-                                              color: `${playingItemArtwork.primary_color}`,
-                                          }
-                                        : {}
-                                }
-                                onClick={() =>
-                                    player.playbackState === "playing"
-                                        ? player.pause()
-                                        : player.resume()
-                                }
+                                className="relative drop-shadow-sm"
+                                onMouseDown={handleMouseDown}
+                                onMouseMove={handleMouseMove}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onClick={async (e) => {
+                                    const { translateX } = parseTranslate(
+                                        e.currentTarget.style.translate,
+                                    )
+                                    console.log(translateX)
+                                    if (translateX !== 0) {
+                                        return
+                                    }
+                                    if (player.playbackState === "playing") {
+                                        await player.pause()
+                                    } else {
+                                        await player.resume()
+                                    }
+                                }}
                             >
-                                {playbackState === "playing" ? (
-                                    <PauseIcon weight="fill" aria-label="Pause" />
-                                ) : (
-                                    <PlayIcon weight="fill" aria-label="Next" />
-                                )}
+                                <ArtworkImage
+                                    variant="plain"
+                                    className={classNames("aspect-square bg-blue-500", {
+                                        "w-3xs": debouncedIsExpanded,
+                                        "w-16": !debouncedIsExpanded,
+                                        "rounded-md": debouncedIsExpanded,
+                                        "rounded-full": !debouncedIsExpanded,
+                                    })}
+                                    artworks={playingItem?.artworks}
+                                    itemTitle={playingItem?.title}
+                                />
+                                <span className="absolute top-1/2 left-1/2 -translate-1/2 text-white/95 bg-blend-hard-light">
+                                    {playbackState === "playing" ? (
+                                        <PauseIcon weight="fill" aria-label="Pause" />
+                                    ) : (
+                                        <PlayIcon weight="fill" aria-label="Next" />
+                                    )}
+                                </span>
                             </AsyncButton>
                             <AsyncButton
                                 className={classNames(
                                     "p-2 rounded-full active:bg-black/10",
                                     "font-bold text-gray-800 disabled:text-gray-300",
+                                    { hidden: !debouncedIsExpanded },
                                 )}
                                 style={
                                     playingItemArtwork
@@ -167,27 +205,6 @@ export default function TransportControls() {
                                 onClick={() => player.skipNext()}
                             >
                                 <SkipForwardIcon weight="fill" aria-label="Play" />
-                            </AsyncButton>
-                            <AsyncButton
-                                buttonComponent={ThemedSubtleButton}
-                                className={classNames({
-                                    "text-blue-500": playbackModes.repeat !== "off",
-                                    "text-gray-500": playbackModes.repeat === "off",
-                                })}
-                                onClick={handleRepeatClick}
-                            >
-                                {playbackModes.repeat === "one" ? (
-                                    <RepeatOnceIcon weight="bold" aria-label="Repeat one" />
-                                ) : (
-                                    <RepeatIcon
-                                        weight={playbackModes.repeat !== "off" ? "bold" : "regular"}
-                                        aria-label={
-                                            playbackModes.repeat === "all"
-                                                ? "Repeat all"
-                                                : "Repeat off"
-                                        }
-                                    />
-                                )}
                             </AsyncButton>
                         </motion.div>
                     </AnimatePresence>
