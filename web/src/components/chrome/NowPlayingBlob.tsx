@@ -7,6 +7,7 @@ import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import DPad from "@/components/reusable/DPad"
+import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
@@ -15,6 +16,7 @@ export default function TransportControls() {
     const player = usePlayer()
     const playbackState = usePlaybackState()
     const playingItem = usePlayingItem()
+    const { setIsOpen: setCommandPaletteIsOpen } = useAppCommandPaletteContext()
 
     const repressExpansion = useRef(false)
     const changeIsExpandedTimerId = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -88,6 +90,7 @@ export default function TransportControls() {
                                 onDraggedPastTop={() => setIsExpanded(true)}
                                 onDraggedPastStart={() => player.skipPrevious()}
                                 onDraggedPastEnd={() => player.skipNext()}
+                                onDraggedPastBottom={() => setCommandPaletteIsOpen(true)}
                                 onDragEnd={() => (repressExpansion.current = false)}
                             >
                                 <AsyncButton
