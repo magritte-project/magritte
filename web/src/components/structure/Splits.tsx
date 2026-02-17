@@ -2,14 +2,13 @@ import Split from "@uiw/react-split"
 import { useCallback, useMemo, type ReactNode } from "react"
 import { type JsonStructure } from "react-cmdk"
 
+import SplitPane from "@/components/structure/SplitPane"
 import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
 import SplitsContextProvider from "@/contexts/providers/SplitsContextProvider"
 import { type CloseSplitOptions, type OpenSplitOptions } from "@/contexts/splitsContext"
 import useSplitRegistry from "@/hooks/splitsRegistryHook"
 import useStorageValue from "@/hooks/storageValueHook"
 import SplitState from "@/splits/state"
-
-import SplitStack from "./SplitStack"
 
 // TODO: Respond to split definitions being added/removed
 
@@ -79,9 +78,31 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
         <SplitsContextProvider value={{ openSplit, closeSplit }}>
             <AppCommandsProvider items={splitItems}>
                 <Split mode="horizontal" lineBar className="min-h-screen">
-                    <SplitStack splits={splits} location="start" />
+                    {Array.from(
+                        registry.getAll(splits["start"]),
+                        ([definition, parameters, index]) => (
+                            <SplitPane
+                                key={`${definition.id}-${index}`}
+                                location="start"
+                                definition={definition}
+                                parameters={parameters}
+                                index={index}
+                            />
+                        ),
+                    )}
                     <div className="flex-1 pb-32">{children}</div>
-                    <SplitStack splits={splits} location="end" />
+                    {Array.from(
+                        registry.getAll(splits["end"]),
+                        ([definition, parameters, index]) => (
+                            <SplitPane
+                                key={`${definition.id}-${index}`}
+                                location="end"
+                                definition={definition}
+                                parameters={parameters}
+                                index={index}
+                            />
+                        ),
+                    )}
                 </Split>
             </AppCommandsProvider>
         </SplitsContextProvider>
