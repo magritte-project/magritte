@@ -90,7 +90,7 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
                             />
                         ),
                     )}
-                    <div className="flex-1 pb-32">{children}</div>
+                    <div className="flex-1 relative h-screen overflow-auto pb-32">{children}</div>
                     {Array.from(
                         registry.getAll(splits["end"]),
                         ([definition, parameters, index]) => (

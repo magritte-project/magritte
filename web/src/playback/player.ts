@@ -269,15 +269,15 @@ class ShuffleContext implements RandomItemContext<PlayableItem> {
         this._playedItems = playedItems
     }
 
-    async getNumberOfPlayedItems(): Promise<number> {
+    getNumberOfPlayedItems = async (): Promise<number> => {
         return this._playedItems.size
     }
 
-    async hasPlayedItem(item: PlayableItem): Promise<boolean> {
+    hasPlayedItem = async (item: PlayableItem): Promise<boolean> => {
         return this._playedItems.has(item.id)
     }
 
-    async randomIndex(length: number): Promise<number> {
+    randomIndex = async (length: number): Promise<number> => {
         return Math.floor(Math.random() * length)
     }
 }

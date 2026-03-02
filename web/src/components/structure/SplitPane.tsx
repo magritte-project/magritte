@@ -21,7 +21,7 @@ export default function SplitPane({
     return (
         <div style={{ minWidth, width: minWidth }} data-testid={`splits[${location}, ${id}]`}>
             <DismissContextProvider value={() => closeSplit({ by: "index", location, index })}>
-                <div className="flex flex-col pb-32">
+                <div className="flex flex-col relative h-screen overflow-auto pb-32">
                     <SplitHeader title={name} />
                     <Component parameters={parameters} />
                 </div>
