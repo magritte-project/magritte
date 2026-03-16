@@ -34,24 +34,10 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.build]
-exclude = [
-    ".*",
-    "reference/**",
-
-    "test*",
-    "conftest.py",
-    "*.pyc",
-
-    "pnpm-*.yaml",
-
-    "bootstrap",
-    "justfile",
-    "*.just",
-]
-
-[tool.hatch.build.targets.wheel]
-packages = ["magritte"]
+[tool.hatch.build.targets.sdist]
+include = ["magritte/**", "admin.py", "admin"]
+force-include = { "web/dist" = "static" }
+exclude = ["test*", "conftest.py", "*.pyc"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I"]
