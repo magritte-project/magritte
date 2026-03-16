@@ -3,7 +3,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from magritte.db import get_db_session
 from magritte.model.notification import Notification
-from magritte.utilities.user_events import UserEvent, UserEvents, UserEventType, get_user_events
+from magritte.utilities.user_events import (
+    UserEvent,
+    UserEvents,
+    UserEventType,
+    get_user_events,
+)
 
 
 class Notifier:

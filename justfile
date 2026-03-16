@@ -19,9 +19,5 @@ export-openapi:
     ../admin dump-openapi | pnpm openapi-typescript --immutable --properties-required-by-default --root-types --root-types-no-schema-prefix -o src/api/openapi.d.ts
 
 clean: server::clean web::clean
-    -[ -e "$PWD/dist" ] && rm -rf "$PWD/dist"
 
-package: server::package web::package
-    -[ -e "$PWD/dist" ] && rm -rf "$PWD/dist"
-    cp -r "$PWD/server/dist" "$PWD/dist"
-    cp -r "$PWD/web/dist" "$PWD/dist/spa"
+build: web::build server::build

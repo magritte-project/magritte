@@ -27,7 +27,11 @@ from magritte.model.notification import Notification
 from magritte.model.user import User, UserNotificationLink
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.base import OperationResult
-from magritte.schemas.notification import NotificationRead, NotificationsRead, NotificationUpdate
+from magritte.schemas.notification import (
+    NotificationRead,
+    NotificationsRead,
+    NotificationUpdate,
+)
 from magritte.schemas.user import (
     UserEventPreflight,
     UserProfileRead,

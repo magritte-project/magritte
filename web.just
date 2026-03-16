@@ -21,5 +21,5 @@ check-types:
 clean:
     pnpm clean
 
-package: clean
+build:
     pnpm build
