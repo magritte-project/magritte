@@ -421,6 +421,63 @@ wheels = [
 ]
 
 [[package]]
+name = "magritte"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "aiosqlite" },
+    { name = "cryptography" },
+    { name = "fastapi", extra = ["standard"] },
+    { name = "greenlet" },
+    { name = "pillow" },
+    { name = "pwdlib", extra = ["argon2"] },
+    { name = "pydantic" },
+    { name = "pyjwt" },
+    { name = "python-dotenv" },
+    { name = "sqlmodel" },
+    { name = "tinytag" },
+    { name = "watchdog" },
+    { name = "websockets" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "faker" },
+    { name = "httpx" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "ruff" },
+    { name = "ty" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiosqlite", specifier = ">=0.21.0" },
+    { name = "cryptography", specifier = ">=46.0.3" },
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.117.1" },
+    { name = "greenlet", specifier = ">=3.2.4" },
+    { name = "pillow", specifier = ">=12.0.0" },
+    { name = "pwdlib", extras = ["argon2"], specifier = ">=0.2.1" },
+    { name = "pydantic", specifier = ">=2.11.9" },
+    { name = "pyjwt", specifier = ">=2.10.1" },
+    { name = "python-dotenv", specifier = ">=1.1.1" },
+    { name = "sqlmodel", specifier = ">=0.0.25" },
+    { name = "tinytag", specifier = ">=2.1.2" },
+    { name = "watchdog", specifier = ">=6.0.0" },
+    { name = "websockets", specifier = ">=15.0.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "faker", specifier = ">=38.0.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "pytest", specifier = ">=8.4.2" },
+    { name = "pytest-asyncio", specifier = ">=1.2.0" },
+    { name = "ruff", specifier = ">=0.14.0" },
+    { name = "ty", specifier = ">=0.0.1a22" },
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "4.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -812,63 +869,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/4c/72/43294fa4bdd75c51610b5104a3ff834459ba653abb415150aa7826a249dd/sentry_sdk-2.39.0.tar.gz", hash = "sha256:8c185854d111f47f329ab6bc35993f28f7a6b7114db64aa426b326998cfa14e9", size = 348556, upload-time = "2025-09-25T09:15:39.064Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/dd/44/4356cc64246ba7b2b920f7c97a85c3c52748e213e250b512ee8152eb559d/sentry_sdk-2.39.0-py2.py3-none-any.whl", hash = "sha256:ba655ca5e57b41569b18e2a5552cb3375209760a5d332cdd87c6c3f28f729602", size = 370851, upload-time = "2025-09-25T09:15:36.35Z" },
-]
-
-[[package]]
-name = "server"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "aiosqlite" },
-    { name = "cryptography" },
-    { name = "fastapi", extra = ["standard"] },
-    { name = "greenlet" },
-    { name = "pillow" },
-    { name = "pwdlib", extra = ["argon2"] },
-    { name = "pydantic" },
-    { name = "pyjwt" },
-    { name = "python-dotenv" },
-    { name = "sqlmodel" },
-    { name = "tinytag" },
-    { name = "watchdog" },
-    { name = "websockets" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "faker" },
-    { name = "httpx" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "ruff" },
-    { name = "ty" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiosqlite", specifier = ">=0.21.0" },
-    { name = "cryptography", specifier = ">=46.0.3" },
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.117.1" },
-    { name = "greenlet", specifier = ">=3.2.4" },
-    { name = "pillow", specifier = ">=12.0.0" },
-    { name = "pwdlib", extras = ["argon2"], specifier = ">=0.2.1" },
-    { name = "pydantic", specifier = ">=2.11.9" },
-    { name = "pyjwt", specifier = ">=2.10.1" },
-    { name = "python-dotenv", specifier = ">=1.1.1" },
-    { name = "sqlmodel", specifier = ">=0.0.25" },
-    { name = "tinytag", specifier = ">=2.1.2" },
-    { name = "watchdog", specifier = ">=6.0.0" },
-    { name = "websockets", specifier = ">=15.0.1" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "faker", specifier = ">=38.0.0" },
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "pytest", specifier = ">=8.4.2" },
-    { name = "pytest-asyncio", specifier = ">=1.2.0" },
-    { name = "ruff", specifier = ">=0.14.0" },
-    { name = "ty", specifier = ">=0.0.1a22" },
 ]
 
 [[package]]

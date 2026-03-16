@@ -3,15 +3,15 @@ import sys
 from argparse import ArgumentParser, Namespace
 from traceback import print_tb
 
-from ingestion.canon import Canonizer
+from magritte.ingestion.canon import Canonizer
 
 
 async def sync_main(args: Namespace):
-    from config import config
-    from db import get_db_engine, get_db_session
-    from ingestion.files import try_ingest_path
-    from model.library import Library
-    from model.user import User
+    from magritte.config import config
+    from magritte.db import get_db_engine, get_db_session
+    from magritte.ingestion.files import try_ingest_path
+    from magritte.model.library import Library
+    from magritte.model.user import User
 
     engine = await get_db_engine()
     async for session in get_db_session(engine):
@@ -45,7 +45,7 @@ async def sync_main(args: Namespace):
 async def dump_openapi_main(args: Namespace):
     import json
 
-    from main import app
+    from magritte import app
 
     openapi = app.openapi()
     dump = json.dumps(openapi)
@@ -57,7 +57,7 @@ async def dump_openapi_main(args: Namespace):
 
 
 async def dominant_colors_main(args: Namespace):
-    from ingestion.artwork import find_dominant_image_colors
+    from magritte.ingestion.artwork import find_dominant_image_colors
 
     for path in args.paths:
         dominant_colors = find_dominant_image_colors(

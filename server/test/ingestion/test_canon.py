@@ -1,6 +1,6 @@
 import pytest
 
-from ingestion.canon import Canon, Canonizer, CanonNormalization
+from magritte.ingestion.canon import Canon, Canonizer, CanonNormalization
 
 
 @pytest.fixture

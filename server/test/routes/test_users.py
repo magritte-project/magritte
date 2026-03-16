@@ -4,8 +4,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conftest import SignIn
-from model.notification import Notification
-from model.user import User
+from magritte.model.notification import Notification
+from magritte.model.user import User
 
 
 class NotificationsFixture:

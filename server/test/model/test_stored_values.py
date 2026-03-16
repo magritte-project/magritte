@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from model.stored_values import StoredValue
+from magritte.model.stored_values import StoredValue
 
 
 @pytest.mark.asyncio

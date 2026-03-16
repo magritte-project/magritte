@@ -4,8 +4,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conftest import SignIn
-from model.artwork import Artwork
-from schemas.artwork import ArtworkKind
+from magritte.model.artwork import Artwork
+from magritte.schemas.artwork import ArtworkKind
 
 
 @pytest_asyncio.fixture

@@ -4,7 +4,7 @@ sync-deps:
     uv sync
 
 dev:
-    uv run fastapi dev main.py --port 6477
+    uv run fastapi dev magritte --port 6477
 
 test:
     uv run pytest

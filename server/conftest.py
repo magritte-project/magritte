@@ -6,11 +6,11 @@ from faker import Faker
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 
-from db import get_db_engine
-from main import app
-from model import create_model_tables_if_needed
-from schemas.user import Token
-from testseed import seed_test_data
+from magritte import app
+from magritte.db import get_db_engine
+from magritte.model import create_model_tables_if_needed
+from magritte.schemas.user import Token
+from magritte.testseed import seed_test_data
 
 
 @pytest_asyncio.fixture(scope="function")
