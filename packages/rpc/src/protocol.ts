@@ -1,6 +1,6 @@
 import * as z4 from "zod/v4/core"
 
-import type { RPCObject } from "@/base/object"
+import type { RPCObject } from "@/object"
 
 export interface MethodSignatures {
     readonly [selector: string]: {
@@ -98,7 +98,7 @@ export async function cast<Signatures extends MethodSignatures>(
 ): Promise<ProtocolInterface<Signatures>> {
     const proxy = await tryCast(protocol, object)
     if (!proxy) {
-        throw new Error(`Failed to cast ${object.name} to ${protocol.name}`)
+        throw new Error(`Failed to cast ${object} to ${protocol.name}`)
     }
     return proxy
 }

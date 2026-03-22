@@ -1,7 +1,7 @@
-export * from "@/base/object"
-export * from "@/base/protocol"
-
-export * from "@/local/object"
-
-export * from "@/remote/object"
-export * from "@/remote/transport"
+export * from "@/export"
+export * from "@/localObject"
+export * from "@/object"
+export * from "@/protocol"
+export * from "@/remoteObject"
+export * from "@/transport"
+export * from "@/transports/dummy"

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest"
 import z4 from "zod/v4"
 
-import { LocalObject } from "@/local/object"
+import { LocalObject } from "@/localObject"
 
-import { protocol, implement, tryCast, cast } from "./protocol"
+import { cast, implement, protocol, tryCast } from "./protocol"
 
 const Arithmetic = protocol("Arithmetic", {
     add: { input: z4.object({ a: z4.number(), b: z4.number() }), output: z4.number() },
@@ -49,7 +49,7 @@ describe("Protocol", () => {
 
     describe("#tryCast", async () => {
         it("should return a functional proxy on success", async () => {
-            const object = new LocalObject("root", [ArithmeticImplementation], [])
+            const object = new LocalObject("root", [ArithmeticImplementation])
             const proxy = await tryCast(Arithmetic, object)
             expect(proxy).not.toBeNull()
             expect(proxy).toStrictEqual(
@@ -63,7 +63,7 @@ describe("Protocol", () => {
         })
 
         it("should return null on failure", async () => {
-            const object = new LocalObject("root", [], [])
+            const object = new LocalObject("root", [])
             const proxy = await tryCast(Arithmetic, object)
             expect(proxy).toBeNull()
         })
@@ -71,7 +71,7 @@ describe("Protocol", () => {
 
     describe("cast", async () => {
         it("should return a functional proxy on success", async () => {
-            const object = new LocalObject("root", [ArithmeticImplementation], [])
+            const object = new LocalObject("root", [ArithmeticImplementation])
             const proxy = await cast(Arithmetic, object)
             expect(proxy).toStrictEqual(
                 expect.objectContaining({
@@ -84,7 +84,7 @@ describe("Protocol", () => {
         })
 
         it("should throw an error on failure", async () => {
-            const object = new LocalObject("root", [], [])
+            const object = new LocalObject("root", [])
             await expect(async () => await cast(Arithmetic, object)).rejects.toThrow()
         })
     })
