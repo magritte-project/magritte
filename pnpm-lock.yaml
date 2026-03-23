@@ -87,7 +87,7 @@ importers:
       '@headlessui/react':
         specifier: ^2.2.9
         version: 2.2.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@mono/rpc':
+      '@magritte/rpc':
         specifier: workspace:*
         version: link:../packages/rpc
       '@phosphor-icons/react':
