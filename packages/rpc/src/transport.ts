@@ -1,31 +1,39 @@
-export type RPCTransportMessage =
-    | {
-          readonly type: "object.conformsToProtocol"
-          readonly path: readonly string[]
-          readonly protocolName: string
-      }
-    | {
-          readonly type: "object.invoke"
-          readonly path: readonly string[]
-          readonly protocolName: string
-          readonly selector: string
-          readonly parameters: unknown
-      }
+import z4 from "zod/v4"
 
-export type RPCTransportReply =
-    | {
-          readonly type: "object.conformsToProtocol"
-          readonly conforms: boolean
-      }
-    | {
-          readonly type: "object.invoke"
-          readonly result: unknown
-      }
-    | {
-          readonly type: "error"
-          readonly name: string
-          readonly message: string
-      }
+export const RPCTransportMessageSchema = z4.union([
+    z4.object({
+        type: z4.literal("object.conformsToProtocol"),
+        path: z4.array(z4.string()),
+        protocolName: z4.string(),
+    }),
+    z4.object({
+        type: z4.literal("object.invoke"),
+        path: z4.array(z4.string()),
+        protocolName: z4.string(),
+        selector: z4.string(),
+        parameters: z4.unknown(),
+    }),
+])
+
+export type RPCTransportMessage = z4.infer<typeof RPCTransportMessageSchema>
+
+export const RPCTransportReplySchema = z4.union([
+    z4.object({
+        type: z4.literal("object.conformsToProtocol"),
+        conforms: z4.boolean(),
+    }),
+    z4.object({
+        type: z4.literal("object.invoke"),
+        result: z4.unknown(),
+    }),
+    z4.object({
+        type: z4.literal("error"),
+        name: z4.string(),
+        message: z4.string(),
+    }),
+])
+
+export type RPCTransportReply = z4.infer<typeof RPCTransportReplySchema>
 
 export function isWireReply<Type extends RPCTransportReply["type"]>(
     reply: RPCTransportReply,

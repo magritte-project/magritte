@@ -31,7 +31,7 @@ export function findExportedObject(
 ): RPCObject | null {
     const walkingPath = [...path]
     let current: RPCObjectExport | undefined = start
-    while (walkingPath.length > 0 && current !== null) {
+    while (walkingPath.length > 0 && current) {
         const nextName = walkingPath.shift()
         if (!nextName) {
             break
