@@ -1,13 +1,14 @@
 import z4 from "zod/v4"
 
-import { findExportedObject, type RPCObjectExport } from "@/export"
 import {
     RPCTransportMessageSchema,
     RPCTransportReplySchema,
     type RPCTransport,
     type RPCTransportMessage,
     type RPCTransportReply,
-} from "@/transport"
+} from "../transport.js"
+
+import { findExportedObject, type RPCObjectExport } from "../export"
 
 const wireSchema = z4.object({
     id: z4.string(),
@@ -33,27 +34,27 @@ export class MessageChannelTransport implements RPCTransport {
     private readonly _root: RPCObjectExport
 
     /** The remote port of the message channel */
-    private readonly _remotePort: MessagePort
+    private readonly _sendPort: MessagePort
 
     /** The local port of the message channel */
-    private readonly _localPort: MessagePort
+    private readonly _receivePort: MessagePort
 
     /** The pending sends, keyed by request ID */
     private readonly _pending: Map<string, PendingSend>
 
-    constructor(root: RPCObjectExport, remotePort: MessagePort, localPort: MessagePort) {
+    constructor(root: RPCObjectExport, sendPort: MessagePort, receivePort: MessagePort) {
         this._root = root
-        this._remotePort = remotePort
-        this._localPort = localPort
+        this._sendPort = sendPort
+        this._receivePort = receivePort
         this._pending = new Map()
 
-        this._localPort.onmessage = (event) => {
+        this._receivePort.onmessage = (event) => {
             this._handleMessage(event)
         }
     }
 
     private _postMessage(message: z4.infer<typeof wireSchema>) {
-        this._remotePort.postMessage(message)
+        this._sendPort.postMessage(message)
     }
 
     private async _handleMessage(event: MessageEvent): Promise<void> {

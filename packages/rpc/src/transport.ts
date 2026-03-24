@@ -3,12 +3,12 @@ import z4 from "zod/v4"
 export const RPCTransportMessageSchema = z4.union([
     z4.object({
         type: z4.literal("object.conformsToProtocol"),
-        path: z4.array(z4.string()),
+        path: z4.array(z4.string()).readonly(),
         protocolName: z4.string(),
     }),
     z4.object({
         type: z4.literal("object.invoke"),
-        path: z4.array(z4.string()),
+        path: z4.array(z4.string()).readonly(),
         protocolName: z4.string(),
         selector: z4.string(),
         parameters: z4.unknown(),

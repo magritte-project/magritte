@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { LocalObject } from "@/localObject"
+import { LocalObject } from "./localObject.js"
 
 import { findExportedObject, type RPCObjectExport } from "./export"
 

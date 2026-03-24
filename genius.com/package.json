@@ -1,0 +1,46 @@
+{
+    "name": "@magritte/genius.com",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite --port 9292",
+        "start": "vite --port 9291",
+        "build": "vite build && tsc",
+        "clean": "rm -rf dist",
+        "serve": "vite preview",
+        "test": "vitest run",
+        "format": "oxfmt",
+        "lint": "oxlint",
+        "check": "oxlint && oxfmt --check"
+    },
+    "dependencies": {
+        "@headlessui/react": "^2.2.9",
+        "@magritte/rpc": "workspace:*",
+        "@magritte/sdk": "workspace:*",
+        "@phosphor-icons/react": "^2.1.10",
+        "@tailwindcss/vite": "catalog:",
+        "@tanstack/react-router": "^1.157.16",
+        "@tanstack/router-plugin": "^1.157.16",
+        "classnames": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "tailwindcss": "catalog:"
+    },
+    "devDependencies": {
+        "@testing-library/dom": "catalog:",
+        "@testing-library/react": "catalog:",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "@vitejs/plugin-react": "^5.1.2",
+        "baseline-browser-mapping": "^2.9.19",
+        "jsdom": "catalog:",
+        "oxfmt": "catalog:",
+        "oxlint": "catalog:",
+        "typescript": "catalog:",
+        "vite": "^7.3.1",
+        "vitest": "catalog:",
+        "web-vitals": "^5.1.0"
+    },
+    "packageManager": "pnpm@10.24.0"
+}

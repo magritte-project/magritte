@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import z4 from "zod/v4"
 
-import { LocalObject } from "@/localObject"
+import { LocalObject } from "./localObject.js"
 
 import { cast, implement, protocol, tryCast } from "./protocol"
 

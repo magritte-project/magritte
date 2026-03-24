@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest"
 import z4 from "zod/v4"
 
-import { LocalObject } from "@/localObject"
-import { implement, protocol } from "@/protocol"
-import { RemoteObject } from "@/remoteObject"
+import { LocalObject } from "../localObject.js"
+import { implement, protocol } from "../protocol.js"
+import { RemoteObject } from "../remoteObject.js"
 
 import { MessageChannelTransport } from "./messageChannel"
 

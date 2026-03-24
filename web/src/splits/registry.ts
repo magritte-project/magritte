@@ -1,5 +1,6 @@
 import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
 
+import { GeniusComSplit } from "@/splits/definitions/GeniusComSplit"
 import { QuickMixSplit } from "@/splits/definitions/QuickMixSplit"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
@@ -19,6 +20,7 @@ export default class SplitRegistry {
         // TODO: Don't hard code this
         this.registerSplit(QuickMixSplit)
         this.registerSplit(SongEditorSplit)
+        this.registerSplit(GeniusComSplit)
     }
 
     readonly $events: EventStream<SplitRegistryEvent>;

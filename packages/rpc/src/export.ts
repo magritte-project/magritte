@@ -1,4 +1,4 @@
-import type { RPCObject } from "@/object"
+import type { RPCObject } from "./object.js"
 
 export interface RPCObjectExport {
     /**

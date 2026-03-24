@@ -1,5 +1,5 @@
-import type { RPCObject } from "@/object"
-import type { ProtocolImplementation } from "@/protocol"
+import type { RPCObject } from "./object.js"
+import type { ProtocolImplementation } from "./protocol.js"
 
 export class LocalObject implements RPCObject {
     private readonly name: string

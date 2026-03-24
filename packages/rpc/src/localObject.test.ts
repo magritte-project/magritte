@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import z4 from "zod/v4"
 
-import { implement, protocol } from "@/protocol"
+import { implement, protocol } from "./protocol.js"
 
 import { LocalObject } from "./localObject"
 

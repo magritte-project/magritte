@@ -1,6 +1,5 @@
-import type { RPCTransport, RPCTransportMessage, RPCTransportReply } from "@/transport"
-
-import { findExportedObject, type RPCObjectExport } from "@/export"
+import { findExportedObject, type RPCObjectExport } from "../export.js"
+import type { RPCTransport, RPCTransportMessage, RPCTransportReply } from "../transport.js"
 
 function jsonify<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T

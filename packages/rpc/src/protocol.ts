@@ -1,6 +1,6 @@
 import * as z4 from "zod/v4/core"
 
-import type { RPCObject } from "@/object"
+import type { RPCObject } from "./object.js"
 
 export interface MethodSignatures {
     readonly [selector: string]: {

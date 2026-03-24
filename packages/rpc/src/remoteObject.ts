@@ -1,6 +1,6 @@
-import type { RPCObject } from "@/object"
+import type { RPCObject } from "./object.js"
 
-import { send, type RPCTransport } from "@/transport"
+import { send, type RPCTransport } from "./transport.js"
 
 export class RemoteObject implements RPCObject {
     private readonly transport: RPCTransport

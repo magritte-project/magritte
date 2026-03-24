@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest"
 import z4 from "zod/v4"
 
-import { LocalObject } from "@/localObject"
-import { implement, protocol } from "@/protocol"
-import { DummyTransport } from "@/transports/dummy"
+import { LocalObject } from "./localObject.js"
+import { implement, protocol } from "./protocol.js"
+import { DummyTransport } from "./transports/dummy.js"
 
 import { RemoteObject } from "./remoteObject"
 
