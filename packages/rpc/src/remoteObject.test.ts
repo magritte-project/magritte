@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest"
 import z4 from "zod/v4"
 
-import { LocalObject } from "./localObject.js"
-import { implement, protocol } from "./protocol.js"
-import { DummyTransport } from "./transports/dummy.js"
-
+import { DummyConnection } from "./connections/dummy"
+import { LocalObject } from "./localObject"
+import { implement, protocol } from "./protocol"
 import { RemoteObject } from "./remoteObject"
 
 const Arithmetic = protocol("Arithmetic", {
@@ -32,37 +31,24 @@ const InspectableImplementation = implement(Inspectable, {
 describe("RemoteObject", () => {
     describe("#conformsToProtocol", () => {
         it("should return true if the object conforms to the protocol", async () => {
-            const transport = new DummyTransport({
-                name: "root",
-                object: new LocalObject("root", [InspectableImplementation]),
-                children: [],
-            })
-            const subject = new RemoteObject(transport, [])
-            await expect(subject.conformsToProtocol(Inspectable.name)).resolves.toBe(true)
+            const transport = new DummyConnection(new LocalObject([InspectableImplementation]))
+            const subject = new RemoteObject(transport)
+            await expect(subject.implementsProtocol(Inspectable.name)).resolves.toBe(true)
         })
 
         it("should return false if the object does not conform to the protocol", async () => {
-            const transport = new DummyTransport({
-                name: "root",
-                object: new LocalObject("root", [InspectableImplementation]),
-                children: [],
-            })
-            const subject = new RemoteObject(transport, [])
-            await expect(subject.conformsToProtocol(Arithmetic.name)).resolves.toBe(false)
+            const transport = new DummyConnection(new LocalObject([InspectableImplementation]))
+            const subject = new RemoteObject(transport)
+            await expect(subject.implementsProtocol(Arithmetic.name)).resolves.toBe(false)
         })
     })
 
     describe("#invoke", () => {
         it("should be possible to invoke a method on any implemented protocol", async () => {
-            const transport = new DummyTransport({
-                name: "root",
-                object: new LocalObject("root", [
-                    InspectableImplementation,
-                    ArithmeticImplementation,
-                ]),
-                children: [],
-            })
-            const subject = new RemoteObject(transport, [])
+            const transport = new DummyConnection(
+                new LocalObject([InspectableImplementation, ArithmeticImplementation]),
+            )
+            const subject = new RemoteObject(transport)
             await expect(
                 subject.invoke(InspectableImplementation.name, "inspect", undefined),
             ).resolves.toStrictEqual("inspectable")

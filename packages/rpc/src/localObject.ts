@@ -1,22 +1,19 @@
-import type { RPCObject } from "./object.js"
-import type { ProtocolImplementation } from "./protocol.js"
+import type { RPCObject } from "./object"
+import type { ProtocolImplementation } from "./protocol"
 
 export class LocalObject implements RPCObject {
-    private readonly name: string
     private readonly protocols: ReadonlyMap<string, ProtocolImplementation>
 
-    /**
-     * The canonical empty object.
-     */
-    static readonly empty = new LocalObject("Empty", [])
-
-    constructor(name: string, protocols: readonly ProtocolImplementation[]) {
-        this.name = name
+    constructor(protocols: readonly ProtocolImplementation[]) {
         this.protocols = new Map(protocols.map((protocol) => [protocol.name, protocol]))
     }
 
-    async conformsToProtocol(name: string): Promise<boolean> {
-        return this.protocols.has(name)
+    async getProtocolNames(): Promise<string[]> {
+        return Array.from(this.protocols.keys())
+    }
+
+    async implementsProtocol(protocolName: string): Promise<boolean> {
+        return this.protocols.has(protocolName)
     }
 
     async invoke(protocolName: string, selector: string, parameters: unknown): Promise<unknown> {
@@ -29,9 +26,5 @@ export class LocalObject implements RPCObject {
             throw new Error(`Selector ${selector} not implemented by ${protocolName}`)
         }
         return await implementation(parameters)
-    }
-
-    toString(): string {
-        return `<${this.name}>`
     }
 }

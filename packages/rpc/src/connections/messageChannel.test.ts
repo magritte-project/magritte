@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest"
 import z4 from "zod/v4"
 
-import { LocalObject } from "../localObject.js"
-import { implement, protocol } from "../protocol.js"
-import { RemoteObject } from "../remoteObject.js"
-
-import { MessageChannelTransport } from "./messageChannel"
+import { LocalObject } from "../localObject"
+import { implement, protocol } from "../protocol"
+import { RemoteObject } from "../remoteObject"
+import { MessageChannelConnection } from "./messageChannel"
 
 const Arithmetic = protocol("Arithmetic", {
     add: { input: z4.object({ a: z4.number(), b: z4.number() }), output: z4.number() },
@@ -29,55 +28,40 @@ const InspectableImplementation = implement(Inspectable, {
     },
 })
 
-describe("MessageChannelTransport", () => {
+describe("MessageChannelConnection", () => {
     describe("#conformsToProtocol", () => {
         it("should return true if the object conforms to the protocol", async () => {
             const channel = new MessageChannel()
-            const transport = new MessageChannelTransport(
-                {
-                    name: "root",
-                    object: new LocalObject("root", [InspectableImplementation]),
-                    children: [],
-                },
+            const transport = new MessageChannelConnection(
+                new LocalObject([InspectableImplementation]),
                 channel.port1,
                 channel.port2,
             )
-            const subject = new RemoteObject(transport, [])
-            await expect(subject.conformsToProtocol(Inspectable.name)).resolves.toBe(true)
+            const subject = new RemoteObject(transport)
+            await expect(subject.implementsProtocol(Inspectable.name)).resolves.toBe(true)
         })
 
         it("should return false if the object does not conform to the protocol", async () => {
             const channel = new MessageChannel()
-            const transport = new MessageChannelTransport(
-                {
-                    name: "root",
-                    object: new LocalObject("root", [InspectableImplementation]),
-                    children: [],
-                },
+            const transport = new MessageChannelConnection(
+                new LocalObject([InspectableImplementation]),
                 channel.port1,
                 channel.port2,
             )
-            const subject = new RemoteObject(transport, [])
-            await expect(subject.conformsToProtocol(Arithmetic.name)).resolves.toBe(false)
+            const subject = new RemoteObject(transport)
+            await expect(subject.implementsProtocol(Arithmetic.name)).resolves.toBe(false)
         })
     })
 
     describe("#invoke", () => {
         it("should be possible to invoke a method on any implemented protocol", async () => {
             const channel = new MessageChannel()
-            const transport = new MessageChannelTransport(
-                {
-                    name: "root",
-                    object: new LocalObject("root", [
-                        InspectableImplementation,
-                        ArithmeticImplementation,
-                    ]),
-                    children: [],
-                },
+            const transport = new MessageChannelConnection(
+                new LocalObject([InspectableImplementation, ArithmeticImplementation]),
                 channel.port1,
                 channel.port2,
             )
-            const subject = new RemoteObject(transport, [])
+            const subject = new RemoteObject(transport)
             await expect(
                 subject.invoke(InspectableImplementation.name, "inspect", undefined),
             ).resolves.toStrictEqual("inspectable")

@@ -1,6 +1,6 @@
 import * as z4 from "zod/v4/core"
 
-import type { RPCObject } from "./object.js"
+import type { RPCObject } from "./object"
 
 export interface MethodSignatures {
     readonly [selector: string]: {
@@ -71,7 +71,7 @@ export async function tryCast<Signatures extends MethodSignatures>(
     protocol: Protocol<Signatures>,
     object: RPCObject,
 ): Promise<ProtocolInterface<Signatures> | null> {
-    if (!(await object.conformsToProtocol(protocol.name))) {
+    if (!(await object.implementsProtocol(protocol.name))) {
         return null
     }
     const proxy: Partial<Record<keyof Signatures, (parameters: unknown) => Promise<unknown>>> = {}

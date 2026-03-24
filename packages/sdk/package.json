@@ -11,9 +11,9 @@
             "types": "./src/index.ts",
             "default": "./src/index.ts"
         },
-        "./extensions": {
-            "types": "./src/extensions/index.ts",
-            "default": "./src/extensions/index.ts"
+        "./handshake": {
+            "types": "./src/handshake/index.ts",
+            "default": "./src/handshake/index.ts"
         },
         "./protocols": {
             "types": "./src/protocols/index.ts",

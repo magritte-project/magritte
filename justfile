@@ -1,16 +1,17 @@
 mod server
 mod web
+mod packages
 
 sync-deps: server::sync-deps web::sync-deps
 
 [parallel]
 dev: server::dev web::dev
 
-test: server::test web::test
+test: server::test web::test packages::test
 
-lint: server::lint web::lint
+lint: server::lint web::lint packages::lint
 
-format: server::format web::format
+format: server::format web::format packages::format
 
 check-types: server::check-types web::check-types
 

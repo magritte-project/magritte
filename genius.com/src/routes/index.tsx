@@ -12,8 +12,7 @@ export const Route = createFileRoute("/")({
                 <button
                     type="button"
                     onClick={async () => {
-                        const hostRoot = await host.getObject([])
-                        const chrome = await cast(HostChromeProtocol, hostRoot)
+                        const chrome = await cast(HostChromeProtocol, host)
                         await chrome.showToast({
                             message: "Hello from the extension",
                             type: "info",

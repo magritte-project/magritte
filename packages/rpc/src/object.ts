@@ -1,15 +1,20 @@
 export interface RPCObject {
     /**
-     * Checks if this object conforms to the given protocol.
-     *
-     * @param name The name of the protocol to check.
-     * @param version The version of the protocol to check.
-     * @returns True if this object conforms to the given protocol, false otherwise.
+     * Get the names of the protocols this object advertises itself as implementing.
      */
-    conformsToProtocol(name: string): Promise<boolean>
+    getProtocolNames(): Promise<string[]>
 
     /**
-     * Invokes a method on a protocol supported by this object.
+     * Checks if this object implements the given protocol.
+     *
+     * @param protocolName The name of the protocol to check for
+     * an implementation of.
+     * @returns True if this object implements the given protocol, false otherwise.
+     */
+    implementsProtocol(protocolName: string): Promise<boolean>
+
+    /**
+     * Invokes a method on a protocol implemented by this object.
      *
      * @param protocolName The name of the protocol the method belongs to.
      * @param selector The name of the method to invoke.

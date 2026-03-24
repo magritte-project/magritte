@@ -1,10 +1,10 @@
-import type { ExtensionHostProxy } from "@magritte/sdk/extensions"
+import type { RPCObject } from "@magritte/rpc"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 
 import RootLayout from "@/layouts/RootLayout"
 
 export interface GeniusExtensionRouterContext {
-    readonly host: ExtensionHostProxy
+    readonly host: RPCObject
 }
 
 declare module "@tanstack/react-router" {

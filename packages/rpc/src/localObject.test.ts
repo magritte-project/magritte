@@ -1,9 +1,8 @@
 import { describe, it, expect } from "vitest"
 import z4 from "zod/v4"
 
-import { implement, protocol } from "./protocol.js"
-
 import { LocalObject } from "./localObject"
+import { implement, protocol } from "./protocol"
 
 const Arithmetic = protocol("Arithmetic", {
     add: { input: z4.object({ a: z4.number(), b: z4.number() }), output: z4.number() },
@@ -30,22 +29,19 @@ const InspectableImplementation = implement(Inspectable, {
 describe("LocalObject", () => {
     describe("#conformsToProtocol", () => {
         it("should return true if the object conforms to the protocol", async () => {
-            const subject = new LocalObject("root", [InspectableImplementation])
-            await expect(subject.conformsToProtocol(Inspectable.name)).resolves.toBe(true)
+            const subject = new LocalObject([InspectableImplementation])
+            await expect(subject.implementsProtocol(Inspectable.name)).resolves.toBe(true)
         })
 
         it("should return false if the object does not conform to the protocol", async () => {
-            const subject = new LocalObject("root", [InspectableImplementation])
-            await expect(subject.conformsToProtocol(Arithmetic.name)).resolves.toBe(false)
+            const subject = new LocalObject([InspectableImplementation])
+            await expect(subject.implementsProtocol(Arithmetic.name)).resolves.toBe(false)
         })
     })
 
     describe("#invoke", () => {
         it("should be possible to invoke a method on any implemented protocol", async () => {
-            const subject = new LocalObject("root", [
-                InspectableImplementation,
-                ArithmeticImplementation,
-            ])
+            const subject = new LocalObject([InspectableImplementation, ArithmeticImplementation])
             await expect(
                 subject.invoke(InspectableImplementation.name, "inspect", undefined),
             ).resolves.toStrictEqual("inspectable")

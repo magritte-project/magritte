@@ -1,16 +1,20 @@
-import { handshake } from "@magritte/sdk/extensions"
+import { LocalObject } from "@magritte/rpc"
+import { extensionHandshake } from "@magritte/sdk/handshake"
 import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
+
+import "@/styles.css"
 import ReactDOM from "react-dom/client"
 
 import reportWebVitals from "@/reportWebVitals.ts"
-
-import "@/styles.css"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
 
 // Handshake with the extension host
-const { host } = await handshake({ extensionId: "magritte.com.genius" })
+const { host } = await extensionHandshake({
+    extensionId: "magritte.com.genius",
+    exportedObject: new LocalObject([]),
+})
 
 // Create a new router instance
 

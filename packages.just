@@ -1,0 +1,8 @@
+test:
+    pnpm --filter "./packages/*" run test
+
+lint:
+    pnpm --filter "./packages/*" run lint --fix
+
+format:
+    pnpm --filter "./packages/*" run format
