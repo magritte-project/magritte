@@ -32,6 +32,16 @@ interface PendingSend {
 
 export class MessageChannelConnection implements RPCConnection {
     private readonly pending = new Map<string, PendingSend>()
+    private isValid = true
+
+    static createChannels() {
+        const localChannel = new MessageChannel()
+        const remoteChannel = new MessageChannel()
+        return {
+            localPorts: { send: localChannel.port1, receive: remoteChannel.port1 },
+            remotePorts: { send: remoteChannel.port2, receive: localChannel.port2 },
+        }
+    }
 
     constructor(
         public readonly exportedObject: RPCObject,
@@ -71,11 +81,31 @@ export class MessageChannelConnection implements RPCConnection {
     }
 
     async send(message: RPCConnectionMessage): Promise<RPConnectionMessageReply> {
+        if (!this.isValid) {
+            throw new Error("Connection is invalid")
+        }
         const id = crypto.randomUUID()
         const reply = new Promise<RPConnectionMessageReply>((resolve, reject) => {
             this.pending.set(id, { resolve, reject })
         })
         this.postMessage({ id, data: { type: "message", message } })
         return await reply
+    }
+
+    invalidate(): void {
+        if (!this.isValid) {
+            return
+        }
+
+        this.sendPort.close()
+        this.receivePort.close()
+        this.receivePort.onmessage = null
+
+        for (const [_, pending] of this.pending) {
+            pending.reject(new Error("Connection invalidated"))
+        }
+        this.pending.clear()
+
+        this.isValid = false
     }
 }

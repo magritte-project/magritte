@@ -1,13 +1,13 @@
 import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
 
+import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
+
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
     PlaybackEngineEvent,
 } from "@/playback/engine"
 import type { PlaybackModes } from "@/playback/modes"
-
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export default class AppleMusicPlaybackEngine implements PlaybackEngine {
     private _musicKit: MusicKit.Instance

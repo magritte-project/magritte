@@ -1,5 +1,7 @@
 import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
 
+import { type EventSink, type EventStream, createEvent } from "@magritte/sdk/utilities"
+
 import type { UserSessionManager } from "@/api/userSession"
 import type {
     PlaybackEngine,
@@ -8,7 +10,6 @@ import type {
 } from "@/playback/engine"
 import type { PlaybackModes } from "@/playback/modes"
 
-import { type EventSink, type EventStream, createEvent } from "@/utilities/events"
 import { resolveUrl } from "@/utilities/resources"
 
 function _findBestUrl(item: PlayableItem): string | undefined {

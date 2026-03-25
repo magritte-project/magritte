@@ -84,4 +84,6 @@ export interface RPCConnection {
     readonly exportedObject: RPCObject
 
     send(message: RPCConnectionMessage): Promise<RPConnectionMessageReply>
+
+    invalidate(): void
 }

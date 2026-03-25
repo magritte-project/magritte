@@ -82,12 +82,11 @@ export function waitForExtensionConnection({
                                 post: _notifications.dispatch,
                             }),
                         ])
-                        const hostChannel = new MessageChannel()
-                        const extensionChannel = new MessageChannel()
+                        const channels = MessageChannelConnection.createChannels()
                         const connection = new MessageChannelConnection(
                             exportedObject,
-                            hostChannel.port1,
-                            extensionChannel.port1,
+                            channels.localPorts.send,
+                            channels.localPorts.receive,
                         )
                         const serialNumber = crypto.randomUUID()
                         iframe.contentWindow?.postMessage(
@@ -96,7 +95,7 @@ export function waitForExtensionConnection({
                                 serialNumber,
                             } satisfies HostConnectResponse,
                             origin,
-                            [extensionChannel.port2, hostChannel.port2],
+                            [channels.remotePorts.send, channels.remotePorts.receive],
                         )
                         resolve(new Extension($notifications, serialNumber, connection))
                         break

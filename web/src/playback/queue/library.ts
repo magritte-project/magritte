@@ -1,12 +1,13 @@
 import type { PlayableItem } from "@magritte/sdk/host"
 import type { QueryClient } from "@tanstack/react-query"
 
+import { createEvent, type EventStream } from "@magritte/sdk/utilities"
+
 import type { APIClient } from "@/api/client"
 import type { LibraryMediaReadSongRead } from "@/api/openapi"
 import type { Queue, QueueContext, QueueEvent, RandomItemContext } from "@/playback/queue/base"
 
 import { readLibrarySongs, type ReadLibrarySongsCriteria } from "@/api/queries/libraries"
-import { createEvent, type EventStream } from "@/utilities/events"
 
 export default class LibraryQueue implements Queue<PlayableItem> {
     private readonly _apiClient: APIClient

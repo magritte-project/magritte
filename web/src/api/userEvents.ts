@@ -1,7 +1,7 @@
+import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
+
 import type { APIClient } from "@/api/client"
 import type { UserSessionManager, UserSessionManagerEvent } from "@/api/userSession"
-
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 type UserEventsState =
     | { type: "notConnected" }

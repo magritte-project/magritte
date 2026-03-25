@@ -1,5 +1,12 @@
 import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
 
+import {
+    type EventSink,
+    type EventStream,
+    type EventSubscription,
+    createEvent,
+} from "@magritte/sdk/utilities"
+
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
@@ -11,12 +18,6 @@ import { PlaybackModes } from "@/playback/modes"
 import { type Queue, type RandomItemContext } from "@/playback/queue/base"
 import EmptyQueue from "@/playback/queue/empty"
 import { CountingStack, type ReadonlyCountingStack } from "@/utilities/countingStack"
-import {
-    type EventSink,
-    type EventStream,
-    type EventSubscription,
-    createEvent,
-} from "@/utilities/events"
 import { resolveNewValue } from "@/utilities/react"
 
 export type PlayerEvent =

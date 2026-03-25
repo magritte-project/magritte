@@ -1,5 +1,7 @@
 import type { JsonStructure } from "react-cmdk"
 
+import { createEvent, EventStream, type EventSink } from "@magritte/sdk/utilities"
+
 import type { PlaybackEngine } from "@/playback/engine"
 
 import {
@@ -10,7 +12,6 @@ import {
     type ServiceOfType,
     type ServiceType,
 } from "@/services/base"
-import { createEvent, EventStream, type EventSink } from "@/utilities/events"
 
 export type ServiceRegistryEvent =
     | { type: "serviceAdded"; service: Service }

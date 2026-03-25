@@ -12,9 +12,18 @@ function jsonify<T>(value: T): T {
 }
 
 export class DummyConnection implements RPCConnection {
+    private isValid = true
+
     constructor(public readonly exportedObject: RPCObject) {}
 
     async send(message: RPCConnectionMessage): Promise<RPConnectionMessageReply> {
+        if (!this.isValid) {
+            throw new Error("Connection is invalid")
+        }
         return jsonify(await dispatchMessage(jsonify(message), this.exportedObject))
+    }
+
+    invalidate(): void {
+        this.isValid = false
     }
 }

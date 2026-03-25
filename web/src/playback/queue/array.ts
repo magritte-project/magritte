@@ -1,6 +1,6 @@
-import type { Queue, QueueEvent, RandomItemContext } from "@/playback/queue/base"
+import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
 
-import { createEvent, EventSink, type EventStream } from "@/utilities/events"
+import type { Queue, QueueEvent, RandomItemContext } from "@/playback/queue/base"
 
 export default class ArrayQueue<Item extends { id: unknown }> implements Queue<Item> {
     private readonly _events: EventSink<QueueEvent>

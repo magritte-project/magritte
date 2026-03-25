@@ -1,6 +1,6 @@
-import type { OAuth2Scope } from "@/api/openapi"
+import { createEvent, EventStream, type EventSink } from "@magritte/sdk/utilities"
 
-import { createEvent, EventStream, type EventSink } from "@/utilities/events"
+import type { OAuth2Scope } from "@/api/openapi"
 
 export interface UserSession {
     readonly accessToken: string

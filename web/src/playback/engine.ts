@@ -1,7 +1,7 @@
 import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+import type { EventStream } from "@magritte/sdk/utilities"
 
 import type { PlaybackModes } from "@/playback/modes"
-import type { EventStream } from "@/utilities/events"
 
 export type PlaybackEngineEvent =
     | { type: "playbackStateDidChange" }
