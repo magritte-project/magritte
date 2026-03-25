@@ -17,7 +17,7 @@ import {
     type Notifications,
 } from "../common/notifications"
 import { ExtensionProtocol } from "../extension"
-import { NowPlayingProtocol, type NowPlaying } from "../host"
+import { PlayerProtocol, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
 import { createEvent, EventStream } from "../utilities/events"
 import { zHostConnectResponse, type HostConnectRequest } from "./handshake"
@@ -61,8 +61,8 @@ export class ExtensionHost {
         return this._cast(ChromeProtocol)
     }
 
-    async nowPlaying(): Promise<NowPlaying> {
-        return this._cast(NowPlayingProtocol)
+    async player(): Promise<Player> {
+        return this._cast(PlayerProtocol)
     }
 }
 

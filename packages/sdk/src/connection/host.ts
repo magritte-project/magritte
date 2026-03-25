@@ -16,7 +16,7 @@ import {
     type Notification,
     type Notifications,
 } from "../common/notifications"
-import { ChromeProtocol, NowPlayingProtocol, type Chrome, type NowPlaying } from "../host"
+import { ChromeProtocol, PlayerProtocol, type Chrome, type Player } from "../host"
 import { createEvent, type EventStream } from "../utilities/events"
 import { zHostConnectRequest, type HostConnectResponse } from "./handshake"
 
@@ -56,7 +56,7 @@ export interface WaitForExtensionConnectionOptions {
     readonly iframe: HTMLIFrameElement
     readonly origin: string
     readonly chrome: Chrome
-    readonly nowPlaying: NowPlaying
+    readonly nowPlaying: Player
 }
 
 export function waitForExtensionConnection({
@@ -77,7 +77,7 @@ export function waitForExtensionConnection({
                         const [_notifications, $notifications] = createEvent<Notification>()
                         const exportedObject = new LocalObject([
                             implement(ChromeProtocol, chrome),
-                            implement(NowPlayingProtocol, nowPlaying),
+                            implement(PlayerProtocol, nowPlaying),
                             implement(NotificationsProtocol, {
                                 post: async (notification) => {
                                     _notifications.dispatch(notification)

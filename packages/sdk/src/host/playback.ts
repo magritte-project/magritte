@@ -49,9 +49,9 @@ export const zPlaybackState = z4.enum(["playing", "paused", "stopped"])
 export type PlaybackState = z4.infer<typeof zPlaybackState>
 
 /**
- * A protocol which allows an extension to control playback in the host.
+ * A protocol which allows an extension to interact with the player in the host.
  */
-export const NowPlayingProtocol = protocol("Magritte.Host.NowPlaying", {
+export const PlayerProtocol = protocol("Magritte.Host.Player", {
     /** Retrieve the current playback time and total time. */
     getCurrentTime: {
         input: z4.void(),
@@ -103,4 +103,4 @@ export const NowPlayingProtocol = protocol("Magritte.Host.NowPlaying", {
     },
 })
 
-export type NowPlaying = ProtocolObject<typeof NowPlayingProtocol>
+export type Player = ProtocolObject<typeof PlayerProtocol>
