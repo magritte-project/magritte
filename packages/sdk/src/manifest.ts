@@ -1,9 +1,5 @@
 import z4 from "zod/v4"
 
-export const zExtensionPermissions = z4.enum(["nowPlaying.read", "nowPlaying.events"])
-
-export type ExtensionPermissions = z4.infer<typeof zExtensionPermissions>
-
 export const zExtensionManifest = z4.object({
     /** A friendly name for the extension */
     name: z4.string(),
@@ -16,9 +12,6 @@ export const zExtensionManifest = z4.object({
 
     /** An optional description of the extension */
     description: z4.string().optional(),
-
-    /** The permissions required by the extension */
-    permissions: z4.array(zExtensionPermissions).optional(),
 
     /** The URL of the extension */
     url: z4.string(),
