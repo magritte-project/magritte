@@ -1,6 +1,6 @@
-import { useSyncExternalStore } from "react"
+import type { PlayableItem } from "@magritte/sdk/host"
 
-import type { PlayableItem } from "@/playback/item"
+import { useSyncExternalStore } from "react"
 
 import usePlayer from "@/hooks/playerHook"
 

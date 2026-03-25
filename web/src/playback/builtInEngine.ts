@@ -1,11 +1,11 @@
+import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+
 import type { UserSessionManager } from "@/api/userSession"
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
     PlaybackEngineEvent,
-    PlaybackEngineState,
 } from "@/playback/engine"
-import type { PlayableItem } from "@/playback/item"
 import type { PlaybackModes } from "@/playback/modes"
 
 import { type EventSink, type EventStream, createEvent } from "@/utilities/events"
@@ -81,7 +81,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         return this._playingItem
     }
 
-    get playbackState(): PlaybackEngineState {
+    get playbackState(): PlaybackState {
         if (this._audio.src === "") {
             return "stopped"
         } else if (this._audio.paused) {

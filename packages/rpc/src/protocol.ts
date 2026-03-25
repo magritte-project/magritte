@@ -22,6 +22,16 @@ export type ProtocolInterface<Signatures extends MethodSignatures> = {
     ) => Promise<z4.infer<Signatures[Method]["output"]>>
 }
 
+/**
+ * Utility for defining types which match the shape of a protocol:
+ *
+ * ```typescript
+ * export type Notifications = ProtocolObject<typeof NotificationsProtocol>
+ * ```
+ */
+export type ProtocolObject<P> =
+    P extends Protocol<infer Signatures> ? ProtocolInterface<Signatures> : never
+
 /** An implementation of a protocol */
 export interface ProtocolImplementation {
     readonly name: string

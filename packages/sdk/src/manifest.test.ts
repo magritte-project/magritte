@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import { extensionPermissionsSchema } from "./manifest"
+import { zExtensionPermissions } from "./manifest"
 
 describe("manifest", () => {
     describe("#extensionPermissionsSchema", () => {
         it("should reject unknown permissions", () => {
-            expect(() => extensionPermissionsSchema.parse("whatever")).toThrow()
+            expect(() => zExtensionPermissions.parse("whatever")).toThrow()
         })
     })
 })

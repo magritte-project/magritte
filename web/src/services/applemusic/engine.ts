@@ -1,10 +1,10 @@
+import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
     PlaybackEngineEvent,
-    PlaybackEngineState,
 } from "@/playback/engine"
-import type { PlayableItem } from "@/playback/item"
 import type { PlaybackModes } from "@/playback/modes"
 
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
@@ -52,7 +52,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         return this._playingItem
     }
 
-    get playbackState(): PlaybackEngineState {
+    get playbackState(): PlaybackState {
         switch (this._musicKit.playbackState) {
             case MusicKit.PlaybackStates.none:
             case MusicKit.PlaybackStates.loading:

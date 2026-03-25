@@ -1,18 +1,16 @@
-import { cast } from "@magritte/rpc"
-import { HostChromeProtocol } from "@magritte/sdk/protocols"
 import { createFileRoute } from "@tanstack/react-router"
 
-import useHost from "@/hooks/hostHook"
+import useExtensionHost from "@/hooks/extensionHostHook"
 
 export const Route = createFileRoute("/")({
     component: function IndexComponent() {
-        const host = useHost()
+        const host = useExtensionHost()
         return (
             <>
                 <button
                     type="button"
                     onClick={async () => {
-                        const chrome = await cast(HostChromeProtocol, host)
+                        const chrome = await host.chrome()
                         await chrome.showToast({
                             message: "Hello from the extension",
                             type: "info",

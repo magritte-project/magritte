@@ -1,8 +1,8 @@
+import type { PlayableItem } from "@magritte/sdk/host"
 import type { QueryClient } from "@tanstack/react-query"
 
 import type { APIClient } from "@/api/client"
 import type { LibraryMediaReadSongRead } from "@/api/openapi"
-import type { PlayableItem } from "@/playback/item"
 import type { Queue, QueueContext, QueueEvent, RandomItemContext } from "@/playback/queue/base"
 
 import { readLibrarySongs, type ReadLibrarySongsCriteria } from "@/api/queries/libraries"

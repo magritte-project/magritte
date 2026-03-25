@@ -11,13 +11,25 @@
             "types": "./src/index.ts",
             "default": "./src/index.ts"
         },
-        "./handshake": {
-            "types": "./src/handshake/index.ts",
-            "default": "./src/handshake/index.ts"
+        "./common": {
+            "types": "./src/common/index.ts",
+            "default": "./src/common/index.ts"
         },
-        "./protocols": {
-            "types": "./src/protocols/index.ts",
-            "default": "./src/protocols/index.ts"
+        "./connection": {
+            "types": "./src/connection/index.ts",
+            "default": "./src/connection/index.ts"
+        },
+        "./extension": {
+            "types": "./src/extension/index.ts",
+            "default": "./src/extension/index.ts"
+        },
+        "./host": {
+            "types": "./src/host/index.ts",
+            "default": "./src/host/index.ts"
+        },
+        "./utilities": {
+            "types": "./src/utilities/index.ts",
+            "default": "./src/utilities/index.ts"
         }
     },
     "scripts": {

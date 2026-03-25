@@ -1,11 +1,11 @@
+import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
     PlaybackEngineEvent,
-    PlaybackEngineState,
 } from "@/playback/engine"
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
-import type { PlayableItem } from "@/playback/item"
 
 import { PlaybackModes } from "@/playback/modes"
 import { type Queue, type RandomItemContext } from "@/playback/queue/base"
@@ -163,7 +163,7 @@ export class Player {
         return this._modes
     }
 
-    get playbackState(): PlaybackEngineState {
+    get playbackState(): PlaybackState {
         if (this._activeEngine !== null) {
             return this._activeEngine.playbackState
         } else {

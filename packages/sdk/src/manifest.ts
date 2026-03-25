@@ -1,13 +1,30 @@
 import z4 from "zod/v4"
 
-export const extensionPermissionsSchema = z4.enum(["nowPlaying.read", "nowPlaying.events"])
+export const zExtensionPermissions = z4.enum(["nowPlaying.read", "nowPlaying.events"])
 
-export const extensionManifestSchema = z4.object({
+export type ExtensionPermissions = z4.infer<typeof zExtensionPermissions>
+
+export const zExtensionManifest = z4.object({
+    /** A friendly name for the extension */
     name: z4.string(),
+
+    /** A unique identifier for the extension */
     id: z4.string(),
+
+    /** The version of the extension */
     version: z4.string(),
+
+    /** An optional description of the extension */
     description: z4.string().optional(),
-    permissions: z4.array(extensionPermissionsSchema).optional(),
+
+    /** The permissions required by the extension */
+    permissions: z4.array(zExtensionPermissions).optional(),
+
+    /** The URL of the extension */
+    url: z4.string(),
+
+    /** The origin of the extension */
+    origin: z4.string(),
 })
 
-export type ExtensionManifest = z4.infer<typeof extensionManifestSchema>
+export type ExtensionManifest = z4.infer<typeof zExtensionManifest>

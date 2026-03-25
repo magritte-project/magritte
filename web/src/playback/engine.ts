@@ -1,8 +1,7 @@
-import type { PlayableItem } from "@/playback/item"
+import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+
 import type { PlaybackModes } from "@/playback/modes"
 import type { EventStream } from "@/utilities/events"
-
-export type PlaybackEngineState = "playing" | "paused" | "stopped"
 
 export type PlaybackEngineEvent =
     | { type: "playbackStateDidChange" }
@@ -36,7 +35,7 @@ export interface PlaybackEngineEnqueueOptions {
 
 export interface PlaybackEngine {
     readonly playingItem: PlayableItem | null
-    readonly playbackState: PlaybackEngineState
+    readonly playbackState: PlaybackState
     readonly totalTime: number | null
     readonly currentTime: number | null
 

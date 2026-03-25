@@ -1,10 +1,10 @@
-import { useSyncExternalStore } from "react"
+import type { PlaybackState } from "@magritte/sdk/host"
 
-import type { PlaybackEngineState } from "@/playback/engine"
+import { useSyncExternalStore } from "react"
 
 import usePlayer from "@/hooks/playerHook"
 
-export default function usePlaybackState(): PlaybackEngineState {
+export default function usePlaybackState(): PlaybackState {
     const player = usePlayer()
     const playbackState = useSyncExternalStore(
         (onStoreChange) => {

@@ -1,5 +1,6 @@
+import type { PlayableItem } from "@magritte/sdk/host"
+
 import type { PlaybackEngine } from "@/playback/engine"
-import type { PlayableItem } from "@/playback/item"
 import type { Service } from "@/services/base"
 
 import { ServiceRegistry } from "@/services/registry"

@@ -1,3 +1,4 @@
+import { type PlayableItem } from "@magritte/sdk/host"
 import { CassetteTapeIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import classNames from "classnames"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -9,7 +10,6 @@ import AsyncButton from "@/components/reusable/AsyncButton"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
-import { type PlayableItem } from "@/playback/item"
 import ArrayQueue from "@/playback/queue/array"
 
 export default function QuickMix() {

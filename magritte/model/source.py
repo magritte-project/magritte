@@ -97,7 +97,7 @@ class Source(LibraryModel, table=True):
             update_result = await session.execute(
                 update(Source)
                 .values(
-                    url=dest_path,
+                    url=dest_url,
                 )
                 .where(col(cls.url) == src_url)
             )

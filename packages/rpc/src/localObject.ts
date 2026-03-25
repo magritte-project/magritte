@@ -25,6 +25,6 @@ export class LocalObject implements RPCObject {
         if (implementation === undefined) {
             throw new Error(`Selector ${selector} not implemented by ${protocolName}`)
         }
-        return await implementation(parameters)
+        return await implementation.call(protocol, parameters)
     }
 }

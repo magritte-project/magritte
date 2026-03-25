@@ -1,8 +1,7 @@
+import type { PlayableItemArtwork } from "@magritte/sdk/host"
 import type React from "react"
 
 import classNames from "classnames"
-
-import type { PlayableItemArtwork } from "@/playback/item"
 
 import useUserSession from "@/hooks/userSessionHook"
 import { resolveUrl } from "@/utilities/resources"
