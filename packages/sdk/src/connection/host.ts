@@ -11,6 +11,8 @@ import {
     type RPCObject,
 } from "@magritte/rpc"
 
+import type { ExtensionManifest } from "../manifest"
+
 import {
     NotificationsProtocol,
     type Notification,
@@ -54,26 +56,29 @@ export class Extension {
 
 export interface WaitForExtensionConnectionOptions {
     readonly iframe: HTMLIFrameElement
-    readonly origin: string
+    readonly manifest: ExtensionManifest
     readonly chrome: Chrome
     readonly nowPlaying: Player
 }
 
 export function waitForExtensionConnection({
     iframe,
-    origin,
+    manifest,
     chrome,
     nowPlaying,
 }: WaitForExtensionConnectionOptions): Promise<Extension> {
     return new Promise((resolve, reject) => {
         const handleMessage = (event: MessageEvent) => {
-            if (event.origin !== origin) {
+            if (event.origin !== manifest.origin) {
                 return
             }
             try {
                 const data = zHostConnectRequest.parse(event.data)
                 switch (data.type) {
                     case "connect": {
+                        if (data.extensionId !== manifest.id) {
+                            throw new Error("Extension ID mismatch")
+                        }
                         const [_notifications, $notifications] = createEvent<Notification>()
                         const exportedObject = new LocalObject([
                             implement(ChromeProtocol, chrome),
@@ -96,7 +101,7 @@ export function waitForExtensionConnection({
                                 type: "connected",
                                 serialNumber,
                             } satisfies HostConnectResponse,
-                            origin,
+                            manifest.origin,
                             [channels.remotePorts.send, channels.remotePorts.receive],
                         )
                         resolve(new Extension($notifications, serialNumber, connection))

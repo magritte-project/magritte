@@ -2,7 +2,7 @@ import { LinkIcon } from "@phosphor-icons/react/dist/ssr"
 
 import type { SplitDefinition } from "@/splits/base"
 
-import GeniusComTester from "@/components/extensions/GeniusComTester"
+import { buildExtensionComponent } from "@/components/extensions/ExtensionComponent"
 
 export const GeniusComSplit: SplitDefinition = {
     id: "geniusCom",
@@ -12,5 +12,11 @@ export const GeniusComSplit: SplitDefinition = {
     preferredLocation: "end",
     allowsMultiple: false,
     requiresParameters: false,
-    component: GeniusComTester,
+    component: buildExtensionComponent({
+        name: "Genius",
+        id: "magritte.com.genius",
+        version: "0.0.0",
+        url: "http://localhost:9292/",
+        origin: "http://localhost:9292",
+    }),
 }
