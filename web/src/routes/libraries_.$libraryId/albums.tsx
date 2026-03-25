@@ -34,7 +34,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                 query,
             },
             onSubmit({ value }) {
-                navigate({ search: (oldSearch) => ({ ...oldSearch, ...value }) })
+                navigate({ search: (oldSearch) => ({ ...oldSearch, ...value, offset: undefined }) })
             },
         })
 
