@@ -29,7 +29,7 @@ export default function TransportControls() {
                         <motion.div
                             layout
                             key="playingItem"
-                            className="flex flex-col items-center gap-0.5 text-shadow-lg text-shadow-white"
+                            className="flex flex-col items-center w-full gap-0.5 text-shadow-lg text-shadow-white"
                         >
                             <motion.div key="title" layout className="font-medium">
                                 {playingItem ? (playingItem.title ?? "--") : "Nothing Playing"}
@@ -50,17 +50,15 @@ export default function TransportControls() {
                             layout
                             className="text-2xl flex items-center gap-2"
                         >
-                            {isExpanded && (
-                                <AsyncButton
-                                    className={classNames(
-                                        "p-2 rounded-full active:bg-black/10",
-                                        "font-bold text-gray-800 disabled:text-gray-300",
-                                    )}
-                                    onClick={() => player.skipPrevious()}
-                                >
-                                    <SkipBackIcon weight="fill" aria-label="Play" />
-                                </AsyncButton>
-                            )}
+                            <AsyncButton
+                                className={classNames(
+                                    "p-2 rounded-full active:bg-black/10",
+                                    "font-bold text-gray-800 disabled:text-gray-300",
+                                )}
+                                onClick={() => player.skipPrevious()}
+                            >
+                                <SkipBackIcon weight="fill" aria-label="Play" />
+                            </AsyncButton>
                             <DPad
                                 onDraggedPastTop={() => setIsExpanded((oldValue) => !oldValue)}
                                 onDraggedPastStart={() => player.skipPrevious()}
@@ -80,7 +78,7 @@ export default function TransportControls() {
                                 >
                                     <ArtworkImage
                                         className={classNames("aspect-square", {
-                                            "w-3xs": isExpanded,
+                                            "w-48": isExpanded,
                                             "w-16": !isExpanded,
                                         })}
                                         artworks={playingItem?.artworks}
@@ -95,17 +93,15 @@ export default function TransportControls() {
                                     </div>
                                 </AsyncButton>
                             </DPad>
-                            {isExpanded && (
-                                <AsyncButton
-                                    className={classNames(
-                                        "p-2 rounded-full active:bg-black/10",
-                                        "font-bold text-gray-800 disabled:text-gray-300",
-                                    )}
-                                    onClick={() => player.skipNext()}
-                                >
-                                    <SkipForwardIcon weight="fill" aria-label="Play" />
-                                </AsyncButton>
-                            )}
+                            <AsyncButton
+                                className={classNames(
+                                    "p-2 rounded-full active:bg-black/10",
+                                    "font-bold text-gray-800 disabled:text-gray-300",
+                                )}
+                                onClick={() => player.skipNext()}
+                            >
+                                <SkipForwardIcon weight="fill" aria-label="Play" />
+                            </AsyncButton>
                         </motion.div>
                     </AnimatePresence>
                 </div>
