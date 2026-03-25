@@ -87,7 +87,9 @@ export function connectToExtensionHost({
                         const exportedObject = new LocalObject([
                             implement(ExtensionProtocol, {}),
                             implement(NotificationsProtocol, {
-                                post: _notifications.dispatch,
+                                post: async (notification) => {
+                                    _notifications.dispatch(notification)
+                                },
                             }),
                         ])
                         const serialNumber = data.serialNumber

@@ -79,7 +79,9 @@ export function waitForExtensionConnection({
                             implement(ChromeProtocol, chrome),
                             implement(NowPlayingProtocol, nowPlaying),
                             implement(NotificationsProtocol, {
-                                post: _notifications.dispatch,
+                                post: async (notification) => {
+                                    _notifications.dispatch(notification)
+                                },
                             }),
                         ])
                         const channels = MessageChannelConnection.createChannels()

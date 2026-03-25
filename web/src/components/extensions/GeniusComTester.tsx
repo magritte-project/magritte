@@ -11,6 +11,23 @@ export default function GeniusComTester() {
     const extensionRef = useRef<Extension | null>(null)
 
     useEffect(() => {
+        const subscription = player.$events.subscribe(async (event) => {
+            switch (event.type) {
+                case "playbackStateDidChange":
+                case "playingItemChanged":
+                    const notifications = await extensionRef.current?.notifications()
+                    notifications?.post({ name: "Magritte.NowPlayingDidChange" })
+                    break
+                default:
+                    break
+            }
+        })
+        return () => {
+            subscription.unsubscribe()
+        }
+    }, [player])
+
+    useEffect(() => {
         if (!containerRef.current) {
             return
         }
