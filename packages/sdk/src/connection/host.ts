@@ -65,9 +65,10 @@ export function waitForExtensionConnection({
     chrome,
     nowPlaying,
 }: WaitForExtensionConnectionOptions): Promise<Extension> {
+    const origin = new URL(manifest.url).origin
     return new Promise((resolve, reject) => {
         const handleMessage = (event: MessageEvent) => {
-            if (event.origin !== manifest.origin) {
+            if (event.origin !== origin) {
                 return
             }
             try {
@@ -99,7 +100,7 @@ export function waitForExtensionConnection({
                                 type: "connected",
                                 serialNumber,
                             } satisfies HostConnectResponse,
-                            manifest.origin,
+                            origin,
                             [channels.remotePorts.send, channels.remotePorts.receive],
                         )
                         resolve(new Extension($notifications, serialNumber, connection))

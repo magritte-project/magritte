@@ -17,6 +17,5 @@ export const GeniusComSplit: SplitDefinition = {
         id: "magritte.com.genius",
         version: "0.0.0",
         url: "http://localhost:9292/",
-        origin: "http://localhost:9292",
     }),
 }

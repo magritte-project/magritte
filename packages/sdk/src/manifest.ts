@@ -15,9 +15,6 @@ export const zExtensionManifest = z4.object({
 
     /** The URL of the extension */
     url: z4.string(),
-
-    /** The origin of the extension */
-    origin: z4.string(),
 })
 
 export type ExtensionManifest = z4.infer<typeof zExtensionManifest>
