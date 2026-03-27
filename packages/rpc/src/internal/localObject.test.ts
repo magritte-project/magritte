@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest"
 import z4 from "zod/v4"
 
+import { implement, protocol } from "../protocol"
 import { LocalObject } from "./localObject"
-import { implement, protocol } from "./protocol"
 
 const Arithmetic = protocol("Arithmetic", {
     add: { input: z4.object({ a: z4.number(), b: z4.number() }), output: z4.number() },

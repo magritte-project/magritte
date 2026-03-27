@@ -1,15 +1,13 @@
 import {
     cast,
     implement,
-    LocalObject,
-    MessageChannelConnection,
-    RemoteObject,
+    RPCConnection,
     type MethodSignatures,
     type Protocol,
     type ProtocolInterface,
-    type RPCConnection,
     type RPCObject,
 } from "@magritte/rpc"
+import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import {
     NotificationsProtocol,
@@ -36,7 +34,7 @@ export class ExtensionHost {
         public readonly serialNumber: string,
         public readonly connection: RPCConnection,
     ) {
-        this.remoteObject = new RemoteObject(connection)
+        this.remoteObject = connection.remoteObject
         this.proxies = new Map()
     }
 
@@ -84,20 +82,20 @@ export function connectToExtensionHost({
                         }
 
                         const [_notifications, $notifications] = createEvent<Notification>()
-                        const exportedObject = new LocalObject([
+                        const exportedObject = [
                             implement(ExtensionProtocol, {}),
                             implement(NotificationsProtocol, {
                                 post: async (notification) => {
                                     _notifications.dispatch(notification)
                                 },
                             }),
-                        ])
+                        ]
                         const serialNumber = data.serialNumber
-                        const connection = new MessageChannelConnection(
-                            exportedObject,
+                        const transport = new MessageChannelTransport(
                             event.ports[0],
                             event.ports[1],
                         )
+                        const connection = new RPCConnection({ transport, exportedObject })
                         resolve(new ExtensionHost($notifications, serialNumber, connection))
                         break
                     }

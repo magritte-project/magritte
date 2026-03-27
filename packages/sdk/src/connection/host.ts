@@ -1,15 +1,13 @@
 import {
     cast,
     implement,
-    LocalObject,
-    MessageChannelConnection,
-    RemoteObject,
+    RPCConnection,
     type MethodSignatures,
     type Protocol,
     type ProtocolInterface,
-    type RPCConnection,
     type RPCObject,
 } from "@magritte/rpc"
+import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import type { ExtensionManifest } from "../manifest"
 
@@ -32,7 +30,7 @@ export class Extension {
         public readonly serialNumber: string,
         public readonly connection: RPCConnection,
     ) {
-        this.remoteObject = new RemoteObject(connection)
+        this.remoteObject = connection.remoteObject
         this.proxies = new Map()
     }
 
@@ -80,7 +78,7 @@ export function waitForExtensionConnection({
                             throw new Error("Extension ID mismatch")
                         }
                         const [_notifications, $notifications] = createEvent<Notification>()
-                        const exportedObject = new LocalObject([
+                        const exportedObject = [
                             implement(ChromeProtocol, chrome),
                             implement(PlayerProtocol, nowPlaying),
                             implement(NotificationsProtocol, {
@@ -88,13 +86,13 @@ export function waitForExtensionConnection({
                                     _notifications.dispatch(notification)
                                 },
                             }),
-                        ])
-                        const channels = MessageChannelConnection.createChannels()
-                        const connection = new MessageChannelConnection(
-                            exportedObject,
+                        ]
+                        const channels = MessageChannelTransport.createChannels()
+                        const transport = new MessageChannelTransport(
                             channels.localPorts.send,
                             channels.localPorts.receive,
                         )
+                        const connection = new RPCConnection({ transport, exportedObject })
                         const serialNumber = crypto.randomUUID()
                         iframe.contentWindow?.postMessage(
                             {

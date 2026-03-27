@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest"
 import z4 from "zod/v4"
 
-import { LocalObject } from "../localObject"
+import { RPCConnection } from "../connection"
 import { implement, protocol } from "../protocol"
-import { RemoteObject } from "../remoteObject"
-import { MessageChannelConnection } from "./messageChannel"
+import { MessageChannelTransport } from "./messageChannel"
 
 const Arithmetic = protocol("Arithmetic", {
     add: { input: z4.object({ a: z4.number(), b: z4.number() }), output: z4.number() },
@@ -32,23 +31,23 @@ describe("MessageChannelConnection", () => {
     describe("#conformsToProtocol", () => {
         it("should return true if the object conforms to the protocol", async () => {
             const channel = new MessageChannel()
-            const transport = new MessageChannelConnection(
-                new LocalObject([InspectableImplementation]),
-                channel.port1,
-                channel.port2,
-            )
-            const subject = new RemoteObject(transport)
+            const transport = new MessageChannelTransport(channel.port1, channel.port2)
+            const connection = new RPCConnection({
+                transport,
+                exportedObject: [InspectableImplementation],
+            })
+            const subject = connection.remoteObject
             await expect(subject.implementsProtocol(Inspectable.name)).resolves.toBe(true)
         })
 
         it("should return false if the object does not conform to the protocol", async () => {
             const channel = new MessageChannel()
-            const transport = new MessageChannelConnection(
-                new LocalObject([InspectableImplementation]),
-                channel.port1,
-                channel.port2,
-            )
-            const subject = new RemoteObject(transport)
+            const transport = new MessageChannelTransport(channel.port1, channel.port2)
+            const connection = new RPCConnection({
+                transport,
+                exportedObject: [InspectableImplementation],
+            })
+            const subject = connection.remoteObject
             await expect(subject.implementsProtocol(Arithmetic.name)).resolves.toBe(false)
         })
     })
@@ -56,12 +55,12 @@ describe("MessageChannelConnection", () => {
     describe("#invoke", () => {
         it("should be possible to invoke a method on any implemented protocol", async () => {
             const channel = new MessageChannel()
-            const transport = new MessageChannelConnection(
-                new LocalObject([InspectableImplementation, ArithmeticImplementation]),
-                channel.port1,
-                channel.port2,
-            )
-            const subject = new RemoteObject(transport)
+            const transport = new MessageChannelTransport(channel.port1, channel.port2)
+            const connection = new RPCConnection({
+                transport,
+                exportedObject: [InspectableImplementation, ArithmeticImplementation],
+            })
+            const subject = connection.remoteObject
             await expect(
                 subject.invoke(InspectableImplementation.name, "inspect", undefined),
             ).resolves.toStrictEqual("inspectable")

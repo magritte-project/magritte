@@ -1,53 +1,13 @@
-import z4 from "zod/v4"
-
 import type { RPCObject } from "./object"
+import type { ProtocolImplementation } from "./protocol"
+import type { RPCCommand, RPCCommandResult, RPCTransport, RPCTransportMessage } from "./transport"
 
-export const RPCConnectionMessageSchema = z4.union([
-    z4.object({
-        type: z4.literal("object.getProtocolNames"),
-    }),
-    z4.object({
-        type: z4.literal("object.implementsProtocol"),
-        protocolName: z4.string(),
-    }),
-    z4.object({
-        type: z4.literal("object.invoke"),
-        protocolName: z4.string(),
-        selector: z4.string(),
-        parameters: z4.unknown(),
-    }),
-])
+import { LocalObject } from "./internal/localObject"
+import { RemoteObject } from "./internal/remoteObject"
 
-export type RPCConnectionMessage = z4.infer<typeof RPCConnectionMessageSchema>
-
-export const RPConnectionMessageReplySchema = z4.union([
-    z4.object({
-        type: z4.literal("object.getProtocolNames"),
-        protocolNames: z4.array(z4.string()),
-    }),
-    z4.object({
-        type: z4.literal("object.implementsProtocol"),
-        conforms: z4.boolean(),
-    }),
-    z4.object({
-        type: z4.literal("object.invoke"),
-        result: z4.unknown(),
-    }),
-    z4.object({
-        type: z4.literal("error"),
-        name: z4.string(),
-        message: z4.string(),
-    }),
-])
-
-export type RPConnectionMessageReply = z4.infer<typeof RPConnectionMessageReplySchema>
-
-export async function dispatchMessage(
-    message: RPCConnectionMessage,
-    object: RPCObject,
-): Promise<RPConnectionMessageReply> {
+async function dispatchCommand(command: RPCCommand, object: RPCObject): Promise<RPCCommandResult> {
     try {
-        switch (message.type) {
+        switch (command.type) {
             case "object.getProtocolNames":
                 return {
                     type: "object.getProtocolNames",
@@ -56,15 +16,15 @@ export async function dispatchMessage(
             case "object.implementsProtocol":
                 return {
                     type: "object.implementsProtocol",
-                    conforms: await object.implementsProtocol(message.protocolName),
+                    conforms: await object.implementsProtocol(command.protocolName),
                 }
             case "object.invoke":
                 return {
                     type: "object.invoke",
                     result: await object.invoke(
-                        message.protocolName,
-                        message.selector,
-                        message.parameters,
+                        command.protocolName,
+                        command.selector,
+                        command.parameters,
                     ),
                 }
             default:
@@ -79,11 +39,159 @@ export async function dispatchMessage(
     }
 }
 
-export interface RPCConnection {
+function isCommandResultOfType<Type extends RPCCommandResult["type"]>(
+    reply: RPCCommandResult,
+    type: Type,
+): reply is Extract<RPCCommandResult, { type: Type }> {
+    return reply.type === type
+}
+
+interface PendingSend {
+    readonly resolve: (value: RPCCommandResult) => void
+    readonly reject: (reason?: unknown) => void
+}
+
+export interface RPCConnectionOptions {
+    /** The transport the connection will use to communicate with the remote object */
+    readonly transport: RPCTransport
+
+    /** The object that will be exported to the remote side */
+    readonly exportedObject: readonly ProtocolImplementation[]
+
+    /** The capabilities of the connection, usable for permissions and feature detection */
+    readonly capabilities?: Record<string, unknown>
+}
+
+export class RPCConnection {
+    /**
+     * Tracks the current RPC connection, if any.
+     */
+    private static _current: RPCConnection | null = null
+
+    /**
+     * Executes the given function with the given connection as the current connection.
+     */
+    private static _withCurrent<T>(
+        current: RPCConnection,
+        fn: (current: RPCConnection | null) => T,
+    ): T {
+        const previous = RPCConnection._current
+        RPCConnection._current = current
+        try {
+            return fn(previous)
+        } finally {
+            RPCConnection._current = previous
+        }
+    }
+
+    /**
+     * Returns the current RPC connection, if any.
+     */
+    static get current(): RPCConnection | null {
+        return RPCConnection._current
+    }
+
+    constructor(options: RPCConnectionOptions) {
+        this._isValid = true
+        this.pending = new Map<string, PendingSend>()
+        this.transport = options.transport
+        this.capabilities = options.capabilities ?? {}
+        this.exportedObject = new LocalObject(options.exportedObject)
+        this.remoteObject = new RemoteObject(async (command) => {
+            const reply = await this.send(command)
+            if (isCommandResultOfType(reply, "error")) {
+                throw new Error(reply.message)
+            }
+            if (!isCommandResultOfType(reply, command.type)) {
+                throw new Error(`Reply to ${command.type} message was mismatched ${reply.type}`)
+            }
+            return reply
+        })
+
+        this.transport.onmessage = (reply) => {
+            this.handleMessage(reply)
+        }
+    }
+
+    /** Read/write backing for public isValid property */
+    private _isValid: boolean
+
+    /** Tracks all pending commands that have been sent but not yet received a reply */
+    private readonly pending: Map<string, PendingSend>
+
+    /** The transport the connection will use to communicate with the remote object */
+    private readonly transport: RPCTransport
+
+    /** The capabilities of the connection, usable for permissions and feature detection */
+    public readonly capabilities: Record<string, unknown>
+
     /** The object exported by this side of the connection */
-    readonly exportedObject: RPCObject
+    public readonly exportedObject: RPCObject
 
-    send(message: RPCConnectionMessage): Promise<RPConnectionMessageReply>
+    /** The object exported by the remote side of the connection */
+    public readonly remoteObject: RPCObject
 
-    invalidate(): void
+    /** Returns true if the connection is valid (i.e. the transport is connected) */
+    public get isValid(): boolean {
+        return this._isValid
+    }
+
+    /**
+     * Handles a message from the remote side of the connection.
+     */
+    private async handleMessage(message: RPCTransportMessage): Promise<void> {
+        await RPCConnection._withCurrent(this, async () => {
+            switch (message.type) {
+                case "command": {
+                    const result = await dispatchCommand(message.command, this.exportedObject)
+                    this.transport.postMessage({ id: message.id, type: "result", result })
+                    break
+                }
+                case "result": {
+                    const pending = this.pending.get(message.id)
+                    if (pending) {
+                        pending.resolve(message.result)
+                        this.pending.delete(message.id)
+                    }
+                    break
+                }
+            }
+        })
+    }
+
+    /**
+     * Send a command to the remote side of the connection.
+     *
+     * @param command The command to send.
+     * @returns A promise that resolves with the result of the command.
+     */
+    private async send(command: RPCCommand): Promise<RPCCommandResult> {
+        if (!this._isValid) {
+            throw new Error("Connection is invalid")
+        }
+        const id = crypto.randomUUID()
+        const reply = new Promise<RPCCommandResult>((resolve, reject) => {
+            this.pending.set(id, { resolve, reject })
+        })
+        this.transport.postMessage({ id, type: "command", command })
+        return await reply
+    }
+
+    /**
+     * Invalidate the connection, rejecting all pending commands and clearing the transport.
+     */
+    invalidate(): void {
+        if (!this._isValid) {
+            return
+        }
+
+        this.transport.invalidate()
+
+        for (const [_, pending] of this.pending) {
+            pending.reject(new Error("Connection invalidated"))
+        }
+        this.pending.clear()
+
+        this._isValid = false
+    }
 }

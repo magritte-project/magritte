@@ -1,5 +1,5 @@
-import type { RPCObject } from "./object"
-import type { ProtocolImplementation } from "./protocol"
+import type { RPCObject } from "../object"
+import type { ProtocolImplementation } from "../protocol"
 
 export class LocalObject implements RPCObject {
     private readonly protocols: ReadonlyMap<string, ProtocolImplementation>

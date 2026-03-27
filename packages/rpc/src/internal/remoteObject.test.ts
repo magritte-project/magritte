@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest"
 import z4 from "zod/v4"
 
-import { DummyConnection } from "./connections/dummy"
-import { LocalObject } from "./localObject"
-import { implement, protocol } from "./protocol"
-import { RemoteObject } from "./remoteObject"
+import { RPCConnection } from "../connection"
+import { implement, protocol } from "../protocol"
+import { LoopbackTransport } from "../transports"
 
 const Arithmetic = protocol("Arithmetic", {
     add: { input: z4.object({ a: z4.number(), b: z4.number() }), output: z4.number() },
@@ -31,24 +30,31 @@ const InspectableImplementation = implement(Inspectable, {
 describe("RemoteObject", () => {
     describe("#conformsToProtocol", () => {
         it("should return true if the object conforms to the protocol", async () => {
-            const transport = new DummyConnection(new LocalObject([InspectableImplementation]))
-            const subject = new RemoteObject(transport)
+            const connection = new RPCConnection({
+                transport: new LoopbackTransport(),
+                exportedObject: [InspectableImplementation],
+            })
+            const subject = connection.remoteObject
             await expect(subject.implementsProtocol(Inspectable.name)).resolves.toBe(true)
         })
 
         it("should return false if the object does not conform to the protocol", async () => {
-            const transport = new DummyConnection(new LocalObject([InspectableImplementation]))
-            const subject = new RemoteObject(transport)
+            const connection = new RPCConnection({
+                transport: new LoopbackTransport(),
+                exportedObject: [InspectableImplementation],
+            })
+            const subject = connection.remoteObject
             await expect(subject.implementsProtocol(Arithmetic.name)).resolves.toBe(false)
         })
     })
 
     describe("#invoke", () => {
         it("should be possible to invoke a method on any implemented protocol", async () => {
-            const transport = new DummyConnection(
-                new LocalObject([InspectableImplementation, ArithmeticImplementation]),
-            )
-            const subject = new RemoteObject(transport)
+            const connection = new RPCConnection({
+                transport: new LoopbackTransport(),
+                exportedObject: [InspectableImplementation, ArithmeticImplementation],
+            })
+            const subject = connection.remoteObject
             await expect(
                 subject.invoke(InspectableImplementation.name, "inspect", undefined),
             ).resolves.toStrictEqual("inspectable")
