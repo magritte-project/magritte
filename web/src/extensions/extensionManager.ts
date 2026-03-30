@@ -1,93 +1,107 @@
 import { getExtensionSrc, type ExtensionManifest } from "@magritte/sdk"
+import {
+    waitForExtensionConnection,
+    type Extension,
+    type WaitForExtensionConnectionOptions,
+} from "@magritte/sdk/connection"
 import { createEvent, EventSink, EventStream } from "@magritte/sdk/utilities"
 
+export class InstalledExtension {
+    private _iframe: HTMLIFrameElement | null
+    private _extension: Extension | null
+
+    constructor(readonly manifest: ExtensionManifest) {
+        this._iframe = null
+        this._extension = null
+    }
+
+    get extension() {
+        return this._extension
+    }
+
+    loadIfNeeded() {
+        if (this._iframe !== null) {
+            return
+        }
+        this._iframe = document.createElement("iframe")
+        this._iframe.style.position = "absolute"
+        this._iframe.style.left = "0"
+        this._iframe.style.top = "0"
+        this._iframe.style.width = "0"
+        this._iframe.style.height = "0"
+        this._iframe.src = getExtensionSrc(this.manifest, {
+            hostOrigin: window.location.origin,
+        })
+        document.body.appendChild(this._iframe)
+    }
+
+    position(boundingClientRect: DOMRect) {
+        if (this._iframe === null) {
+            return
+        }
+        this._iframe.style.left = `${boundingClientRect.x}px`
+        this._iframe.style.top = `${boundingClientRect.y}px`
+        this._iframe.style.width = `${boundingClientRect.width}px`
+        this._iframe.style.height = `${boundingClientRect.height}px`
+    }
+
+    async connect(options: Omit<WaitForExtensionConnectionOptions, "iframe" | "manifest">) {
+        if (this._iframe === null) {
+            throw new Error("Cannot connect to extension: iframe is not loaded")
+        }
+        this._extension = await waitForExtensionConnection({
+            ...options,
+            iframe: this._iframe,
+            manifest: this.manifest,
+        })
+    }
+
+    unload() {
+        if (this._extension !== null) {
+            this._extension?.connection.invalidate()
+            this._extension = null
+        }
+        if (this._iframe !== null) {
+            document.body.removeChild(this._iframe)
+            this._iframe = null
+        }
+    }
+}
+
 export type ExtensionManagerEvent =
-    | { type: "extensionInstalled"; manifest: ExtensionManifest }
-    | { type: "extensionLoaded"; manifest: ExtensionManifest }
-    | { type: "extensionUnloaded"; manifest: ExtensionManifest }
-    | { type: "extensionUninstalled"; manifest: ExtensionManifest }
+    | { type: "extensionInstalled"; installedExtension: InstalledExtension }
+    | { type: "extensionUninstalled"; installedExtension: InstalledExtension }
 
 export class ExtensionManager {
-    private readonly manifests: Map<string, ExtensionManifest>
-    private readonly iframes: Map<string, HTMLIFrameElement>
+    private readonly _installed: Map<string, InstalledExtension>
     private readonly _events: EventSink<ExtensionManagerEvent>
 
     constructor() {
-        this.manifests = new Map()
-        this.iframes = new Map()
+        this._installed = new Map()
         ;[this._events, this.$events] = createEvent()
     }
 
     readonly $events: EventStream<ExtensionManagerEvent>
 
-    get installed(): Iterable<ExtensionManifest> {
-        return this.manifests.values()
+    get installed(): Iterable<InstalledExtension> {
+        return this._installed.values()
     }
 
     install(manifest: ExtensionManifest) {
-        if (this.manifests.has(manifest.id)) {
+        if (this._installed.has(manifest.id)) {
             throw new Error(`Extension already installed: ${manifest.id}`)
         }
-        this.manifests.set(manifest.id, manifest)
-    }
-
-    load(id: string): HTMLIFrameElement {
-        const manifest = this.manifests.get(id)
-        if (manifest === undefined) {
-            throw new Error(`Extension not found: ${id}`)
-        }
-        let iframe = this.iframes.get(id)
-        if (iframe === undefined) {
-            iframe = document.createElement("iframe")
-            iframe.style.position = "absolute"
-            iframe.style.left = "0"
-            iframe.style.top = "0"
-            iframe.style.width = "0"
-            iframe.style.height = "0"
-            iframe.src = getExtensionSrc(manifest, {
-                hostOrigin: window.location.origin,
-            })
-            document.body.appendChild(iframe)
-            this.iframes.set(id, iframe)
-            this._events.dispatch({ type: "extensionLoaded", manifest })
-        }
-        return iframe
-    }
-
-    position(id: string, boundingClientRect: DOMRect) {
-        const iframe = this.iframes.get(id)
-        if (iframe === undefined) {
-            return
-        }
-        iframe.style.left = `${boundingClientRect.x}px`
-        iframe.style.top = `${boundingClientRect.y}px`
-        iframe.style.width = `${boundingClientRect.width}px`
-        iframe.style.height = `${boundingClientRect.height}px`
-    }
-
-    unload(id: string) {
-        const manifest = this.manifests.get(id)
-        if (manifest === undefined) {
-            throw new Error(`Extension not found: ${id}`)
-        }
-        const iframe = this.iframes.get(id)
-        if (iframe) {
-            document.body.removeChild(iframe)
-            this.iframes.delete(id)
-            this._events.dispatch({ type: "extensionUnloaded", manifest })
-        }
+        const installedExtension = new InstalledExtension(manifest)
+        this._installed.set(manifest.id, installedExtension)
+        this._events.dispatch({ type: "extensionInstalled", installedExtension })
     }
 
     uninstall(id: string) {
-        const iframe = this.iframes.get(id)
-        if (iframe) {
-            iframe.parentElement?.removeChild(iframe)
-            this.iframes.delete(id)
-        }
-        const manifest = this.manifests.get(id)
-        if (manifest !== undefined) {
-            this.manifests.delete(id)
-            this._events.dispatch({ type: "extensionUninstalled", manifest })
+        const installedExtension = this._installed.get(id)
+        if (installedExtension !== undefined) {
+            installedExtension.unload()
+            this._installed.delete(id)
+            this._events.dispatch({ type: "extensionUninstalled", installedExtension })
         }
     }
 }

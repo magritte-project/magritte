@@ -1,29 +1,31 @@
-import type { ExtensionManifest } from "@magritte/sdk"
-
 import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
 import { GearIcon } from "@phosphor-icons/react"
 
-import type { ExtensionManager, ExtensionManagerEvent } from "@/extensions/extensionManager"
+import type {
+    ExtensionManager,
+    ExtensionManagerEvent,
+    InstalledExtension,
+} from "@/extensions/extensionManager"
 import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
 
 import { buildExtensionComponent } from "@/components/extensions/ExtensionComponent"
 import { QuickMixSplit } from "@/splits/definitions/QuickMixSplit"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 
-function getExtensionSplitID(manifest: ExtensionManifest): SplitID {
-    return `extension.${manifest.id}`
+function getExtensionSplitID(installedExtension: InstalledExtension): SplitID {
+    return `extension.${installedExtension.manifest.id}`
 }
 
-function getExtensionSplitDefinition(manifest: ExtensionManifest): SplitDefinition {
+function getExtensionSplitDefinition(installedExtension: InstalledExtension): SplitDefinition {
     return {
-        id: getExtensionSplitID(manifest),
-        name: manifest.name,
+        id: getExtensionSplitID(installedExtension),
+        name: installedExtension.manifest.name,
         icon: GearIcon,
         minWidth: "16rem",
         preferredLocation: "end",
         allowsMultiple: false,
         requiresParameters: false,
-        component: buildExtensionComponent(manifest),
+        component: buildExtensionComponent(installedExtension),
     }
 }
 
@@ -54,10 +56,10 @@ export default class SplitRegistry {
     private handleExtensionEvent(event: ExtensionManagerEvent) {
         switch (event.type) {
             case "extensionInstalled":
-                this.registerSplit(getExtensionSplitDefinition(event.manifest))
+                this.registerSplit(getExtensionSplitDefinition(event.installedExtension))
                 break
             case "extensionUninstalled":
-                this.unregisterSplit(getExtensionSplitID(event.manifest))
+                this.unregisterSplit(getExtensionSplitID(event.installedExtension))
                 break
             default:
                 break
