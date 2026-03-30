@@ -1,7 +1,8 @@
 import { type ExtensionManifest } from "@magritte/sdk"
 import { Extension, waitForExtensionConnection } from "@magritte/sdk/connection"
-import { useRef, useEffect } from "react"
+import { useEffect, useRef } from "react"
 
+import useExtensionManager from "@/hooks/extensionsManagerHook"
 import usePlayer from "@/hooks/playerHook"
 import useToast from "@/hooks/toastHook"
 
@@ -9,6 +10,7 @@ export function buildExtensionComponent(manifest: ExtensionManifest) {
     function ExtensionComponent() {
         const { showToast } = useToast()
         const player = usePlayer()
+        const extensionManager = useExtensionManager()
         const containerRef = useRef<HTMLDivElement | null>(null)
         const extensionRef = useRef<Extension | null>(null)
 
@@ -34,11 +36,7 @@ export function buildExtensionComponent(manifest: ExtensionManifest) {
             if (!containerRef.current) {
                 return
             }
-            const container = containerRef.current
-            const iframe = document.createElement("iframe")
-            iframe.width = "100%"
-            iframe.height = "100%"
-            iframe.src = manifest.url
+            const iframe = extensionManager.attach(manifest.id, { parent: containerRef.current })
             ;(async () => {
                 const extension = await waitForExtensionConnection({
                     iframe,
@@ -89,11 +87,10 @@ export function buildExtensionComponent(manifest: ExtensionManifest) {
                 })
                 extensionRef.current = extension
             })()
-            container.appendChild(iframe)
             return () => {
-                container.removeChild(iframe)
+                extensionManager.detach(manifest.id)
             }
-        }, [showToast, player])
+        }, [showToast, player, extensionManager])
 
         return <div ref={containerRef} className="h-full" />
     }

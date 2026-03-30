@@ -7,6 +7,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import type { APIClient } from "@/api/client"
 import type { UserEvents } from "@/api/userEvents"
 import type { UserSessionManager } from "@/api/userSession"
+import type { ExtensionManager } from "@/extensions/extensionManager"
 import type { Player } from "@/playback/player"
 import type { ServiceRegistry } from "@/services/registry"
 import type SplitRegistry from "@/splits/registry"
@@ -22,6 +23,7 @@ export interface MagritteRouterContext {
     readonly serviceRegistry: ServiceRegistry
     readonly userEvents: UserEvents
     readonly player: Player
+    readonly extensionManager: ExtensionManager
     readonly splitRegister: SplitRegistry
 }
 

@@ -6,6 +6,7 @@ import { APIClient } from "@/api/client"
 import { UserEvents } from "@/api/userEvents"
 import { StorageUserSessionManager } from "@/api/userSession.ts"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
+import { ExtensionManager } from "@/extensions/extensionManager"
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
 import BuiltInPlaybackEngine from "@/playback/builtInEngine"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
@@ -15,8 +16,8 @@ import reportWebVitals from "@/reportWebVitals.ts"
 import { routeTree } from "@/routeTree.gen"
 import { AppleMusic } from "@/services/applemusic/service"
 import { ServiceRegistry } from "@/services/registry"
-import SplitRegistry from "@/splits/registry"
 import "@/styles.css"
+import SplitRegistry from "@/splits/registry"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
@@ -39,8 +40,18 @@ const player = new Player(
     }),
 )
 
+// Set up extensions
+const extensionManager = new ExtensionManager(document.getElementById("app-iframes")!)
+// TODO: Don't hard code this
+extensionManager.install({
+    name: "Genius",
+    id: "magritte.com.genius",
+    version: "0.0.0",
+    url: "http://localhost:9292/",
+})
+
 // Set up splits
-const splitRegister = new SplitRegistry()
+const splitRegister = new SplitRegistry(extensionManager)
 
 // Create a new router instance
 
@@ -53,6 +64,7 @@ const router = createRouter({
         serviceRegistry,
         userEvents,
         player,
+        extensionManager,
         splitRegister,
         ...TanStackQueryProviderContext,
     },

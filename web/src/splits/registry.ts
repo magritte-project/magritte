@@ -1,33 +1,73 @@
-import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
+import type { ExtensionManifest } from "@magritte/sdk"
 
+import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
+import { GearIcon } from "@phosphor-icons/react"
+
+import type { ExtensionManager, ExtensionManagerEvent } from "@/extensions/extensionManager"
 import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
 
-import { GeniusComSplit } from "@/splits/definitions/GeniusComSplit"
+import { buildExtensionComponent } from "@/components/extensions/ExtensionComponent"
 import { QuickMixSplit } from "@/splits/definitions/QuickMixSplit"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
+
+function getExtensionSplitID(manifest: ExtensionManifest): SplitID {
+    return `extension.${manifest.id}`
+}
+
+function getExtensionSplitDefinition(manifest: ExtensionManifest): SplitDefinition {
+    return {
+        id: getExtensionSplitID(manifest),
+        name: manifest.name,
+        icon: GearIcon,
+        minWidth: "16rem",
+        preferredLocation: "end",
+        allowsMultiple: false,
+        requiresParameters: false,
+        component: buildExtensionComponent(manifest),
+    }
+}
 
 export type SplitRegistryEvent =
     | { type: "splitDefinitionAdded"; id: SplitID }
     | { type: "splitDefinitionRemove"; id: SplitID }
 
 export default class SplitRegistry {
-    private _splitDefinitions: Map<SplitID, SplitDefinition>
+    private splitDefinitions: Map<SplitID, SplitDefinition>
     private readonly _events: EventSink<SplitRegistryEvent>
 
-    constructor() {
-        this._splitDefinitions = new Map()
+    constructor(extensionManager: ExtensionManager) {
+        this.splitDefinitions = new Map()
         ;[this._events, this.$events] = createEvent<SplitRegistryEvent>()
 
-        // TODO: Don't hard code this
+        // TODO: Don't hard code these
         this.registerSplit(QuickMixSplit)
         this.registerSplit(SongEditorSplit)
-        this.registerSplit(GeniusComSplit)
+
+        for (const installed of extensionManager.installed) {
+            this.registerSplit(getExtensionSplitDefinition(installed))
+        }
+        extensionManager.$events.subscribe((event) => {
+            this.handleExtensionEvent(event)
+        })
+    }
+
+    private handleExtensionEvent(event: ExtensionManagerEvent) {
+        switch (event.type) {
+            case "extensionInstalled":
+                this.registerSplit(getExtensionSplitDefinition(event.manifest))
+                break
+            case "extensionUninstalled":
+                this.unregisterSplit(getExtensionSplitID(event.manifest))
+                break
+            default:
+                break
+        }
     }
 
     readonly $events: EventStream<SplitRegistryEvent>;
 
     *allOpenable(): IterableIterator<SplitDefinition> {
-        for (const definition of this._splitDefinitions.values()) {
+        for (const definition of this.splitDefinitions.values()) {
             if (!definition.requiresParameters) {
                 yield definition
             }
@@ -35,7 +75,7 @@ export default class SplitRegistry {
     }
 
     get(id: SplitID): SplitDefinition | undefined {
-        return this._splitDefinitions.get(id)
+        return this.splitDefinitions.get(id)
     }
 
     *getAll(
@@ -52,15 +92,15 @@ export default class SplitRegistry {
 
     registerSplit(splitDefinition: SplitDefinition) {
         const id = splitDefinition.id
-        if (this._splitDefinitions.has(id)) {
+        if (this.splitDefinitions.has(id)) {
             throw new Error(`Split definition with id ${id} already exists`)
         }
-        this._splitDefinitions.set(id, splitDefinition)
+        this.splitDefinitions.set(id, splitDefinition)
         this._events.dispatch({ type: "splitDefinitionAdded", id: id })
     }
 
     unregisterSplit(id: SplitID) {
-        const deleted = this._splitDefinitions.delete(id)
+        const deleted = this.splitDefinitions.delete(id)
         if (deleted) {
             this._events.dispatch({ type: "splitDefinitionRemove", id })
         }

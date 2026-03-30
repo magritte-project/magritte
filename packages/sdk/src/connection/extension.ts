@@ -29,8 +29,20 @@ export function connectToExtensionHost({
         return Promise.reject(new Error("No extension host found"))
     }
     const hostWindow = window.top
+    // NOTE: There isn't a chain of trust here, but having the host pass
+    //       us this data in the URL hash serves a couple of purposes:
+    //       1. It allows us to filter messages from the host based on the origin
+    //       2. It allows to check that we're the extension the host is expecting
+    const hostParams = new URLSearchParams(window.location.hash.substring(1))
+    const hostOrigin = hostParams.get("h")
+    if (hostOrigin === null || hostParams.get("e") !== extensionId) {
+        return Promise.reject(new Error("No host origin found in URL hash"))
+    }
     return new Promise((resolve, reject) => {
         const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== hostOrigin) {
+                return
+            }
             try {
                 const data = ConnectResponse.parse(event.data)
                 switch (data.type) {

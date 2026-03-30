@@ -1,10 +1,9 @@
 import { implement, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
-import type { ExtensionManifest } from "../manifest"
-
 import { EventsProtocol, type Event } from "../common/events"
 import { ChromeProtocol, PlayerProtocol, type Chrome, type Player } from "../host"
+import { getExtensionOrigin, type ExtensionManifest } from "../manifest"
 import { createEvent } from "../utilities/events"
 import { ConnectionHolder, ConnectRequest, type ConnectResponse } from "./handshake"
 
@@ -23,7 +22,7 @@ export function waitForExtensionConnection({
     chrome,
     nowPlaying,
 }: WaitForExtensionConnectionOptions): Promise<Extension> {
-    const origin = new URL(manifest.url).origin
+    const origin = getExtensionOrigin(manifest)
     return new Promise((resolve, reject) => {
         const handleMessage = (event: MessageEvent) => {
             if (event.origin !== origin) {
