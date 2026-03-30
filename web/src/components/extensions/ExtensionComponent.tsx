@@ -1,6 +1,6 @@
 import { type ExtensionManifest } from "@magritte/sdk"
 import { Extension, waitForExtensionConnection } from "@magritte/sdk/connection"
-import { useEffect, useRef } from "react"
+import { useEffect, useLayoutEffect, useRef } from "react"
 
 import useExtensionManager from "@/hooks/extensionsManagerHook"
 import usePlayer from "@/hooks/playerHook"
@@ -13,6 +13,13 @@ export function buildExtensionComponent(manifest: ExtensionManifest) {
         const extensionManager = useExtensionManager()
         const containerRef = useRef<HTMLDivElement | null>(null)
         const extensionRef = useRef<Extension | null>(null)
+
+        useLayoutEffect(() => {
+            if (!containerRef.current) {
+                return
+            }
+            extensionManager.position(manifest.id, containerRef.current.getBoundingClientRect())
+        }, [extensionManager])
 
         useEffect(() => {
             const subscription = player.$events.subscribe(async (event) => {
@@ -36,7 +43,8 @@ export function buildExtensionComponent(manifest: ExtensionManifest) {
             if (!containerRef.current) {
                 return
             }
-            const iframe = extensionManager.attach(manifest.id, { parent: containerRef.current })
+            const iframe = extensionManager.load(manifest.id)
+            extensionManager.position(manifest.id, containerRef.current.getBoundingClientRect())
             ;(async () => {
                 const extension = await waitForExtensionConnection({
                     iframe,
@@ -88,7 +96,7 @@ export function buildExtensionComponent(manifest: ExtensionManifest) {
                 extensionRef.current = extension
             })()
             return () => {
-                extensionManager.detach(manifest.id)
+                extensionManager.unload(manifest.id)
             }
         }, [showToast, player, extensionManager])
 

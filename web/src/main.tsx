@@ -16,8 +16,8 @@ import reportWebVitals from "@/reportWebVitals.ts"
 import { routeTree } from "@/routeTree.gen"
 import { AppleMusic } from "@/services/applemusic/service"
 import { ServiceRegistry } from "@/services/registry"
-import "@/styles.css"
 import SplitRegistry from "@/splits/registry"
+import "@/styles.css"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
@@ -41,7 +41,7 @@ const player = new Player(
 )
 
 // Set up extensions
-const extensionManager = new ExtensionManager(document.getElementById("app-iframes")!)
+const extensionManager = new ExtensionManager()
 // TODO: Don't hard code this
 extensionManager.install({
     name: "Genius",
