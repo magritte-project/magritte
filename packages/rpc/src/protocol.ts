@@ -70,6 +70,24 @@ export function implement<Signatures extends MethodSignatures>(
 }
 
 /**
+ * Holds all protocol proxies created for an RPC object.
+ */
+const CAST_PROXIES_CACHE = new WeakMap<RPCObject, Map<string, ProtocolInterface<any>>>()
+
+/**
+ * Returns the cache of protocol proxies for the given RPC object.
+ * If the cache does not exist, it is created and stored in the weak map.
+ */
+function getObjectCastProxyCache(object: RPCObject): Map<string, ProtocolInterface<any>> {
+    let cache = CAST_PROXIES_CACHE.get(object)
+    if (!cache) {
+        cache = new Map<string, ProtocolInterface<any>>()
+        CAST_PROXIES_CACHE.set(object, cache)
+    }
+    return cache
+}
+
+/**
  * Attempts to create a proxy to treat the given RPC object
  * as though it were an instance of the given protocol.
  *
@@ -81,6 +99,11 @@ export async function tryCast<Signatures extends MethodSignatures>(
     protocol: Protocol<Signatures>,
     object: RPCObject,
 ): Promise<ProtocolInterface<Signatures> | null> {
+    const objectCache = getObjectCastProxyCache(object)
+    const existingProxy = objectCache.get(protocol.name)
+    if (existingProxy !== undefined) {
+        return existingProxy
+    }
     if (!(await object.implementsProtocol(protocol.name))) {
         return null
     }
@@ -90,6 +113,7 @@ export async function tryCast<Signatures extends MethodSignatures>(
             return await object.invoke(protocol.name, selector, parameters)
         }
     }
+    objectCache.set(protocol.name, proxy as ProtocolInterface<Signatures>)
     return proxy as ProtocolInterface<Signatures>
 }
 

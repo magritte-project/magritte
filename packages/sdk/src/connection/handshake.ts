@@ -1,10 +1,4 @@
-import {
-    cast,
-    type MethodSignatures,
-    type Protocol,
-    type ProtocolInterface,
-    type RPCConnection,
-} from "@magritte/rpc"
+import { cast, type RPCConnection } from "@magritte/rpc"
 import z4 from "zod/v4"
 
 import type { EventStream } from "../utilities"
@@ -36,32 +30,15 @@ export const ConnectResponse = z4.union([
 export type ConnectResponse = z4.infer<typeof ConnectResponse>
 
 export class ConnectionHolder {
-    private readonly remoteObjectProxies: Map<string, Promise<unknown>>
-
     /** @private */
     constructor(
         public readonly $events: EventStream<Event>,
         public readonly serialNumber: string,
         public readonly connection: RPCConnection,
-    ) {
-        this.remoteObjectProxies = new Map()
-    }
-
-    castRemoteObject<Signatures extends MethodSignatures>(
-        protocol: Protocol<Signatures>,
-    ): Promise<ProtocolInterface<Signatures>> {
-        let proxy = this.remoteObjectProxies.get(protocol.name) as
-            | Promise<ProtocolInterface<Signatures>>
-            | undefined
-        if (!proxy) {
-            proxy = cast(protocol, this.connection.remoteObject)
-            this.remoteObjectProxies.set(protocol.name, proxy)
-        }
-        return proxy
-    }
+    ) {}
 
     async dispatchEvent(event: Event): Promise<void> {
-        const events = await this.castRemoteObject(EventsProtocol)
+        const events = await cast(EventsProtocol, this.connection.remoteObject)
         await events.dispatch(event)
     }
 }

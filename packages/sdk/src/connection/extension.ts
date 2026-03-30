@@ -1,4 +1,4 @@
-import { implement, RPCConnection } from "@magritte/rpc"
+import { cast, implement, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { EventsProtocol, type Event } from "../common/events"
@@ -14,11 +14,11 @@ export interface ConnectToExtensionHostOptions {
 
 export class ExtensionHost extends ConnectionHolder {
     async chrome(): Promise<Chrome> {
-        return this.castRemoteObject(ChromeProtocol)
+        return cast(ChromeProtocol, this.connection.remoteObject)
     }
 
     async player(): Promise<Player> {
-        return this.castRemoteObject(PlayerProtocol)
+        return cast(PlayerProtocol, this.connection.remoteObject)
     }
 }
 
