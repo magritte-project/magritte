@@ -1,66 +1,24 @@
-import {
-    cast,
-    implement,
-    RPCConnection,
-    type MethodSignatures,
-    type Protocol,
-    type ProtocolInterface,
-    type RPCObject,
-} from "@magritte/rpc"
+import { implement, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
-import {
-    NotificationsProtocol,
-    type Notification,
-    type Notifications,
-} from "../common/notifications"
+import { EventsProtocol, type Event } from "../common/events"
 import { ExtensionProtocol } from "../extension"
 import { PlayerProtocol, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
-import { createEvent, EventStream } from "../utilities/events"
-import { zHostConnectResponse, type HostConnectRequest } from "./handshake"
+import { createEvent } from "../utilities/events"
+import { ConnectionHolder, ConnectResponse, type ConnectRequest } from "./handshake"
 
 export interface ConnectToExtensionHostOptions {
     readonly extensionId: string
 }
 
-export class ExtensionHost {
-    private readonly remoteObject: RPCObject
-    private readonly proxies: Map<string, Promise<unknown>>
-
-    /** @private */
-    constructor(
-        public readonly $notifications: EventStream<Notification>,
-        public readonly serialNumber: string,
-        public readonly connection: RPCConnection,
-    ) {
-        this.remoteObject = connection.remoteObject
-        this.proxies = new Map()
-    }
-
-    private _cast<Signatures extends MethodSignatures>(
-        protocol: Protocol<Signatures>,
-    ): Promise<ProtocolInterface<Signatures>> {
-        let proxy = this.proxies.get(protocol.name) as
-            | Promise<ProtocolInterface<Signatures>>
-            | undefined
-        if (!proxy) {
-            proxy = cast(protocol, this.remoteObject)
-            this.proxies.set(protocol.name, proxy)
-        }
-        return proxy
-    }
-
-    async notifications(): Promise<Notifications> {
-        return this._cast(NotificationsProtocol)
-    }
-
+export class ExtensionHost extends ConnectionHolder {
     async chrome(): Promise<Chrome> {
-        return this._cast(ChromeProtocol)
+        return this.castRemoteObject(ChromeProtocol)
     }
 
     async player(): Promise<Player> {
-        return this._cast(PlayerProtocol)
+        return this.castRemoteObject(PlayerProtocol)
     }
 }
 
@@ -74,19 +32,19 @@ export function connectToExtensionHost({
     return new Promise((resolve, reject) => {
         const handleMessage = (event: MessageEvent) => {
             try {
-                const data = zHostConnectResponse.parse(event.data)
+                const data = ConnectResponse.parse(event.data)
                 switch (data.type) {
                     case "connected": {
                         if (event.ports.length !== 2) {
                             throw new Error("Handshake received but wrong number of ports given")
                         }
 
-                        const [_notifications, $notifications] = createEvent<Notification>()
+                        const [_events, $events] = createEvent<Event>()
                         const exportedObject = [
                             implement(ExtensionProtocol, {}),
-                            implement(NotificationsProtocol, {
-                                post: async (notification) => {
-                                    _notifications.dispatch(notification)
+                            implement(EventsProtocol, {
+                                dispatch: async (event) => {
+                                    _events.dispatch(event)
                                 },
                             }),
                         ]
@@ -96,7 +54,7 @@ export function connectToExtensionHost({
                             event.ports[1],
                         )
                         const connection = new RPCConnection({ transport, exportedObject })
-                        resolve(new ExtensionHost($notifications, serialNumber, connection))
+                        resolve(new ExtensionHost($events, serialNumber, connection))
                         break
                     }
                 }
@@ -110,7 +68,7 @@ export function connectToExtensionHost({
             {
                 type: "connect",
                 extensionId,
-            } satisfies HostConnectRequest,
+            } satisfies ConnectRequest,
             "*",
         )
     })

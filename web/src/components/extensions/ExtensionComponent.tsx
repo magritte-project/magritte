@@ -17,8 +17,9 @@ export function buildExtensionComponent(manifest: ExtensionManifest) {
                 switch (event.type) {
                     case "playbackStateDidChange":
                     case "playingItemChanged":
-                        const notifications = await extensionRef.current?.notifications()
-                        notifications?.post({ name: "Magritte.NowPlayingDidChange" })
+                        extensionRef.current?.dispatchEvent({
+                            type: "Magritte.NowPlayingDidChange",
+                        })
                         break
                     default:
                         break

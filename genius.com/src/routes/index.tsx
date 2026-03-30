@@ -25,8 +25,8 @@ export const Route = createFileRoute("/")({
                 const player = await host.player()
                 setNowPlaying(await player.getNowPlaying())
             }
-            const subscription = host.$notifications.subscribe(async (notification) => {
-                if (notification.name === "Magritte.NowPlayingDidChange") {
+            const subscription = host.$events.subscribe(async (event) => {
+                if (event.type === "Magritte.NowPlayingDidChange") {
                     await update()
                 }
             })

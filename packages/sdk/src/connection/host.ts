@@ -1,56 +1,14 @@
-import {
-    cast,
-    implement,
-    RPCConnection,
-    type MethodSignatures,
-    type Protocol,
-    type ProtocolInterface,
-    type RPCObject,
-} from "@magritte/rpc"
+import { implement, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import type { ExtensionManifest } from "../manifest"
 
-import {
-    NotificationsProtocol,
-    type Notification,
-    type Notifications,
-} from "../common/notifications"
+import { EventsProtocol, type Event } from "../common/events"
 import { ChromeProtocol, PlayerProtocol, type Chrome, type Player } from "../host"
-import { createEvent, type EventStream } from "../utilities/events"
-import { zHostConnectRequest, type HostConnectResponse } from "./handshake"
+import { createEvent } from "../utilities/events"
+import { ConnectionHolder, ConnectRequest, type ConnectResponse } from "./handshake"
 
-export class Extension {
-    private readonly remoteObject: RPCObject
-    private readonly proxies: Map<string, Promise<unknown>>
-
-    /** @private */
-    constructor(
-        public readonly $notifications: EventStream<Notification>,
-        public readonly serialNumber: string,
-        public readonly connection: RPCConnection,
-    ) {
-        this.remoteObject = connection.remoteObject
-        this.proxies = new Map()
-    }
-
-    private _cast<Signatures extends MethodSignatures>(
-        protocol: Protocol<Signatures>,
-    ): Promise<ProtocolInterface<Signatures>> {
-        let proxy = this.proxies.get(protocol.name) as
-            | Promise<ProtocolInterface<Signatures>>
-            | undefined
-        if (!proxy) {
-            proxy = cast(protocol, this.remoteObject)
-            this.proxies.set(protocol.name, proxy)
-        }
-        return proxy
-    }
-
-    async notifications(): Promise<Notifications> {
-        return this._cast(NotificationsProtocol)
-    }
-}
+export class Extension extends ConnectionHolder {}
 
 export interface WaitForExtensionConnectionOptions {
     readonly iframe: HTMLIFrameElement
@@ -72,19 +30,19 @@ export function waitForExtensionConnection({
                 return
             }
             try {
-                const data = zHostConnectRequest.parse(event.data)
+                const data = ConnectRequest.parse(event.data)
                 switch (data.type) {
                     case "connect": {
                         if (data.extensionId !== manifest.id) {
                             throw new Error("Extension ID mismatch")
                         }
-                        const [_notifications, $notifications] = createEvent<Notification>()
+                        const [_events, $events] = createEvent<Event>()
                         const exportedObject = [
                             implement(ChromeProtocol, chrome),
                             implement(PlayerProtocol, nowPlaying),
-                            implement(NotificationsProtocol, {
-                                post: async (notification) => {
-                                    _notifications.dispatch(notification)
+                            implement(EventsProtocol, {
+                                dispatch: async (event) => {
+                                    _events.dispatch(event)
                                 },
                             }),
                         ]
@@ -99,11 +57,11 @@ export function waitForExtensionConnection({
                             {
                                 type: "connected",
                                 serialNumber,
-                            } satisfies HostConnectResponse,
+                            } satisfies ConnectResponse,
                             origin,
                             [channels.remotePorts.send, channels.remotePorts.receive],
                         )
-                        resolve(new Extension($notifications, serialNumber, connection))
+                        resolve(new Extension($events, serialNumber, connection))
                         break
                     }
                 }
