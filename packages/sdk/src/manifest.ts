@@ -71,21 +71,31 @@ export function getExtensionOrigin(manifest: ExtensionManifest): string {
     return new URL(manifest.url).origin
 }
 
+export const ExtensionData = z4.record(z4.string(), z4.string()).readonly()
+
+export type ExtensionData = z4.infer<typeof ExtensionData>
+
 export interface ExtensionSourceOptions {
     /**
      * The origin of the extension host.
      */
     readonly hostOrigin: string
+
+    /**
+     * Optional data to pass to the extension.
+     */
+    readonly data?: ExtensionData
 }
 
 export function getExtensionSrc(
     manifest: ExtensionManifest,
-    { hostOrigin: parentOrigin }: ExtensionSourceOptions,
+    { hostOrigin, data }: ExtensionSourceOptions,
 ): string {
     let src = new URL(manifest.url)
     src.hash = new URLSearchParams([
-        ["h", parentOrigin],
+        ["h", hostOrigin],
         ["e", manifest.id],
+        ["d", JSON.stringify(data ?? {})],
     ]).toString()
     return src.toString()
 }

@@ -16,7 +16,7 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
             if (!containerRef.current || !instanceRef.current) {
                 return
             }
-            instanceRef.current.position(containerRef.current.getBoundingClientRect())
+            instanceRef.current.updateClientFrame(containerRef.current.getBoundingClientRect())
         }, [])
 
         useEffect(() => {

@@ -1,4 +1,4 @@
-import { getExtensionSrc, type ExtensionManifest } from "@magritte/sdk"
+import { ExtensionData, getExtensionSrc, type ExtensionManifest } from "@magritte/sdk"
 import {
     waitForExtensionConnection,
     type Extension,
@@ -17,6 +17,7 @@ export interface ExtensionInstanceLoadOptions extends Omit<
     "iframe" | "manifest"
 > {
     readonly clientFrame: DOMRect
+    readonly data?: ExtensionData
 }
 
 export class ExtensionInstance {
@@ -40,7 +41,7 @@ export class ExtensionInstance {
         return this._extension
     }
 
-    async load({ clientFrame, ...options }: ExtensionInstanceLoadOptions) {
+    async load({ clientFrame, data, ...options }: ExtensionInstanceLoadOptions) {
         if (this._iframe !== null || this._extension !== null) {
             throw new Error("Cannot load extension: iframe is already loaded")
         }
@@ -51,9 +52,10 @@ export class ExtensionInstance {
         this._iframe.style.background = "white"
         this._iframe.style.display = "none"
         this._iframe.style.position = "absolute"
-        this.position(clientFrame)
+        this.updateClientFrame(clientFrame)
         this._iframe.src = getExtensionSrc(this.manifest, {
             hostOrigin: window.location.origin,
+            data,
         })
         document.body.appendChild(this._iframe)
 
@@ -84,7 +86,7 @@ export class ExtensionInstance {
         }
     }
 
-    position(clientFrame: DOMRect) {
+    updateClientFrame(clientFrame: DOMRect) {
         if (this._iframe === null) {
             return
         }

@@ -5,7 +5,8 @@ import { EventsProtocol, type Event } from "../common/events"
 import { ExtensionProtocol } from "../extension"
 import { PlayerProtocol, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
-import { createEvent } from "../utilities/events"
+import { ExtensionData } from "../manifest"
+import { createEvent, EventStream } from "../utilities/events"
 import { ConnectionHolder, ConnectResponse, type ConnectRequest } from "./handshake"
 
 export interface ConnectToExtensionHostOptions {
@@ -13,6 +14,19 @@ export interface ConnectToExtensionHostOptions {
 }
 
 export class ExtensionHost extends ConnectionHolder {
+    constructor(
+        $events: EventStream<Event>,
+        serialNumber: string,
+        connection: RPCConnection,
+        data: ExtensionData,
+    ) {
+        super($events, serialNumber, connection)
+        this.data = data
+    }
+
+    /** Data passed to the extension from the host */
+    readonly data: ExtensionData
+
     async chrome(): Promise<Chrome> {
         return cast(ChromeProtocol, this.connection.remoteObject)
     }
@@ -35,17 +49,19 @@ export function connectToExtensionHost({
     //       2. It allows to check that we're the extension the host is expecting
     const hostParams = new URLSearchParams(window.location.hash.substring(1))
     const hostOrigin = hostParams.get("h")
-    if (hostOrigin === null || hostParams.get("e") !== extensionId) {
-        return Promise.reject(new Error("No host origin found in URL hash"))
+    const hostData = hostParams.get("d")
+    if (hostOrigin === null || hostParams.get("e") !== extensionId || hostData === null) {
+        return Promise.reject(new Error("Malformed host information"))
     }
+    const data = ExtensionData.parse(JSON.parse(hostData))
     return new Promise((resolve, reject) => {
         const handleMessage = (event: MessageEvent) => {
             if (event.origin !== hostOrigin) {
                 return
             }
             try {
-                const data = ConnectResponse.parse(event.data)
-                switch (data.type) {
+                const eventData = ConnectResponse.parse(event.data)
+                switch (eventData.type) {
                     case "connected": {
                         if (event.ports.length !== 2) {
                             throw new Error("Handshake received but wrong number of ports given")
@@ -60,13 +76,13 @@ export function connectToExtensionHost({
                                 },
                             }),
                         ]
-                        const serialNumber = data.serialNumber
+                        const serialNumber = eventData.serialNumber
                         const transport = new MessageChannelTransport(
                             event.ports[0],
                             event.ports[1],
                         )
                         const connection = new RPCConnection({ transport, exportedObject })
-                        resolve(new ExtensionHost($events, serialNumber, connection))
+                        resolve(new ExtensionHost($events, serialNumber, connection, data))
                         break
                     }
                 }
@@ -81,7 +97,7 @@ export function connectToExtensionHost({
                 type: "connect",
                 extensionId,
             } satisfies ConnectRequest,
-            "*",
+            hostOrigin,
         )
     })
 }
