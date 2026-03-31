@@ -14,7 +14,7 @@ import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
-import { AppleMusic } from "@/services/applemusic/service"
+import { AppleMusic } from "@/services/applemusic/services"
 import { ServiceRegistry } from "@/services/registry"
 import SplitRegistry from "@/splits/registry"
 import "@/styles.css"
@@ -46,7 +46,7 @@ extensionManager.install({
 
 // Set up services
 const serviceRegistry = new ServiceRegistry(extensionManager, { apiClient, userSession })
-await serviceRegistry.addService(AppleMusic) // TODO: Don't hard code this
+await serviceRegistry.addServiceGroup(AppleMusic) // TODO: Don't hard code this
 
 // Set up user events
 const userEvents = new UserEvents(apiClient, userSession)

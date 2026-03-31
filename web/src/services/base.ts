@@ -6,18 +6,29 @@ import type { UserSessionManager } from "@/api/userSession"
 import type { PlaybackEngine } from "@/playback/engine"
 
 export interface BaseService {
+    /** Unique ID for the group this service belongs to */
+    readonly groupID: string
+
     /** The unique name of the service, human readable */
     readonly name: string
+}
+
+export interface CommandsService extends BaseService {
+    readonly type: "commands"
 
     /** The commands the service adds to the instance */
     readonly commands: JsonStructure
 }
 
-export interface StreamingMusicService extends BaseService {
-    readonly type: "streamingMusic"
+export interface PlaybackService extends BaseService {
+    readonly type: "playback"
 
-    /** This service's playback engine, if any */
-    readonly playbackEngine: PlaybackEngine | null
+    /** This service's playback engine */
+    readonly playbackEngine: PlaybackEngine
+}
+
+export interface SongSearchService extends BaseService {
+    readonly type: "songSearch"
 
     /** Search this music service's catalog for songs */
     searchSongs(
@@ -38,7 +49,7 @@ export interface StreamingMusicServiceSongsRead {
 }
 
 /** Union of all supported types of services */
-export type Service = StreamingMusicService
+export type Service = CommandsService | PlaybackService | SongSearchService
 
 /** All types of services */
 export type ServiceType = Service["type"]
@@ -58,6 +69,14 @@ export function isServiceOfType<TType extends ServiceType>(
 export interface ServiceConstructorOptions {
     readonly apiClient: APIClient
     readonly userSession: UserSessionManager
+}
+
+export interface ServiceGroup {
+    /** The unique identifier of the service group */
+    readonly id: string
+
+    /** Attempt to construct services with the given options */
+    construct(context: ServiceConstructorOptions): Promise<readonly Service[]>
 }
 
 export interface MetaService<TType extends ServiceType> {

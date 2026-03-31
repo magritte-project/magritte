@@ -17,9 +17,9 @@ import type { PlaybackEngine } from "@/playback/engine"
 import { ForwardingPlaybackEngine } from "@/components/extensions/forwardingEngine"
 import {
     isServiceOfType,
-    type MetaService,
     type Service,
     type ServiceConstructorOptions,
+    type ServiceGroup,
     type ServiceOfType,
     type ServiceType,
 } from "@/services/base"
@@ -31,13 +31,15 @@ export type ServiceRegistryEvent =
 /** Manages the lifecycle of services and provides a means to work with all services at once */
 export class ServiceRegistry {
     private readonly _options: ServiceConstructorOptions
-    private readonly _services: Map<string, Service>
+    private readonly _groupsByID: Map<string, ServiceGroup>
+    private readonly _services: Service[]
     private readonly _extensionSubscriptions: Map<string, EventSubscription<ExtensionInstanceEvent>>
     private readonly _events: EventSink<ServiceRegistryEvent>
 
     constructor(extensionManager: ExtensionManager, options: ServiceConstructorOptions) {
         this._options = { ...options }
-        this._services = new Map()
+        this._groupsByID = new Map()
+        this._services = []
         this._extensionSubscriptions = new Map()
         ;[this._events, this.$events] = createEvent<ServiceRegistryEvent>()
 
@@ -78,18 +80,16 @@ export class ServiceRegistry {
                         event.instance,
                         await event.instance.extension.playbackEngine(),
                     )
-                    await this.addService({
-                        type: "streamingMusic",
-                        name: event.instance.manifest.name,
-                        construct: async () => ({
-                            type: "streamingMusic",
-                            name: event.instance.manifest.name,
-                            commands: [],
-                            playbackEngine,
-                            searchSongs: async () => {
-                                throw new Error("Not implemented")
+                    await this.addServiceGroup({
+                        id: event.instance.manifest.id,
+                        construct: async () => [
+                            {
+                                type: "playback",
+                                groupID: event.instance.manifest.id,
+                                name: event.instance.manifest.name,
+                                playbackEngine,
                             },
-                        }),
+                        ],
                     })
                 } catch (error) {
                     console.debug(
@@ -101,11 +101,7 @@ export class ServiceRegistry {
                 break
             }
             case "extensionInstanceUnloaded": {
-                const service = this._services.get(event.instance.manifest.name)
-                if (service !== undefined) {
-                    this._services.delete(event.instance.manifest.name)
-                    await this._events.dispatch({ type: "serviceRemoved", service })
-                }
+                this.removeServiceGroup(event.instance.manifest.id)
                 break
             }
             default:
@@ -115,23 +111,20 @@ export class ServiceRegistry {
 
     get commands(): JsonStructure {
         const commands: JsonStructure = []
-        for (const service of this._services.values()) {
+        for (const service of this.getServicesOfType("commands")) {
             commands.push(...service.commands)
         }
         return commands
     }
 
     get playbackEngines(): readonly [string, PlaybackEngine][] {
-        const streamingMusicServices = this.getAllServices("streamingMusic")
-        return streamingMusicServices.flatMap((service) => {
-            const playbackEngine = service.playbackEngine
-            return playbackEngine ? [[service.name, playbackEngine]] : []
-        })
+        const streamingMusicServices = this.getServicesOfType("playback")
+        return streamingMusicServices.map(({ name, playbackEngine }) => [name, playbackEngine])
     }
 
-    getAllServices<TType extends ServiceType>(type: TType): ServiceOfType<TType>[] {
+    getServicesOfType<TType extends ServiceType>(type: TType): readonly ServiceOfType<TType>[] {
         const services: ServiceOfType<TType>[] = []
-        for (const service of this._services.values()) {
+        for (const service of this._services) {
             if (isServiceOfType(service, type)) {
                 services.push(service)
             }
@@ -139,40 +132,38 @@ export class ServiceRegistry {
         return services
     }
 
-    getService<TType extends ServiceType>(name: string, type: TType): ServiceOfType<TType> | null {
-        const service = this._services.get(name)
-        if (service === undefined) {
-            return null
+    async addServiceGroup(group: ServiceGroup) {
+        if (this._groupsByID.has(group.id)) {
+            throw new Error(`Service group ${group.id} already exists`)
         }
-        if (!isServiceOfType(service, type)) {
-            return null
+        const services = await group.construct(this._options)
+        if (services.length > 0) {
+            for (const service of services) {
+                if (service.groupID !== group.id) {
+                    console.warn(
+                        "*** Discarding new service whose group ID does not match its parent",
+                        service,
+                        group,
+                    )
+                    continue
+                }
+                this._services.push(service)
+                await this._events.dispatch({ type: "serviceAdded", service })
+            }
         }
-        return service
     }
 
-    async addService<TType extends ServiceType>(
-        metaService: MetaService<TType>,
-    ): Promise<ServiceOfType<TType> | null> {
-        if (this._services.has(metaService.name)) {
-            throw new Error(`Service ${metaService.name} already exists`)
-        }
-        const service = await metaService.construct(this._options)
-        if (service !== null) {
-            this._services.set(metaService.name, service)
-            await this._events.dispatch({ type: "serviceAdded", service })
-        }
-        return service
-    }
-
-    async removeService<TType extends ServiceType>(
-        metaService: MetaService<TType>,
-    ): Promise<boolean> {
-        const service = this._services.get(metaService.name)
-        if (service === undefined) {
+    async removeServiceGroup(groupID: string) {
+        if (!this._groupsByID.has(groupID)) {
             return false
         }
-        this._services.delete(metaService.name)
-        await this._events.dispatch({ type: "serviceRemoved", service })
+        for (let i = this._services.length - 1; i >= 0; i--) {
+            if (this._services[i].groupID === groupID) {
+                const [service] = this._services.splice(i, 1)
+                await this._events.dispatch({ type: "serviceRemoved", service })
+            }
+        }
+        this._groupsByID.delete(groupID)
         return true
     }
 }

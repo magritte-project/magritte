@@ -1,8 +1,8 @@
 import type { PlayableItem } from "@magritte/sdk/host"
 
 import type { PlaybackEngine } from "@/playback/engine"
-import type { Service } from "@/services/base"
 
+import { isServiceOfType, type Service } from "@/services/base"
 import { ServiceRegistry } from "@/services/registry"
 
 export interface PlaybackEngineRegistryOptions {
@@ -33,9 +33,8 @@ export default class PlaybackEngineRegistry {
     }
 
     private _onServiceAdded(service: Service) {
-        const servicePlaybackEngine = service.playbackEngine
-        if (servicePlaybackEngine !== null) {
-            this._engines.set(service.name, servicePlaybackEngine)
+        if (isServiceOfType(service, "playback")) {
+            this._engines.set(service.name, service.playbackEngine)
         }
     }
 

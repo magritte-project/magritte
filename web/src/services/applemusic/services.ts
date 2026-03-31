@@ -4,9 +4,12 @@ import { SignInIcon, SignOutIcon } from "@phosphor-icons/react"
 
 import type { PlaybackEngine } from "@/playback/engine"
 import type {
-    MetaService,
+    CommandsService,
+    PlaybackService,
+    Service,
     ServiceConstructorOptions,
-    StreamingMusicService,
+    ServiceGroup,
+    SongSearchService,
     StreamingMusicServiceSongsRead,
 } from "@/services/base"
 
@@ -15,14 +18,12 @@ import type { MusicSearchResponse } from "./models/search"
 import AppleMusicPlaybackEngine from "./engine"
 import { initializeMusicKit } from "./initialization"
 
-class AppleMusicService implements StreamingMusicService {
-    readonly type = "streamingMusic" as const
+class AppleMusicCommandService implements CommandsService {
+    readonly type = "commands" as const
+    readonly groupID = "com.apple.music"
     readonly name = "Apple Music"
-    readonly playbackEngine: PlaybackEngine | null
 
-    constructor(private readonly musicKit: MusicKit.Instance) {
-        this.playbackEngine = new AppleMusicPlaybackEngine(this.musicKit)
-    }
+    constructor(private readonly musicKit: MusicKit.Instance) {}
 
     get commands(): JsonStructure {
         return [
@@ -53,6 +54,25 @@ class AppleMusicService implements StreamingMusicService {
             },
         ]
     }
+}
+
+class AppleMusicPlaybackService implements PlaybackService {
+    readonly type = "playback" as const
+    readonly groupID = "com.apple.music"
+    readonly name = "Apple Music"
+    readonly playbackEngine: PlaybackEngine
+
+    constructor(musicKit: MusicKit.Instance) {
+        this.playbackEngine = new AppleMusicPlaybackEngine(musicKit)
+    }
+}
+
+class AppleMusicSongSearchService implements SongSearchService {
+    readonly type = "songSearch" as const
+    readonly groupID = "com.apple.music"
+    readonly name = "Apple Music"
+
+    constructor(private readonly musicKit: MusicKit.Instance) {}
 
     async searchSongs(
         query: string,
@@ -127,15 +147,12 @@ class AppleMusicService implements StreamingMusicService {
     }
 }
 
-export const AppleMusic: MetaService<"streamingMusic"> = {
-    type: "streamingMusic",
-    name: "Apple Music",
-    async construct({
-        apiClient,
-    }: ServiceConstructorOptions): Promise<StreamingMusicService | null> {
+export const AppleMusic: ServiceGroup = {
+    id: "com.apple.music",
+    async construct({ apiClient }: ServiceConstructorOptions): Promise<readonly Service[]> {
         const instanceStatus = await apiClient.instanceStatus()
         if (!instanceStatus.available_functions.includes("apple_music_token")) {
-            return null
+            return []
         }
         const tokenResult = (await apiClient.callFunction("apple_music_token")) as {
             developer_token: string
@@ -146,6 +163,10 @@ export const AppleMusic: MetaService<"streamingMusic"> = {
                 name: "Magritte",
             },
         })
-        return new AppleMusicService(musicKit)
+        return [
+            new AppleMusicCommandService(musicKit),
+            new AppleMusicPlaybackService(musicKit),
+            new AppleMusicSongSearchService(musicKit),
+        ]
     },
 }

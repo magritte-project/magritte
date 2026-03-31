@@ -17,7 +17,7 @@ import ArrayQueue from "@/playback/queue/array"
 export const Route = createFileRoute("/libraries_/$libraryId/songs/add/")({
     component: function ServiceComponent() {
         const player = usePlayer()
-        const streamingServices = useServices("streamingMusic")
+        const streamingServices = useServices("songSearch")
 
         const [query, setQuery] = useState("")
         const currentQuery = useDebounce(query, 500)
