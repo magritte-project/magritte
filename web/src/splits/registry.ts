@@ -1,14 +1,14 @@
 import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
 import { GearIcon } from "@phosphor-icons/react"
 
-import type {
-    ExtensionManager,
-    ExtensionManagerEvent,
-    InstalledExtension,
-} from "@/extensions/extensionManager"
 import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
 
 import { buildExtensionComponent } from "@/components/extensions/ExtensionComponent"
+import {
+    InstalledExtension,
+    type ExtensionManager,
+    type ExtensionManagerEvent,
+} from "@/extensions/extensionManager"
 import { QuickMixSplit } from "@/splits/definitions/QuickMixSplit"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 
@@ -16,14 +16,22 @@ function getExtensionSplitID(installedExtension: InstalledExtension): SplitID {
     return `extension.${installedExtension.manifest.id}`
 }
 
-function getExtensionSplitDefinition(installedExtension: InstalledExtension): SplitDefinition {
+function getExtensionSplitDefinition(
+    installedExtension: InstalledExtension,
+): SplitDefinition | undefined {
+    const splitUseCase = installedExtension.manifest.useCases.find(
+        (useCase) => useCase.type === "split",
+    )
+    if (splitUseCase === undefined) {
+        return undefined
+    }
     return {
         id: getExtensionSplitID(installedExtension),
         name: installedExtension.manifest.name,
         icon: GearIcon,
-        minWidth: "16rem",
-        preferredLocation: "end",
-        allowsMultiple: false,
+        minWidth: splitUseCase.minWidth,
+        preferredLocation: splitUseCase.preferredLocation,
+        allowsMultiple: installedExtension.manifest.allowsMultipleInstances,
         requiresParameters: false,
         component: buildExtensionComponent(installedExtension),
     }
@@ -46,7 +54,10 @@ export default class SplitRegistry {
         this.registerSplit(SongEditorSplit)
 
         for (const installed of extensionManager.installed) {
-            this.registerSplit(getExtensionSplitDefinition(installed))
+            const split = getExtensionSplitDefinition(installed)
+            if (split !== undefined) {
+                this.registerSplit(split)
+            }
         }
         extensionManager.$events.subscribe((event) => {
             this.handleExtensionEvent(event)
@@ -55,14 +66,20 @@ export default class SplitRegistry {
 
     private handleExtensionEvent(event: ExtensionManagerEvent) {
         switch (event.type) {
-            case "extensionInstalled":
-                this.registerSplit(getExtensionSplitDefinition(event.installedExtension))
+            case "extensionInstalled": {
+                const split = getExtensionSplitDefinition(event.installedExtension)
+                if (split !== undefined) {
+                    this.registerSplit(split)
+                }
                 break
-            case "extensionUninstalled":
+            }
+            case "extensionUninstalled": {
                 this.unregisterSplit(getExtensionSplitID(event.installedExtension))
                 break
-            default:
+            }
+            default: {
                 break
+            }
         }
     }
 

@@ -48,6 +48,15 @@ extensionManager.install({
     id: "magritte.com.genius",
     version: "0.0.0",
     url: "http://localhost:9292/",
+    permissions: [],
+    allowsMultipleInstances: false,
+    useCases: [
+        {
+            type: "split",
+            minWidth: "16rem",
+            preferredLocation: "end",
+        },
+    ],
 })
 
 // Set up splits

@@ -1,5 +1,38 @@
 import z4 from "zod/v4"
 
+export const ExtensionPermissions = z4.enum(["runInBackground"])
+
+export type ExtensionPermissions = z4.infer<typeof ExtensionPermissions>
+
+export const ExtensionUseCases = z4.union([
+    z4.object({
+        type: z4.literal("split"),
+
+        /** The min width of the extension in a split */
+        minWidth: z4.string(),
+
+        /** The preferred location of the extension in a split */
+        preferredLocation: z4.enum(["start", "end"]),
+    }),
+
+    z4.object({
+        type: z4.literal("modal"),
+
+        /** The width of the extension in a modal */
+        width: z4.string(),
+
+        /** The height of the extension in a modal */
+        height: z4.string(),
+    }),
+])
+
+export type ExtensionUseCases = z4.infer<typeof ExtensionUseCases>
+
+export type ExtensionUseCase<TType extends ExtensionUseCases["type"]> = Extract<
+    ExtensionUseCases,
+    { type: TType }
+>
+
 export const ExtensionManifest = z4.object({
     /** A friendly name for the extension */
     name: z4.string(),
@@ -15,6 +48,15 @@ export const ExtensionManifest = z4.object({
 
     /** The URL of the extension */
     url: z4.string(),
+
+    /** An optional array of permissions required by the extension */
+    permissions: z4.array(ExtensionPermissions).default([]),
+
+    /** Whether the extension allows multiple instances */
+    allowsMultipleInstances: z4.boolean().default(false),
+
+    /** An optional array of use cases for the extension */
+    useCases: z4.array(ExtensionUseCases).default([]),
 })
 
 export type ExtensionManifest = z4.infer<typeof ExtensionManifest>
