@@ -69,6 +69,69 @@ export function implement<Signatures extends MethodSignatures>(
     }
 }
 
+export interface ProtocolProxyInvocation {
+    /** The method selector which was invoked */
+    readonly selector: string
+
+    /** The input schema for the method */
+    readonly input: z4.$ZodType
+
+    /** The output schema for the method */
+    readonly output: z4.$ZodType
+
+    /** The unparsed parameters passed to the method */
+    readonly parameters: unknown
+}
+
+/** Forward a protocol proxy method call to another implementation */
+export async function forward(
+    { selector, input, output, parameters }: ProtocolProxyInvocation,
+    implementation: ProtocolImplementation,
+): Promise<unknown> {
+    const impl = implementation.vtable[selector]
+    if (!impl) {
+        throw new Error(`Method not found: ${selector}`)
+    }
+    const result = await impl(z4.parse(input, parameters))
+    return z4.parse(output, result)
+}
+
+/**
+ * Prototype of a function which is called when a method
+ * is invoked on a protocol proxy.
+ *
+ * **Warning:** A proxy forwarder is responsible for validating
+ * all inputs and outputs of the method invocation. This is taken
+ * care of for you if you utilize the `forward` helper function.
+ *
+ * @param invocation Details of the protocol method invocation.
+ * @returns The result of forwarding the method.
+ */
+export type ProtocolProxyForwarder = (invocation: ProtocolProxyInvocation) => Promise<unknown>
+
+/** Proxy a protocol */
+export function proxy<Signatures extends MethodSignatures>(
+    protocol: Protocol<Signatures>,
+    forwarder: ProtocolProxyForwarder,
+): ProtocolImplementation {
+    const vtable: Record<string, (parameters: unknown) => Promise<unknown>> = {}
+    for (const selector in protocol.signatures) {
+        const { input, output } = protocol.signatures[selector]
+        vtable[selector] = async (parameters) => {
+            return forwarder({
+                selector,
+                input,
+                output,
+                parameters,
+            })
+        }
+    }
+    return {
+        name: protocol.name,
+        vtable,
+    }
+}
+
 /**
  * Holds all protocol proxies created for an RPC object.
  */
