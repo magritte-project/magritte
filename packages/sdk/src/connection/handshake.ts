@@ -41,4 +41,8 @@ export class ConnectionHolder {
         const events = await cast(EventsProtocol, this.connection.remoteObject)
         await events.dispatch(event)
     }
+
+    async disconnect(): Promise<void> {
+        this.connection.invalidate()
+    }
 }

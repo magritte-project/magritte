@@ -1,20 +1,22 @@
+import { GearIcon } from "@phosphor-icons/react/dist/ssr"
 import { useEffect, useLayoutEffect, useRef } from "react"
 
-import { InstalledExtension } from "@/extensions/extensionManager"
+import { ExtensionInstance, ExtensionManager } from "@/extensions/extensionManager"
 import usePlayer from "@/hooks/playerHook"
 import useToast from "@/hooks/toastHook"
 
-export function buildExtensionComponent(installedExtension: InstalledExtension) {
+export function buildExtensionComponent(extensionManager: ExtensionManager, id: string) {
     function ExtensionComponent() {
         const { showToast } = useToast()
         const player = usePlayer()
         const containerRef = useRef<HTMLDivElement | null>(null)
+        const instanceRef = useRef<ExtensionInstance | null>(null)
 
         useLayoutEffect(() => {
-            if (!containerRef.current) {
+            if (!containerRef.current || !instanceRef.current) {
                 return
             }
-            installedExtension.position(containerRef.current.getBoundingClientRect())
+            instanceRef.current.position(containerRef.current.getBoundingClientRect())
         }, [])
 
         useEffect(() => {
@@ -22,7 +24,7 @@ export function buildExtensionComponent(installedExtension: InstalledExtension) 
                 switch (event.type) {
                     case "playbackStateDidChange":
                     case "playingItemChanged":
-                        installedExtension.extension?.dispatchEvent({
+                        instanceRef.current?.extension?.dispatchEvent({
                             type: "Magritte.NowPlayingDidChange",
                         })
                         break
@@ -39,9 +41,10 @@ export function buildExtensionComponent(installedExtension: InstalledExtension) 
             if (!containerRef.current) {
                 return
             }
-            installedExtension.loadIfNeeded()
-            installedExtension.position(containerRef.current.getBoundingClientRect())
-            installedExtension.connect({
+
+            const instance = extensionManager.acquireInstance(id)
+            instance.load({
+                clientFrame: containerRef.current.getBoundingClientRect(),
                 chrome: {
                     showToast: async (options: {
                         message: string
@@ -86,13 +89,18 @@ export function buildExtensionComponent(installedExtension: InstalledExtension) 
                     },
                 },
             })
+            instanceRef.current = instance
 
             return () => {
-                installedExtension.unload()
+                extensionManager.releaseInstance(instance)
             }
         }, [showToast, player])
 
-        return <div ref={containerRef} className="h-full" />
+        return (
+            <div ref={containerRef} className="h-full flex items-center justify-center">
+                <GearIcon size="4rem" weight="light" className="text-gray-200" />
+            </div>
+        )
     }
     return ExtensionComponent
 }

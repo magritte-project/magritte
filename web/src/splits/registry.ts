@@ -1,39 +1,36 @@
+import type { ExtensionManifest } from "@magritte/sdk"
+
 import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
 import { GearIcon } from "@phosphor-icons/react"
 
 import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
 
 import { buildExtensionComponent } from "@/components/extensions/ExtensionComponent"
-import {
-    InstalledExtension,
-    type ExtensionManager,
-    type ExtensionManagerEvent,
-} from "@/extensions/extensionManager"
+import { type ExtensionManager, type ExtensionManagerEvent } from "@/extensions/extensionManager"
 import { QuickMixSplit } from "@/splits/definitions/QuickMixSplit"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 
-function getExtensionSplitID(installedExtension: InstalledExtension): SplitID {
-    return `extension.${installedExtension.manifest.id}`
+function getExtensionSplitID(manifest: ExtensionManifest): SplitID {
+    return `extension.${manifest.id}`
 }
 
 function getExtensionSplitDefinition(
-    installedExtension: InstalledExtension,
+    extensionManager: ExtensionManager,
+    manifest: ExtensionManifest,
 ): SplitDefinition | undefined {
-    const splitUseCase = installedExtension.manifest.useCases.find(
-        (useCase) => useCase.type === "split",
-    )
+    const splitUseCase = manifest.useCases.find((useCase) => useCase.type === "split")
     if (splitUseCase === undefined) {
         return undefined
     }
     return {
-        id: getExtensionSplitID(installedExtension),
-        name: installedExtension.manifest.name,
+        id: getExtensionSplitID(manifest),
+        name: manifest.name,
         icon: GearIcon,
         minWidth: splitUseCase.minWidth,
         preferredLocation: splitUseCase.preferredLocation,
-        allowsMultiple: installedExtension.manifest.allowsMultipleInstances,
+        allowsMultiple: manifest.allowsMultipleInstances,
         requiresParameters: false,
-        component: buildExtensionComponent(installedExtension),
+        component: buildExtensionComponent(extensionManager, manifest.id),
     }
 }
 
@@ -42,10 +39,12 @@ export type SplitRegistryEvent =
     | { type: "splitDefinitionRemove"; id: SplitID }
 
 export default class SplitRegistry {
-    private splitDefinitions: Map<SplitID, SplitDefinition>
+    private readonly extensionManager: ExtensionManager
+    private readonly splitDefinitions: Map<SplitID, SplitDefinition>
     private readonly _events: EventSink<SplitRegistryEvent>
 
     constructor(extensionManager: ExtensionManager) {
+        this.extensionManager = extensionManager
         this.splitDefinitions = new Map()
         ;[this._events, this.$events] = createEvent<SplitRegistryEvent>()
 
@@ -54,7 +53,7 @@ export default class SplitRegistry {
         this.registerSplit(SongEditorSplit)
 
         for (const installed of extensionManager.installed) {
-            const split = getExtensionSplitDefinition(installed)
+            const split = getExtensionSplitDefinition(extensionManager, installed)
             if (split !== undefined) {
                 this.registerSplit(split)
             }
@@ -67,14 +66,14 @@ export default class SplitRegistry {
     private handleExtensionEvent(event: ExtensionManagerEvent) {
         switch (event.type) {
             case "extensionInstalled": {
-                const split = getExtensionSplitDefinition(event.installedExtension)
+                const split = getExtensionSplitDefinition(this.extensionManager, event.manifest)
                 if (split !== undefined) {
                     this.registerSplit(split)
                 }
                 break
             }
             case "extensionUninstalled": {
-                this.unregisterSplit(getExtensionSplitID(event.installedExtension))
+                this.unregisterSplit(getExtensionSplitID(event.manifest))
                 break
             }
             default: {
