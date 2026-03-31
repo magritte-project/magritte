@@ -20,10 +20,10 @@ export interface MagritteRouterContext {
     readonly queryClient: QueryClient
     readonly userSession: UserSessionManager
     readonly apiClient: APIClient
+    readonly extensionManager: ExtensionManager
     readonly serviceRegistry: ServiceRegistry
     readonly userEvents: UserEvents
     readonly player: Player
-    readonly extensionManager: ExtensionManager
     readonly splitRegister: SplitRegistry
 }
 

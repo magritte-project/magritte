@@ -112,6 +112,14 @@ export class ExtensionInstance {
 
 export type ExtensionManagerEvent =
     | { type: "extensionInstalled"; manifest: ExtensionManifest }
+    | {
+          type: "extensionInstanceAcquired"
+          instance: ExtensionInstance
+      }
+    | {
+          type: "extensionInstanceReleased"
+          instance: ExtensionInstance
+      }
     | { type: "extensionUninstalled"; manifest: ExtensionManifest }
 
 export class ExtensionManager {
@@ -152,6 +160,7 @@ export class ExtensionManager {
         }
         const instance = new ExtensionInstance(manifest)
         this._instances.push(instance)
+        this._events.dispatch({ type: "extensionInstanceAcquired", instance })
         return instance
     }
 
@@ -161,6 +170,7 @@ export class ExtensionManager {
             const instance = this._instances[toRemove]
             instance.unload()
             this._instances.splice(toRemove, 1)
+            this._events.dispatch({ type: "extensionInstanceReleased", instance })
         }
     }
 

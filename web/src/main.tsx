@@ -25,21 +25,6 @@ const userSession = StorageUserSessionManager.local
 // Set up API client
 const apiClient = new APIClient(userSession)
 
-// Set up services
-const serviceRegistry = new ServiceRegistry({ apiClient, userSession })
-await serviceRegistry.addService(AppleMusic) // TODO: Don't hard code this
-
-// Set up user events
-const userEvents = new UserEvents(apiClient, userSession)
-
-// Set up playback
-const player = new Player(
-    new PlaybackEngineRegistry({
-        serviceRegistry,
-        defaultEngine: new BuiltInPlaybackEngine(userSession),
-    }),
-)
-
 // Set up extensions
 const extensionManager = new ExtensionManager()
 // TODO: Don't hard code this
@@ -59,6 +44,21 @@ extensionManager.install({
     ],
 })
 
+// Set up services
+const serviceRegistry = new ServiceRegistry(extensionManager, { apiClient, userSession })
+await serviceRegistry.addService(AppleMusic) // TODO: Don't hard code this
+
+// Set up user events
+const userEvents = new UserEvents(apiClient, userSession)
+
+// Set up playback
+const player = new Player(
+    new PlaybackEngineRegistry({
+        serviceRegistry,
+        defaultEngine: new BuiltInPlaybackEngine(userSession),
+    }),
+)
+
 // Set up splits
 const splitRegister = new SplitRegistry(extensionManager)
 
@@ -70,10 +70,10 @@ const router = createRouter({
     context: {
         userSession,
         apiClient,
+        extensionManager,
         serviceRegistry,
         userEvents,
         player,
-        extensionManager,
         splitRegister,
         ...TanStackQueryProviderContext,
     },

@@ -1,7 +1,17 @@
 import type { JsonStructure } from "react-cmdk"
 
-import { createEvent, EventStream, type EventSink } from "@magritte/sdk/utilities"
+import {
+    createEvent,
+    EventStream,
+    EventSubscription,
+    type EventSink,
+} from "@magritte/sdk/utilities"
 
+import type {
+    ExtensionInstanceEvent,
+    ExtensionManager,
+    ExtensionManagerEvent,
+} from "@/extensions/extensionManager"
 import type { PlaybackEngine } from "@/playback/engine"
 
 import {
@@ -21,15 +31,54 @@ export type ServiceRegistryEvent =
 export class ServiceRegistry {
     private readonly _options: ServiceConstructorOptions
     private readonly _services: Map<string, Service>
+    private readonly _extensionSubscriptions: Map<string, EventSubscription<ExtensionInstanceEvent>>
     private readonly _events: EventSink<ServiceRegistryEvent>
 
-    constructor(options: ServiceConstructorOptions) {
-        this._options = options
+    constructor(extensionManager: ExtensionManager, options: ServiceConstructorOptions) {
+        this._options = { ...options }
         this._services = new Map()
+        this._extensionSubscriptions = new Map()
         ;[this._events, this.$events] = createEvent<ServiceRegistryEvent>()
+
+        extensionManager.$events.subscribe((event) => {
+            this.handleExtensionEvent(event)
+        })
     }
 
     readonly $events: EventStream<ServiceRegistryEvent>
+
+    private handleExtensionEvent(event: ExtensionManagerEvent) {
+        switch (event.type) {
+            case "extensionInstanceAcquired": {
+                const subscription = event.instance.$events.subscribe((event) => {
+                    this.handleExtensionInstanceEvent(event)
+                })
+                this._extensionSubscriptions.set(event.instance.manifest.id, subscription)
+                break
+            }
+            case "extensionInstanceReleased": {
+                const subscription = this._extensionSubscriptions.get(event.instance.manifest.id)
+                if (subscription !== undefined) {
+                    subscription.unsubscribe()
+                    this._extensionSubscriptions.delete(event.instance.manifest.id)
+                }
+                break
+            }
+            default:
+                break
+        }
+    }
+
+    private handleExtensionInstanceEvent(event: ExtensionInstanceEvent) {
+        switch (event.type) {
+            case "extensionInstanceLoaded":
+                break
+            case "extensionInstanceUnloaded":
+                break
+            default:
+                break
+        }
+    }
 
     get commands(): JsonStructure {
         const commands: JsonStructure = []
