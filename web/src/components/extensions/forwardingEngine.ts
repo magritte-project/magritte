@@ -1,5 +1,5 @@
 import type { PlaybackEngine as ExtensionPlaybackEngine } from "@magritte/sdk/extension"
-import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+import type { PlayableItem, PlaybackTime } from "@magritte/sdk/host"
 
 import { type Event } from "@magritte/sdk/common"
 import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
@@ -16,12 +16,14 @@ import type { PlaybackModes } from "@/playback/modes"
 
 export class ForwardingPlaybackEngine implements PlaybackEngine {
     private readonly _events: EventSink<PlaybackEngineEvent>
+    private _playingItem: PlayableItem | null
 
     constructor(
         instance: ExtensionInstance,
         private readonly engine: ExtensionPlaybackEngine,
     ) {
         ;[this._events, this.$events] = createEvent()
+        this._playingItem = null
 
         instance.extension.$events.subscribe((event) => {
             this.handleEvent(event)
@@ -31,40 +33,30 @@ export class ForwardingPlaybackEngine implements PlaybackEngine {
     private async handleEvent(event: Event) {
         switch (event.type) {
             case "PlaybackEngine.playbackStateDidChange":
-                this._events.dispatch({ type: "playbackStateDidChange" })
+                const { playbackState, playingItem: item } = await this.engine.getNowPlaying()
+                this._playingItem = item
+                this._events.dispatch({ type: "playbackStateDidChange", playbackState })
                 break
             case "PlaybackEngine.playingItemChanged":
+                const { playingItem } = await this.engine.getNowPlaying()
+                this._playingItem = playingItem
                 this._events.dispatch({ type: "playingItemChanged" })
                 break
             case "PlaybackEngine.encounteredError":
                 break
             case "PlaybackEngine.endOfAudio":
+                this._events.dispatch({ type: "endOfAudio", lastItem: this._playingItem })
+                this._playingItem = null
                 break
             default:
                 break
         }
     }
 
-    get playingItem(): PlayableItem | null {
-        return null
-    }
-
-    get playbackState(): PlaybackState {
-        return "stopped"
-    }
-
-    get totalTime(): number | null {
-        return null
-    }
-
-    get currentTime(): number | null {
-        return null
-    }
-
     readonly $events: EventStream<PlaybackEngineEvent>
 
-    async setPlaybackModes(modes: PlaybackModes): Promise<void> {
-        await this.engine.setPlaybackModes(modes)
+    async syncPlaybackModes(modes: PlaybackModes): Promise<void> {
+        await this.engine.syncPlaybackModes(modes)
     }
 
     async canEnqueue(item: PlayableItem): Promise<boolean> {
@@ -81,6 +73,10 @@ export class ForwardingPlaybackEngine implements PlaybackEngine {
 
     async skipNextInQueue(): Promise<boolean> {
         return await this.engine.skipNextInQueue()
+    }
+
+    async getCurrentTime(): Promise<PlaybackTime> {
+        return await this.engine.getCurrentTime()
     }
 
     async seek(newTime: number): Promise<void> {

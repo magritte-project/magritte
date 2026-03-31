@@ -1,4 +1,9 @@
-import type { PlayableItem, PlaybackState, Player as ExtensionPlayer } from "@magritte/sdk/host"
+import type {
+    PlayableItem,
+    PlaybackState,
+    Player as ExtensionPlayer,
+    PlaybackTime,
+} from "@magritte/sdk/host"
 
 import {
     type EventSink,
@@ -40,6 +45,7 @@ export class Player {
     private _activeEngine: PlaybackEngine | null
     private _queue: Queue<PlayableItem>
     private _playingItem: PlayableItem | null
+    private _playbackState: PlaybackState
 
     constructor(engineRegistry: PlaybackEngineRegistry) {
         this._engineRegistry = engineRegistry
@@ -51,6 +57,7 @@ export class Player {
         this._activeEngine = null
         this._queue = new EmptyQueue()
         this._playingItem = null
+        this._playbackState = "stopped"
     }
 
     private async _changeEngine(newEngine: PlaybackEngine | null): Promise<void> {
@@ -64,7 +71,7 @@ export class Player {
         }
         this._activeEngine = newEngine
         if (newEngine !== null) {
-            await newEngine.setPlaybackModes(this._modes)
+            await newEngine.syncPlaybackModes(this._modes)
             this._activeEngineEventSubscription = newEngine.$events.subscribe((e) =>
                 this._handleEngineEvent(e),
             )
@@ -139,6 +146,9 @@ export class Player {
     private async _handleEngineEvent(event: PlaybackEngineEvent): Promise<void> {
         switch (event.type) {
             case "playbackStateDidChange":
+                this._playbackState = event.playbackState
+                this._events.dispatch(event)
+                break
             case "playingItemChanged":
             case "encounteredError":
                 this._events.dispatch(event)
@@ -165,27 +175,7 @@ export class Player {
     }
 
     get playbackState(): PlaybackState {
-        if (this._activeEngine !== null) {
-            return this._activeEngine.playbackState
-        } else {
-            return "stopped"
-        }
-    }
-
-    get totalTime(): number | null {
-        if (this._activeEngine !== null) {
-            return this._activeEngine.totalTime
-        } else {
-            return null
-        }
-    }
-
-    get currentTime(): number | null {
-        if (this._activeEngine !== null) {
-            return this._activeEngine.currentTime
-        } else {
-            return null
-        }
+        return this._playbackState
     }
 
     get queue(): Queue<PlayableItem> {
@@ -201,7 +191,7 @@ export class Player {
         const modes = resolveNewValue(this._modes, newModes)
         this._modes = modes
         if (this._activeEngine !== null) {
-            await this._activeEngine.setPlaybackModes(modes)
+            await this._activeEngine.syncPlaybackModes(modes)
         }
         await this._events.dispatch({ type: "playbackModesDidChange", modes })
     }
@@ -220,7 +210,7 @@ export class Player {
     }
 
     async skipPrevious(): Promise<boolean> {
-        const currentTime = this.currentTime
+        const { elapsedTime: currentTime } = await this.getCurrentTime()
         if (currentTime !== null && currentTime > 10) {
             await this.seek(0)
             return true
@@ -244,6 +234,14 @@ export class Player {
         return true
     }
 
+    async getCurrentTime(): Promise<PlaybackTime> {
+        const currentTime = await this._activeEngine?.getCurrentTime()
+        return {
+            elapsedTime: currentTime?.elapsedTime ?? null,
+            totalTime: currentTime?.totalTime ?? null,
+        }
+    }
+
     async seek(newTime: number): Promise<void> {
         await this._activeEngine?.seek(newTime)
     }
@@ -258,6 +256,7 @@ export class Player {
 
     async stop(): Promise<void> {
         this._playingItem = null
+        this._playbackState = "stopped"
         this._playedItems.clear()
         await this._activeEngine?.stop()
     }
@@ -265,10 +264,7 @@ export class Player {
     get forExtension(): ExtensionPlayer {
         return {
             getCurrentTime: async () => {
-                return {
-                    currentTime: this.currentTime,
-                    totalTime: this.totalTime,
-                }
+                return await this.getCurrentTime()
             },
 
             seek: async ({ newTime }) => {

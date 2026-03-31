@@ -1,7 +1,7 @@
 import { protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
-import { PlayableItem, PlaybackState } from "../host"
+import { PlayableItem, PlaybackState, PlaybackTime } from "../host"
 
 export type PlaybackEngineEventTypes =
     | "PlaybackEngine.playbackStateDidChange"
@@ -53,23 +53,20 @@ export const PlaybackEngineProtocol = protocol("Magritte.Extension.PlaybackEngin
     /** Retrieve the current playback time and total time. */
     getCurrentTime: {
         input: z4.void(),
-        output: z4.object({
-            currentTime: z4.number().nullable(),
-            totalTime: z4.number().nullable(),
-        }),
+        output: PlaybackTime,
     },
 
     /** Get the current playback state and item. */
     getNowPlaying: {
         input: z4.void(),
         output: z4.object({
-            state: PlaybackState,
-            item: PlayableItem.nullable(),
+            playbackState: PlaybackState,
+            playingItem: PlayableItem.nullable(),
         }),
     },
 
-    /** Set the playback modes for this engine */
-    setPlaybackModes: { input: PlaybackModes, output: z4.void() },
+    /** Synchronize the playback modes for this engine */
+    syncPlaybackModes: { input: PlaybackModes, output: z4.void() },
 
     /** Check whether this playback engine can play a given item. */
     canEnqueue: {

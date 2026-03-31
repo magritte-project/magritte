@@ -1,10 +1,10 @@
-import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
 import type { EventStream } from "@magritte/sdk/utilities"
 
 import type { PlaybackModes } from "@/playback/modes"
 
 export type PlaybackEngineEvent =
-    | { type: "playbackStateDidChange" }
+    | { type: "playbackStateDidChange"; playbackState: PlaybackState }
     | { type: "playingItemChanged" }
     | { type: "encounteredError"; error: Error }
     | { type: "endOfAudio"; lastItem: PlayableItem | null }
@@ -34,16 +34,11 @@ export interface PlaybackEngineEnqueueOptions {
 }
 
 export interface PlaybackEngine {
-    readonly playingItem: PlayableItem | null
-    readonly playbackState: PlaybackState
-    readonly totalTime: number | null
-    readonly currentTime: number | null
-
     /** Events relating to the state of this playback engine */
     readonly $events: EventStream<PlaybackEngineEvent>
 
-    /** Set the playback modes for this engine */
-    setPlaybackModes(modes: PlaybackModes): Promise<void>
+    /** Sync the playback modes for this engine */
+    syncPlaybackModes(modes: PlaybackModes): Promise<void>
 
     /**
      * Check whether this playback engine can play a given item.
@@ -78,6 +73,7 @@ export interface PlaybackEngine {
      */
     skipNextInQueue(): Promise<boolean>
 
+    getCurrentTime(): Promise<PlaybackTime>
     seek(newTime: number): Promise<void>
     pause(): Promise<void>
     resume(): Promise<void>

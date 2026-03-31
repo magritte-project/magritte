@@ -1,4 +1,4 @@
-import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
 
 import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
 
@@ -8,6 +8,26 @@ import type {
     PlaybackEngineEvent,
 } from "@/playback/engine"
 import type { PlaybackModes } from "@/playback/modes"
+
+function _getPlaybackState(playbackState: MusicKit.PlaybackStates): PlaybackState {
+    switch (playbackState) {
+        case MusicKit.PlaybackStates.none:
+        case MusicKit.PlaybackStates.loading:
+        case MusicKit.PlaybackStates.stopped:
+        case MusicKit.PlaybackStates.ended:
+        case MusicKit.PlaybackStates.completed:
+            return "stopped"
+        case MusicKit.PlaybackStates.waiting:
+        case MusicKit.PlaybackStates.stalled:
+        case MusicKit.PlaybackStates.seeking:
+        case MusicKit.PlaybackStates.playing:
+            return "playing"
+        case MusicKit.PlaybackStates.paused:
+            return "paused"
+        default:
+            return "stopped"
+    }
+}
 
 export default class AppleMusicPlaybackEngine implements PlaybackEngine {
     private _musicKit: MusicKit.Instance
@@ -33,7 +53,10 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
     }
 
     private _handlePlaybackStateDidChange(event: Parameters<MusicKit.StateChangeEventCallback>[0]) {
-        this._events.dispatch({ type: "playbackStateDidChange" })
+        this._events.dispatch({
+            type: "playbackStateDidChange",
+            playbackState: _getPlaybackState(event.state),
+        })
 
         switch (event.state) {
             case MusicKit.PlaybackStates.ended:
@@ -48,41 +71,9 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         }
     }
 
-    get playingItem(): PlayableItem | null {
-        return this._playingItem
-    }
-
-    get playbackState(): PlaybackState {
-        switch (this._musicKit.playbackState) {
-            case MusicKit.PlaybackStates.none:
-            case MusicKit.PlaybackStates.loading:
-            case MusicKit.PlaybackStates.stopped:
-            case MusicKit.PlaybackStates.ended:
-            case MusicKit.PlaybackStates.completed:
-                return "stopped"
-            case MusicKit.PlaybackStates.waiting:
-            case MusicKit.PlaybackStates.stalled:
-            case MusicKit.PlaybackStates.seeking:
-            case MusicKit.PlaybackStates.playing:
-                return "playing"
-            case MusicKit.PlaybackStates.paused:
-                return "paused"
-            default:
-                return "stopped"
-        }
-    }
-
-    get totalTime(): number | null {
-        return this._musicKit.currentPlaybackDuration
-    }
-
-    get currentTime(): number | null {
-        return this._musicKit.currentPlaybackTime
-    }
-
     readonly $events: EventStream<PlaybackEngineEvent>
 
-    async setPlaybackModes(modes: PlaybackModes): Promise<void> {
+    async syncPlaybackModes(modes: PlaybackModes): Promise<void> {
         switch (modes.repeat) {
             case "off":
                 this._musicKit.repeatMode = MusicKit.PlayerRepeatMode.none
@@ -148,6 +139,13 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
             return true
         } else {
             return false
+        }
+    }
+
+    async getCurrentTime(): Promise<PlaybackTime> {
+        return {
+            totalTime: this._musicKit.currentPlaybackDuration,
+            elapsedTime: this._musicKit.currentPlaybackTime,
         }
     }
 

@@ -1,4 +1,4 @@
-import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
 
 import { type EventSink, type EventStream, createEvent } from "@magritte/sdk/utilities"
 
@@ -18,6 +18,16 @@ function _findBestUrl(item: PlayableItem): string | undefined {
         return undefined
     }
     return sources.find((source) => source.url.startsWith("magritte://"))?.url
+}
+
+function _getPlaybackState(audio: HTMLAudioElement): PlaybackState {
+    if (audio.src === "") {
+        return "stopped"
+    } else if (audio.paused) {
+        return "paused"
+    } else {
+        return "playing"
+    }
 }
 
 export default class BuiltInPlaybackEngine implements PlaybackEngine {
@@ -47,7 +57,10 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     private _handleCanPlay(_event: Event) {
-        this._events.dispatch({ type: "playbackStateDidChange" })
+        this._events.dispatch({
+            type: "playbackStateDidChange",
+            playbackState: _getPlaybackState(this._audio),
+        })
     }
 
     private _handleDurationChange(_event: Event) {
@@ -71,38 +84,22 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     private _handlePause(_event: Event) {
-        this._events.dispatch({ type: "playbackStateDidChange" })
+        this._events.dispatch({
+            type: "playbackStateDidChange",
+            playbackState: _getPlaybackState(this._audio),
+        })
     }
 
     private _handlePlay(_event: Event) {
-        this._events.dispatch({ type: "playbackStateDidChange" })
-    }
-
-    get playingItem(): PlayableItem | null {
-        return this._playingItem
-    }
-
-    get playbackState(): PlaybackState {
-        if (this._audio.src === "") {
-            return "stopped"
-        } else if (this._audio.paused) {
-            return "paused"
-        } else {
-            return "playing"
-        }
-    }
-
-    get totalTime(): number | null {
-        return this._audio.duration
-    }
-
-    get currentTime(): number | null {
-        return this._audio.currentTime
+        this._events.dispatch({
+            type: "playbackStateDidChange",
+            playbackState: _getPlaybackState(this._audio),
+        })
     }
 
     readonly $events: EventStream<PlaybackEngineEvent>
 
-    async setPlaybackModes(_modes: PlaybackModes): Promise<void> {
+    async syncPlaybackModes(_modes: PlaybackModes): Promise<void> {
         /** Nothing to do in this engine */
     }
 
@@ -123,6 +120,13 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
 
         if (playNow) {
             await this._audio.play()
+        }
+    }
+
+    async getCurrentTime(): Promise<PlaybackTime> {
+        return {
+            totalTime: this._audio.duration,
+            elapsedTime: this._audio.currentTime,
         }
     }
 

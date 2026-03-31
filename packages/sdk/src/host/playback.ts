@@ -48,6 +48,12 @@ export type PlayableItem = z4.infer<typeof PlayableItem>
 export const PlaybackState = z4.enum(["playing", "paused", "stopped"])
 export type PlaybackState = z4.infer<typeof PlaybackState>
 
+export const PlaybackTime = z4.object({
+    totalTime: z4.number().nullable(),
+    elapsedTime: z4.number().nullable(),
+})
+export type PlaybackTime = z4.infer<typeof PlaybackTime>
+
 /**
  * A protocol which allows an extension to interact with the player in the host.
  */
@@ -55,10 +61,7 @@ export const PlayerProtocol = protocol("Magritte.Host.Player", {
     /** Retrieve the current playback time and total time. */
     getCurrentTime: {
         input: z4.void(),
-        output: z4.object({
-            currentTime: z4.number().nullable(),
-            totalTime: z4.number().nullable(),
-        }),
+        output: PlaybackTime,
     },
 
     /** Seek to a new playback time. */

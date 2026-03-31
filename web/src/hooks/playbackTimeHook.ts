@@ -1,3 +1,5 @@
+import type { PlaybackTime } from "@magritte/sdk/host"
+
 import { useCallback, useEffect, useState } from "react"
 
 import usePlayer from "@/hooks/playerHook"
@@ -12,20 +14,30 @@ export interface UsePlaybackTimeResult {
 
 export default function usePlaybackTime(): UsePlaybackTimeResult {
     const player = usePlayer()
-    const [elapsedTime, setElapsedTime] = useState(player.currentTime)
+    const [currentTime, setCurrentTime] = useState<PlaybackTime>({
+        totalTime: null,
+        elapsedTime: null,
+    })
     const [isSeeking, setIsSeeking] = useState(false)
     useEffect(() => {
         if (isSeeking || player.playbackState !== "playing") {
             return
         }
+        const update = async () => {
+            const currentTime = await player.getCurrentTime()
+            setCurrentTime(currentTime)
+        }
+        update()
+
         const interval = setInterval(() => {
-            setElapsedTime(player.currentTime)
+            update()
         }, 1000)
         return () => {
             clearInterval(interval)
         }
     }, [player, isSeeking, player.playbackState])
-    const totalTime = player.totalTime
+    const totalTime = currentTime.totalTime
+    const elapsedTime = currentTime.elapsedTime
     const remainingTime =
         totalTime !== null && elapsedTime !== null ? totalTime - elapsedTime : null
     const seekToTime = useCallback(

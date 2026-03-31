@@ -15,8 +15,8 @@ export default function NowPlayingScrubber() {
     )
     return (
         <Slider
-            value={currentTime ?? 0}
-            max={totalTime ?? 0}
+            value={currentTime || 0}
+            max={totalTime || 0}
             step={1}
             onChange={handleChange}
             disabled={isSeeking || playbackState === "stopped"}
