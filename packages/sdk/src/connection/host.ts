@@ -13,14 +13,14 @@ export interface WaitForExtensionConnectionOptions {
     readonly iframe: HTMLIFrameElement
     readonly manifest: ExtensionManifest
     readonly chrome: Chrome
-    readonly nowPlaying: Player
+    readonly player: Player
 }
 
 export function waitForExtensionConnection({
     iframe,
     manifest,
     chrome,
-    nowPlaying,
+    player,
 }: WaitForExtensionConnectionOptions): Promise<Extension> {
     const origin = getExtensionOrigin(manifest)
     return new Promise((resolve, reject) => {
@@ -38,7 +38,7 @@ export function waitForExtensionConnection({
                         const [_events, $events] = createEvent<Event>()
                         const exportedObject = [
                             implement(ChromeProtocol, chrome),
-                            implement(PlayerProtocol, nowPlaying),
+                            implement(PlayerProtocol, player),
                             implement(EventsProtocol, {
                                 dispatch: async (event) => {
                                     _events.dispatch(event)

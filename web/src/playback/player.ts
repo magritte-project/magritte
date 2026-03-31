@@ -1,4 +1,4 @@
-import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
+import type { PlayableItem, PlaybackState, Player as ExtensionPlayer } from "@magritte/sdk/host"
 
 import {
     type EventSink,
@@ -260,6 +260,44 @@ export class Player {
         this._playingItem = null
         this._playedItems.clear()
         await this._activeEngine?.stop()
+    }
+
+    get forExtension(): ExtensionPlayer {
+        return {
+            getCurrentTime: async () => {
+                return {
+                    currentTime: this.currentTime,
+                    totalTime: this.totalTime,
+                }
+            },
+
+            seek: async ({ newTime }) => {
+                await this.seek(newTime)
+            },
+
+            getNowPlaying: async () => {
+                return {
+                    state: this.playbackState,
+                    item: this.playingItem,
+                }
+            },
+
+            pause: async () => {
+                await this.pause()
+            },
+
+            resume: async () => {
+                await this.resume()
+            },
+
+            skipPrevious: async () => {
+                await this.skipPrevious()
+            },
+
+            skipNext: async () => {
+                await this.skipNext()
+            },
+        }
     }
 }
 

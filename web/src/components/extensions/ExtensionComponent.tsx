@@ -53,41 +53,7 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
                         showToast(options)
                     },
                 },
-                nowPlaying: {
-                    async getCurrentTime() {
-                        return {
-                            currentTime: player.currentTime,
-                            totalTime: player.totalTime,
-                        }
-                    },
-
-                    async seek({ newTime }) {
-                        await player.seek(newTime)
-                    },
-
-                    async getNowPlaying() {
-                        return {
-                            state: player.playbackState,
-                            item: player.playingItem,
-                        }
-                    },
-
-                    async pause() {
-                        await player.pause()
-                    },
-
-                    async resume() {
-                        await player.resume()
-                    },
-
-                    async skipPrevious() {
-                        await player.skipPrevious()
-                    },
-
-                    async skipNext() {
-                        await player.skipNext()
-                    },
-                },
+                player: player.forExtension,
             })
             instanceRef.current = instance
 
