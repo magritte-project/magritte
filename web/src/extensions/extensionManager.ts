@@ -7,10 +7,13 @@ import {
 import { createEvent, EventSink, EventStream } from "@magritte/sdk/utilities"
 
 export type ExtensionInstanceEvent =
-    | { type: "extensionInstanceWillLoad" }
-    | { type: "extensionInstanceLoaded" }
-    | { type: "extensionInstanceLoadFailed"; error: unknown }
-    | { type: "extensionInstanceUnloaded" }
+    | {
+          type: "extensionInstanceWillLoad"
+          instance: ExtensionInstance
+      }
+    | { type: "extensionInstanceLoaded"; instance: ExtensionInstance }
+    | { type: "extensionInstanceLoadFailed"; error: unknown; instance: ExtensionInstance }
+    | { type: "extensionInstanceUnloaded"; instance: ExtensionInstance }
 
 export interface ExtensionInstanceLoadOptions extends Omit<
     WaitForExtensionConnectionOptions,
@@ -38,6 +41,9 @@ export class ExtensionInstance {
     }
 
     get extension() {
+        if (this._extension == null) {
+            throw new Error("Extension is not loaded")
+        }
         return this._extension
     }
 
@@ -46,7 +52,7 @@ export class ExtensionInstance {
             throw new Error("Cannot load extension: iframe is already loaded")
         }
 
-        this._events.dispatch({ type: "extensionInstanceWillLoad" })
+        this._events.dispatch({ type: "extensionInstanceWillLoad", instance: this })
 
         this._iframe = document.createElement("iframe")
         this._iframe.style.background = "white"
@@ -78,10 +84,10 @@ export class ExtensionInstance {
 
             this._iframe.style.display = "block"
 
-            this._events.dispatch({ type: "extensionInstanceLoaded" })
+            this._events.dispatch({ type: "extensionInstanceLoaded", instance: this })
         } catch (error) {
             console.error("*** Could not load extension", this.manifest.id, error)
-            this._events.dispatch({ type: "extensionInstanceLoadFailed", error })
+            this._events.dispatch({ type: "extensionInstanceLoadFailed", error, instance: this })
             this.unload()
         }
     }
@@ -101,7 +107,7 @@ export class ExtensionInstance {
             this._extension.disconnect()
             this._extension = null
 
-            this._events.dispatch({ type: "extensionInstanceUnloaded" })
+            this._events.dispatch({ type: "extensionInstanceUnloaded", instance: this })
         }
         if (this._iframe !== null) {
             document.body.removeChild(this._iframe)

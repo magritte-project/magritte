@@ -1,13 +1,18 @@
-import { implement, RPCConnection } from "@magritte/rpc"
+import { cast, implement, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { EventsProtocol, type Event } from "../common/events"
+import { PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
 import { ChromeProtocol, PlayerProtocol, type Chrome, type Player } from "../host"
 import { getExtensionOrigin, type ExtensionManifest } from "../manifest"
 import { createEvent } from "../utilities/events"
 import { ConnectionHolder, ConnectRequest, type ConnectResponse } from "./handshake"
 
-export class Extension extends ConnectionHolder {}
+export class Extension extends ConnectionHolder {
+    async playbackEngine(): Promise<PlaybackEngine> {
+        return cast(PlaybackEngineProtocol, this.connection.remoteObject)
+    }
+}
 
 export interface WaitForExtensionConnectionOptions {
     readonly iframe: HTMLIFrameElement

@@ -1,7 +1,7 @@
 import { protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod"
 
-export const zPlayableItemArtwork = z4
+export const PlayableItemArtwork = z4
     .object({
         image_url: z4.string(),
         background_color: z4.string().nullable(),
@@ -11,24 +11,24 @@ export const zPlayableItemArtwork = z4
     })
     .readonly()
 
-export type PlayableItemArtwork = z4.infer<typeof zPlayableItemArtwork>
+export type PlayableItemArtwork = z4.infer<typeof PlayableItemArtwork>
 
-export const zPlayableItemSource = z4
+export const PlayableItemSource = z4
     .object({
         url: z4.string(),
         mime_type: z4.string().nullable(),
     })
     .readonly()
 
-export type PlayableItemSource = z4.infer<typeof zPlayableItemSource>
+export type PlayableItemSource = z4.infer<typeof PlayableItemSource>
 
-export const zPlayableItem = z4
+export const PlayableItem = z4
     .object({
         id: z4.unknown(),
         artist_name: z4.string().nullish(),
         album_title: z4.string().nullish(),
-        artworks: z4.array(zPlayableItemArtwork).readonly().optional(),
-        sources: z4.array(zPlayableItemSource).readonly().optional(),
+        artworks: z4.array(PlayableItemArtwork).readonly().optional(),
+        sources: z4.array(PlayableItemSource).readonly().optional(),
         start_time: z4.number(),
         end_time: z4.number(),
         title: z4.string().nullish(),
@@ -43,10 +43,10 @@ export const zPlayableItem = z4
     })
     .readonly()
 
-export type PlayableItem = z4.infer<typeof zPlayableItem>
+export type PlayableItem = z4.infer<typeof PlayableItem>
 
-export const zPlaybackState = z4.enum(["playing", "paused", "stopped"])
-export type PlaybackState = z4.infer<typeof zPlaybackState>
+export const PlaybackState = z4.enum(["playing", "paused", "stopped"])
+export type PlaybackState = z4.infer<typeof PlaybackState>
 
 /**
  * A protocol which allows an extension to interact with the player in the host.
@@ -73,8 +73,8 @@ export const PlayerProtocol = protocol("Magritte.Host.Player", {
     getNowPlaying: {
         input: z4.void(),
         output: z4.object({
-            state: zPlaybackState,
-            item: zPlayableItem.nullable(),
+            state: PlaybackState,
+            item: PlayableItem.nullable(),
         }),
     },
 

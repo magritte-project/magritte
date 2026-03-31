@@ -14,6 +14,7 @@ import type {
 } from "@/extensions/extensionManager"
 import type { PlaybackEngine } from "@/playback/engine"
 
+import { ForwardingPlaybackEngine } from "@/components/extensions/forwardingEngine"
 import {
     isServiceOfType,
     type MetaService,
@@ -69,12 +70,44 @@ export class ServiceRegistry {
         }
     }
 
-    private handleExtensionInstanceEvent(event: ExtensionInstanceEvent) {
+    private async handleExtensionInstanceEvent(event: ExtensionInstanceEvent) {
         switch (event.type) {
-            case "extensionInstanceLoaded":
+            case "extensionInstanceLoaded": {
+                try {
+                    const playbackEngine = new ForwardingPlaybackEngine(
+                        event.instance,
+                        await event.instance.extension.playbackEngine(),
+                    )
+                    await this.addService({
+                        type: "streamingMusic",
+                        name: event.instance.manifest.name,
+                        construct: async () => ({
+                            type: "streamingMusic",
+                            name: event.instance.manifest.name,
+                            commands: [],
+                            playbackEngine,
+                            searchSongs: async () => {
+                                throw new Error("Not implemented")
+                            },
+                        }),
+                    })
+                } catch (error) {
+                    console.debug(
+                        "Failed to get playback engine for extension",
+                        event.instance.manifest.id,
+                        error,
+                    )
+                }
                 break
-            case "extensionInstanceUnloaded":
+            }
+            case "extensionInstanceUnloaded": {
+                const service = this._services.get(event.instance.manifest.name)
+                if (service !== undefined) {
+                    this._services.delete(event.instance.manifest.name)
+                    await this._events.dispatch({ type: "serviceRemoved", service })
+                }
                 break
+            }
             default:
                 break
         }
