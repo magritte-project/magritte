@@ -46,7 +46,7 @@ export default function NotificationsButton() {
                         </div>
                     ) : (
                         <>
-                            <ol className="px-4 flex flex-col">
+                            <ol className="px-4 flex flex-col w-full">
                                 {notifications.data.items.map((notification) => (
                                     <NotificationListItem
                                         key={notification.id}

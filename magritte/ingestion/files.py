@@ -160,11 +160,8 @@ async def _ingest_notifications(libraries: list[Library], session: AsyncSession)
         await session.commit()
         raise
     else:
-        for library, notification in zip(libraries, notifications):
-            await session.refresh(notification)
-            notification.title = f"Updated {library.name}"
-            notification.is_locked = False
-            notification.is_read = True
+        for notification in notifications:
+            await session.delete(notification)
         await session.commit()
 
 
