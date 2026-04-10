@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query"
+import { infiniteQueryOptions, keepPreviousData, queryOptions } from "@tanstack/react-query"
 
 import type { APIClient, ReadLibrarySongsSortBy } from "@/api/client"
 
@@ -147,5 +147,41 @@ export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySong
                 criteria.offset,
                 criteria.limit,
             ),
+    })
+}
+
+export function infiniteReadLibrarySongs(
+    apiClient: APIClient,
+    criteria: Omit<ReadLibrarySongsCriteria, "offset">,
+) {
+    return infiniteQueryOptions({
+        queryKey: librarySongs(
+            criteria.libraryId,
+            criteria.query,
+            criteria.albumId,
+            criteria.artistId,
+            criteria.sortBy,
+            criteria.limit,
+        ),
+        initialPageParam: { offset: 0 },
+        queryFn: ({ pageParam: { offset } }) =>
+            apiClient.readLibrarySongs(
+                criteria.libraryId,
+                criteria.query,
+                criteria.albumId,
+                criteria.artistId,
+                criteria.sortBy,
+                offset,
+                criteria.limit,
+            ),
+        getNextPageParam: (lastPage, _allPages) => {
+            const offset = lastPage.offset + lastPage.limit
+            return offset < lastPage.total ? { offset } : null
+        },
+        getPreviousPageParam: (lastPage, _allPages) => {
+            const offset = lastPage.offset + lastPage.limit
+            return offset >= 0 ? { offset } : null
+        },
+        placeholderData: keepPreviousData,
     })
 }
