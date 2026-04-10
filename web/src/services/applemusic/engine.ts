@@ -95,6 +95,10 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         }
     }
 
+    async syncVolume(volume: number): Promise<void> {
+        this._musicKit.volume = volume
+    }
+
     async canEnqueue(item: PlayableItem): Promise<boolean> {
         const sources = item.sources ?? []
         return sources.some((source) => source.url.startsWith("applemusic://"))

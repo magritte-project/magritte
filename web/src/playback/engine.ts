@@ -40,6 +40,9 @@ export interface PlaybackEngine {
     /** Sync the playback modes for this engine */
     syncPlaybackModes(modes: PlaybackModes): Promise<void>
 
+    /** Sync this engine's volume level */
+    syncVolume(volume: number): Promise<void>
+
     /**
      * Check whether this playback engine can play a given item.
      *

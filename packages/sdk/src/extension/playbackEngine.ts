@@ -68,6 +68,9 @@ export const PlaybackEngineProtocol = protocol("Magritte.Extension.PlaybackEngin
     /** Synchronize the playback modes for this engine */
     syncPlaybackModes: { input: PlaybackModes, output: z4.void() },
 
+    /** Sync this engine's volume level */
+    syncVolume: { input: z4.number().gte(0).lte(1), output: z4.void() },
+
     /** Check whether this playback engine can play a given item. */
     canEnqueue: {
         input: z4.object({ item: PlayableItem }),

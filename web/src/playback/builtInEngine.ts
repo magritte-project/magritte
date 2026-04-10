@@ -103,6 +103,10 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         /** Nothing to do in this engine */
     }
 
+    async syncVolume(volume: number): Promise<void> {
+        this._audio.volume = volume
+    }
+
     async canEnqueue(item: PlayableItem): Promise<boolean> {
         return _findBestUrl(item) !== undefined
     }

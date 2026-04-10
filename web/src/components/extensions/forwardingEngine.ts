@@ -59,6 +59,10 @@ export class ForwardingPlaybackEngine implements PlaybackEngine {
         await this.engine.syncPlaybackModes(modes)
     }
 
+    async syncVolume(volume: number): Promise<void> {
+        await this.engine.syncVolume(volume)
+    }
+
     async canEnqueue(item: PlayableItem): Promise<boolean> {
         return await this.engine.canEnqueue({ item })
     }

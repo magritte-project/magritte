@@ -4,7 +4,6 @@ import type {
     Player as ExtensionPlayer,
     PlaybackTime,
 } from "@magritte/sdk/host"
-
 import {
     type EventSink,
     type EventStream,
@@ -18,7 +17,6 @@ import type {
     PlaybackEngineEvent,
 } from "@/playback/engine"
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
-
 import { PlaybackModes } from "@/playback/modes"
 import { type Queue, type RandomItemContext } from "@/playback/queue/base"
 import EmptyQueue from "@/playback/queue/empty"
@@ -46,6 +44,7 @@ export class Player {
     private _queue: Queue<PlayableItem>
     private _playingItem: PlayableItem | null
     private _playbackState: PlaybackState
+    private _volume: number
 
     constructor(engineRegistry: PlaybackEngineRegistry) {
         this._engineRegistry = engineRegistry
@@ -58,6 +57,7 @@ export class Player {
         this._queue = new EmptyQueue()
         this._playingItem = null
         this._playbackState = "stopped"
+        this._volume = parseFloat(localStorage.getItem("player.volume") ?? "1.0")
     }
 
     private async _changeEngine(newEngine: PlaybackEngine | null): Promise<void> {
@@ -72,6 +72,7 @@ export class Player {
         this._activeEngine = newEngine
         if (newEngine !== null) {
             await newEngine.syncPlaybackModes(this._modes)
+            await newEngine.syncVolume(this._volume)
             this._activeEngineEventSubscription = newEngine.$events.subscribe((e) =>
                 this._handleEngineEvent(e),
             )
@@ -180,6 +181,17 @@ export class Player {
 
     get queue(): Queue<PlayableItem> {
         return this._queue
+    }
+
+    get volume(): number {
+        return this._volume
+    }
+
+    set volume(volume: number) {
+        const normalizedVolume = Math.max(0, Math.min(1, volume))
+        this._volume = normalizedVolume
+        localStorage.setItem("player.volume", String(normalizedVolume))
+        this._activeEngine?.syncVolume(normalizedVolume)
     }
 
     /** Events relating to the state of playback */
