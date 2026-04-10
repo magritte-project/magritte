@@ -6,6 +6,7 @@ import NotificationsButton from "@/components/NotificationsButton"
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import UserButton from "@/components/UserButton"
+import VolumeButton from "@/components/VolumeButton"
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 
 export interface PrimaryHeaderProps {
@@ -28,6 +29,7 @@ export default function PrimaryHeader({ children }: PrimaryHeaderProps) {
             }
             supplementaryEnd={
                 <>
+                    <VolumeButton />
                     <ThemedSubtleButton onClick={handleToggleCommandPalette}>
                         <CommandIcon /> K
                     </ThemedSubtleButton>

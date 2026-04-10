@@ -4,6 +4,7 @@ import type {
     Player as ExtensionPlayer,
     PlaybackTime,
 } from "@magritte/sdk/host"
+
 import {
     type EventSink,
     type EventStream,
@@ -17,6 +18,7 @@ import type {
     PlaybackEngineEvent,
 } from "@/playback/engine"
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
+
 import { PlaybackModes } from "@/playback/modes"
 import { type Queue, type RandomItemContext } from "@/playback/queue/base"
 import EmptyQueue from "@/playback/queue/empty"
@@ -27,6 +29,7 @@ export type PlayerEvent =
     | PlaybackEngineEvent
     | { type: "queueDidChange" }
     | { type: "playbackModesDidChange"; modes: PlaybackModes }
+    | { type: "volumeDidChange"; volume: number }
 
 export interface ReplaceQueueOptions extends Omit<PlaybackEngineEnqueueOptions, "itemToPlay"> {
     readonly newQueue: Queue<PlayableItem>
@@ -192,6 +195,7 @@ export class Player {
         this._volume = normalizedVolume
         localStorage.setItem("player.volume", String(normalizedVolume))
         this._activeEngine?.syncVolume(normalizedVolume)
+        this._events.dispatch({ type: "volumeDidChange", volume: normalizedVolume })
     }
 
     /** Events relating to the state of playback */
