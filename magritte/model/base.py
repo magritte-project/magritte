@@ -74,7 +74,7 @@ class LibraryModel(SQLModel, AsyncAttrs):
     async def exists(
         cls,
         where: list[sa.ColumnExpressionArgument],
-        joins: list[tuple[type["LibraryModel"], sa.ColumnExpressionArgument]],
+        joins: list[tuple[type["SQLModel"], sa.ColumnExpressionArgument]],
         session: AsyncSession,
     ):
         """
