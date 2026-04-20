@@ -5,6 +5,8 @@ import ReactDOM from "react-dom/client"
 import { APIClient } from "@/api/client"
 import { UserEvents } from "@/api/userEvents"
 import { StorageUserSessionManager } from "@/api/userSession.ts"
+import { builtInCommands } from "@/commands/builtIn"
+import { CommandSystem } from "@/commands/system"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
 import { ExtensionManager } from "@/extensions/extensionManager"
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
@@ -16,14 +18,17 @@ import reportWebVitals from "@/reportWebVitals.ts"
 import { routeTree } from "@/routeTree.gen"
 import { AppleMusic } from "@/services/applemusic/services"
 import { ServiceRegistry } from "@/services/registry"
-import SplitRegistry from "@/splits/registry"
 import "@/styles.css"
+import SplitRegistry from "@/splits/registry"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
 
 // Set up API client
 const apiClient = new APIClient(userSession)
+
+// Set up command system
+const commandSystem = new CommandSystem()
 
 // Set up extensions
 const extensionManager = new ExtensionManager()
@@ -62,6 +67,9 @@ const player = new Player(
 // Set up splits
 const splitRegister = new SplitRegistry(extensionManager)
 
+// Hook everything up
+commandSystem.registry.register(...builtInCommands(player))
+
 // Create a new router instance
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
@@ -70,6 +78,7 @@ const router = createRouter({
     context: {
         userSession,
         apiClient,
+        commandSystem,
         extensionManager,
         serviceRegistry,
         userEvents,
