@@ -4,7 +4,8 @@ import { useCallback, useMemo, useState } from "react"
 
 import type { CommandDefinition } from "@/commands/definition"
 
-import useCommandSystem from "@/hooks/commandSystemHook"
+import useCommandInputs from "@/hooks/commandInputsHook"
+import useCommandRegistry from "@/hooks/commandRegistryHook"
 
 export interface CommandPaletteProps {
     readonly isOpen: boolean
@@ -14,9 +15,10 @@ export interface CommandPaletteProps {
 export default function CommandPalette({ isOpen, onChangeOpen }: CommandPaletteProps) {
     const [query, setQuery] = useState("")
 
-    const commandSystem = useCommandSystem()
+    const registry = useCommandRegistry()
+    const inputs = useCommandInputs()
 
-    const results = useMemo(() => commandSystem.search(query), [commandSystem, query])
+    const results = useMemo(() => registry.search(query), [registry, query])
 
     const handleChange = useCallback(
         (command: CommandDefinition | null) => {
@@ -49,10 +51,11 @@ export default function CommandPalette({ isOpen, onChangeOpen }: CommandPaletteP
                             {results.map((result) => (
                                 <ComboboxOption
                                     className="px-4 py-2 not-last:border-b border-gray-200 data-focus:bg-blue-100"
-                                    key={result.item.id}
-                                    value={result.item}
+                                    key={result.id}
+                                    value={result}
+                                    disabled={result.disabled?.(inputs)}
                                 >
-                                    {result.item.displayName}
+                                    {result.displayName(inputs)}
                                 </ComboboxOption>
                             ))}
                         </ComboboxOptions>

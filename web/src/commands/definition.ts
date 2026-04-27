@@ -1,23 +1,15 @@
-import type { OnScreenEntityKind, OnScreenEntityOfKind } from "@/commands/onScreen"
-
-export interface CommandInputs {
-    getOnScreenEntities<TKind extends OnScreenEntityKind>(
-        kind: TKind,
-    ): readonly OnScreenEntityOfKind<TKind>[]
-}
+import type { CommandInputs } from "@/commands/inputs/base"
 
 export interface CommandDefinition {
     /** Unique identifier for the command */
     readonly id: string
 
-    /** A friendly name for the command */
-    readonly displayName: string
+    /** The search terms for the command */
+    readonly searchTerms: string
 
-    /** A brief description of what the command does */
-    readonly description?: string
+    readonly displayName: (inputs: CommandInputs) => string
 
-    /** A list of entity types that the command requires, if any */
-    readonly requires: readonly OnScreenEntityKind[]
+    readonly disabled?: (inputs: CommandInputs) => boolean
 
     /** Executes the command with the given inputs */
     readonly execute: (inputs: CommandInputs) => Promise<unknown>

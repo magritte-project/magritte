@@ -1,51 +1,27 @@
-import { useMemo, useState } from "react"
-import CommandPalette, {
-    filterItems,
-    getItemIndex,
-    useHandleOpenCommandPalette,
-    type JsonStructure,
-    type JsonStructureItem,
-} from "react-cmdk"
+import { useState } from "react"
+import CommandPalette, { filterItems, getItemIndex, useHandleOpenCommandPalette } from "react-cmdk"
 
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
-import useCommandSystem from "@/hooks/commandSystemHook"
-import useServiceRegistry from "@/hooks/serviceRegistryHook"
+import useCommands from "@/hooks/commandsHook"
 
 import "react-cmdk/dist/cmdk.css"
 
 export default function AppCommandPalette() {
     const [search, setSearch] = useState("")
-    const serviceRegistry = useServiceRegistry()
-    const commandSystem = useCommandSystem()
 
     const { isOpen, setIsOpen, items: pages } = useAppCommandPaletteContext()
-    const items = useMemo(() => {
-        const results = commandSystem.search(search)
-        return [
-            {
-                id: "newCommandSystem",
-                heading: "New Command System",
-                items: results.map(
-                    (result): JsonStructureItem => ({
-                        id: result.item.id,
-                        children: result.item.displayName,
-                        onClick: () => commandSystem.execute(result.item),
-                    }),
-                ),
-            },
-        ] satisfies JsonStructure
-    }, [commandSystem, search])
+    const commands = useCommands({ search })
 
-    const filteredItems = filterItems(
-        [
-            ...pages,
-            // TODO: This is kind of a jank way to inject global actions...
-            ...serviceRegistry.commands,
-        ],
-        search,
-    )
+    const filteredItems = filterItems([...pages], search)
 
-    const allItems = [...items, ...filteredItems]
+    const allItems = [
+        {
+            id: "newCommandSystem",
+            heading: "Commands",
+            items: commands,
+        },
+        ...filteredItems,
+    ]
 
     useHandleOpenCommandPalette(setIsOpen)
 

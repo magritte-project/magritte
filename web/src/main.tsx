@@ -6,7 +6,9 @@ import { APIClient } from "@/api/client"
 import { UserEvents } from "@/api/userEvents"
 import { StorageUserSessionManager } from "@/api/userSession.ts"
 import { builtInCommands } from "@/commands/builtIn"
-import { CommandSystem } from "@/commands/system"
+import { CommandInputs } from "@/commands/inputs/base"
+import { wirePlayerInput } from "@/commands/inputs/playerInput"
+import { CommandRegistry } from "@/commands/registry"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
 import { ExtensionManager } from "@/extensions/extensionManager"
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
@@ -27,8 +29,9 @@ const userSession = StorageUserSessionManager.local
 // Set up API client
 const apiClient = new APIClient(userSession)
 
-// Set up command system
-const commandSystem = new CommandSystem()
+// Set up commands
+const commandInputs = new CommandInputs()
+const commandRegistry = new CommandRegistry()
 
 // Set up extensions
 const extensionManager = new ExtensionManager()
@@ -68,7 +71,8 @@ const player = new Player(
 const splitRegister = new SplitRegistry(extensionManager)
 
 // Hook everything up
-commandSystem.registry.register(...builtInCommands(player))
+commandRegistry.register(...builtInCommands(player))
+wirePlayerInput(player, commandInputs)
 
 // Create a new router instance
 
@@ -78,7 +82,8 @@ const router = createRouter({
     context: {
         userSession,
         apiClient,
-        commandSystem,
+        commandInputs,
+        commandRegistry,
         extensionManager,
         serviceRegistry,
         userEvents,
