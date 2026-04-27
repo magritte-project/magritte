@@ -1,9 +1,10 @@
 import Split from "@uiw/react-split"
 import { useCallback, useMemo, type ReactNode } from "react"
-import { type JsonStructure } from "react-cmdk"
+
+import type { CommandDefinition } from "@/commands/definition"
 
 import SplitPane from "@/components/structure/SplitPane"
-import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
+import CommandsProvider from "@/contexts/providers/CommandsProvider"
 import SplitsContextProvider from "@/contexts/providers/SplitsContextProvider"
 import { type CloseSplitOptions, type OpenSplitOptions } from "@/contexts/splitsContext"
 import useSplitRegistry from "@/hooks/splitsRegistryHook"
@@ -56,27 +57,24 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
         [setSplits],
     )
 
-    const splitItems = useMemo<JsonStructure>(() => {
-        return [
-            {
-                id: "splits",
-                heading: "Splits",
-                items: Array.from(registry.allOpenable(), (split) => ({
-                    id: `splits.open[${split.id}]`,
-                    icon: split.icon,
-                    children: `Open ${split.name}`,
-                    onClick: () => openSplit(split),
-                    disabled: !split.allowsMultiple && splits.has(split.id),
-                })),
-            },
-        ]
+    const splitCommands = useMemo(() => {
+        return Array.from(
+            registry.allOpenable(),
+            (split): CommandDefinition => ({
+                id: `splits.open[${split.id}]`,
+                searchTerms: `open ${split.name}`,
+                displayName: () => `Open ${split.name}`,
+                disabled: () => !split.allowsMultiple && splits.has(split.id),
+                execute: async () => openSplit(split),
+            }),
+        )
     }, [registry, openSplit, splits])
 
     return hideSplit ? (
         children
     ) : (
         <SplitsContextProvider value={{ openSplit, closeSplit }}>
-            <AppCommandsProvider items={splitItems}>
+            <CommandsProvider commands={splitCommands}>
                 <Split mode="horizontal" lineBar className="min-h-screen">
                     {Array.from(
                         registry.getAll(splits["start"]),
@@ -104,7 +102,7 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
                         ),
                     )}
                 </Split>
-            </AppCommandsProvider>
+            </CommandsProvider>
         </SplitsContextProvider>
     )
 }

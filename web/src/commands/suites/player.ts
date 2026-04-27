@@ -1,68 +1,10 @@
-import type { RegisteredRouter } from "@tanstack/react-router"
-
 import type { CommandDefinition } from "@/commands/definition"
 import type { Player } from "@/playback/player"
 
 import { PlayerInput } from "@/commands/inputs/playerInput"
 
-import { LibraryInput } from "./inputs/libraryInput"
-
-export function builtInCommands(router: RegisteredRouter, player: Player): CommandDefinition[] {
+export function playerCommands(player: Player): CommandDefinition[] {
     return [
-        // Library Commands:
-        {
-            id: `libraries.artists`,
-            searchTerms: "library artists",
-            displayName: () => "Go to Artists",
-            disabled: (inputs) => !inputs.hasAny("library", LibraryInput),
-            execute: async (inputs) => {
-                const [libraryId] = inputs.allOf("library", LibraryInput)
-                router.navigate({
-                    to: "/libraries/$libraryId/artists",
-                    params: { libraryId: String(libraryId) },
-                })
-            },
-        },
-        {
-            id: `libraries.albums`,
-            searchTerms: "library albums",
-            displayName: () => "Go to Albums",
-            disabled: (inputs) => !inputs.hasAny("library", LibraryInput),
-            execute: async (inputs) => {
-                const [library] = inputs.allOf("library", LibraryInput)
-                router.navigate({
-                    to: "/libraries/$libraryId/albums",
-                    params: { libraryId: String(library.id) },
-                })
-            },
-        },
-        {
-            id: `libraries.songs`,
-            searchTerms: "library songs",
-            displayName: () => "Go to Songs",
-            disabled: (inputs) => !inputs.hasAny("library", LibraryInput),
-            execute: async (inputs) => {
-                const [library] = inputs.allOf("library", LibraryInput)
-                router.navigate({
-                    to: "/libraries/$libraryId/songs",
-                    params: { libraryId: String(library.id) },
-                })
-            },
-        },
-        {
-            id: `libraries.add.songs`,
-            searchTerms: "library add songs",
-            displayName: () => "Add Songs",
-            disabled: (inputs) => !inputs.hasAny("library", LibraryInput),
-            execute: async (inputs) => {
-                const [library] = inputs.allOf("library", LibraryInput)
-                router.navigate({
-                    to: "/libraries/$libraryId/songs/add",
-                    params: { libraryId: String(library.id) },
-                })
-            },
-        },
-        // Player Commands:
         {
             id: "playback.skipPrevious",
             searchTerms: "skip previous",

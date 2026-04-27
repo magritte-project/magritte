@@ -1,10 +1,10 @@
-import type { JsonStructure } from "react-cmdk"
-
-import { BooksIcon, FilesIcon, PlusIcon, VinylRecordIcon, WavesIcon } from "@phosphor-icons/react"
+import { BooksIcon, FilesIcon, PlusIcon, WavesIcon } from "@phosphor-icons/react"
 import { PencilIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
+
+import type { CommandDefinition } from "@/commands/definition"
 
 import { readLibraries } from "@/api/queries/libraries"
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
@@ -12,7 +12,7 @@ import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
-import AppCommandsProvider from "@/contexts/providers/AppCommandsProvider"
+import CommandsProvider from "@/contexts/providers/CommandsProvider"
 import useAPIClient from "@/hooks/apiClientHook"
 
 export const Route = createFileRoute("/libraries")({
@@ -21,26 +21,22 @@ export const Route = createFileRoute("/libraries")({
         const apiClient = useAPIClient()
         const { data: libraries } = useSuspenseQuery(readLibraries(apiClient))
 
-        const libraryItems = useMemo<JsonStructure>(() => {
-            return [
-                {
-                    id: "libraries.read",
-                    heading: "Libraries",
-                    items: libraries.map((library) => ({
-                        id: `libraries.read[${library.id}]`,
-                        icon: VinylRecordIcon,
-                        children: library.name,
-                        onClick: () =>
-                            navigate({
-                                to: "/libraries/$libraryId",
-                                params: { libraryId: String(library.id) },
-                            }),
-                    })),
-                },
-            ]
+        const libraryCommands = useMemo(() => {
+            return libraries.map(
+                (library): CommandDefinition => ({
+                    id: `libraries.read[${library.id}]`,
+                    searchTerms: `library ${library.name}`,
+                    displayName: () => library.name,
+                    execute: async () =>
+                        navigate({
+                            to: "/libraries/$libraryId",
+                            params: { libraryId: String(library.id) },
+                        }),
+                }),
+            )
         }, [navigate, libraries])
         return (
-            <AppCommandsProvider items={libraryItems}>
+            <CommandsProvider commands={libraryCommands}>
                 <div>
                     <PrimaryHeader>
                         <ThemedTabItemLink to="/libraries" icon={BooksIcon} label="Libraries" />
@@ -110,7 +106,7 @@ export const Route = createFileRoute("/libraries")({
                     </main>
                 </div>
                 <Outlet />
-            </AppCommandsProvider>
+            </CommandsProvider>
         )
     },
     pendingComponent() {

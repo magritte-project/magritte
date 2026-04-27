@@ -5,11 +5,12 @@ import ReactDOM from "react-dom/client"
 import { APIClient } from "@/api/client"
 import { UserEvents } from "@/api/userEvents"
 import { StorageUserSessionManager } from "@/api/userSession.ts"
-import { builtInCommands } from "@/commands/builtIn"
 import { CommandInputs } from "@/commands/inputs/base"
 import { wirePlayerInput } from "@/commands/inputs/playerInput"
 import { CommandRegistry } from "@/commands/registry"
-import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider.tsx"
+import { libraryCommands } from "@/commands/suites/library"
+import { playerCommands } from "@/commands/suites/player"
+import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider"
 import { ExtensionManager } from "@/extensions/extensionManager"
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
 import BuiltInPlaybackEngine from "@/playback/builtInEngine"
@@ -20,8 +21,8 @@ import reportWebVitals from "@/reportWebVitals.ts"
 import { routeTree } from "@/routeTree.gen"
 import { AppleMusic } from "@/services/applemusic/services"
 import { ServiceRegistry } from "@/services/registry"
-import "@/styles.css"
 import SplitRegistry from "@/splits/registry"
+import "@/styles.css"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local
@@ -101,7 +102,8 @@ declare module "@tanstack/react-router" {
 }
 
 // Hook up commands
-commandRegistry.register(...builtInCommands(router, player))
+commandRegistry.add(...libraryCommands(router))
+commandRegistry.add(...playerCommands(player))
 wirePlayerInput(player, commandInputs)
 
 // Render the app

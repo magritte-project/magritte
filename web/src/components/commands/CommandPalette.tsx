@@ -1,11 +1,11 @@
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react"
 import { AnimatePresence, motion } from "motion/react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useState } from "react"
 
 import type { CommandDefinition } from "@/commands/definition"
 
 import useCommandInputs from "@/hooks/commandInputsHook"
-import useCommandRegistry from "@/hooks/commandRegistryHook"
+import useCommands from "@/hooks/commandsHook"
 
 export interface CommandPaletteProps {
     readonly isOpen: boolean
@@ -13,12 +13,10 @@ export interface CommandPaletteProps {
 }
 
 export default function CommandPalette({ isOpen, onChangeOpen }: CommandPaletteProps) {
-    const [query, setQuery] = useState("")
+    const [search, setSearch] = useState("")
 
-    const registry = useCommandRegistry()
     const inputs = useCommandInputs()
-
-    const results = useMemo(() => registry.search(query), [registry, query])
+    const results = useCommands({ search })
 
     const handleChange = useCallback(
         (command: CommandDefinition | null) => {
@@ -42,7 +40,7 @@ export default function CommandPalette({ isOpen, onChangeOpen }: CommandPaletteP
                         <ComboboxInput
                             className="border border-gray-200 bg-white px-4 py-2 rounded-md min-w-sm"
                             autoFocus
-                            onChange={(e) => setQuery(e.currentTarget.value)}
+                            onChange={(e) => setSearch(e.currentTarget.value)}
                         />
                         <ComboboxOptions
                             className="w-(--input-width) bg-gray-100 rounded-md flex flex-col"

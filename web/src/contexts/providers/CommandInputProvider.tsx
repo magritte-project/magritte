@@ -5,23 +5,23 @@ import type { CommandInput } from "@/commands/inputs/base"
 
 import useCommandInputs from "@/hooks/commandInputsHook"
 
-export interface CommandInputContextProviderProps<Input extends CommandInput> {
+export interface CommandInputProviderProps<Input extends CommandInput> {
     readonly schema: z4.ZodType<Input>
     readonly value: Input
     readonly children?: ReactNode
 }
 
-export default function CommandInputContextProvider<Input extends CommandInput>({
+export default function CommandInputProvider<Input extends CommandInput>({
     schema,
     value,
     children,
-}: CommandInputContextProviderProps<Input>) {
-    const commandInputs = useCommandInputs()
+}: CommandInputProviderProps<Input>) {
+    const inputs = useCommandInputs()
     useEffect(() => {
-        commandInputs.add(schema, value)
+        inputs.add(schema, value)
         return () => {
-            commandInputs.remove(value)
+            inputs.remove(value)
         }
-    }, [commandInputs, value])
+    }, [inputs, schema, value])
     return children
 }

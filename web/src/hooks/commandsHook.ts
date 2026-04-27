@@ -1,6 +1,6 @@
-import type { JsonStructureItem } from "react-cmdk"
-
 import { useEffect, useState } from "react"
+
+import type { CommandDefinition } from "@/commands/definition"
 
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommandRegistry from "@/hooks/commandRegistryHook"
@@ -12,7 +12,7 @@ export interface UseCommandsOptions {
 export default function useCommands({ search }: UseCommandsOptions) {
     const registry = useCommandRegistry()
     const inputs = useCommandInputs()
-    const [results, setResults] = useState<JsonStructureItem[]>([])
+    const [results, setResults] = useState<readonly CommandDefinition[]>([])
 
     useEffect(() => {
         if (!search) {
@@ -21,16 +21,7 @@ export default function useCommands({ search }: UseCommandsOptions) {
         }
         function refreshResults() {
             const results = registry.search(search)
-            setResults(
-                results.map(
-                    (result): JsonStructureItem => ({
-                        id: result.id,
-                        children: result.displayName(inputs),
-                        onClick: () => result.execute(inputs),
-                        disabled: result.disabled?.(inputs),
-                    }),
-                ),
-            )
+            setResults(results)
         }
         const registrySubscription = registry.$events.subscribe((event) => {
             if (event.type === "registeredCommandsDidChange") {

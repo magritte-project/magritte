@@ -1,27 +1,39 @@
-import { useState } from "react"
-import CommandPalette, { filterItems, getItemIndex, useHandleOpenCommandPalette } from "react-cmdk"
+import { useMemo, useState } from "react"
+import CommandPalette, {
+    getItemIndex,
+    useHandleOpenCommandPalette,
+    type JsonStructure,
+    type JsonStructureItem,
+} from "react-cmdk"
 
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
-import useCommands from "@/hooks/commandsHook"
+import useCommandInputs from "@/hooks/commandInputsHook"
 
 import "react-cmdk/dist/cmdk.css"
+import useCommands from "@/hooks/commandsHook"
 
 export default function AppCommandPalette() {
     const [search, setSearch] = useState("")
 
-    const { isOpen, setIsOpen, items: pages } = useAppCommandPaletteContext()
+    const { isOpen, setIsOpen } = useAppCommandPaletteContext()
+    const inputs = useCommandInputs()
     const commands = useCommands({ search })
-
-    const filteredItems = filterItems([...pages], search)
-
-    const allItems = [
-        {
-            id: "newCommandSystem",
-            heading: "Commands",
-            items: commands,
-        },
-        ...filteredItems,
-    ]
+    const items = useMemo(
+        (): JsonStructure => [
+            {
+                id: "commands",
+                items: commands.map(
+                    (result): JsonStructureItem => ({
+                        id: result.id,
+                        children: result.displayName(inputs),
+                        onClick: () => result.execute(inputs),
+                        disabled: result.disabled?.(inputs),
+                    }),
+                ),
+            },
+        ],
+        [inputs, commands],
+    )
 
     useHandleOpenCommandPalette(setIsOpen)
 
@@ -34,13 +46,13 @@ export default function AppCommandPalette() {
             page="all"
         >
             <CommandPalette.Page id="all">
-                {allItems.length ? (
-                    allItems.map((list) => (
+                {items.length ? (
+                    items.map((list) => (
                         <CommandPalette.List key={list.id} heading={list.heading}>
                             {list.items.map(({ id, ...rest }) => (
                                 <CommandPalette.ListItem
                                     key={id}
-                                    index={getItemIndex(allItems, id)}
+                                    index={getItemIndex(items, id)}
                                     {...rest}
                                 />
                             ))}

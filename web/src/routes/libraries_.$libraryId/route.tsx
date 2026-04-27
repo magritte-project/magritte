@@ -5,14 +5,14 @@ import { LibraryInput } from "@/commands/inputs/libraryInput"
 import NowPlayingBlob from "@/components/chrome/NowPlayingBlob"
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
-import CommandInputContextProvider from "@/contexts/providers/CommandInputContextProvider"
+import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 
 export const Route = createFileRoute("/libraries_/$libraryId")({
     component: function LibrariesLayoutComponent() {
         const params = Route.useParams()
 
         return (
-            <CommandInputContextProvider
+            <CommandInputProvider
                 schema={LibraryInput}
                 value={{
                     kind: "library",
@@ -47,7 +47,7 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                     </main>
                 </div>
                 <NowPlayingBlob />
-            </CommandInputContextProvider>
+            </CommandInputProvider>
         )
     },
 })

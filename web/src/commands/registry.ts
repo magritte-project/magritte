@@ -18,15 +18,16 @@ export class CommandRegistry {
 
     readonly $events: EventStream<CommandRegistryEvent>
 
-    register(...definitions: CommandDefinition[]): void {
+    add(...definitions: CommandDefinition[]): void {
         for (const definition of definitions) {
             this._commands.add(definition)
         }
         this._events.dispatch({ type: "registeredCommandsDidChange" })
     }
 
-    unregister(definition: CommandDefinition): boolean {
-        const deletedCommands = this._commands.remove((doc) => doc.id === definition.id)
+    remove(...definitions: CommandDefinition[]): boolean {
+        const toRemove = new Set(definitions.map((d) => d.id))
+        const deletedCommands = this._commands.remove((doc) => toRemove.has(doc.id))
         const deleted = deletedCommands.length > 0
         if (deleted) {
             this._events.dispatch({ type: "registeredCommandsDidChange" })
