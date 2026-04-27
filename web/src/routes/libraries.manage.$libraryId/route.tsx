@@ -1,10 +1,15 @@
 import { GearSixIcon, UsersThreeIcon } from "@phosphor-icons/react"
+import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"
 
+import { useRequestSyncLibrary } from "@/api/mutations/ingest"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import Modal from "@/components/reusable/Modal"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
+import useToast from "@/hooks/toastHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries/manage/$libraryId")({
     component: function ManageRoute() {
@@ -17,10 +22,23 @@ export const Route = createFileRoute("/libraries/manage/$libraryId")({
             })
         }, [navigate])
 
+        const { showToast } = useToast()
+        const syncLibraryMutation = useRequestSyncLibrary(Number(libraryId))
+        const handleSyncLibrary = useCallback(async () => {
+            try {
+                await syncLibraryMutation.mutateAsync()
+            } catch (error) {
+                showToast({
+                    message: `Failed to start library sync: ${getErrorMessage(error)}`,
+                    type: "error",
+                })
+            }
+        }, [syncLibraryMutation, showToast])
+
         return (
-            <Modal className="min-w-full md:min-w-[600px]" onDismiss={handleDismiss}>
+            <Modal className="min-w-full md:min-w-150" onDismiss={handleDismiss}>
                 <ModalHeader>
-                    <div className="flex items-center gap-0">
+                    <div className="flex-1 flex items-center gap-0">
                         <ThemedTabItemLink
                             to="/libraries/manage/$libraryId"
                             params={{ libraryId }}
@@ -35,6 +53,13 @@ export const Route = createFileRoute("/libraries/manage/$libraryId")({
                             label="Permissions"
                         />
                     </div>
+                    <ThemedSubtleButton
+                        className="flex items-center gap-1 px-3! py-1!"
+                        onClick={handleSyncLibrary}
+                        disabled={syncLibraryMutation.isPending}
+                    >
+                        <ArrowsClockwiseIcon size="2em" weight="light" /> Sync
+                    </ThemedSubtleButton>
                 </ModalHeader>
                 <Outlet />
             </Modal>

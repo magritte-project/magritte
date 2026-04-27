@@ -48,6 +48,22 @@ export class CommandInputs {
         }
     }
 
+    hasAny<K extends string, T extends CommandInput & { kind: K }>(
+        kind: K,
+        schema: z4.ZodType<T>,
+    ): boolean {
+        const inputsOfKind = this._inputs.get(kind)
+        if (inputsOfKind === undefined) {
+            return false
+        }
+        for (const input of inputsOfKind.values()) {
+            if (schema.safeParse(input).success) {
+                return true
+            }
+        }
+        return false
+    }
+
     allOf<K extends string, T extends CommandInput & { kind: K }>(
         kind: K,
         schema: z4.ZodType<T>,

@@ -70,10 +70,6 @@ const player = new Player(
 // Set up splits
 const splitRegister = new SplitRegistry(extensionManager)
 
-// Hook everything up
-commandRegistry.register(...builtInCommands(player))
-wirePlayerInput(player, commandInputs)
-
 // Create a new router instance
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
@@ -103,6 +99,10 @@ declare module "@tanstack/react-router" {
         router: typeof router
     }
 }
+
+// Hook up commands
+commandRegistry.register(...builtInCommands(router, player))
+wirePlayerInput(player, commandInputs)
 
 // Render the app
 const rootElement = document.getElementById("app")
