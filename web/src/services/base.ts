@@ -1,8 +1,7 @@
-import type { JsonStructure } from "react-cmdk"
-
 import type { APIClient } from "@/api/client"
 import type { IngestSong } from "@/api/openapi"
 import type { UserSessionManager } from "@/api/userSession"
+import type { CommandRegistry } from "@/commands/registry"
 import type { PlaybackEngine } from "@/playback/engine"
 
 export interface BaseService {
@@ -11,13 +10,13 @@ export interface BaseService {
 
     /** The unique name of the service, human readable */
     readonly name: string
+
+    /** Tear down the service, releasing any resources */
+    deconstruct(): void
 }
 
 export interface CommandsService extends BaseService {
     readonly type: "commands"
-
-    /** The commands the service adds to the instance */
-    readonly commands: JsonStructure
 }
 
 export interface PlaybackService extends BaseService {
@@ -69,6 +68,7 @@ export function isServiceOfType<TType extends ServiceType>(
 export interface ServiceConstructorOptions {
     readonly apiClient: APIClient
     readonly userSession: UserSessionManager
+    readonly commandRegistry: CommandRegistry
 }
 
 export interface ServiceGroup {

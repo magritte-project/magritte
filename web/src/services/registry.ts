@@ -1,5 +1,3 @@
-import type { JsonStructure } from "react-cmdk"
-
 import {
     createEvent,
     EventStream,
@@ -85,6 +83,7 @@ export class ServiceRegistry {
                                 groupID: event.instance.manifest.id,
                                 name: event.instance.manifest.name,
                                 playbackEngine,
+                                deconstruct: () => {},
                             },
                         ],
                     })
@@ -104,14 +103,6 @@ export class ServiceRegistry {
             default:
                 break
         }
-    }
-
-    get commands(): JsonStructure {
-        const commands: JsonStructure = []
-        for (const service of this.getServicesOfType("commands")) {
-            commands.push(...service.commands)
-        }
-        return commands
     }
 
     get playbackEngines(): readonly [string, PlaybackEngine][] {
@@ -158,6 +149,7 @@ export class ServiceRegistry {
             if (this._services[i].groupID === groupID) {
                 const [service] = this._services.splice(i, 1)
                 await this._events.dispatch({ type: "serviceRemoved", service })
+                service.deconstruct()
             }
         }
         this._groupsByID.delete(groupID)

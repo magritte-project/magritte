@@ -54,7 +54,11 @@ extensionManager.install({
 })
 
 // Set up services
-const serviceRegistry = new ServiceRegistry(extensionManager, { apiClient, userSession })
+const serviceRegistry = new ServiceRegistry(extensionManager, {
+    apiClient,
+    userSession,
+    commandRegistry,
+})
 await serviceRegistry.addServiceGroup(AppleMusic) // TODO: Don't hard code this
 
 // Set up user events

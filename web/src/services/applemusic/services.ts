@@ -1,7 +1,4 @@
-import type { JsonStructure } from "react-cmdk"
-
-import { SignInIcon, SignOutIcon } from "@phosphor-icons/react"
-
+import type { CommandDefinition } from "@/commands/definition"
 import type { PlaybackEngine } from "@/playback/engine"
 import type {
     CommandsService,
@@ -13,6 +10,8 @@ import type {
     StreamingMusicServiceSongsRead,
 } from "@/services/base"
 
+import { CommandRegistry } from "@/commands/registry"
+
 import type { MusicSearchResponse } from "./models/search"
 
 import AppleMusicPlaybackEngine from "./engine"
@@ -23,36 +22,34 @@ class AppleMusicCommandService implements CommandsService {
     readonly groupID = "com.apple.music"
     readonly name = "Apple Music"
 
-    constructor(private readonly musicKit: MusicKit.Instance) {}
+    private readonly _commands: readonly CommandDefinition[]
 
-    get commands(): JsonStructure {
-        return [
+    constructor(
+        private readonly musicKit: MusicKit.Instance,
+        private readonly commandRegistry: CommandRegistry,
+    ) {
+        this._commands = [
             {
-                id: "AppleMusicService",
-                heading: this.name,
-                items: this.musicKit.isAuthorized
-                    ? [
-                          {
-                              id: "AppleMusicService.unauthorize",
-                              icon: SignOutIcon,
-                              children: "Unauthorize",
-                              onClick: () => {
-                                  this.musicKit.unauthorize()
-                              },
-                          },
-                      ]
-                    : [
-                          {
-                              id: "AppleMusicService.authorize",
-                              icon: SignInIcon,
-                              children: "Authorize",
-                              onClick: () => {
-                                  this.musicKit.authorize()
-                              },
-                          },
-                      ],
+                id: "appleMusicService.authorization",
+                searchTerms: "apple music authorize unauthorize",
+                displayName: () =>
+                    this.musicKit.isAuthorized
+                        ? "Apple Music: Unauthorize"
+                        : "Apple Music: Authorize",
+                execute: async () => {
+                    if (this.musicKit.isAuthorized) {
+                        await this.musicKit.unauthorize()
+                    } else {
+                        await this.musicKit.authorize()
+                    }
+                },
             },
         ]
+        this.commandRegistry.add(...this._commands)
+    }
+
+    deconstruct(): void {
+        this.commandRegistry.remove(...this._commands)
     }
 }
 
@@ -65,6 +62,8 @@ class AppleMusicPlaybackService implements PlaybackService {
     constructor(musicKit: MusicKit.Instance) {
         this.playbackEngine = new AppleMusicPlaybackEngine(musicKit)
     }
+
+    deconstruct(): void {}
 }
 
 class AppleMusicSongSearchService implements SongSearchService {
@@ -73,6 +72,8 @@ class AppleMusicSongSearchService implements SongSearchService {
     readonly name = "Apple Music"
 
     constructor(private readonly musicKit: MusicKit.Instance) {}
+
+    deconstruct(): void {}
 
     async searchSongs(
         query: string,
@@ -149,7 +150,10 @@ class AppleMusicSongSearchService implements SongSearchService {
 
 export const AppleMusic: ServiceGroup = {
     id: "com.apple.music",
-    async construct({ apiClient }: ServiceConstructorOptions): Promise<readonly Service[]> {
+    async construct({
+        apiClient,
+        commandRegistry,
+    }: ServiceConstructorOptions): Promise<readonly Service[]> {
         const instanceStatus = await apiClient.instanceStatus()
         if (!instanceStatus.available_functions.includes("apple_music_token")) {
             return []
@@ -164,7 +168,7 @@ export const AppleMusic: ServiceGroup = {
             },
         })
         return [
-            new AppleMusicCommandService(musicKit),
+            new AppleMusicCommandService(musicKit, commandRegistry),
             new AppleMusicPlaybackService(musicKit),
             new AppleMusicSongSearchService(musicKit),
         ]
