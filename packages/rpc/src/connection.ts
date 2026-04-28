@@ -205,6 +205,8 @@ export class RPCConnection extends EventTarget {
         this.pending.clear()
 
         this._isValid = false
+
+        this.dispatchEvent(new RPCConnectionInvalidatedEvent())
     }
 
     addEventListener<K extends keyof RPCConnectionEventMap>(
