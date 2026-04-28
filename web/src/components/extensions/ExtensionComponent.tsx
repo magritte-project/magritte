@@ -4,12 +4,14 @@ import { useEffect, useLayoutEffect, useRef } from "react"
 import type { ExtensionInstance } from "@/extensions/instance"
 import type { ExtensionManager } from "@/extensions/manager"
 
+import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
 import useToast from "@/hooks/toastHook"
 
 export function buildExtensionComponent(extensionManager: ExtensionManager, id: string) {
     function ExtensionComponent() {
         const { showToast } = useToast()
+        const apiClient = useAPIClient()
         const player = usePlayer()
         const containerRef = useRef<HTMLDivElement | null>(null)
         const instanceRef = useRef<ExtensionInstance | null>(null)
@@ -47,6 +49,11 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
             const instance = extensionManager.acquireInstance(id)
             instance.load({
                 clientFrame: containerRef.current.getBoundingClientRect(),
+                serverFunctions: {
+                    call: async ({ name, body }) => {
+                        return (await apiClient.callFunction(name, body)) as any
+                    },
+                },
                 chrome: {
                     showToast: async (options: {
                         message: string
@@ -62,7 +69,7 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
             return () => {
                 extensionManager.releaseInstance(instance)
             }
-        }, [showToast, player])
+        }, [showToast, apiClient, player])
 
         return (
             <div ref={containerRef} className="h-full flex items-center justify-center">

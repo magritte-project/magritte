@@ -3,7 +3,13 @@ import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { RemoteEventSinkProtocol, type RemoteEvent } from "../common/events"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
-import { ChromeProtocol, PlayerProtocol, type Chrome, type Player } from "../host"
+import {
+    ChromeProtocol,
+    PlayerProtocol,
+    type ServerFunctions,
+    type Chrome,
+    type Player,
+} from "../host"
 import { getExtensionOrigin, type ExtensionManifest } from "../manifest"
 import { createEvent } from "../utilities/events"
 import { ConnectionHolder, ConnectRequest, type ConnectResponse } from "./handshake"
@@ -17,6 +23,7 @@ export class Extension extends ConnectionHolder {
 export interface WaitForExtensionConnectionOptions {
     readonly iframe: HTMLIFrameElement
     readonly manifest: ExtensionManifest
+    readonly serverFunctions: ServerFunctions
     readonly chrome: Chrome
     readonly player: Player
 }
