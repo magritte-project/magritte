@@ -1,20 +1,15 @@
-import type { JsonStructure } from "react-cmdk"
-
 import {
     createEvent,
     EventStream,
     EventSubscription,
     type EventSink,
 } from "@magritte/sdk/utilities"
+import type { JsonStructure } from "react-cmdk"
 
-import type {
-    ExtensionInstanceEvent,
-    ExtensionManager,
-    ExtensionManagerEvent,
-} from "@/extensions/extensionManager"
+import type { ExtensionInstanceEvent } from "@/extensions/instance"
+import type { ExtensionManager, ExtensionManagerEvent } from "@/extensions/manager"
+import { ExtensionPlaybackEngineProxy } from "@/extensions/playbackEngine"
 import type { PlaybackEngine } from "@/playback/engine"
-
-import { ForwardingPlaybackEngine } from "@/components/extensions/forwardingEngine"
 import {
     isServiceOfType,
     type Service,
@@ -76,7 +71,7 @@ export class ServiceRegistry {
         switch (event.type) {
             case "extensionInstanceLoaded": {
                 try {
-                    const playbackEngine = new ForwardingPlaybackEngine(
+                    const playbackEngine = new ExtensionPlaybackEngineProxy(
                         event.instance,
                         await event.instance.extension.playbackEngine(),
                     )

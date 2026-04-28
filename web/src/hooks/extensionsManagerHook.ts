@@ -1,6 +1,6 @@
 import { useRouteContext } from "@tanstack/react-router"
 
-import type { ExtensionManager } from "@/extensions/extensionManager"
+import type { ExtensionManager } from "@/extensions/manager"
 
 export default function useExtensionManager(): ExtensionManager {
     const extensionManager = useRouteContext({

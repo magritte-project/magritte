@@ -1,7 +1,9 @@
 import { GearIcon } from "@phosphor-icons/react/dist/ssr"
 import { useEffect, useLayoutEffect, useRef } from "react"
 
-import { ExtensionInstance, ExtensionManager } from "@/extensions/extensionManager"
+import type { ExtensionInstance } from "@/extensions/instance"
+import type { ExtensionManager } from "@/extensions/manager"
+
 import usePlayer from "@/hooks/playerHook"
 import useToast from "@/hooks/toastHook"
 

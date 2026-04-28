@@ -6,7 +6,7 @@ import { GearIcon } from "@phosphor-icons/react"
 import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
 
 import { buildExtensionComponent } from "@/components/extensions/ExtensionComponent"
-import { type ExtensionManager, type ExtensionManagerEvent } from "@/extensions/extensionManager"
+import { type ExtensionManager, type ExtensionManagerEvent } from "@/extensions/manager"
 import { QuickMixSplit } from "@/splits/definitions/QuickMixSplit"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 

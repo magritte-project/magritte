@@ -1,10 +1,9 @@
+import { type Event } from "@magritte/sdk/common"
 import type { PlaybackEngine as ExtensionPlaybackEngine } from "@magritte/sdk/extension"
 import type { PlayableItem, PlaybackTime } from "@magritte/sdk/host"
-
-import { type Event } from "@magritte/sdk/common"
 import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
 
-import type { ExtensionInstance } from "@/extensions/extensionManager"
+import type { ExtensionInstance } from "@/extensions/instance"
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
@@ -14,7 +13,7 @@ import type { PlaybackModes } from "@/playback/modes"
 
 // TODO: Finish this
 
-export class ForwardingPlaybackEngine implements PlaybackEngine {
+export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
     private readonly _events: EventSink<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
