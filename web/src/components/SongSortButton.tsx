@@ -1,5 +1,5 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react"
-import { FunnelSimpleIcon } from "@phosphor-icons/react/dist/ssr"
+import { FunnelSimpleIcon } from "@phosphor-icons/react"
 import { useCallback } from "react"
 
 import SortControl from "@/components/reusable/SortControl"

@@ -1,6 +1,6 @@
 import { MenuButton } from "@headlessui/react"
 import { DotsThreeCircleVerticalIcon, TrashIcon } from "@phosphor-icons/react"
-import { PencilIcon } from "@phosphor-icons/react/dist/ssr"
+import { PencilIcon } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"

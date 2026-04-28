@@ -1,5 +1,5 @@
 import { GearSixIcon, UsersThreeIcon } from "@phosphor-icons/react"
-import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr"
+import { ArrowsClockwiseIcon } from "@phosphor-icons/react"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"
 

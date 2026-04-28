@@ -1,4 +1,4 @@
-import { PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { useDebounce } from "@uidotdev/usehooks"

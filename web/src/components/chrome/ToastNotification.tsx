@@ -1,5 +1,5 @@
 import { CheckCircleIcon, type Icon } from "@phosphor-icons/react"
-import { CircleIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr"
+import { CircleIcon, WarningCircleIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 import { motion } from "motion/react"
 

@@ -1,4 +1,4 @@
-import { CassetteTapeIcon } from "@phosphor-icons/react/dist/ssr"
+import { CassetteTapeIcon } from "@phosphor-icons/react"
 
 import type { SplitDefinition } from "@/splits/base"
 

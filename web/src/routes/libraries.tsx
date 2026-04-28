@@ -1,5 +1,5 @@
 import { BooksIcon, FilesIcon, PlusIcon, WavesIcon } from "@phosphor-icons/react"
-import { PencilIcon } from "@phosphor-icons/react/dist/ssr"
+import { PencilIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"

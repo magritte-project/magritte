@@ -1,5 +1,5 @@
 import { type PlayableItem } from "@magritte/sdk/host"
-import { CassetteTapeIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import { CassetteTapeIcon, TrashIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 import { useCallback, useEffect, useMemo, useState } from "react"
 

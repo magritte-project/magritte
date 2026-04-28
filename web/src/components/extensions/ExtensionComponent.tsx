@@ -1,4 +1,4 @@
-import { GearIcon } from "@phosphor-icons/react/dist/ssr"
+import { GearIcon } from "@phosphor-icons/react"
 import { useEffect, useLayoutEffect, useRef } from "react"
 
 import type { ExtensionInstance } from "@/extensions/instance"

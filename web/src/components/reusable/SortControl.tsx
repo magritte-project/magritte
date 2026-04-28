@@ -14,7 +14,7 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { ArrowDownIcon, MinusIcon } from "@phosphor-icons/react"
-import { ArrowUpIcon, DotsSixVerticalIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr"
+import { ArrowUpIcon, DotsSixVerticalIcon, PlusIcon } from "@phosphor-icons/react"
 import { useCallback, useMemo } from "react"
 
 import SortableListItem from "@/components/reusable/SortableListItem"
