@@ -1,6 +1,6 @@
 packages:
     - web
-    - genius.com
+    - applemusic
     - packages/*
     - "!**/test/**"
 

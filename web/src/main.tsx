@@ -38,8 +38,8 @@ const commandRegistry = new CommandRegistry()
 const extensionManager = new ExtensionManager()
 // TODO: Don't hard code this
 extensionManager.install({
-    name: "Genius",
-    id: "magritte.com.genius",
+    name: "Apple Music",
+    id: "magritte.applemusic",
     version: "0.0.0",
     url: "http://localhost:9292/",
     permissions: [],
