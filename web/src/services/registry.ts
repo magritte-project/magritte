@@ -1,15 +1,17 @@
+import type { JsonStructure } from "react-cmdk"
+
 import {
     createEvent,
     EventStream,
     EventSubscription,
     type EventSink,
 } from "@magritte/sdk/utilities"
-import type { JsonStructure } from "react-cmdk"
 
 import type { ExtensionInstanceEvent } from "@/extensions/instance"
 import type { ExtensionManager, ExtensionManagerEvent } from "@/extensions/manager"
-import { ExtensionPlaybackEngineProxy } from "@/extensions/playbackEngine"
 import type { PlaybackEngine } from "@/playback/engine"
+
+import { ExtensionPlaybackEngineProxy } from "@/extensions/playbackEngine"
 import {
     isServiceOfType,
     type Service,
