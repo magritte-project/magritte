@@ -43,6 +43,10 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
                 this._events.dispatch({ type: "playingItemChanged" })
                 break
             case "PlaybackEngine.encounteredError":
+                this._events.dispatch({
+                    type: "encounteredError",
+                    error: new Error(event.data?.message ?? ""),
+                })
                 break
             case "PlaybackEngine.endOfAudio":
                 this._events.dispatch({ type: "endOfAudio", lastItem: this._playingItem })

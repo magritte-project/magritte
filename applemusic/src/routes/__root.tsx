@@ -1,4 +1,5 @@
 import type { ExtensionHost } from "@magritte/sdk/connection"
+
 import { createRootRouteWithContext } from "@tanstack/react-router"
 
 import RootLayout from "@/layouts/RootLayout"
