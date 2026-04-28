@@ -62,7 +62,17 @@ export interface RPCConnectionOptions {
     readonly capabilities?: Record<string, unknown>
 }
 
-export class RPCConnection {
+export class RPCConnectionInvalidatedEvent extends Event {
+    constructor(eventInit?: EventInit) {
+        super("invalidated", eventInit)
+    }
+}
+
+interface RPCConnectionEventMap {
+    invalidated: RPCConnectionInvalidatedEvent
+}
+
+export class RPCConnection extends EventTarget {
     /**
      * Tracks the current RPC connection, if any.
      */
@@ -92,6 +102,8 @@ export class RPCConnection {
     }
 
     constructor(options: RPCConnectionOptions) {
+        super()
+
         this._isValid = true
         this.pending = new Map<string, PendingSend>()
         this.transport = options.transport
@@ -193,5 +205,31 @@ export class RPCConnection {
         this.pending.clear()
 
         this._isValid = false
+    }
+
+    addEventListener<K extends keyof RPCConnectionEventMap>(
+        type: K,
+        listener: (this: RPCConnection, ev: RPCConnectionEventMap[K]) => any,
+        options?: AddEventListenerOptions | boolean,
+    ): void
+    override addEventListener(
+        type: string,
+        callback: EventListenerOrEventListenerObject | null,
+        options?: AddEventListenerOptions | boolean,
+    ): void {
+        super.addEventListener(type, callback, options)
+    }
+
+    removeEventListener<K extends keyof RPCConnectionEventMap>(
+        type: K,
+        listener: (this: RPCConnection, ev: RPCConnectionEventMap[K]) => any,
+        options?: AddEventListenerOptions | boolean,
+    ): void
+    override removeEventListener(
+        type: string,
+        callback: EventListenerOrEventListenerObject | null,
+        options?: EventListenerOptions | boolean,
+    ): void {
+        super.removeEventListener(type, callback, options)
     }
 }
