@@ -3,13 +3,7 @@ import { DotsThreeCircleVerticalIcon, TrashIcon } from "@phosphor-icons/react"
 import { PencilIcon } from "@phosphor-icons/react/dist/ssr"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
-import {
-    createColumnHelper,
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-} from "@tanstack/react-table"
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { z } from "zod"
 
 import type { SongRead } from "@/api/openapi"
@@ -29,8 +23,6 @@ import useSplits from "@/hooks/splitsHook"
 import LibraryQueue from "@/playback/queue/library"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 import { resolveNewValue } from "@/utilities/react"
-
-const columnHelper = createColumnHelper<SongRead>()
 
 function formatDuration(seconds: number) {
     const minutes = Math.floor(seconds / 60)
@@ -159,79 +151,6 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             },
         })
 
-        const columns = useMemo(
-            () => [
-                columnHelper.accessor("title", {
-                    header: "Title",
-                    cell: (info) => info.getValue(),
-                }),
-                columnHelper.display({
-                    id: "time",
-                    header: "Time",
-                    cell: ({ row }) =>
-                        formatDuration(row.original.end_time - row.original.start_time),
-                }),
-                columnHelper.accessor("album_title", {
-                    header: "Artist",
-                    cell: (info) => info.getValue(),
-                }),
-                columnHelper.accessor("artist_name", {
-                    header: "Album",
-                    cell: (info) => info.getValue(),
-                }),
-                columnHelper.accessor("genre", {
-                    header: "Genre",
-                    cell: (info) => info.getValue(),
-                }),
-                columnHelper.display({
-                    id: "actions",
-                    header: () => <SongSortButton order={sortBy} setOrder={handleChangeSortBy} />,
-                    cell: ({ row }) => (
-                        <ThemedPopUpMenu
-                            button={
-                                <MenuButton
-                                    className="text-blue-600 p-2"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <DotsThreeCircleVerticalIcon
-                                        weight="bold"
-                                        aria-label="Actions"
-                                    />
-                                </MenuButton>
-                            }
-                            items={[
-                                {
-                                    key: "edit",
-                                    label: (
-                                        <>
-                                            <PencilIcon /> Edit
-                                        </>
-                                    ),
-                                    onClick: () => handleEdit(row.original),
-                                },
-                                {
-                                    key: "remove",
-                                    label: (
-                                        <>
-                                            <TrashIcon /> Remove
-                                        </>
-                                    ),
-                                    onClick: () => handleRemove(row.original),
-                                },
-                            ]}
-                        />
-                    ),
-                }),
-            ],
-            [sortBy, handleChangeSortBy, handleEdit, handleRemove],
-        )
-
-        const table = useReactTable({
-            data: pageQuery.data?.items ? [...pageQuery.data.items] : [],
-            columns,
-            getCoreRowModel: getCoreRowModel(),
-        })
-
         if (pageQuery.isError) {
             return <ThemedContentUnavailable error={pageQuery.error} onRetry={pageQuery.refetch} />
         }
@@ -252,30 +171,25 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                     </AppForm>
                     <table className="w-full">
                         <thead>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <tr
-                                    key={headerGroup.id}
-                                    className="text-left font-semibold text-sm"
-                                >
-                                    {headerGroup.headers.map((header) => (
-                                        <th key={header.id} className="p-2">
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
-                                        </th>
-                                    ))}
-                                </tr>
-                            ))}
+                            <tr className="text-left font-semibold text-sm">
+                                <th className="p-2">Title</th>
+                                <th className="p-2">Time</th>
+                                <th className="p-2">Artist</th>
+                                <th className="p-2">Album</th>
+                                <th className="p-2">Genre</th>
+                                <th className="p-2">
+                                    <SongSortButton order={sortBy} setOrder={handleChangeSortBy} />
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
                             {pageQuery.isSuccess &&
-                                table.getRowModel().rows.map((row) => (
+                                pageQuery.data.items.map((song) => (
                                     <tr
-                                        key={row.id}
+                                        key={`song-${song.id}`}
                                         className="cursor-pointer bg-gray-50 odd:bg-inherit hover:bg-blue-50"
                                         draggable={true}
-                                        onDragStart={(e) => handleSongDrag(e, row.original)}
+                                        onDragStart={(e) => handleSongDrag(e, song)}
                                         onClick={() =>
                                             player.replaceQueue({
                                                 newQueue: new LibraryQueue(
@@ -288,20 +202,55 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                                         sortBy,
                                                     },
                                                 ),
-                                                startingItem: row.original,
+
+                                                startingItem: song,
                                                 playNow: true,
                                             })
                                         }
                                         onKeyDown={() => {}}
                                     >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <td key={cell.id} className="px-2 py-1">
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </td>
-                                        ))}
+                                        <td className="px-2 py-1">{song.title}</td>
+                                        <td className="px-2 py-1">
+                                            {formatDuration(song.end_time - song.start_time)}
+                                        </td>
+                                        <td className="px-2 py-1">{song.album_title}</td>
+                                        <td className="px-2 py-1">{song.artist_name}</td>
+                                        <td className="px-2 py-1">{song.genre}</td>
+                                        <td className="px-2 py-1">
+                                            <ThemedPopUpMenu
+                                                button={
+                                                    <MenuButton
+                                                        className="text-blue-600 p-2"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <DotsThreeCircleVerticalIcon
+                                                            weight="bold"
+                                                            aria-label="Actions"
+                                                        />
+                                                    </MenuButton>
+                                                }
+                                                items={[
+                                                    {
+                                                        key: "edit",
+                                                        label: (
+                                                            <>
+                                                                <PencilIcon /> Edit
+                                                            </>
+                                                        ),
+                                                        onClick: () => handleEdit(song),
+                                                    },
+                                                    {
+                                                        key: "remove",
+                                                        label: (
+                                                            <>
+                                                                <TrashIcon /> Remove
+                                                            </>
+                                                        ),
+                                                        onClick: () => handleRemove(song),
+                                                    },
+                                                ]}
+                                            />
+                                        </td>
                                     </tr>
                                 ))}
                         </tbody>

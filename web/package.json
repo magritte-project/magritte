@@ -29,7 +29,6 @@
         "@tanstack/react-query-devtools": "^5.91.2",
         "@tanstack/react-router": "^1.157.16",
         "@tanstack/react-router-devtools": "^1.157.16",
-        "@tanstack/react-table": "^8.21.3",
         "@tanstack/router-plugin": "^1.157.16",
         "@uidotdev/usehooks": "^2.4.1",
         "@uiw/react-split": "^5.9.3",
