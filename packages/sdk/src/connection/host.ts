@@ -14,25 +14,32 @@ import { getExtensionOrigin, type ExtensionManifest } from "../manifest"
 import { createEvent } from "../utilities/events"
 import { ConnectionHolder, ConnectRequest, type ConnectResponse } from "./handshake"
 
+export interface HostExports {
+    readonly serverFunctions: ServerFunctions
+    readonly chrome: Chrome
+    readonly player: Player
+}
+
+function implementExports(exports: HostExports) {
+    return [implement(ChromeProtocol, exports.chrome), implement(PlayerProtocol, exports.player)]
+}
+
+export interface WaitForExtensionConnectionOptions {
+    readonly iframe: HTMLIFrameElement
+    readonly manifest: ExtensionManifest
+    readonly exports: HostExports
+}
+
 export class Extension extends ConnectionHolder {
     async playbackEngine(): Promise<PlaybackEngine> {
         return cast(PlaybackEngineProtocol, this.connection.remoteObject)
     }
 }
 
-export interface WaitForExtensionConnectionOptions {
-    readonly iframe: HTMLIFrameElement
-    readonly manifest: ExtensionManifest
-    readonly serverFunctions: ServerFunctions
-    readonly chrome: Chrome
-    readonly player: Player
-}
-
 export function waitForExtensionConnection({
     iframe,
     manifest,
-    chrome,
-    player,
+    exports,
 }: WaitForExtensionConnectionOptions): Promise<Extension> {
     const origin = getExtensionOrigin(manifest)
     return new Promise((resolve, reject) => {
@@ -49,8 +56,7 @@ export function waitForExtensionConnection({
                         }
                         const [_events, $events] = createEvent<RemoteEvent>()
                         const exportedObject = [
-                            implement(ChromeProtocol, chrome),
-                            implement(PlayerProtocol, player),
+                            ...implementExports(exports),
                             implement(RemoteEventSinkProtocol, {
                                 dispatch: async (event) => {
                                     _events.dispatch(event)

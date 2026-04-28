@@ -1,10 +1,11 @@
-import type { ExtensionHost } from "@magritte/sdk/connection"
+import { RemoteEvent } from "@magritte/sdk/common"
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
     PlaybackModes,
 } from "@magritte/sdk/extension"
 import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
+import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
 
 function _getPlaybackState(playbackState: MusicKit.PlaybackStates): PlaybackState {
     switch (playbackState) {
@@ -27,14 +28,13 @@ function _getPlaybackState(playbackState: MusicKit.PlaybackStates): PlaybackStat
 }
 
 export default class AppleMusicPlaybackEngine implements PlaybackEngine {
-    private _musicKit: MusicKit.Instance
-    private readonly _host: ExtensionHost
+    private readonly _musicKit: MusicKit.Instance
+    private readonly _events: EventSink<RemoteEvent>
     private _playingItem: PlayableItem | null
 
-    constructor(host: ExtensionHost, musicKit: MusicKit.Instance) {
+    constructor(musicKit: MusicKit.Instance) {
         this._musicKit = musicKit
-        this._host = host
-
+        ;[this._events, this.$events] = createEvent<RemoteEvent>()
         this._playingItem = null
 
         this._musicKit.addEventListener("mediaPlaybackError", () =>
@@ -45,15 +45,17 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         )
     }
 
+    readonly $events: EventStream<RemoteEvent>
+
     private _handleMediaPlaybackError() {
-        this._host.dispatchEvent({
+        this._events.dispatch({
             type: "PlaybackEngine.encounteredError",
             data: {},
         })
     }
 
     private _handlePlaybackStateDidChange(event: Parameters<MusicKit.StateChangeEventCallback>[0]) {
-        this._host.dispatchEvent({
+        this._events.dispatch({
             type: "PlaybackEngine.playbackStateDidChange",
             data: {},
         })
@@ -62,7 +64,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
             case MusicKit.PlaybackStates.ended:
             case MusicKit.PlaybackStates.completed: {
                 this.stop()
-                this._host.dispatchEvent({
+                this._events.dispatch({
                     type: "PlaybackEngine.endOfAudio",
                     data: {},
                 })
@@ -135,7 +137,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         }
 
         this._playingItem = itemToPlay
-        this._host.dispatchEvent({
+        this._events.dispatch({
             type: "PlaybackEngine.playingItemChanged",
             data: {},
         })

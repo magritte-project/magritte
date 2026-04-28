@@ -12,6 +12,7 @@ import { routeTree } from "@/routeTree.gen"
 // Handshake with the extension host
 const extensionHost = await connectToExtensionHost({
     extensionId: "magritte.applemusic",
+    exports: {},
 })
 
 // Create a new router instance

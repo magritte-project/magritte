@@ -42,6 +42,15 @@ export class ConnectionHolder {
         await events.dispatch(event)
     }
 
+    forwardEvents(stream: EventStream<RemoteEvent>): void {
+        const forwardingSubscription = stream.subscribe(
+            async (event) => await this.dispatchEvent(event),
+        )
+        this.connection.addEventListener("invalidated", () => {
+            forwardingSubscription.unsubscribe()
+        })
+    }
+
     async disconnect(): Promise<void> {
         this.connection.invalidate()
     }

@@ -49,20 +49,22 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
             const instance = extensionManager.acquireInstance(id)
             instance.load({
                 clientFrame: containerRef.current.getBoundingClientRect(),
-                serverFunctions: {
-                    call: async ({ name, body }) => {
-                        return (await apiClient.callFunction(name, body)) as any
+                exports: {
+                    serverFunctions: {
+                        call: async ({ name, body }) => {
+                            return (await apiClient.callFunction(name, body)) as any
+                        },
                     },
-                },
-                chrome: {
-                    showToast: async (options: {
-                        message: string
-                        type: "error" | "success" | "info"
-                    }) => {
-                        showToast(options)
+                    chrome: {
+                        showToast: async (options: {
+                            message: string
+                            type: "error" | "success" | "info"
+                        }) => {
+                            showToast(options)
+                        },
                     },
+                    player: player.forExtension,
                 },
-                player: player.forExtension,
             })
             instanceRef.current = instance
 

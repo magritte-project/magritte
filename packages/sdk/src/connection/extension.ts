@@ -1,16 +1,29 @@
-import { cast, implement, RPCConnection } from "@magritte/rpc"
+import { cast, implement, RPCConnection, type ProtocolImplementation } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { RemoteEventSinkProtocol, type RemoteEvent } from "../common/events"
-import { ExtensionProtocol } from "../extension"
+import { ExtensionProtocol, PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
 import { PlayerProtocol, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
 import { ExtensionData } from "../manifest"
 import { createEvent, EventStream } from "../utilities/events"
 import { ConnectionHolder, ConnectResponse, type ConnectRequest } from "./handshake"
 
+export interface ExtensionExports {
+    readonly playbackEngine?: PlaybackEngine
+}
+
+function implementExports(exports: ExtensionExports) {
+    const implementations: ProtocolImplementation[] = []
+    if (exports.playbackEngine) {
+        implementations.push(implement(PlaybackEngineProtocol, exports.playbackEngine))
+    }
+    return implementations
+}
+
 export interface ConnectToExtensionHostOptions {
     readonly extensionId: string
+    readonly exports?: ExtensionExports
 }
 
 export class ExtensionHost extends ConnectionHolder {
@@ -38,6 +51,7 @@ export class ExtensionHost extends ConnectionHolder {
 
 export function connectToExtensionHost({
     extensionId,
+    exports = {},
 }: ConnectToExtensionHostOptions): Promise<ExtensionHost> {
     if (!window.top || window.top === window) {
         return Promise.reject(new Error("No extension host found"))
@@ -69,6 +83,7 @@ export function connectToExtensionHost({
 
                         const [_events, $events] = createEvent<RemoteEvent>()
                         const exportedObject = [
+                            ...implementExports(exports),
                             implement(ExtensionProtocol, {}),
                             implement(RemoteEventSinkProtocol, {
                                 dispatch: async (event) => {
