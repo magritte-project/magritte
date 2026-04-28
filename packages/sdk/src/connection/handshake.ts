@@ -3,7 +3,7 @@ import z4 from "zod/v4"
 
 import type { EventStream } from "../utilities"
 
-import { EventsProtocol, type Event } from "../common"
+import { RemoteEventSinkProtocol, type RemoteEvent } from "../common"
 
 /**
  * The schema of a handshake request posted by an extension running in an `<iframe>`.
@@ -32,13 +32,13 @@ export type ConnectResponse = z4.infer<typeof ConnectResponse>
 export class ConnectionHolder {
     /** @private */
     constructor(
-        public readonly $events: EventStream<Event>,
+        public readonly $events: EventStream<RemoteEvent>,
         public readonly serialNumber: string,
         public readonly connection: RPCConnection,
     ) {}
 
-    async dispatchEvent(event: Event): Promise<void> {
-        const events = await cast(EventsProtocol, this.connection.remoteObject)
+    async dispatchEvent(event: RemoteEvent): Promise<void> {
+        const events = await cast(RemoteEventSinkProtocol, this.connection.remoteObject)
         await events.dispatch(event)
     }
 

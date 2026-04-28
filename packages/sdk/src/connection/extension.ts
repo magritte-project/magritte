@@ -1,7 +1,7 @@
 import { cast, implement, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
-import { EventsProtocol, type Event } from "../common/events"
+import { RemoteEventSinkProtocol, type RemoteEvent } from "../common/events"
 import { ExtensionProtocol } from "../extension"
 import { PlayerProtocol, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
@@ -15,7 +15,7 @@ export interface ConnectToExtensionHostOptions {
 
 export class ExtensionHost extends ConnectionHolder {
     constructor(
-        $events: EventStream<Event>,
+        $events: EventStream<RemoteEvent>,
         serialNumber: string,
         connection: RPCConnection,
         data: ExtensionData,
@@ -67,10 +67,10 @@ export function connectToExtensionHost({
                             throw new Error("Handshake received but wrong number of ports given")
                         }
 
-                        const [_events, $events] = createEvent<Event>()
+                        const [_events, $events] = createEvent<RemoteEvent>()
                         const exportedObject = [
                             implement(ExtensionProtocol, {}),
-                            implement(EventsProtocol, {
+                            implement(RemoteEventSinkProtocol, {
                                 dispatch: async (event) => {
                                     _events.dispatch(event)
                                 },

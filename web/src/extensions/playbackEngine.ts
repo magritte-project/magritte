@@ -1,7 +1,7 @@
+import type { RemoteEvent } from "@magritte/sdk/common"
 import type { PlaybackEngine as ExtensionPlaybackEngine } from "@magritte/sdk/extension"
 import type { PlayableItem, PlaybackTime } from "@magritte/sdk/host"
 
-import { type Event } from "@magritte/sdk/common"
 import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
 
 import type { ExtensionInstance } from "@/extensions/instance"
@@ -30,7 +30,7 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
         })
     }
 
-    private async handleEvent(event: Event) {
+    private async handleEvent(event: RemoteEvent) {
         switch (event.type) {
             case "PlaybackEngine.playbackStateDidChange":
                 const { playbackState, playingItem: item } = await this.engine.getNowPlaying()

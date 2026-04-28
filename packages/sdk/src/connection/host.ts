@@ -1,7 +1,7 @@
 import { cast, implement, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
-import { EventsProtocol, type Event } from "../common/events"
+import { RemoteEventSinkProtocol, type RemoteEvent } from "../common/events"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
 import { ChromeProtocol, PlayerProtocol, type Chrome, type Player } from "../host"
 import { getExtensionOrigin, type ExtensionManifest } from "../manifest"
@@ -40,11 +40,11 @@ export function waitForExtensionConnection({
                         if (data.extensionId !== manifest.id) {
                             throw new Error("Extension ID mismatch")
                         }
-                        const [_events, $events] = createEvent<Event>()
+                        const [_events, $events] = createEvent<RemoteEvent>()
                         const exportedObject = [
                             implement(ChromeProtocol, chrome),
                             implement(PlayerProtocol, player),
-                            implement(EventsProtocol, {
+                            implement(RemoteEventSinkProtocol, {
                                 dispatch: async (event) => {
                                     _events.dispatch(event)
                                 },
