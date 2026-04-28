@@ -5,14 +5,29 @@ import "@/styles.css"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
+import AppleMusicPlaybackEngine from "@/extension/engine"
+import { initializeMusicKit } from "@/musickit/initialization"
 import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
 
+// Set up Apple Music API
+const musicKit = await initializeMusicKit({
+    developerToken: "", // TODO: how are we going to get this?
+    app: {
+        name: "Magritte",
+    },
+})
+
+// Set up exports
+const playbackEngine = new AppleMusicPlaybackEngine(musicKit)
+
 // Handshake with the extension host
 const extensionHost = await connectToExtensionHost({
     extensionId: "magritte.applemusic",
-    exports: {},
+    exports: {
+        playbackEngine,
+    },
 })
 
 // Create a new router instance
@@ -20,6 +35,7 @@ const extensionHost = await connectToExtensionHost({
 const router = createRouter({
     routeTree,
     context: {
+        musicKit,
         extensionHost,
     },
     defaultPreload: "intent",
