@@ -1,10 +1,11 @@
-import { RemoteEvent } from "@magritte/sdk/common"
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
     PlaybackModes,
 } from "@magritte/sdk/extension"
 import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
+
+import { RemoteEvent } from "@magritte/sdk/common"
 import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
 
 function _getPlaybackState(playbackState: MusicKit.PlaybackStates): PlaybackState {
