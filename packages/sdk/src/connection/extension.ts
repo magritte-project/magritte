@@ -3,7 +3,7 @@ import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { RemoteEventSinkProtocol, type RemoteEvent } from "../common/events"
 import { ExtensionProtocol, PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
-import { PlayerProtocol, type Player } from "../host"
+import { LibraryProtocol, PlayerProtocol, type Library, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
 import { ExtensionData } from "../manifest"
 import { createEvent, EventStream } from "../utilities/events"
@@ -42,6 +42,10 @@ export class ExtensionHost extends ConnectionHolder {
 
     async chrome(): Promise<Chrome> {
         return cast(ChromeProtocol, this.connection.remoteObject)
+    }
+
+    async library(): Promise<Library> {
+        return cast(LibraryProtocol, this.connection.remoteObject)
     }
 
     async player(): Promise<Player> {

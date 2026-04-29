@@ -3,13 +3,14 @@ import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { RemoteEventSinkProtocol, type RemoteEvent } from "../common/events"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
-import { ChromeProtocol, PlayerProtocol, type Chrome, type Player } from "../host"
+import { ChromeProtocol, PlayerProtocol, type Chrome, type Library, type Player } from "../host"
 import { getExtensionOrigin, type ExtensionManifest } from "../manifest"
 import { createEvent } from "../utilities/events"
 import { ConnectionHolder, ConnectRequest, type ConnectResponse } from "./handshake"
 
 export interface HostExports {
     readonly chrome: Chrome
+    readonly library: Library
     readonly player: Player
 }
 
