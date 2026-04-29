@@ -1,16 +1,15 @@
+import ArtworkImage from "@/components/ArtworkImage"
 import type { MusicArtwork } from "@/musickit/models/base"
 
-import ArtworkImage from "@/components/ArtworkImage"
-
 export interface SearchResultLabelProps {
-    readonly artworks?: readonly MusicArtwork[]
+    readonly artwork?: MusicArtwork
     readonly title?: string | null
     readonly creator?: string | null
     readonly collection?: string | null
 }
 
 export default function SearchResultLabel({
-    artworks,
+    artwork,
     title,
     creator,
     collection,
@@ -19,7 +18,7 @@ export default function SearchResultLabel({
         <div className="flex-1 flex items-center gap-2 text-start">
             <ArtworkImage
                 className="h-8 aspect-square shrink-0"
-                artworks={artworks}
+                artwork={artwork}
                 itemTitle={title}
             />
             <div className="flex-1 flex flex-col">

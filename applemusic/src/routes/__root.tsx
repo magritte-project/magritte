@@ -1,10 +1,11 @@
 import type { ExtensionHost } from "@magritte/sdk/connection"
-
+import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 
 import RootLayout from "@/components/layouts/RootLayout"
 
 export interface MagritteAppleMusicExtensionRouterContext {
+    readonly queryClient: QueryClient
     readonly musicKit: MusicKit.Instance
     readonly extensionHost: ExtensionHost
 }

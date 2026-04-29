@@ -1,7 +1,8 @@
 import { connectToExtensionHost } from "@magritte/sdk/connection"
-import { createRouter, RouterProvider } from "@tanstack/react-router"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import "@/styles.css"
+import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
@@ -30,11 +31,15 @@ const extensionHost = await connectToExtensionHost({
     },
 })
 
+// Set up tanstack query
+const queryClient = new QueryClient()
+
 // Create a new router instance
 
 const router = createRouter({
     routeTree,
     context: {
+        queryClient,
         musicKit,
         extensionHost,
     },
@@ -57,7 +62,9 @@ if (rootElement && !rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement)
     root.render(
         <StrictMode>
-            <RouterProvider router={router} />
+            <QueryClientProvider client={queryClient}>
+                <RouterProvider router={router} />
+            </QueryClientProvider>
         </StrictMode>,
     )
 }

@@ -3,13 +3,13 @@ import classNames from "classnames"
 import type { MusicArtwork } from "@/musickit/models/base"
 
 export interface ArtworkImageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-    readonly artworks?: readonly MusicArtwork[]
+    readonly artwork?: MusicArtwork
     readonly itemTitle?: string | null
 }
 
 export default function ArtworkImage({
     className,
-    artworks,
+    artwork,
     itemTitle,
     ...rest
 }: ArtworkImageProps) {
@@ -21,12 +21,12 @@ export default function ArtworkImage({
             )}
             {...rest}
         >
-            {!!artworks?.length && (
+            {artwork && (
                 <img
                     className="object-fit w-full h-full"
-                    src={artworks[0].url
-                        .replace("{w}", String(Math.min(256, artworks[0].width)))
-                        .replace("{h}", String(Math.min(256, artworks[0].height)))}
+                    src={artwork.url
+                        .replace("{w}", String(Math.min(256, artwork.width)))
+                        .replace("{h}", String(Math.min(256, artwork.height)))}
                     alt={`Cover for ${itemTitle}`}
                 />
             )}
