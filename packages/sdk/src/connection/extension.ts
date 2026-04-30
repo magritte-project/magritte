@@ -1,7 +1,7 @@
 import { cast, implement, RPCConnection, type ProtocolImplementation } from "@magritte/rpc"
-import { MessageChannelTransport } from "@magritte/rpc/transports"
+import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transports"
 
-import { RemoteEventSinkProtocol, type RemoteEvent } from "../common/events"
+import { RemoteEvent, RemoteEventSinkProtocol } from "../common/events"
 import { ExtensionProtocol, PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
 import { LibraryProtocol, PlayerProtocol, type Library, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
@@ -119,4 +119,23 @@ export function connectToExtensionHost({
             hostOrigin,
         )
     })
+}
+
+/**
+ * Creates an extension host with an invalid connection.
+ *
+ * Use an invalid extension host if you wish to gracefully
+ * recover from not being able to establish a connection
+ * to the host in your extension.
+ */
+export function invalidConnectionHost(): ExtensionHost {
+    const [, $events] = createEvent<RemoteEvent>()
+    const serialNumber = "invalid"
+    const connection = new RPCConnection({
+        transport: new LoopbackTransport(),
+        exportedObject: [],
+    })
+    connection.invalidate()
+    const data: ExtensionData = {}
+    return new ExtensionHost($events, serialNumber, connection, data)
 }

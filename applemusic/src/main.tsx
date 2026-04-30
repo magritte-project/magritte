@@ -1,4 +1,4 @@
-import { connectToExtensionHost } from "@magritte/sdk/connection"
+import { connectToExtensionHost, invalidConnectionHost } from "@magritte/sdk/connection"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import "@/styles.css"
@@ -38,6 +38,9 @@ const extensionHost = await connectToExtensionHost({
     exports: {
         playbackEngine: new AppleMusicPlaybackEngine(musicKit),
     },
+}).catch((error) => {
+    console.error("*** Could not connect to extension host", error)
+    return invalidConnectionHost()
 })
 
 // Set up tanstack query
