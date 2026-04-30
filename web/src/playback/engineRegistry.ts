@@ -1,45 +1,79 @@
 import type { PlayableItem } from "@magritte/sdk/host"
+import type { EventSubscription } from "@magritte/sdk/utilities"
 
+import type { ExtensionInstanceEvent } from "@/extensions/instance"
+import type { ExtensionManager, ExtensionManagerEvent } from "@/extensions/manager"
 import type { PlaybackEngine } from "@/playback/engine"
 
-import { isServiceOfType, type Service } from "@/services/base"
-import { ServiceRegistry } from "@/services/registry"
+import { ExtensionPlaybackEngineProxy } from "@/extensions/playbackEngine"
 
 export interface PlaybackEngineRegistryOptions {
-    readonly serviceRegistry: ServiceRegistry
+    readonly extensionManager: ExtensionManager
     readonly defaultEngine: PlaybackEngine
 }
 
 export default class PlaybackEngineRegistry {
-    private _engines: Map<string, PlaybackEngine>
-    private _defaultEngine: PlaybackEngine
+    private readonly _engines: Map<string, PlaybackEngine>
+    private readonly _defaultEngine: PlaybackEngine
+    private readonly _extensionSubscriptions: Map<string, EventSubscription<ExtensionInstanceEvent>>
 
-    constructor({ serviceRegistry, defaultEngine }: PlaybackEngineRegistryOptions) {
-        this._engines = new Map(serviceRegistry.playbackEngines)
+    constructor({ extensionManager, defaultEngine }: PlaybackEngineRegistryOptions) {
+        this._engines = new Map()
         this._defaultEngine = defaultEngine
+        this._extensionSubscriptions = new Map()
 
-        serviceRegistry.$events.subscribe((event) => {
-            switch (event.type) {
-                case "serviceAdded":
-                    this._onServiceAdded(event.service)
-                    break
-                case "serviceRemoved":
-                    this._onServiceRemoved(event.service)
-                    break
-                default:
-                    break
-            }
+        extensionManager.$events.subscribe((event) => {
+            this.handleExtensionEvent(event)
         })
     }
 
-    private _onServiceAdded(service: Service) {
-        if (isServiceOfType(service, "playback")) {
-            this._engines.set(service.name, service.playbackEngine)
+    private handleExtensionEvent(event: ExtensionManagerEvent) {
+        switch (event.type) {
+            case "extensionInstanceAcquired": {
+                const subscription = event.instance.$events.subscribe((event) => {
+                    this.handleExtensionInstanceEvent(event)
+                })
+                this._extensionSubscriptions.set(event.instance.manifest.id, subscription)
+                break
+            }
+            case "extensionInstanceReleased": {
+                const subscription = this._extensionSubscriptions.get(event.instance.manifest.id)
+                if (subscription !== undefined) {
+                    subscription.unsubscribe()
+                    this._extensionSubscriptions.delete(event.instance.manifest.id)
+                }
+                break
+            }
+            default:
+                break
         }
     }
 
-    private _onServiceRemoved(service: Service) {
-        this._engines.delete(service.name)
+    private async handleExtensionInstanceEvent(event: ExtensionInstanceEvent) {
+        switch (event.type) {
+            case "extensionInstanceLoaded": {
+                try {
+                    const playbackEngine = new ExtensionPlaybackEngineProxy(
+                        event.instance,
+                        await event.instance.extension.playbackEngine(),
+                    )
+                    this._engines.set(event.instance.manifest.id, playbackEngine)
+                } catch (error) {
+                    console.debug(
+                        "Failed to get playback engine for extension",
+                        event.instance.manifest.id,
+                        error,
+                    )
+                }
+                break
+            }
+            case "extensionInstanceUnloaded": {
+                this._engines.delete(event.instance.manifest.id)
+                break
+            }
+            default:
+                break
+        }
     }
 
     get engines(): readonly PlaybackEngine[] {

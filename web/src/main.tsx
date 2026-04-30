@@ -19,7 +19,6 @@ import { Player } from "@/playback/player.ts"
 import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
-import { ServiceRegistry } from "@/services/registry"
 import SplitRegistry from "@/splits/registry"
 import "@/styles.css"
 
@@ -52,20 +51,13 @@ extensionManager.install({
     ],
 })
 
-// Set up services
-const serviceRegistry = new ServiceRegistry(extensionManager, {
-    apiClient,
-    userSession,
-    commandRegistry,
-})
-
 // Set up user events
 const userEvents = new UserEvents(apiClient, userSession)
 
 // Set up playback
 const player = new Player(
     new PlaybackEngineRegistry({
-        serviceRegistry,
+        extensionManager,
         defaultEngine: new BuiltInPlaybackEngine(userSession),
     }),
 )
@@ -84,7 +76,6 @@ const router = createRouter({
         commandInputs,
         commandRegistry,
         extensionManager,
-        serviceRegistry,
         userEvents,
         player,
         splitRegister,

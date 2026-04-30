@@ -11,7 +11,6 @@ import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
 import type { ExtensionManager } from "@/extensions/manager"
 import type { Player } from "@/playback/player"
-import type { ServiceRegistry } from "@/services/registry"
 import type SplitRegistry from "@/splits/registry"
 
 import AppCommandPalette from "@/components/structure/AppCommandPalette"
@@ -25,7 +24,6 @@ export interface MagritteRouterContext {
     readonly commandInputs: CommandInputs
     readonly commandRegistry: CommandRegistry
     readonly extensionManager: ExtensionManager
-    readonly serviceRegistry: ServiceRegistry
     readonly userEvents: UserEvents
     readonly player: Player
     readonly splitRegister: SplitRegistry
