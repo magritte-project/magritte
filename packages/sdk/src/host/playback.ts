@@ -54,6 +54,13 @@ export const PlaybackTime = z4.object({
 })
 export type PlaybackTime = z4.infer<typeof PlaybackTime>
 
+export const ReplaceQueueOptions = z4.object({
+    newQueueItems: z4.array(PlayableItem).readonly(),
+    startingItem: PlayableItem.optional().readonly(),
+    playNow: z4.boolean().optional().readonly(),
+})
+export type ReplaceQueueOptions = z4.infer<typeof ReplaceQueueOptions>
+
 /**
  * A protocol which allows an extension to interact with the player in the host.
  */
@@ -79,6 +86,12 @@ export const PlayerProtocol = protocol("Magritte.Host.Player", {
             state: PlaybackState,
             item: PlayableItem.nullable(),
         }),
+    },
+
+    /** Replace any existing queue with a new one. */
+    replaceQueue: {
+        input: ReplaceQueueOptions,
+        output: z4.void(),
     },
 
     /** Pause playback. */

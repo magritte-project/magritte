@@ -2,6 +2,8 @@ import type { Player as ExtensionPlayer } from "@magritte/sdk/host"
 
 import type { Player as HostPlayer } from "@/playback/player"
 
+import ArrayQueue from "@/playback/queue/array"
+
 export function exportPlayer(player: HostPlayer): ExtensionPlayer {
     return {
         getCurrentTime: async () => {
@@ -17,6 +19,14 @@ export function exportPlayer(player: HostPlayer): ExtensionPlayer {
                 state: player.playbackState,
                 item: player.playingItem,
             }
+        },
+
+        replaceQueue: async ({ newQueueItems, startingItem, playNow }) => {
+            await player.replaceQueue({
+                newQueue: new ArrayQueue(newQueueItems),
+                startingItem,
+                playNow,
+            })
         },
 
         pause: async () => {
