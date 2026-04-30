@@ -2,7 +2,6 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import z4 from "zod"
 
-import { readLibraries } from "@/api/queries/library"
 import { searchSongs } from "@/api/queries/search"
 import SearchResultLabel from "@/components/SearchResultLabel"
 import useMusicKit from "@/hooks/musicKitHook"
@@ -18,12 +17,9 @@ export const Route = createFileRoute("/search/songs")({
         deps: {
             search: { query },
         },
-        context: { queryClient, extensionHost, musicKit },
+        context: { queryClient, /*extensionHost,*/ musicKit },
     }) => {
-        await Promise.all([
-            queryClient.ensureQueryData(readLibraries(extensionHost)),
-            queryClient.ensureQueryData(searchSongs(musicKit, query)),
-        ])
+        await queryClient.ensureQueryData(searchSongs(musicKit, query))
     },
     component: function SearchSongsComponent() {
         const { query } = Route.useSearch()
@@ -36,15 +32,20 @@ export const Route = createFileRoute("/search/songs")({
 
         return (
             <div>
-                <ol>
+                <ol className="flex flex-col py-3">
                     {songs.map((song, index) => (
-                        <li key={`songs[${song.id}@${index}]`}>
-                            <SearchResultLabel
-                                artwork={song.attributes?.artwork}
-                                title={song.attributes?.name}
-                                creator={song.attributes?.artistName}
-                                collection={song.attributes?.albumName}
-                            />
+                        <li
+                            key={`songs[${song.id}@${index}]`}
+                            className="w-full hover:bg-black/10 flex items-center gap-2"
+                        >
+                            <button type="button" className="flex-1 px-3 py-2 text-left">
+                                <SearchResultLabel
+                                    artwork={song.attributes?.artwork}
+                                    title={song.attributes?.name}
+                                    creator={song.attributes?.artistName}
+                                    collection={song.attributes?.albumName}
+                                />
+                            </button>
                         </li>
                     ))}
                 </ol>
