@@ -1,5 +1,5 @@
 import { GearIcon } from "@phosphor-icons/react"
-import { useEffect, useLayoutEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 
 import type { ExtensionInstance } from "@/extensions/instance"
 import type { ExtensionManager } from "@/extensions/manager"
@@ -17,13 +17,6 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
         const player = usePlayer()
         const containerRef = useRef<HTMLDivElement | null>(null)
         const instanceRef = useRef<ExtensionInstance | null>(null)
-
-        useLayoutEffect(() => {
-            if (!containerRef.current || !instanceRef.current) {
-                return
-            }
-            instanceRef.current.updateClientFrame(containerRef.current.getBoundingClientRect())
-        }, [])
 
         useEffect(() => {
             const subscription = player.$events.subscribe(async (event) => {
@@ -66,8 +59,18 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
             })
             instanceRef.current = instance
 
+            const resizeObserver = new ResizeObserver(() => {
+                if (!containerRef.current) {
+                    return
+                }
+                instance.updateClientFrame(containerRef.current.getBoundingClientRect())
+            })
+            resizeObserver.observe(document.body)
+            resizeObserver.observe(containerRef.current)
+
             return () => {
                 extensionManager.releaseInstance(instance)
+                resizeObserver.disconnect()
             }
         }, [showToast, apiClient, player])
 
