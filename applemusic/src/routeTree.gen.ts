@@ -9,48 +9,95 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteRouteImport } from './routes/search/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SearchSongsRouteImport } from './routes/search.songs'
+import { Route as TestsNowPlayingRouteImport } from './routes/tests/nowPlaying'
+import { Route as TestsChromeRouteImport } from './routes/tests/chrome'
+import { Route as SearchSongsRouteImport } from './routes/search/songs'
 
+const SearchRouteRoute = SearchRouteRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SearchSongsRoute = SearchSongsRouteImport.update({
-  id: '/search/songs',
-  path: '/search/songs',
+const TestsNowPlayingRoute = TestsNowPlayingRouteImport.update({
+  id: '/tests/nowPlaying',
+  path: '/tests/nowPlaying',
   getParentRoute: () => rootRouteImport,
+} as any)
+const TestsChromeRoute = TestsChromeRouteImport.update({
+  id: '/tests/chrome',
+  path: '/tests/chrome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchSongsRoute = SearchSongsRouteImport.update({
+  id: '/songs',
+  path: '/songs',
+  getParentRoute: () => SearchRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/search': typeof SearchRouteRouteWithChildren
   '/search/songs': typeof SearchSongsRoute
+  '/tests/chrome': typeof TestsChromeRoute
+  '/tests/nowPlaying': typeof TestsNowPlayingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/search': typeof SearchRouteRouteWithChildren
   '/search/songs': typeof SearchSongsRoute
+  '/tests/chrome': typeof TestsChromeRoute
+  '/tests/nowPlaying': typeof TestsNowPlayingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/search': typeof SearchRouteRouteWithChildren
   '/search/songs': typeof SearchSongsRoute
+  '/tests/chrome': typeof TestsChromeRoute
+  '/tests/nowPlaying': typeof TestsNowPlayingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/search/songs'
+  fullPaths:
+    | '/'
+    | '/search'
+    | '/search/songs'
+    | '/tests/chrome'
+    | '/tests/nowPlaying'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/search/songs'
-  id: '__root__' | '/' | '/search/songs'
+  to: '/' | '/search' | '/search/songs' | '/tests/chrome' | '/tests/nowPlaying'
+  id:
+    | '__root__'
+    | '/'
+    | '/search'
+    | '/search/songs'
+    | '/tests/chrome'
+    | '/tests/nowPlaying'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SearchSongsRoute: typeof SearchSongsRoute
+  SearchRouteRoute: typeof SearchRouteRouteWithChildren
+  TestsChromeRoute: typeof TestsChromeRoute
+  TestsNowPlayingRoute: typeof TestsNowPlayingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -58,19 +105,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tests/nowPlaying': {
+      id: '/tests/nowPlaying'
+      path: '/tests/nowPlaying'
+      fullPath: '/tests/nowPlaying'
+      preLoaderRoute: typeof TestsNowPlayingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tests/chrome': {
+      id: '/tests/chrome'
+      path: '/tests/chrome'
+      fullPath: '/tests/chrome'
+      preLoaderRoute: typeof TestsChromeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search/songs': {
       id: '/search/songs'
-      path: '/search/songs'
+      path: '/songs'
       fullPath: '/search/songs'
       preLoaderRoute: typeof SearchSongsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof SearchRouteRoute
     }
   }
 }
 
+interface SearchRouteRouteChildren {
+  SearchSongsRoute: typeof SearchSongsRoute
+}
+
+const SearchRouteRouteChildren: SearchRouteRouteChildren = {
+  SearchSongsRoute: SearchSongsRoute,
+}
+
+const SearchRouteRouteWithChildren = SearchRouteRoute._addFileChildren(
+  SearchRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SearchSongsRoute: SearchSongsRoute,
+  SearchRouteRoute: SearchRouteRouteWithChildren,
+  TestsChromeRoute: TestsChromeRoute,
+  TestsNowPlayingRoute: TestsNowPlayingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

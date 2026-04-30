@@ -13,6 +13,9 @@ export function searchSongs(
     return queryOptions({
         queryKey: search(term, "songs"),
         queryFn: async () => {
+            if (!term) {
+                return []
+            }
             const { data: response } = await musicKit.api.music<MusicSearchResponse>(
                 "/v1/catalog/{{storefrontId}}/search",
                 {

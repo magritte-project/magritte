@@ -41,7 +41,7 @@ extensionManager.install({
     name: "Apple Music",
     id: "magritte.applemusic",
     version: "0.0.0",
-    url: "http://localhost:9292/search/songs?query=mumbo%20sugar",
+    url: "http://localhost:9292/",
     permissions: [],
     allowsMultipleInstances: false,
     useCases: [
