@@ -59,7 +59,7 @@ export function implement<Signatures extends MethodSignatures>(
         const impl = implementation[selector] as (parameters: unknown) => Promise<unknown>
         const signature = protocol.signatures[selector]
         vtable[selector] = async (parameters) => {
-            const result = await impl(z4.parse(signature.input, parameters))
+            const result = await impl.call(implementation, z4.parse(signature.input, parameters))
             return z4.parse(signature.output, result)
         }
     }
