@@ -45,18 +45,5 @@ export function libraryCommands(router: RegisteredRouter): CommandDefinition[] {
                 })
             },
         },
-        {
-            id: `libraries.add.songs`,
-            searchTerms: "library add songs",
-            displayName: () => "Add Songs",
-            disabled: (inputs) => !inputs.hasAny("library", LibraryInput),
-            execute: async (inputs) => {
-                const [library] = inputs.allOf("library", LibraryInput)
-                router.navigate({
-                    to: "/libraries/$libraryId/songs/add",
-                    params: { libraryId: String(library.id) },
-                })
-            },
-        },
     ]
 }

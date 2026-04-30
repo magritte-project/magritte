@@ -23,8 +23,6 @@ import { Route as LibrariesLibraryIdAlbumsRouteImport } from './routes/libraries
 import { Route as LibrariesManageLibraryIdRouteRouteImport } from './routes/libraries.manage.$libraryId/route'
 import { Route as LibrariesManageLibraryIdIndexRouteImport } from './routes/libraries.manage.$libraryId/index'
 import { Route as LibrariesManageLibraryIdPermissionsRouteImport } from './routes/libraries.manage.$libraryId/permissions'
-import { Route as LibrariesLibraryIdSongsAddRouteRouteImport } from './routes/libraries_.$libraryId/songs.add/route'
-import { Route as LibrariesLibraryIdSongsAddIndexRouteImport } from './routes/libraries_.$libraryId/songs.add/index'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -101,18 +99,6 @@ const LibrariesManageLibraryIdPermissionsRoute =
     path: '/permissions',
     getParentRoute: () => LibrariesManageLibraryIdRouteRoute,
   } as any)
-const LibrariesLibraryIdSongsAddRouteRoute =
-  LibrariesLibraryIdSongsAddRouteRouteImport.update({
-    id: '/add',
-    path: '/add',
-    getParentRoute: () => LibrariesLibraryIdSongsRoute,
-  } as any)
-const LibrariesLibraryIdSongsAddIndexRoute =
-  LibrariesLibraryIdSongsAddIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => LibrariesLibraryIdSongsAddRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -125,12 +111,10 @@ export interface FileRoutesByFullPath {
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
-  '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRouteWithChildren
+  '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
   '/libraries/$libraryId/': typeof LibrariesLibraryIdIndexRoute
-  '/libraries/$libraryId/songs/add': typeof LibrariesLibraryIdSongsAddRouteRouteWithChildren
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
   '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
-  '/libraries/$libraryId/songs/add/': typeof LibrariesLibraryIdSongsAddIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -141,11 +125,10 @@ export interface FileRoutesByTo {
   '/libraries/add': typeof LibrariesAddRoute
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
-  '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRouteWithChildren
+  '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
   '/libraries/$libraryId': typeof LibrariesLibraryIdIndexRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdIndexRoute
-  '/libraries/$libraryId/songs/add': typeof LibrariesLibraryIdSongsAddIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -159,12 +142,10 @@ export interface FileRoutesById {
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
   '/libraries_/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries_/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
-  '/libraries_/$libraryId/songs': typeof LibrariesLibraryIdSongsRouteWithChildren
+  '/libraries_/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
   '/libraries_/$libraryId/': typeof LibrariesLibraryIdIndexRoute
-  '/libraries_/$libraryId/songs/add': typeof LibrariesLibraryIdSongsAddRouteRouteWithChildren
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
   '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
-  '/libraries_/$libraryId/songs/add/': typeof LibrariesLibraryIdSongsAddIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,10 +162,8 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId/artists'
     | '/libraries/$libraryId/songs'
     | '/libraries/$libraryId/'
-    | '/libraries/$libraryId/songs/add'
     | '/libraries/manage/$libraryId/permissions'
     | '/libraries/manage/$libraryId/'
-    | '/libraries/$libraryId/songs/add/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,7 +178,6 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId'
     | '/libraries/manage/$libraryId/permissions'
     | '/libraries/manage/$libraryId'
-    | '/libraries/$libraryId/songs/add'
   id:
     | '__root__'
     | '/'
@@ -214,10 +192,8 @@ export interface FileRouteTypes {
     | '/libraries_/$libraryId/artists'
     | '/libraries_/$libraryId/songs'
     | '/libraries_/$libraryId/'
-    | '/libraries_/$libraryId/songs/add'
     | '/libraries/manage/$libraryId/permissions'
     | '/libraries/manage/$libraryId/'
-    | '/libraries_/$libraryId/songs/add/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -329,20 +305,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibrariesManageLibraryIdPermissionsRouteImport
       parentRoute: typeof LibrariesManageLibraryIdRouteRoute
     }
-    '/libraries_/$libraryId/songs/add': {
-      id: '/libraries_/$libraryId/songs/add'
-      path: '/add'
-      fullPath: '/libraries/$libraryId/songs/add'
-      preLoaderRoute: typeof LibrariesLibraryIdSongsAddRouteRouteImport
-      parentRoute: typeof LibrariesLibraryIdSongsRoute
-    }
-    '/libraries_/$libraryId/songs/add/': {
-      id: '/libraries_/$libraryId/songs/add/'
-      path: '/'
-      fullPath: '/libraries/$libraryId/songs/add/'
-      preLoaderRoute: typeof LibrariesLibraryIdSongsAddIndexRouteImport
-      parentRoute: typeof LibrariesLibraryIdSongsAddRouteRoute
-    }
   }
 }
 
@@ -378,39 +340,10 @@ const LibrariesRouteWithChildren = LibrariesRoute._addFileChildren(
   LibrariesRouteChildren,
 )
 
-interface LibrariesLibraryIdSongsAddRouteRouteChildren {
-  LibrariesLibraryIdSongsAddIndexRoute: typeof LibrariesLibraryIdSongsAddIndexRoute
-}
-
-const LibrariesLibraryIdSongsAddRouteRouteChildren: LibrariesLibraryIdSongsAddRouteRouteChildren =
-  {
-    LibrariesLibraryIdSongsAddIndexRoute: LibrariesLibraryIdSongsAddIndexRoute,
-  }
-
-const LibrariesLibraryIdSongsAddRouteRouteWithChildren =
-  LibrariesLibraryIdSongsAddRouteRoute._addFileChildren(
-    LibrariesLibraryIdSongsAddRouteRouteChildren,
-  )
-
-interface LibrariesLibraryIdSongsRouteChildren {
-  LibrariesLibraryIdSongsAddRouteRoute: typeof LibrariesLibraryIdSongsAddRouteRouteWithChildren
-}
-
-const LibrariesLibraryIdSongsRouteChildren: LibrariesLibraryIdSongsRouteChildren =
-  {
-    LibrariesLibraryIdSongsAddRouteRoute:
-      LibrariesLibraryIdSongsAddRouteRouteWithChildren,
-  }
-
-const LibrariesLibraryIdSongsRouteWithChildren =
-  LibrariesLibraryIdSongsRoute._addFileChildren(
-    LibrariesLibraryIdSongsRouteChildren,
-  )
-
 interface LibrariesLibraryIdRouteRouteChildren {
   LibrariesLibraryIdAlbumsRoute: typeof LibrariesLibraryIdAlbumsRoute
   LibrariesLibraryIdArtistsRoute: typeof LibrariesLibraryIdArtistsRoute
-  LibrariesLibraryIdSongsRoute: typeof LibrariesLibraryIdSongsRouteWithChildren
+  LibrariesLibraryIdSongsRoute: typeof LibrariesLibraryIdSongsRoute
   LibrariesLibraryIdIndexRoute: typeof LibrariesLibraryIdIndexRoute
 }
 
@@ -418,7 +351,7 @@ const LibrariesLibraryIdRouteRouteChildren: LibrariesLibraryIdRouteRouteChildren
   {
     LibrariesLibraryIdAlbumsRoute: LibrariesLibraryIdAlbumsRoute,
     LibrariesLibraryIdArtistsRoute: LibrariesLibraryIdArtistsRoute,
-    LibrariesLibraryIdSongsRoute: LibrariesLibraryIdSongsRouteWithChildren,
+    LibrariesLibraryIdSongsRoute: LibrariesLibraryIdSongsRoute,
     LibrariesLibraryIdIndexRoute: LibrariesLibraryIdIndexRoute,
   }
 
