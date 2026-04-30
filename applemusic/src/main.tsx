@@ -31,17 +31,21 @@ const musicKit = await initializeMusicKit({
         name: "Magritte",
     },
 })
+const playbackEngine = new AppleMusicPlaybackEngine(musicKit)
 
 // Handshake with the extension host
 const extensionHost = await connectToExtensionHost({
     extensionId: "magritte.applemusic",
     exports: {
-        playbackEngine: new AppleMusicPlaybackEngine(musicKit),
+        playbackEngine,
     },
 }).catch((error) => {
     console.error("*** Could not connect to extension host", error)
     return invalidConnectionHost()
 })
+
+// TODO: This should probably be automagically handled somehow?
+extensionHost.forwardEvents(playbackEngine.$events)
 
 // Set up tanstack query
 const queryClient = new QueryClient()

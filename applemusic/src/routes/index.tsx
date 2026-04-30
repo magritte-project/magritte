@@ -1,5 +1,4 @@
 import type { PlayableItem, PlaybackState } from "@magritte/sdk/host"
-
 import { createFileRoute } from "@tanstack/react-router"
 import { useCallback, useEffect, useState } from "react"
 
