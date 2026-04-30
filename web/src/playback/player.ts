@@ -56,6 +56,31 @@ export class Player {
         this._playingItem = null
         this._playbackState = "stopped"
         this._volume = parseFloat(localStorage.getItem("player.volume") ?? "1.0")
+
+        this._engineRegistry.$events.subscribe(async (event) => {
+            switch (event.type) {
+                case "playbackEngineUnregistered":
+                    if (this._activeEngine === event.engine) {
+                        await this._engineLost()
+                    }
+                    break
+                default:
+                    break
+            }
+        })
+    }
+
+    private async _engineLost(): Promise<void> {
+        this._activeEngineEventSubscription?.unsubscribe()
+        this._activeEngineEventSubscription = null
+
+        this._activeEngine = null
+
+        this._playbackState = "stopped"
+        await this._events.dispatch({ type: "playbackStateDidChange", playbackState: "stopped" })
+
+        this._playingItem = null
+        await this._events.dispatch({ type: "playingItemChanged" })
     }
 
     private async _changeEngine(newEngine: PlaybackEngine | null): Promise<void> {
