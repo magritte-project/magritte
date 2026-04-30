@@ -1,11 +1,17 @@
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
+import { PlusIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import z4 from "zod"
 
+import { useBulkIngestSongsMutation } from "@/api/mutations/library"
 import { readLibraries } from "@/api/queries/library"
 import { searchSongs } from "@/api/queries/search"
 import SearchResultLabel from "@/components/SearchResultLabel"
-import { songResourceToPlayableItem } from "@/conversions/songs"
+import {
+    songResourceToLibraryIngestableSong,
+    songResourceToPlayableItem,
+} from "@/conversions/songs"
 import useExtensionHost from "@/hooks/extensionHostHook"
 import useMusicKit from "@/hooks/musicKitHook"
 
@@ -32,6 +38,8 @@ export const Route = createFileRoute("/search/songs")({
 
         const extensionHost = useExtensionHost()
         const { data: libraries } = useSuspenseQuery(readLibraries(extensionHost))
+
+        const ingestMutation = useBulkIngestSongsMutation()
 
         const musicKit = useMusicKit()
         const { data: songs } = useSuspenseQuery(searchSongs(musicKit, query))
@@ -62,6 +70,37 @@ export const Route = createFileRoute("/search/songs")({
                                     collection={song.attributes?.albumName}
                                 />
                             </button>
+                            <Menu>
+                                <MenuButton title="Add to Library">
+                                    <PlusIcon />
+                                </MenuButton>
+                                <MenuItems
+                                    anchor="bottom"
+                                    className="bg-white rounded-md shadow-sm text-sm flex flex-col z-100"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    {libraries.map((library, index) => (
+                                        <MenuItem key={`library[${library.id}@${index}]`}>
+                                            <button
+                                                type="button"
+                                                className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white disabled:hover:bg-inherit disabled:hover:text-inherit disabled:opacity-70"
+                                                onClick={() => {
+                                                    ingestMutation.mutate({
+                                                        libraryId: library.id,
+                                                        songs: [
+                                                            songResourceToLibraryIngestableSong(
+                                                                song,
+                                                            ),
+                                                        ],
+                                                    })
+                                                }}
+                                            >
+                                                Add to {library.name}
+                                            </button>
+                                        </MenuItem>
+                                    ))}
+                                </MenuItems>
+                            </Menu>
                         </li>
                     ))}
                 </ol>
