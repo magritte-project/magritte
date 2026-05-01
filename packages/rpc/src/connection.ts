@@ -126,9 +126,9 @@ export class RPCConnection extends EventTarget {
             return reply
         })
 
-        this.broadcaster.addEventListener("outgoingBroadcast", (event) => {
-            this.transport.postMessage({ type: "broadcast", what: event.what, topic: event.topic })
-        })
+        this.broadcaster.onsend = (what, topic, data) => {
+            this.transport.postMessage({ type: "broadcast", what, topic, data })
+        }
         this.transport.onmessage = (reply) => {
             this.handleMessage(reply)
         }

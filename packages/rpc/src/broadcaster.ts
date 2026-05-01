@@ -6,17 +6,6 @@ export class RPCInvalidatedBroadcastEvent extends Event {
     }
 }
 
-export class RPCOutgoingBroadcastEvent extends Event {
-    constructor(
-        readonly what: string,
-        readonly topic: string,
-        readonly data: Record<string, string | undefined> | undefined,
-        eventInitDict?: EventInit,
-    ) {
-        super("outgoingBroadcast", eventInitDict)
-    }
-}
-
 export class RPCIncomingBroadcastEvent extends Event {
     constructor(
         readonly connection: RPCConnection,
@@ -31,7 +20,6 @@ export class RPCIncomingBroadcastEvent extends Event {
 
 interface RPCBroadcasterEventMap {
     invalidated: RPCInvalidatedBroadcastEvent
-    outgoingBroadcast: RPCOutgoingBroadcastEvent
     incomingBroadcast: RPCIncomingBroadcastEvent
 }
 
@@ -58,6 +46,15 @@ export class RPCBroadcaster extends EventTarget {
     }
 
     /**
+     * @private
+     *
+     * Called to handle a broadcast being sent. This should only be set by `RPCConnection`.
+     */
+    onsend:
+        | ((what: string, topic: string, data?: Record<string, string | undefined>) => void)
+        | undefined
+
+    /**
      * Send a broadcast to the remote side of a connection.
      *
      * @param what What's being broadcast.
@@ -68,10 +65,12 @@ export class RPCBroadcaster extends EventTarget {
         if (!this._isValid) {
             throw new Error("Broadcaster is invalid")
         }
-        this.dispatchEvent(new RPCOutgoingBroadcastEvent(what, topic, data))
+        this.onsend?.(what, topic, data)
     }
 
     /**
+     * @private
+     *
      * Receive a broadcast from the remote side of a connection.
      *
      * This method should only be called by `RPCConnection`.
