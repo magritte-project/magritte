@@ -15,14 +15,12 @@ export const RPCCommand = z4.union([
         parameters: z4.unknown(),
     }),
 ])
-
 export type RPCCommand = z4.infer<typeof RPCCommand>
 
 export const RPCTransportOutgoingMessage = z4.object({
     id: z4.string(),
     command: RPCCommand,
 })
-
 export type RPCTransportOutgoingMessage = z4.infer<typeof RPCTransportOutgoingMessage>
 
 export const RPCCommandResult = z4.union([
@@ -44,13 +42,7 @@ export const RPCCommandResult = z4.union([
         message: z4.string(),
     }),
 ])
-
 export type RPCCommandResult = z4.infer<typeof RPCCommandResult>
-
-export const RPCTransportIncomingMessage = z4.object({
-    id: z4.string(),
-    result: RPCCommandResult,
-})
 
 export const RPCTransportMessage = z4.union([
     z4.object({
@@ -63,8 +55,13 @@ export const RPCTransportMessage = z4.union([
         id: z4.string(),
         result: RPCCommandResult,
     }),
+    z4.object({
+        type: z4.literal("broadcast"),
+        what: z4.string(),
+        topic: z4.string(),
+        data: z4.record(z4.string(), z4.string().optional()).optional(),
+    }),
 ])
-
 export type RPCTransportMessage = z4.infer<typeof RPCTransportMessage>
 
 export interface RPCTransport {

@@ -2,8 +2,10 @@ import type { RPCObject } from "./object"
 import type { ProtocolImplementation } from "./protocol"
 import type { RPCCommand, RPCCommandResult, RPCTransport, RPCTransportMessage } from "./transport"
 
+import { RPCBroadcaster } from "./broadcaster"
 import { LocalObject } from "./internal/localObject"
 import { RemoteObject } from "./internal/remoteObject"
+import { assertNever } from "./internal/utilities"
 
 async function dispatchCommand(command: RPCCommand, object: RPCObject): Promise<RPCCommandResult> {
     try {
@@ -60,6 +62,9 @@ export interface RPCConnectionOptions {
 
     /** The capabilities of the connection, usable for permissions and feature detection */
     readonly capabilities?: Record<string, unknown>
+
+    /** The broadcast to use for this connection */
+    readonly broadcaster?: RPCBroadcaster
 }
 
 export class RPCConnectionInvalidatedEvent extends Event {
@@ -107,6 +112,7 @@ export class RPCConnection extends EventTarget {
         this._isValid = true
         this.pending = new Map<string, PendingSend>()
         this.transport = options.transport
+        this.broadcaster = options.broadcaster ?? new RPCBroadcaster()
         this.capabilities = options.capabilities ?? {}
         this.exportedObject = new LocalObject(options.exportedObject)
         this.remoteObject = new RemoteObject(async (command) => {
@@ -120,6 +126,9 @@ export class RPCConnection extends EventTarget {
             return reply
         })
 
+        this.broadcaster.addEventListener("outgoingBroadcast", (event) => {
+            this.transport.postMessage({ type: "broadcast", what: event.what, topic: event.topic })
+        })
         this.transport.onmessage = (reply) => {
             this.handleMessage(reply)
         }
@@ -133,6 +142,9 @@ export class RPCConnection extends EventTarget {
 
     /** The transport the connection will use to communicate with the remote object */
     private readonly transport: RPCTransport
+
+    /** The broadcaster forwarded to the remote side of the connection */
+    public readonly broadcaster: RPCBroadcaster
 
     /** The capabilities of the connection, usable for permissions and feature detection */
     public readonly capabilities: Record<string, unknown>
@@ -167,6 +179,13 @@ export class RPCConnection extends EventTarget {
                     }
                     break
                 }
+                case "broadcast": {
+                    this.broadcaster.receive(this, message.what, message.topic, message.data)
+                    break
+                }
+                default: {
+                    assertNever(message)
+                }
             }
         })
     }
@@ -198,6 +217,7 @@ export class RPCConnection extends EventTarget {
         }
 
         this.transport.invalidate()
+        this.broadcaster.invalidate()
 
         for (const [_, pending] of this.pending) {
             pending.reject(new Error("Connection invalidated"))
