@@ -1,5 +1,5 @@
-import type { PlaybackState, PlayableItem } from "@magritte/sdk/host"
-
+import type { RPCIncomingBroadcastEvent } from "@magritte/rpc"
+import { type PlaybackState, type PlayableItem, PlayerProtocol } from "@magritte/sdk/host"
 import { createFileRoute } from "@tanstack/react-router"
 import { useState, useEffect } from "react"
 
@@ -18,14 +18,18 @@ export const Route = createFileRoute("/tests/nowPlaying")({
                 const player = await host.player()
                 setNowPlaying(await player.getNowPlaying())
             }
-            const subscription = host.$events.subscribe(async (event) => {
-                if (event.type === "Magritte.NowPlayingDidChange") {
-                    await update()
+            const onIncomingBroadcast = (event: RPCIncomingBroadcastEvent) => {
+                if (event.topic === PlayerProtocol.name && event.what === "nowPlayingDidChange") {
+                    update()
                 }
-            })
+            }
+            host.connection.broadcaster.addEventListener("incomingBroadcast", onIncomingBroadcast)
             update()
             return () => {
-                subscription.unsubscribe()
+                host.connection.broadcaster.removeEventListener(
+                    "incomingBroadcast",
+                    onIncomingBroadcast,
+                )
             }
         }, [host])
 

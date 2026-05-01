@@ -11,10 +11,6 @@
             "types": "./src/index.ts",
             "default": "./src/index.ts"
         },
-        "./common": {
-            "types": "./src/common/index.ts",
-            "default": "./src/common/index.ts"
-        },
         "./connection": {
             "types": "./src/connection/index.ts",
             "default": "./src/connection/index.ts"

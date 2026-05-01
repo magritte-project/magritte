@@ -1,3 +1,4 @@
+import { RPCBroadcaster } from "@magritte/rpc"
 import { GearIcon } from "@phosphor-icons/react"
 import { useEffect, useRef } from "react"
 
@@ -19,31 +20,15 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
         const instanceRef = useRef<ExtensionInstance | null>(null)
 
         useEffect(() => {
-            const subscription = player.$events.subscribe(async (event) => {
-                switch (event.type) {
-                    case "playbackStateDidChange":
-                    case "playingItemChanged":
-                        instanceRef.current?.extension?.dispatchEvent({
-                            type: "Magritte.NowPlayingDidChange",
-                        })
-                        break
-                    default:
-                        break
-                }
-            })
-            return () => {
-                subscription.unsubscribe()
-            }
-        }, [player])
-
-        useEffect(() => {
             if (!containerRef.current) {
                 return
             }
 
             const instance = extensionManager.acquireInstance(id)
+            const broadcaster = new RPCBroadcaster()
             instance.load({
                 clientFrame: containerRef.current.getBoundingClientRect(),
+                broadcaster,
                 exports: {
                     chrome: {
                         showToast: async (options: {
@@ -54,7 +39,7 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
                         },
                     },
                     library: exportLibrary(apiClient),
-                    player: exportPlayer(player),
+                    player: exportPlayer(broadcaster, player),
                 },
             })
             instanceRef.current = instance

@@ -1,10 +1,12 @@
-import type { RemoteEvent } from "@magritte/sdk/common"
-import type { PlaybackEngine as ExtensionPlaybackEngine } from "@magritte/sdk/extension"
+import type { RPCBroadcaster, RPCIncomingBroadcastEvent } from "@magritte/rpc"
 import type { PlayableItem, PlaybackTime } from "@magritte/sdk/host"
 
+import {
+    PlaybackEngineProtocol,
+    type PlaybackEngine as ExtensionPlaybackEngine,
+} from "@magritte/sdk/extension"
 import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
 
-import type { ExtensionInstance } from "@/extensions/instance"
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,
@@ -19,36 +21,39 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
     private _playingItem: PlayableItem | null
 
     constructor(
-        instance: ExtensionInstance,
+        broadcaster: RPCBroadcaster,
         private readonly engine: ExtensionPlaybackEngine,
     ) {
         ;[this._events, this.$events] = createEvent()
         this._playingItem = null
 
-        instance.extension.$events.subscribe((event) => {
+        broadcaster.addEventListener("incomingBroadcast", (event) => {
             this.handleEvent(event)
         })
     }
 
-    private async handleEvent(event: RemoteEvent) {
-        switch (event.type) {
-            case "PlaybackEngine.playbackStateDidChange":
+    private async handleEvent(event: RPCIncomingBroadcastEvent) {
+        if (event.topic !== PlaybackEngineProtocol.name) {
+            return
+        }
+        switch (event.what) {
+            case "playbackStateDidChange":
                 const { playbackState, playingItem: item } = await this.engine.getNowPlaying()
                 this._playingItem = item
                 this._events.dispatch({ type: "playbackStateDidChange", playbackState })
                 break
-            case "PlaybackEngine.playingItemChanged":
+            case "playingItemChanged":
                 const { playingItem } = await this.engine.getNowPlaying()
                 this._playingItem = playingItem
                 this._events.dispatch({ type: "playingItemChanged" })
                 break
-            case "PlaybackEngine.encounteredError":
+            case "encounteredError":
                 this._events.dispatch({
                     type: "encounteredError",
                     error: new Error(event.data?.message ?? ""),
                 })
                 break
-            case "PlaybackEngine.endOfAudio":
+            case "endOfAudio":
                 this._events.dispatch({ type: "endOfAudio", lastItem: this._playingItem })
                 this._playingItem = null
                 break

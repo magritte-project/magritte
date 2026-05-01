@@ -1,7 +1,6 @@
-import { cast, implement, RPCConnection } from "@magritte/rpc"
+import { cast, implement, RPCBroadcaster, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
-import { RemoteEventSinkProtocol, type RemoteEvent } from "../common/events"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
 import {
     ChromeProtocol,
@@ -12,7 +11,6 @@ import {
     type Player,
 } from "../host"
 import { getExtensionOrigin, type ExtensionManifest } from "../manifest"
-import { createEvent } from "../utilities/events"
 import { ConnectionHolder, ConnectRequest, type ConnectResponse } from "./handshake"
 
 export interface HostExports {
@@ -32,6 +30,7 @@ function implementExports(exports: HostExports) {
 export interface WaitForExtensionConnectionOptions {
     readonly iframe: HTMLIFrameElement
     readonly manifest: ExtensionManifest
+    readonly broadcaster?: RPCBroadcaster
     readonly exports: HostExports
 }
 
@@ -44,6 +43,7 @@ export class Extension extends ConnectionHolder {
 export function waitForExtensionConnection({
     iframe,
     manifest,
+    broadcaster,
     exports,
 }: WaitForExtensionConnectionOptions): Promise<Extension> {
     const origin = getExtensionOrigin(manifest)
@@ -59,21 +59,17 @@ export function waitForExtensionConnection({
                         if (data.extensionId !== manifest.id) {
                             throw new Error("Extension ID mismatch")
                         }
-                        const [_events, $events] = createEvent<RemoteEvent>()
-                        const exportedObject = [
-                            ...implementExports(exports),
-                            implement(RemoteEventSinkProtocol, {
-                                dispatch: async (event) => {
-                                    _events.dispatch(event)
-                                },
-                            }),
-                        ]
+                        const exportedObject = [...implementExports(exports)]
                         const channels = MessageChannelTransport.createChannels()
                         const transport = new MessageChannelTransport(
                             channels.localPorts.send,
                             channels.localPorts.receive,
                         )
-                        const connection = new RPCConnection({ transport, exportedObject })
+                        const connection = new RPCConnection({
+                            transport,
+                            broadcaster,
+                            exportedObject,
+                        })
                         const serialNumber = crypto.randomUUID()
                         iframe.contentWindow?.postMessage(
                             {
@@ -83,7 +79,7 @@ export function waitForExtensionConnection({
                             origin,
                             [channels.remotePorts.send, channels.remotePorts.receive],
                         )
-                        resolve(new Extension($events, serialNumber, connection))
+                        resolve(new Extension(serialNumber, connection))
                         break
                     }
                 }

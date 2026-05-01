@@ -1,7 +1,8 @@
+import { RPCBroadcaster } from "@magritte/rpc"
 import { connectToExtensionHost, invalidConnectionHost } from "@magritte/sdk/connection"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import "@/styles.css"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
@@ -31,11 +32,13 @@ const musicKit = await initializeMusicKit({
         name: "Magritte",
     },
 })
-const playbackEngine = new AppleMusicPlaybackEngine(musicKit)
+const broadcaster = new RPCBroadcaster()
+const playbackEngine = new AppleMusicPlaybackEngine(broadcaster, musicKit)
 
 // Handshake with the extension host
 const extensionHost = await connectToExtensionHost({
     extensionId: "magritte.applemusic",
+    broadcaster,
     exports: {
         playbackEngine,
     },
@@ -43,9 +46,6 @@ const extensionHost = await connectToExtensionHost({
     console.error("*** Could not connect to extension host", error)
     return invalidConnectionHost()
 })
-
-// TODO: This should probably be automagically handled somehow?
-extensionHost.forwardEvents(playbackEngine.$events)
 
 // Set up tanstack query
 const queryClient = new QueryClient()

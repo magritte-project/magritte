@@ -1,9 +1,5 @@
-import { cast, type RPCConnection } from "@magritte/rpc"
+import { type RPCConnection } from "@magritte/rpc"
 import z4 from "zod/v4"
-
-import type { EventStream } from "../utilities"
-
-import { RemoteEventSinkProtocol, type RemoteEvent } from "../common"
 
 /**
  * The schema of a handshake request posted by an extension running in an `<iframe>`.
@@ -32,24 +28,9 @@ export type ConnectResponse = z4.infer<typeof ConnectResponse>
 export class ConnectionHolder {
     /** @private */
     constructor(
-        public readonly $events: EventStream<RemoteEvent>,
         public readonly serialNumber: string,
         public readonly connection: RPCConnection,
     ) {}
-
-    async dispatchEvent(event: RemoteEvent): Promise<void> {
-        const events = await cast(RemoteEventSinkProtocol, this.connection.remoteObject)
-        await events.dispatch(event)
-    }
-
-    forwardEvents(stream: EventStream<RemoteEvent>): void {
-        const forwardingSubscription = stream.subscribe(
-            async (event) => await this.dispatchEvent(event),
-        )
-        this.connection.addEventListener("invalidated", () => {
-            forwardingSubscription.unsubscribe()
-        })
-    }
 
     async disconnect(): Promise<void> {
         this.connection.invalidate()

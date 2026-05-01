@@ -1,12 +1,12 @@
-import type {
-    PlaybackEngine,
-    PlaybackEngineEnqueueOptions,
-    PlaybackModes,
-} from "@magritte/sdk/extension"
+import type { RPCBroadcaster } from "@magritte/rpc"
 import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
 
-import { RemoteEvent } from "@magritte/sdk/common"
-import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
+import {
+    PlaybackEngineProtocol,
+    type PlaybackEngine,
+    type PlaybackEngineEnqueueOptions,
+    type PlaybackModes,
+} from "@magritte/sdk/extension"
 
 function _getPlaybackState(playbackState: MusicKit.PlaybackStates): PlaybackState {
     switch (playbackState) {
@@ -29,13 +29,13 @@ function _getPlaybackState(playbackState: MusicKit.PlaybackStates): PlaybackStat
 }
 
 export default class AppleMusicPlaybackEngine implements PlaybackEngine {
+    private readonly _broadcaster: RPCBroadcaster
     private readonly _musicKit: MusicKit.Instance
-    private readonly _events: EventSink<RemoteEvent>
     private _playingItem: PlayableItem | null
 
-    constructor(musicKit: MusicKit.Instance) {
+    constructor(broadcaster: RPCBroadcaster, musicKit: MusicKit.Instance) {
+        this._broadcaster = broadcaster
         this._musicKit = musicKit
-        ;[this._events, this.$events] = createEvent<RemoteEvent>()
         this._playingItem = null
 
         this._musicKit.addEventListener("mediaPlaybackError", () =>
@@ -46,29 +46,18 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         )
     }
 
-    readonly $events: EventStream<RemoteEvent>
-
     private _handleMediaPlaybackError() {
-        this._events.dispatch({
-            type: "PlaybackEngine.encounteredError",
-            data: {},
-        })
+        this._broadcaster.send("encounteredError", PlaybackEngineProtocol.name)
     }
 
     private _handlePlaybackStateDidChange(event: Parameters<MusicKit.StateChangeEventCallback>[0]) {
-        this._events.dispatch({
-            type: "PlaybackEngine.playbackStateDidChange",
-            data: {},
-        })
+        this._broadcaster.send("playbackStateDidChange", PlaybackEngineProtocol.name)
 
         switch (event.state) {
             case MusicKit.PlaybackStates.ended:
             case MusicKit.PlaybackStates.completed: {
                 this.stop()
-                this._events.dispatch({
-                    type: "PlaybackEngine.endOfAudio",
-                    data: {},
-                })
+                this._broadcaster.send("endOfAudio", PlaybackEngineProtocol.name)
                 break
             }
             default:
@@ -138,10 +127,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         }
 
         this._playingItem = itemToPlay
-        this._events.dispatch({
-            type: "PlaybackEngine.playingItemChanged",
-            data: {},
-        })
+        this._broadcaster.send("playingItemChanged", PlaybackEngineProtocol.name)
     }
 
     async skipPreviousInQueue(): Promise<boolean> {

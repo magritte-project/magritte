@@ -68,7 +68,7 @@ export default class PlaybackEngineRegistry {
             case "extensionInstanceLoaded": {
                 try {
                     const engine = new ExtensionPlaybackEngineProxy(
-                        event.instance,
+                        event.instance.extension.connection.broadcaster,
                         await event.instance.extension.playbackEngine(),
                     )
                     this._engines.set(event.instance.manifest.id, engine)
@@ -85,10 +85,6 @@ export default class PlaybackEngineRegistry {
             case "extensionInstanceUnloaded": {
                 const engine = this._engines.get(event.instance.manifest.id)
                 if (engine !== undefined) {
-                    console.log(
-                        "Extension unloaded, removing playback engine",
-                        event.instance.manifest.id,
-                    )
                     this._events.dispatch({ type: "playbackEngineUnregistered", engine })
                     this._engines.delete(event.instance.manifest.id)
                 }

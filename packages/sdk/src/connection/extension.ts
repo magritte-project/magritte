@@ -1,12 +1,16 @@
-import { cast, implement, RPCConnection, type ProtocolImplementation } from "@magritte/rpc"
+import {
+    cast,
+    implement,
+    RPCBroadcaster,
+    RPCConnection,
+    type ProtocolImplementation,
+} from "@magritte/rpc"
 import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transports"
 
-import { RemoteEvent, RemoteEventSinkProtocol } from "../common/events"
 import { ExtensionProtocol, PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
 import { LibraryProtocol, PlayerProtocol, type Library, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
 import { ExtensionData } from "../manifest"
-import { createEvent, EventStream } from "../utilities/events"
 import { ConnectionHolder, ConnectResponse, type ConnectRequest } from "./handshake"
 
 export interface ExtensionExports {
@@ -23,17 +27,13 @@ function implementExports(exports: ExtensionExports) {
 
 export interface ConnectToExtensionHostOptions {
     readonly extensionId: string
+    readonly broadcaster?: RPCBroadcaster
     readonly exports?: ExtensionExports
 }
 
 export class ExtensionHost extends ConnectionHolder {
-    constructor(
-        $events: EventStream<RemoteEvent>,
-        serialNumber: string,
-        connection: RPCConnection,
-        data: ExtensionData,
-    ) {
-        super($events, serialNumber, connection)
+    constructor(serialNumber: string, connection: RPCConnection, data: ExtensionData) {
+        super(serialNumber, connection)
         this.data = data
     }
 
@@ -55,6 +55,7 @@ export class ExtensionHost extends ConnectionHolder {
 
 export function connectToExtensionHost({
     extensionId,
+    broadcaster,
     exports = {},
 }: ConnectToExtensionHostOptions): Promise<ExtensionHost> {
     if (!window.top || window.top === window) {
@@ -85,23 +86,21 @@ export function connectToExtensionHost({
                             throw new Error("Handshake received but wrong number of ports given")
                         }
 
-                        const [_events, $events] = createEvent<RemoteEvent>()
                         const exportedObject = [
                             ...implementExports(exports),
                             implement(ExtensionProtocol, {}),
-                            implement(RemoteEventSinkProtocol, {
-                                dispatch: async (event) => {
-                                    _events.dispatch(event)
-                                },
-                            }),
                         ]
                         const serialNumber = eventData.serialNumber
                         const transport = new MessageChannelTransport(
                             event.ports[0],
                             event.ports[1],
                         )
-                        const connection = new RPCConnection({ transport, exportedObject })
-                        resolve(new ExtensionHost($events, serialNumber, connection, data))
+                        const connection = new RPCConnection({
+                            transport,
+                            broadcaster,
+                            exportedObject,
+                        })
+                        resolve(new ExtensionHost(serialNumber, connection, data))
                         break
                     }
                 }
@@ -129,7 +128,6 @@ export function connectToExtensionHost({
  * to the host in your extension.
  */
 export function invalidConnectionHost(): ExtensionHost {
-    const [, $events] = createEvent<RemoteEvent>()
     const serialNumber = "invalid"
     const connection = new RPCConnection({
         transport: new LoopbackTransport(),
@@ -137,5 +135,5 @@ export function invalidConnectionHost(): ExtensionHost {
     })
     connection.invalidate()
     const data: ExtensionData = {}
-    return new ExtensionHost($events, serialNumber, connection, data)
+    return new ExtensionHost(serialNumber, connection, data)
 }
