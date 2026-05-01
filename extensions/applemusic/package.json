@@ -1,5 +1,5 @@
 {
-    "name": "@magritte/applemusic",
+    "name": "@magritte/extension-applemusic",
     "private": true,
     "type": "module",
     "scripts": {
