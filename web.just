@@ -1,8 +1,5 @@
 set working-directory := 'web'
 
-sync-deps:
-    pnpm install
-
 dev:
     pnpm dev
 

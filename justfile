@@ -3,7 +3,9 @@ mod web
 mod packages
 mod extensions
 
-sync-deps: server::sync-deps web::sync-deps
+sync-deps:
+    uv sync
+    pnpm install
 
 [parallel]
 dev: server::dev web::dev

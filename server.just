@@ -1,6 +1,3 @@
-sync-deps:
-    uv sync
-
 dev:
     uv run fastapi dev magritte --port 6477
 
