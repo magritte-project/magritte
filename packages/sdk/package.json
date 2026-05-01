@@ -41,6 +41,7 @@
     "devDependencies": {
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
+        "typescript": "catalog:",
         "vitest": "catalog:"
     },
     "packageManager": "pnpm@10.24.0"

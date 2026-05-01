@@ -6,3 +6,6 @@ lint:
 
 format:
     pnpm --filter "./packages/*" run format
+
+check-types:
+    pnpm --filter "./packages/*" exec tsc --noEmit

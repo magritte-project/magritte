@@ -14,15 +14,15 @@
         "check": "oxlint && oxfmt --check"
     },
     "dependencies": {
-        "@headlessui/react": "^2.2.9",
+        "@headlessui/react": "catalog:",
         "@magritte/rpc": "workspace:*",
         "@magritte/sdk": "workspace:*",
-        "@phosphor-icons/react": "^2.1.10",
+        "@phosphor-icons/react": "catalog:",
         "@tailwindcss/vite": "catalog:",
-        "@tanstack/react-form": "^1.28.0",
-        "@tanstack/react-query": "^5.90.20",
-        "@tanstack/react-router": "^1.157.16",
-        "@tanstack/router-plugin": "^1.157.16",
+        "@tanstack/react-form": "catalog:",
+        "@tanstack/react-query": "catalog:",
+        "@tanstack/react-router": "catalog:",
+        "@tanstack/router-plugin": "catalog:",
         "classnames": "catalog:",
         "react": "catalog:",
         "react-dom": "catalog:",
@@ -35,15 +35,15 @@
         "@types/node": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
-        "@vitejs/plugin-react": "^5.1.2",
-        "baseline-browser-mapping": "^2.9.19",
+        "@vitejs/plugin-react": "catalog:",
+        "baseline-browser-mapping": "catalog:",
         "jsdom": "catalog:",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
         "typescript": "catalog:",
-        "vite": "^7.3.1",
+        "vite": "catalog:",
         "vitest": "catalog:",
-        "web-vitals": "^5.1.0"
+        "web-vitals": "catalog:"
     },
     "packageManager": "pnpm@10.24.0"
 }
