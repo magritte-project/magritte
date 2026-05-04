@@ -6,8 +6,5 @@
     "semi": false,
     "singleQuote": false,
     "experimentalSortImports": {},
-    "ignorePatterns": [
-        "web/src/routeTree.gen.ts",
-        "web/src/api/openapi.d.ts"
-    ]
+    "ignorePatterns": ["**/routeTree.gen.ts", "**/openapi.d.ts"]
 }
