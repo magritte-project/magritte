@@ -69,6 +69,12 @@ export const LibraryProtocol = protocol("Magritte.Host.Library", {
         input: LibraryBulkIngestableSongs,
         output: z4.void(),
     },
+
+    /** Resolve an image URL for an artwork */
+    resolveArtworkImageUrl: {
+        input: z4.string(),
+        output: z4.string().optional(),
+    },
 })
 
 export type Library = ProtocolObject<typeof LibraryProtocol>

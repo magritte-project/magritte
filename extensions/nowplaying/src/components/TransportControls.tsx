@@ -8,7 +8,7 @@ export default function TransportControls() {
     const { state } = useNowPlaying()
     const { resume, pause, skipPrevious, skipNext } = useTransportControls()
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-evenly gap-2">
             <button
                 className={classNames(
                     "p-2 rounded-full active:bg-black/10",

@@ -1,10 +1,13 @@
 import type { Library } from "@magritte/sdk/host"
 
 import type { APIClient } from "@/api/client"
+import type { UserSession } from "@/api/userSession"
+
+import { resolveUrl } from "@/utilities/resources"
 
 // TODO: This should enforce library:read and library:write capabilities
 
-export function exportLibrary(apiClient: APIClient): Library {
+export function exportLibrary(userSession: UserSession | null, apiClient: APIClient): Library {
     return {
         readLibraries: async () => {
             return (await apiClient.readLibraries()).map((library) => ({
@@ -14,6 +17,9 @@ export function exportLibrary(apiClient: APIClient): Library {
         },
         bulkIngestSongs: async ({ libraryId, songs }) => {
             await apiClient.ingestSongs(libraryId, { songs })
+        },
+        resolveArtworkImageUrl: async (url) => {
+            return resolveUrl(url, userSession)
         },
     }
 }

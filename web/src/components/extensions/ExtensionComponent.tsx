@@ -10,10 +10,12 @@ import { exportPlayer } from "@/extensions/exports/Player"
 import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
 import useToast from "@/hooks/toastHook"
+import useUserSession from "@/hooks/userSessionHook"
 
 export function buildExtensionComponent(extensionManager: ExtensionManager, id: string) {
     function ExtensionComponent() {
         const { showToast } = useToast()
+        const userSession = useUserSession()
         const apiClient = useAPIClient()
         const player = usePlayer()
         const containerRef = useRef<HTMLDivElement | null>(null)
@@ -38,7 +40,7 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
                             showToast(options)
                         },
                     },
-                    library: exportLibrary(apiClient),
+                    library: exportLibrary(userSession?.current, apiClient),
                     player: exportPlayer(broadcaster, player),
                 },
             })
@@ -57,7 +59,7 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
                 extensionManager.releaseInstance(instance)
                 resizeObserver.disconnect()
             }
-        }, [showToast, apiClient, player])
+        }, [showToast, userSession, apiClient, player])
 
         return (
             <div ref={containerRef} className="h-full flex items-center justify-center">
