@@ -35,6 +35,8 @@ Bootstrapping the development environment creates a single `.env` file at the ro
 
 __Note:__ You do not need to populate the session secrets or salt, as they are generated automatically when the server starts for the first time.
 
+You may also wish to review the `.env` files in the extension projects included in the monorepo. The `bootstrap` script will create `.env` files in any extensions which have them, but further configuration may be necessary for an extension to function.
+
 ## Development
 
 Once you've installed all of the prerequisites, you can run the development API and web servers:

@@ -12,22 +12,17 @@ import { initializeMusicKit } from "@/musickit/initialization"
 import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
-
-// TODO: This can't directly call the Magritte server long term
-// Get Apple Music developer token
-const tokenResponse = await fetch("/api/functions/apple_music_token", {
-    method: "POST",
-    body: "{}",
-    headers: { "Content-Type": "application/json" },
-})
-if (!tokenResponse.ok) {
-    throw new Error("Failed to get Apple Music developer token")
-}
-const { developer_token } = await tokenResponse.json()
+import createDeveloperToken from "@/utilities/token"
 
 // Set up Apple Music API
+const developerToken = await createDeveloperToken({
+    teamId: import.meta.env.VITE_TEAM_ID,
+    appId: import.meta.env.VITE_APP_ID,
+    keyId: import.meta.env.VITE_KEY_ID,
+    privateKey: import.meta.env.VITE_KEY_SECRET,
+})
 const musicKit = await initializeMusicKit({
-    developerToken: developer_token,
+    developerToken,
     app: {
         name: "Magritte",
     },
