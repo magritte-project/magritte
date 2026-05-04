@@ -4,8 +4,9 @@ import { useCallback } from "react"
 
 import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlaybackTime from "@/hooks/playbackTimeHook"
+
 export default function NowPlayingScrubber() {
-    const { elapsedTime: currentTime, totalTime, seekToTime, isSeeking } = usePlaybackTime()
+    const { elapsedTime, totalTime, seekToTime, isSeeking } = usePlaybackTime()
     const playbackState = usePlaybackState()
     const handleChange = useCallback(
         async (newValue: number | number[]) => {
@@ -15,8 +16,8 @@ export default function NowPlayingScrubber() {
     )
     return (
         <Slider
-            value={currentTime || 0}
-            max={totalTime || 0}
+            value={elapsedTime ?? 0}
+            max={totalTime ?? 0}
             step={1}
             onChange={handleChange}
             disabled={isSeeking || playbackState === "stopped"}

@@ -1,8 +1,16 @@
+import { connectToExtensionHost } from "@magritte/sdk/connection"
 import { StrictMode } from "react"
-import ReactDOM from "react-dom/client"
 
 import "./index.css"
-import App from "./App.tsx"
+import ReactDOM from "react-dom/client"
+
+import Extension from "@/components/Extension"
+import { ExtensionHostContext } from "@/contexts/extensionHostContext"
+
+// Handshake with the extension host
+const extensionHost = await connectToExtensionHost({
+    extensionId: "magritte.nowplaying",
+})
 
 // Render the app
 const rootElement = document.getElementById("app")
@@ -10,7 +18,9 @@ if (rootElement && !rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement)
     root.render(
         <StrictMode>
-            <App />
+            <ExtensionHostContext.Provider value={extensionHost}>
+                <Extension />
+            </ExtensionHostContext.Provider>
         </StrictMode>,
     )
 }

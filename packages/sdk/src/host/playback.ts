@@ -61,6 +61,12 @@ export const ReplaceQueueOptions = z4.object({
 })
 export type ReplaceQueueOptions = z4.infer<typeof ReplaceQueueOptions>
 
+export const NowPlaying = z4.object({
+    state: PlaybackState,
+    item: PlayableItem.nullable(),
+})
+export type NowPlaying = z4.infer<typeof NowPlaying>
+
 /**
  * A protocol which allows an extension to interact with the player in the host.
  */
@@ -82,10 +88,7 @@ export const PlayerProtocol = protocol("Magritte.Host.Player", {
     /** Get the current playback state and item. */
     getNowPlaying: {
         input: z4.void(),
-        output: z4.object({
-            state: PlaybackState,
-            item: PlayableItem.nullable(),
-        }),
+        output: NowPlaying,
     },
 
     /** Replace any existing queue with a new one. */

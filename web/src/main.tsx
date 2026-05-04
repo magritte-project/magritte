@@ -34,7 +34,7 @@ const commandRegistry = new CommandRegistry()
 
 // Set up extensions
 const extensionManager = new ExtensionManager()
-// TODO: Don't hard code this
+// TODO: Don't hard code these
 extensionManager.install({
     name: "Apple Music",
     id: "magritte.applemusic",
@@ -47,6 +47,21 @@ extensionManager.install({
             type: "split",
             minWidth: "16rem",
             preferredLocation: "end",
+        },
+    ],
+})
+extensionManager.install({
+    name: "Now Playing",
+    id: "magritte.nowplaying",
+    version: "0.0.0",
+    url: "http://localhost:9294/",
+    permissions: [],
+    allowsMultipleInstances: true,
+    useCases: [
+        {
+            type: "split",
+            minWidth: "16rem",
+            preferredLocation: "start",
         },
     ],
 })
