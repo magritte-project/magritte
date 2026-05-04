@@ -107,23 +107,6 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
-    readonly "/functions/{name}": {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path?: never;
-            readonly cookie?: never;
-        };
-        readonly get?: never;
-        readonly put?: never;
-        /** Call a server function */
-        readonly post: operations["call_function_functions__name__post"];
-        readonly delete?: never;
-        readonly options?: never;
-        readonly head?: never;
-        readonly patch?: never;
-        readonly trace?: never;
-    };
     readonly "/libraries/{library_id}/albums/{album_id}": {
         readonly parameters: {
             readonly query?: never;
@@ -762,8 +745,6 @@ export interface components {
             readonly env: "dev" | "ci" | "prod";
             /** First Setup Complete */
             readonly first_setup_complete: boolean;
-            /** Available Functions */
-            readonly available_functions: readonly string[];
         };
         /** LibraryCreate */
         readonly LibraryCreate: {
@@ -1415,41 +1396,6 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["Token"];
-                };
-            };
-            /** @description Validation Error */
-            readonly 422: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    readonly call_function_functions__name__post: {
-        readonly parameters: {
-            readonly query?: never;
-            readonly header?: never;
-            readonly path: {
-                readonly name: string;
-            };
-            readonly cookie?: never;
-        };
-        readonly requestBody: {
-            readonly content: {
-                readonly "application/json": unknown;
-            };
-        };
-        readonly responses: {
-            /** @description Successful Response */
-            readonly 200: {
-                headers: {
-                    readonly [name: string]: unknown;
-                };
-                content: {
-                    readonly "application/json": unknown;
                 };
             };
             /** @description Validation Error */

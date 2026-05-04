@@ -12,7 +12,6 @@ from magritte.auth import (
 )
 from magritte.config import config
 from magritte.db import get_db_session
-from magritte.functions import Functions, get_functions
 from magritte.model.user import User
 from magritte.schemas.auth import InstanceStatusRead
 from magritte.schemas.user import Token, UserProfileRead, UserSignUp
@@ -27,7 +26,6 @@ router = APIRouter()
 )
 async def read_instance_status(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    functions: Annotated[Functions, Depends(get_functions)],
 ):
     return InstanceStatusRead(
         env=config.env,
@@ -38,7 +36,6 @@ async def read_instance_status(
             joins=[],
             session=session,
         ),
-        available_functions=functions.available,
     )
 
 

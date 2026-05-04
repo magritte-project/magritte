@@ -24,4 +24,3 @@ class OAuth2Scope(str, Enum):
 class InstanceStatusRead(BaseModel):
     env: Literal["dev", "ci", "prod"]
     first_setup_complete: bool
-    available_functions: list[str]
