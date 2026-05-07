@@ -18,9 +18,7 @@ format: server::format web::format packages::format packages::format extensions:
 
 check-types: server::check-types web::check-types packages::check-types extensions::check-types
 
-[working-directory: 'web']
-export-openapi:
-    ../admin dump-openapi | pnpm openapi-typescript --immutable --properties-required-by-default --root-types --root-types-no-schema-prefix -o src/api/openapi.d.ts
+generate-openapi: server::generate-openapi web::generate-openapi packages::generate-openapi
 
 clean: server::clean web::clean
 

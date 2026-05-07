@@ -9,3 +9,6 @@ format:
 
 check-types:
     pnpm --filter "./packages/*" exec tsc --noEmit
+
+generate-openapi:
+    pnpm --filter "./packages/*" run generate-openapi

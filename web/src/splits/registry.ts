@@ -18,7 +18,7 @@ function getExtensionSplitDefinition(
     extensionManager: ExtensionManager,
     manifest: ExtensionManifest,
 ): SplitDefinition | undefined {
-    const splitUseCase = manifest.useCases.find((useCase) => useCase.type === "split")
+    const splitUseCase = manifest.useCases?.find((useCase) => useCase.type === "split")
     if (splitUseCase === undefined) {
         return undefined
     }
@@ -28,7 +28,7 @@ function getExtensionSplitDefinition(
         icon: GearIcon,
         minWidth: splitUseCase.minWidth,
         preferredLocation: splitUseCase.preferredLocation,
-        allowsMultiple: manifest.allowsMultipleInstances,
+        allowsMultiple: manifest.allowsMultipleInstances ?? false,
         requiresParameters: false,
         component: buildExtensionComponent(extensionManager, manifest.id),
     }

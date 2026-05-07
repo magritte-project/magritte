@@ -1,0 +1,115 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Magritte Extension SDK",
+        "version": "1.0.0"
+    },
+    "components": {
+        "schemas": {
+            "ExtensionPermissions": {
+                "type": "string",
+                "enum": ["runInBackground"]
+            },
+            "ExtensionUseCaseSplit": {
+                "type": "object",
+                "required": ["type", "minWidth", "preferredLocation"],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": ["split"]
+                    },
+                    "minWidth": {
+                        "type": "string",
+                        "description": "The min width of the extension in a split"
+                    },
+                    "preferredLocation": {
+                        "type": "string",
+                        "enum": ["start", "end"],
+                        "description": "The preferred location of the extension in a split"
+                    }
+                }
+            },
+            "ExtensionUseCaseModal": {
+                "type": "object",
+                "required": ["type", "width", "height"],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": ["modal"]
+                    },
+                    "width": {
+                        "type": "string",
+                        "description": "The width of the extension in a modal"
+                    },
+                    "height": {
+                        "type": "string",
+                        "description": "The height of the extension in a modal"
+                    }
+                }
+            },
+            "ExtensionUseCases": {
+                "oneOf": [
+                    { "$ref": "#/components/schemas/ExtensionUseCaseSplit" },
+                    { "$ref": "#/components/schemas/ExtensionUseCaseModal" }
+                ],
+                "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                        "split": "#/components/schemas/ExtensionUseCaseSplit",
+                        "modal": "#/components/schemas/ExtensionUseCaseModal"
+                    }
+                }
+            },
+            "ExtensionManifest": {
+                "type": "object",
+                "required": ["name", "id", "version", "url"],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "A friendly name for the extension"
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "A unique identifier for the extension"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "The version of the extension"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "An optional description of the extension"
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "The URL of the extension"
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/ExtensionPermissions" },
+                        "default": [],
+                        "description": "An optional array of permissions required by the extension"
+                    },
+                    "allowsMultipleInstances": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Whether the extension allows multiple instances"
+                    },
+                    "useCases": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/ExtensionUseCases" },
+                        "default": [],
+                        "description": "An optional array of use cases for the extension"
+                    }
+                }
+            },
+            "ExtensionData": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "string"
+                },
+                "readOnly": true
+            }
+        }
+    }
+}

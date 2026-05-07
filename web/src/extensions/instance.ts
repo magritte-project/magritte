@@ -1,4 +1,4 @@
-import { ExtensionData, getExtensionSrc, type ExtensionManifest } from "@magritte/sdk"
+import { type ExtensionData, getExtensionSrc, type ExtensionManifest } from "@magritte/sdk"
 import {
     waitForExtensionConnection,
     type Extension,

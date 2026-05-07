@@ -32,13 +32,15 @@
         "test": "vitest run",
         "format": "oxfmt",
         "lint": "oxlint",
-        "check": "oxlint && oxfmt --check"
+        "check": "oxlint && oxfmt --check",
+        "generate-openapi": "openapi-ts"
     },
     "dependencies": {
         "@magritte/rpc": "workspace:*",
         "zod": "catalog:"
     },
     "devDependencies": {
+        "@hey-api/openapi-ts": "^0.97.1",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
         "typescript": "catalog:",
