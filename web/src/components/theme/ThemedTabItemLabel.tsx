@@ -1,7 +1,6 @@
 import type { Icon } from "@phosphor-icons/react"
-import type { ReactNode } from "react"
-
 import classNames from "classnames"
+import type { ReactNode } from "react"
 
 export interface ThemedTabItemLabelProps {
     readonly isActive: boolean

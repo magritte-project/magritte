@@ -2,11 +2,10 @@ import { RPCBroadcaster } from "@magritte/rpc"
 import { GearIcon } from "@phosphor-icons/react"
 import { useEffect, useRef } from "react"
 
-import type { ExtensionInstance } from "@/extensions/instance"
-import type { ExtensionManager } from "@/extensions/manager"
-
 import { exportLibrary } from "@/extensions/exports/Library"
 import { exportPlayer } from "@/extensions/exports/Player"
+import type { ExtensionInstance } from "@/extensions/instance"
+import type { ExtensionManager } from "@/extensions/manager"
 import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
 import useToast from "@/hooks/toastHook"

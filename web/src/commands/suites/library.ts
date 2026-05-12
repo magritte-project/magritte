@@ -1,7 +1,6 @@
 import type { RegisteredRouter } from "@tanstack/react-router"
 
 import type { CommandDefinition } from "@/commands/definition"
-
 import { LibraryInput } from "@/commands/inputs/libraryInput"
 
 export function libraryCommands(router: RegisteredRouter): CommandDefinition[] {

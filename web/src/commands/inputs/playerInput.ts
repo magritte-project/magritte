@@ -2,9 +2,8 @@ import { PlaybackModes } from "@magritte/sdk/extension"
 import { PlayableItem, PlaybackState } from "@magritte/sdk/host"
 import z4 from "zod"
 
-import type { Player } from "@/playback/player"
-
 import { CommandInputs, SingletonCommandInput } from "@/commands/inputs/base"
+import type { Player } from "@/playback/player"
 
 export const PlayerInput = SingletonCommandInput.extend({
     kind: z4.literal("player"),

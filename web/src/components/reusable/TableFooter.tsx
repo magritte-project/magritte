@@ -1,7 +1,6 @@
-import type React from "react"
-
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
+import type React from "react"
 import { type ReactNode, useCallback, useMemo } from "react"
 
 export interface TableFooterProps extends Omit<

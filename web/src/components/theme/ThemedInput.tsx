@@ -1,6 +1,5 @@
-import type React from "react"
-
 import classNames from "classnames"
+import type React from "react"
 
 export type ThemedInputProps = React.InputHTMLAttributes<HTMLInputElement>
 

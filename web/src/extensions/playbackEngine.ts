@@ -1,10 +1,9 @@
 import type { RPCBroadcaster, RPCIncomingBroadcastEvent } from "@magritte/rpc"
-import type { PlayableItem, PlaybackTime } from "@magritte/sdk/host"
-
 import {
     PlaybackEngineProtocol,
     type PlaybackEngine as ExtensionPlaybackEngine,
 } from "@magritte/sdk/extension"
+import type { PlayableItem, PlaybackTime } from "@magritte/sdk/host"
 import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
 
 import type {

@@ -1,5 +1,5 @@
+import classNames from "classnames"
 import React from "react"
-import { classNames } from "react-cmdk"
 
 export interface ThemedAnchorProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {}
 

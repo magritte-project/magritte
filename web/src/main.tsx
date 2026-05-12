@@ -20,6 +20,7 @@ import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
 import SplitRegistry from "@/splits/registry"
+
 import "@/styles.css"
 
 // Set up user session

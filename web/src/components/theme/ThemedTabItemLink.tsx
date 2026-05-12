@@ -3,7 +3,6 @@ import classNames from "classnames"
 import React from "react"
 
 import type { ThemedTabItemLabelProps } from "@/components/theme/ThemedTabItemLabel"
-
 import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 
 interface BasicLinkProps

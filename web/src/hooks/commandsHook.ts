@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 
 import type { CommandDefinition } from "@/commands/definition"
-
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommandRegistry from "@/hooks/commandRegistryHook"
 

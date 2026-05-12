@@ -4,9 +4,8 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
 
-import type { CommandDefinition } from "@/commands/definition"
-
 import { readLibraries } from "@/api/queries/libraries"
+import type { CommandDefinition } from "@/commands/definition"
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"

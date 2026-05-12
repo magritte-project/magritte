@@ -1,6 +1,5 @@
-import type { ReactNode } from "react"
-
 import { CaretLeftIcon } from "@phosphor-icons/react"
+import type { ReactNode } from "react"
 
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"

@@ -1,5 +1,4 @@
 import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
-
 import {
     type EventSink,
     type EventStream,
@@ -13,7 +12,6 @@ import type {
     PlaybackEngineEvent,
 } from "@/playback/engine"
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
-
 import { PlaybackModes } from "@/playback/modes"
 import { type Queue, type RandomItemContext } from "@/playback/queue/base"
 import EmptyQueue from "@/playback/queue/empty"

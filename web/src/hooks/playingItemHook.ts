@@ -1,5 +1,4 @@
 import type { PlayableItem } from "@magritte/sdk/host"
-
 import { useSyncExternalStore } from "react"
 
 import usePlayer from "@/hooks/playerHook"

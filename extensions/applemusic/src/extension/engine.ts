@@ -1,12 +1,11 @@
 import type { RPCBroadcaster } from "@magritte/rpc"
-import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
-
 import {
     PlaybackEngineProtocol,
     type PlaybackEngine,
     type PlaybackEngineEnqueueOptions,
     type PlaybackModes,
 } from "@magritte/sdk/extension"
+import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
 
 function _getPlaybackState(playbackState: MusicKit.PlaybackStates): PlaybackState {
     switch (playbackState) {

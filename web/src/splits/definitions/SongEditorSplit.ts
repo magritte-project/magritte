@@ -1,8 +1,7 @@
 import { PencilIcon } from "@phosphor-icons/react"
 
-import type { SplitDefinition } from "@/splits/base"
-
 import SongEditor from "@/components/SongEditor"
+import type { SplitDefinition } from "@/splits/base"
 
 export const SongEditorSplit: SplitDefinition = {
     id: "songEditor",

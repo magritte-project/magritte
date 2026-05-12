@@ -1,8 +1,7 @@
 import { useSyncExternalStore } from "react"
 
-import type { PlaybackModes } from "@/playback/modes"
-
 import usePlayer from "@/hooks/playerHook"
+import type { PlaybackModes } from "@/playback/modes"
 
 export default function usePlaybackModes(): PlaybackModes {
     const player = usePlayer()

@@ -1,10 +1,8 @@
 import type { PlayableItem } from "@magritte/sdk/host"
-
 import { useSyncExternalStore } from "react"
 
-import type { Queue } from "@/playback/queue/base"
-
 import usePlayer from "@/hooks/playerHook"
+import type { Queue } from "@/playback/queue/base"
 
 export default function useQueue(): Queue<PlayableItem> {
     const player = usePlayer()

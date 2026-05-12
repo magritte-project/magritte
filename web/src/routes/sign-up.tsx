@@ -1,9 +1,8 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import z from "zod"
 
-import type { UserSignUp } from "@/api/openapi"
-
 import { useSignIn, useSignUp } from "@/api/mutations/root"
+import type { UserSignUp } from "@/api/openapi"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import { useAppForm } from "@/hooks/formHook"

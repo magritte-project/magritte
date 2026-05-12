@@ -38,7 +38,6 @@ import type {
     paths,
 } from "@/api/openapi"
 import type { UserSessionManager } from "@/api/userSession"
-
 import { Coalesced } from "@/utilities/coalesced"
 
 export type ReadLibrarySongsSortBy = NonNullable<
@@ -46,11 +45,12 @@ export type ReadLibrarySongsSortBy = NonNullable<
 >["sort_by"]
 
 function unwrap<
-    // biome-ignore lint/suspicious/noExplicitAny: Required due to imported API
     T extends Record<string | number, any>,
     Options,
     Media extends `${string}/${string}`,
->(fetchResponse: FetchResponse<T, Options, Media>) {
+>(fetchResponse: FetchResponse<T, Options, Media>): any {
+    // TODO: Remove explicit `any` return type here once openapi-typescript generates
+    //       correct types: <https://github.com/openapi-ts/openapi-typescript/pull/2774>
     if (fetchResponse.data === undefined) {
         throw new Error(`Could not unwrap fetch response: ${fetchResponse}`)
     }

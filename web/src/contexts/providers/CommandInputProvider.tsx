@@ -2,7 +2,6 @@ import { useEffect, type ReactNode } from "react"
 import z4 from "zod"
 
 import type { CommandInput } from "@/commands/inputs/base"
-
 import useCommandInputs from "@/hooks/commandInputsHook"
 
 export interface CommandInputProviderProps<Input extends CommandInput> {

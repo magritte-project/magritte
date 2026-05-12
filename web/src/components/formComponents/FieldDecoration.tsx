@@ -1,7 +1,6 @@
 import type { AnyFieldApi } from "@tanstack/react-form"
-import type { ReactNode } from "react"
-
 import classNames from "classnames"
+import type { ReactNode } from "react"
 
 import FieldInfo from "@/components/formComponents/FieldInfo"
 

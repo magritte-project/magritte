@@ -1,12 +1,10 @@
 import type { RPCBroadcaster } from "@magritte/rpc"
-
 import {
     PlayerProtocol as ExtensionPlayerProtocol,
     type Player as ExtensionPlayer,
 } from "@magritte/sdk/host"
 
 import type { Player as HostPlayer } from "@/playback/player"
-
 import ArrayQueue from "@/playback/queue/array"
 
 export function exportPlayer(broadcaster: RPCBroadcaster, player: HostPlayer): ExtensionPlayer {

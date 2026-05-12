@@ -1,8 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import type { MusicSearchResponse } from "@/musickit/models/search"
-
 import { search } from "@/api/keys/search"
+import type { MusicSearchResponse } from "@/musickit/models/search"
 
 export function searchSongs(
     musicKit: MusicKit.Instance,

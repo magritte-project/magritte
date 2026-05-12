@@ -1,6 +1,5 @@
-import type { MusicArtwork } from "@/musickit/models/base"
-
 import ArtworkImage from "@/components/ArtworkImage"
+import type { MusicArtwork } from "@/musickit/models/base"
 
 export interface SearchResultLabelProps {
     readonly artwork?: MusicArtwork

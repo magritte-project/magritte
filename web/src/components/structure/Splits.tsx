@@ -2,7 +2,6 @@ import Split from "@uiw/react-split"
 import { useCallback, useMemo, type ReactNode } from "react"
 
 import type { CommandDefinition } from "@/commands/definition"
-
 import SplitPane from "@/components/structure/SplitPane"
 import CommandsProvider from "@/contexts/providers/CommandsProvider"
 import SplitsContextProvider from "@/contexts/providers/SplitsContextProvider"

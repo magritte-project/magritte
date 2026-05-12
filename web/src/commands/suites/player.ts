@@ -1,7 +1,6 @@
 import type { CommandDefinition } from "@/commands/definition"
-import type { Player } from "@/playback/player"
-
 import { PlayerInput } from "@/commands/inputs/playerInput"
+import type { Player } from "@/playback/player"
 
 export function playerCommands(player: Player): CommandDefinition[] {
     return [

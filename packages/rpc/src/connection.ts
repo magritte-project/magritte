@@ -1,11 +1,10 @@
-import type { RPCObject } from "./object"
-import type { ProtocolImplementation } from "./protocol"
-import type { RPCCommand, RPCCommandResult, RPCTransport, RPCTransportMessage } from "./transport"
-
 import { RPCBroadcaster } from "./broadcaster"
 import { LocalObject } from "./internal/localObject"
 import { RemoteObject } from "./internal/remoteObject"
 import { assertNever } from "./internal/utilities"
+import type { RPCObject } from "./object"
+import type { ProtocolImplementation } from "./protocol"
+import type { RPCCommand, RPCCommandResult, RPCTransport, RPCTransportMessage } from "./transport"
 
 async function dispatchCommand(command: RPCCommand, object: RPCObject): Promise<RPCCommandResult> {
     try {

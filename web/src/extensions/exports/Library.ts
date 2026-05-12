@@ -2,7 +2,6 @@ import type { Library } from "@magritte/sdk/host"
 
 import type { APIClient } from "@/api/client"
 import type { UserSession } from "@/api/userSession"
-
 import { resolveUrl } from "@/utilities/resources"
 
 // TODO: This should enforce library:read and library:write capabilities

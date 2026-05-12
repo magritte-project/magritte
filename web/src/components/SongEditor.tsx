@@ -2,10 +2,8 @@ import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import z from "zod"
 
-import type { SongRead, SongUpdate } from "@/api/openapi"
-import type { SplitComponentProps } from "@/splits/base"
-
 import { useUpdateLibrarySong } from "@/api/mutations/libraries"
+import type { SongRead, SongUpdate } from "@/api/openapi"
 import { readLibrarySong } from "@/api/queries/libraries"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
@@ -13,6 +11,7 @@ import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailabl
 import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"
 import useToast from "@/hooks/toastHook"
+import type { SplitComponentProps } from "@/splits/base"
 import { getErrorMessage } from "@/utilities/errors"
 
 export type SongEditorProps = SplitComponentProps

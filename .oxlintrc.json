@@ -6,7 +6,7 @@
         "es2024": true
     },
     "rules": {
-        "no-useless-else": "off"
+        "no-else-return": "off"
     },
     "ignorePatterns": [
         "web/src/routeTree.gen.ts",

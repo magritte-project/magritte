@@ -1,8 +1,7 @@
-import type { SplitDefinition, SplitLocation, SplitParameter } from "@/splits/base"
-
 import SplitHeader from "@/components/chrome/SplitHeader"
 import DismissContextProvider from "@/contexts/providers/DismissContextProvider"
 import useSplits from "@/hooks/splitsHook"
+import type { SplitDefinition, SplitLocation, SplitParameter } from "@/splits/base"
 
 export interface SplitPaneProps {
     readonly location: SplitLocation

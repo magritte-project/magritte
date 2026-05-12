@@ -1,5 +1,4 @@
 import type { ExtensionHost } from "@magritte/sdk/connection"
-
 import { useRouteContext } from "@tanstack/react-router"
 
 export default function useExtensionHost(): ExtensionHost {

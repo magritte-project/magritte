@@ -1,5 +1,4 @@
 import type { EventCallback } from "@magritte/sdk/utilities"
-
 import { useRouteContext } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
 

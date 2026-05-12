@@ -1,12 +1,10 @@
 import type { ExtensionManifest } from "@magritte/sdk"
-
 import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
 import { GearIcon } from "@phosphor-icons/react"
 
-import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
-
 import { buildExtensionComponent } from "@/components/extensions/ExtensionComponent"
 import { type ExtensionManager, type ExtensionManagerEvent } from "@/extensions/manager"
+import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
 import { QuickMixSplit } from "@/splits/definitions/QuickMixSplit"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 

@@ -1,8 +1,7 @@
 import { CassetteTapeIcon } from "@phosphor-icons/react"
 
-import type { SplitDefinition } from "@/splits/base"
-
 import QuickMix from "@/components/QuickMix"
+import type { SplitDefinition } from "@/splits/base"
 
 export const QuickMixSplit: SplitDefinition = {
     id: "quickMix",

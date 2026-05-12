@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useState } from "react"
 
 import type { CommandDefinition } from "@/commands/definition"
-
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommands from "@/hooks/commandsHook"
 

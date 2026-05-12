@@ -1,7 +1,6 @@
-import type { ReactNode } from "react"
-
+import classNames from "classnames"
 import { AnimatePresence, motion } from "motion/react"
-import { classNames } from "react-cmdk"
+import type { ReactNode } from "react"
 import { createPortal } from "react-dom"
 
 import DismissContextProvider from "@/contexts/providers/DismissContextProvider"

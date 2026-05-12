@@ -2,10 +2,9 @@ import { AnimatePresence } from "motion/react"
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
 import { createPortal } from "react-dom"
 
-import type { Toast } from "@/contexts/toastContext"
-
 import ToastNotification from "@/components/chrome/ToastNotification"
 import ToastContextProvider from "@/contexts/providers/ToastContextProvider"
+import type { Toast } from "@/contexts/toastContext"
 
 export interface ToastLayoutProps {
     readonly children?: ReactNode

@@ -1,6 +1,5 @@
-import type { QueryClient } from "@tanstack/react-query"
-
 import { TanStackDevtools } from "@tanstack/react-devtools"
+import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 
@@ -9,13 +8,12 @@ import type { UserEvents } from "@/api/userEvents"
 import type { UserSessionManager } from "@/api/userSession"
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
-import type { ExtensionManager } from "@/extensions/manager"
-import type { Player } from "@/playback/player"
-import type SplitRegistry from "@/splits/registry"
-
 import AppCommandPalette from "@/components/structure/AppCommandPalette"
 import RootLayout from "@/components/structure/RootLayout"
+import type { ExtensionManager } from "@/extensions/manager"
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
+import type { Player } from "@/playback/player"
+import type SplitRegistry from "@/splits/registry"
 
 export interface MagritteRouterContext {
     readonly queryClient: QueryClient

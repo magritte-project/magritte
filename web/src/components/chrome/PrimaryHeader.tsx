@@ -1,4 +1,4 @@
-import { CaretLeftIcon, CommandIcon } from "@phosphor-icons/react"
+import { CaretLeftIcon, CommandIcon, ControlIcon } from "@phosphor-icons/react"
 import { useCanGoBack, useRouter } from "@tanstack/react-router"
 import { useCallback, type ReactNode } from "react"
 
@@ -16,7 +16,7 @@ export interface PrimaryHeaderProps {
 export default function PrimaryHeader({ children }: PrimaryHeaderProps) {
     const { history } = useRouter()
     const canGoBack = useCanGoBack()
-    const { setIsOpen: setCommandPaletteIsOpen } = useAppCommandPaletteContext()
+    const { setIsOpen: setCommandPaletteIsOpen, modifierKey } = useAppCommandPaletteContext()
     const handleToggleCommandPalette = useCallback(() => {
         setCommandPaletteIsOpen((oldValue) => !oldValue)
     }, [setCommandPaletteIsOpen])
@@ -31,7 +31,7 @@ export default function PrimaryHeader({ children }: PrimaryHeaderProps) {
                 <>
                     <VolumeButton />
                     <ThemedSubtleButton onClick={handleToggleCommandPalette}>
-                        <CommandIcon /> K
+                        {modifierKey === "meta" ? <CommandIcon /> : <ControlIcon />} K
                     </ThemedSubtleButton>
                     <NotificationsButton />
                     <UserButton />

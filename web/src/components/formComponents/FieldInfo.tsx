@@ -1,6 +1,5 @@
-import type { AnyFieldApi } from "@tanstack/react-form"
-
 import { WarningCircleIcon } from "@phosphor-icons/react"
+import type { AnyFieldApi } from "@tanstack/react-form"
 
 import { getErrorMessage } from "@/utilities/errors"
 

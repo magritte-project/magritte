@@ -1,7 +1,6 @@
 import { useEffect, type ReactNode } from "react"
 
 import type { CommandDefinition } from "@/commands/definition"
-
 import useCommandRegistry from "@/hooks/commandRegistryHook"
 
 export interface CommandsProviderProps {

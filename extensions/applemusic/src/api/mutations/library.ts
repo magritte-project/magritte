@@ -1,5 +1,4 @@
 import type { LibraryBulkIngestableSongsInput } from "@magritte/sdk/host"
-
 import { useMutation } from "@tanstack/react-query"
 
 import useExtensionHost from "@/hooks/extensionHostHook"
