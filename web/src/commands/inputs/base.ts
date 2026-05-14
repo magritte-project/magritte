@@ -1,18 +1,6 @@
+import type { CommandInput, SingletonCommandInput } from "@magritte/sdk/host"
 import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
 import z4 from "zod/v4"
-
-export const CommandInput = z4.object({
-    kind: z4.string(),
-    id: z4.union([z4.string(), z4.number()]),
-})
-
-export type CommandInput = z4.infer<typeof CommandInput>
-
-export const SingletonCommandInput = CommandInput.extend({
-    id: z4.literal("__onlyOne__"),
-})
-
-export type SingletonCommandInput = z4.infer<typeof SingletonCommandInput>
 
 export type CommandInputsEvent = { readonly type: "commandInputsDidChange" }
 
@@ -27,18 +15,18 @@ export class CommandInputs {
 
     readonly $events: EventStream<CommandInputsEvent>
 
-    add<Input extends CommandInput>(schema: z4.ZodType<Input>, input: Input): void {
+    add(input: CommandInput): void {
         let inputsOfKind = this._inputs.get(input.kind)
         if (inputsOfKind === undefined) {
             inputsOfKind = new Map<string | number, unknown>()
             this._inputs.set(input.kind, inputsOfKind)
         }
 
-        inputsOfKind.set(input.id, schema.parse(input))
+        inputsOfKind.set(input.id, input)
         this._events.dispatch({ type: "commandInputsDidChange" })
     }
 
-    remove<Input extends CommandInput>(input: Input): void {
+    remove(input: CommandInput): void {
         const inputsOfKind = this._inputs.get(input.kind)
         if (inputsOfKind !== undefined) {
             const deleted = inputsOfKind.delete(input.id)

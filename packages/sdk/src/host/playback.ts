@@ -24,7 +24,7 @@ export type PlayableItemSource = z4.infer<typeof PlayableItemSource>
 
 export const PlayableItem = z4
     .object({
-        id: z4.unknown(),
+        id: z4.union([z4.string(), z4.number()]),
         artist_name: z4.string().nullish(),
         album_title: z4.string().nullish(),
         artworks: z4.array(PlayableItemArtwork).readonly().optional(),

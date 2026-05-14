@@ -13,11 +13,12 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
 
         return (
             <CommandInputProvider
-                schema={LibraryInput}
-                value={{
-                    kind: "library",
-                    id: Number(params.libraryId),
-                }}
+                value={
+                    {
+                        kind: "library",
+                        id: Number(params.libraryId),
+                    } satisfies LibraryInput
+                }
             >
                 <div>
                     <PrimaryHeader>

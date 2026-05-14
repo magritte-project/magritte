@@ -14,11 +14,15 @@ export function playerCommands(player: Player): CommandDefinition[] {
             id: "playback.playPaused",
             searchTerms: "play pause",
             displayName: (inputs) => {
-                const { playbackState } = inputs.only("player", PlayerInput)
+                const {
+                    args: { playbackState },
+                } = inputs.only("player", PlayerInput)
                 return playbackState === "playing" ? "Pause" : "Play"
             },
             disabled: (inputs) => {
-                const { playbackState } = inputs.only("player", PlayerInput)
+                const {
+                    args: { playbackState },
+                } = inputs.only("player", PlayerInput)
                 return playbackState === "stopped"
             },
             execute: async () => {
@@ -40,7 +44,9 @@ export function playerCommands(player: Player): CommandDefinition[] {
             searchTerms: "repeat off",
             displayName: () => "Repeat Off",
             disabled: (inputs) => {
-                const { playbackModes } = inputs.only("player", PlayerInput)
+                const {
+                    args: { playbackModes },
+                } = inputs.only("player", PlayerInput)
                 return playbackModes.repeat === "off"
             },
             execute: () =>
@@ -51,7 +57,9 @@ export function playerCommands(player: Player): CommandDefinition[] {
             searchTerms: "repeat all",
             displayName: () => "Repeat All",
             disabled: (inputs) => {
-                const { playbackModes } = inputs.only("player", PlayerInput)
+                const {
+                    args: { playbackModes },
+                } = inputs.only("player", PlayerInput)
                 return playbackModes.repeat === "all"
             },
             execute: () =>
@@ -62,7 +70,9 @@ export function playerCommands(player: Player): CommandDefinition[] {
             searchTerms: "repeat one",
             displayName: () => "Repeat One",
             disabled: (inputs) => {
-                const { playbackModes } = inputs.only("player", PlayerInput)
+                const {
+                    args: { playbackModes },
+                } = inputs.only("player", PlayerInput)
                 return playbackModes.repeat === "one"
             },
             execute: () =>
@@ -73,7 +83,9 @@ export function playerCommands(player: Player): CommandDefinition[] {
             searchTerms: "shuffle off",
             displayName: () => "Shuffle Off",
             disabled: (inputs) => {
-                const { playbackModes } = inputs.only("player", PlayerInput)
+                const {
+                    args: { playbackModes },
+                } = inputs.only("player", PlayerInput)
                 return playbackModes.shuffle === "off"
             },
             execute: () =>
@@ -84,7 +96,9 @@ export function playerCommands(player: Player): CommandDefinition[] {
             searchTerms: "shuffle on",
             displayName: () => "Shuffle On",
             disabled: (inputs) => {
-                const { playbackModes } = inputs.only("player", PlayerInput)
+                const {
+                    args: { playbackModes },
+                } = inputs.only("player", PlayerInput)
                 return playbackModes.shuffle === "on"
             },
             execute: () =>

@@ -63,7 +63,7 @@ export default function AppCommandPalette() {
                         >
                             {results.map((result) => (
                                 <ComboboxOption
-                                    className="px-4 py-2 not-last:border-b border-gray-200 data-focus:bg-blue-100"
+                                    className="px-4 py-2 not-last:border-b border-gray-200 data-focus:bg-blue-100 data-disabled:opacity-50"
                                     key={result.id}
                                     value={result}
                                     disabled={result.disabled?.(inputs)}
