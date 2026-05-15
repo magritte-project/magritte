@@ -7,23 +7,20 @@ export function playerCommands(player: Player): CommandDefinition[] {
         {
             id: "playback.skipPrevious",
             searchTerms: "skip previous",
-            displayName: () => "Skip Previous",
+            present: () => ({ displayName: "Skip Previous", disabled: false }),
             execute: () => player.skipPrevious(),
         },
         {
             id: "playback.playPaused",
             searchTerms: "play pause",
-            displayName: (inputs) => {
+            present: (inputs) => {
                 const {
                     args: { playbackState },
                 } = inputs.only("player", PlayerInput)
-                return playbackState === "playing" ? "Pause" : "Play"
-            },
-            disabled: (inputs) => {
-                const {
-                    args: { playbackState },
-                } = inputs.only("player", PlayerInput)
-                return playbackState === "stopped"
+                return {
+                    displayName: playbackState === "playing" ? "Pause" : "Play",
+                    disabled: playbackState === "stopped",
+                }
             },
             execute: async () => {
                 if (player.playbackState === "playing") {
@@ -36,18 +33,17 @@ export function playerCommands(player: Player): CommandDefinition[] {
         {
             id: "playback.skipNext",
             searchTerms: "skip next",
-            displayName: () => "Skip Next",
+            present: () => ({ displayName: "Skip Next", disabled: false }),
             execute: () => player.skipNext(),
         },
         {
             id: "playback.repeatOff",
             searchTerms: "repeat off",
-            displayName: () => "Repeat Off",
-            disabled: (inputs) => {
+            present: (inputs) => {
                 const {
                     args: { playbackModes },
                 } = inputs.only("player", PlayerInput)
-                return playbackModes.repeat === "off"
+                return { displayName: "Repeat Off", disabled: playbackModes.repeat === "off" }
             },
             execute: () =>
                 player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("off")),
@@ -55,12 +51,11 @@ export function playerCommands(player: Player): CommandDefinition[] {
         {
             id: "playback.repeatAll",
             searchTerms: "repeat all",
-            displayName: () => "Repeat All",
-            disabled: (inputs) => {
+            present: (inputs) => {
                 const {
                     args: { playbackModes },
                 } = inputs.only("player", PlayerInput)
-                return playbackModes.repeat === "all"
+                return { displayName: "Repeat All", disabled: playbackModes.repeat === "all" }
             },
             execute: () =>
                 player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("all")),
@@ -68,41 +63,29 @@ export function playerCommands(player: Player): CommandDefinition[] {
         {
             id: "playback.repeatOne",
             searchTerms: "repeat one",
-            displayName: () => "Repeat One",
-            disabled: (inputs) => {
+            present: (inputs) => {
                 const {
                     args: { playbackModes },
                 } = inputs.only("player", PlayerInput)
-                return playbackModes.repeat === "one"
+                return { displayName: "Repeat One", disabled: playbackModes.repeat === "one" }
             },
             execute: () =>
                 player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("one")),
         },
         {
-            id: "playback.shuffleOff",
-            searchTerms: "shuffle off",
-            displayName: () => "Shuffle Off",
-            disabled: (inputs) => {
+            id: "playback.shuffleOnOff",
+            searchTerms: "shuffle on off toggle",
+            present: (inputs) => {
                 const {
                     args: { playbackModes },
                 } = inputs.only("player", PlayerInput)
-                return playbackModes.shuffle === "off"
+                return {
+                    displayName: playbackModes.shuffle === "on" ? "Shuffle Off" : "Shuffle On",
+                    disabled: false,
+                }
             },
             execute: () =>
-                player.setPlaybackModes((playbackModes) => playbackModes.withShuffle("off")),
-        },
-        {
-            id: "playback.shuffleOn",
-            searchTerms: "shuffle on",
-            displayName: () => "Shuffle On",
-            disabled: (inputs) => {
-                const {
-                    args: { playbackModes },
-                } = inputs.only("player", PlayerInput)
-                return playbackModes.shuffle === "on"
-            },
-            execute: () =>
-                player.setPlaybackModes((playbackModes) => playbackModes.withShuffle("on")),
+                player.setPlaybackModes((playbackModes) => playbackModes.withNextShuffle()),
         },
     ]
 }

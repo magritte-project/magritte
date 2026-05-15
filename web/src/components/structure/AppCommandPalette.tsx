@@ -61,16 +61,19 @@ export default function AppCommandPalette() {
                             className="w-(--input-width) bg-gray-100 rounded-md flex flex-col"
                             anchor="bottom"
                         >
-                            {results.map((result) => (
-                                <ComboboxOption
-                                    className="px-4 py-2 not-last:border-b border-gray-200 data-focus:bg-blue-100 data-disabled:opacity-50"
-                                    key={result.id}
-                                    value={result}
-                                    disabled={result.disabled?.(inputs)}
-                                >
-                                    {result.displayName(inputs)}
-                                </ComboboxOption>
-                            ))}
+                            {results.map((result) => {
+                                const { displayName, disabled } = result.present(inputs)
+                                return (
+                                    <ComboboxOption
+                                        className="px-4 py-2 not-last:border-b border-gray-200 data-focus:bg-blue-100 data-disabled:opacity-50"
+                                        key={result.id}
+                                        value={result}
+                                        disabled={disabled}
+                                    >
+                                        {displayName}
+                                    </ComboboxOption>
+                                )
+                            })}
                         </ComboboxOptions>
                     </Combobox>
                 </motion.div>

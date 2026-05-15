@@ -8,8 +8,10 @@ export function libraryCommands(router: RegisteredRouter): CommandDefinition[] {
         {
             id: `libraries.artists`,
             searchTerms: "library artists",
-            displayName: () => "Go to Artists",
-            disabled: (inputs) => !inputs.hasAny("library", LibraryInput),
+            present: (inputs) => ({
+                displayName: "Go to Artists",
+                disabled: !inputs.hasAny("library", LibraryInput),
+            }),
             execute: async (inputs) => {
                 const [library] = inputs.allOf("library", LibraryInput)
                 router.navigate({
@@ -21,8 +23,10 @@ export function libraryCommands(router: RegisteredRouter): CommandDefinition[] {
         {
             id: `libraries.albums`,
             searchTerms: "library albums",
-            displayName: () => "Go to Albums",
-            disabled: (inputs) => !inputs.hasAny("library", LibraryInput),
+            present: (inputs) => ({
+                displayName: "Go to Albums",
+                disabled: !inputs.hasAny("library", LibraryInput),
+            }),
             execute: async (inputs) => {
                 const [library] = inputs.allOf("library", LibraryInput)
                 router.navigate({
@@ -34,8 +38,10 @@ export function libraryCommands(router: RegisteredRouter): CommandDefinition[] {
         {
             id: `libraries.songs`,
             searchTerms: "library songs",
-            displayName: () => "Go to Songs",
-            disabled: (inputs) => !inputs.hasAny("library", LibraryInput),
+            present: (inputs) => ({
+                displayName: "Go to Songs",
+                disabled: !inputs.hasAny("library", LibraryInput),
+            }),
             execute: async (inputs) => {
                 const [library] = inputs.allOf("library", LibraryInput)
                 router.navigate({

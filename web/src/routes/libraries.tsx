@@ -25,7 +25,7 @@ export const Route = createFileRoute("/libraries")({
                 (library): CommandDefinition => ({
                     id: `libraries.read[${library.id}]`,
                     searchTerms: `library ${library.name}`,
-                    displayName: () => library.name,
+                    present: () => ({ displayName: library.name, disabled: false }),
                     execute: async () =>
                         navigate({
                             to: "/libraries/$libraryId",

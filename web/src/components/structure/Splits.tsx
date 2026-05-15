@@ -62,8 +62,10 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
             (split): CommandDefinition => ({
                 id: `splits.open[${split.id}]`,
                 searchTerms: `open ${split.name}`,
-                displayName: () => `Open ${split.name}`,
-                disabled: () => !split.allowsMultiple && splits.has(split.id),
+                present: () => ({
+                    displayName: `Open ${split.name}`,
+                    disabled: !split.allowsMultiple && splits.has(split.id),
+                }),
                 execute: async () => openSplit(split),
             }),
         )
