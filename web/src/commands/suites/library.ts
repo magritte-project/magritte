@@ -1,14 +1,14 @@
 import type { RegisteredRouter } from "@tanstack/react-router"
 
-import type { CommandDefinition } from "@/commands/definition"
+import type { Command } from "@/commands/base"
 import { LibraryInput } from "@/commands/inputs/libraryInput"
 
-export function libraryCommands(router: RegisteredRouter): CommandDefinition[] {
+export function libraryCommands(router: RegisteredRouter): Command[] {
     return [
         {
             id: `libraries.artists`,
             searchTerms: "library artists",
-            present: (inputs) => ({
+            present: async (inputs) => ({
                 displayName: "Go to Artists",
                 disabled: !inputs.hasAny("library", LibraryInput),
             }),
@@ -23,7 +23,7 @@ export function libraryCommands(router: RegisteredRouter): CommandDefinition[] {
         {
             id: `libraries.albums`,
             searchTerms: "library albums",
-            present: (inputs) => ({
+            present: async (inputs) => ({
                 displayName: "Go to Albums",
                 disabled: !inputs.hasAny("library", LibraryInput),
             }),
@@ -38,7 +38,7 @@ export function libraryCommands(router: RegisteredRouter): CommandDefinition[] {
         {
             id: `libraries.songs`,
             searchTerms: "library songs",
-            present: (inputs) => ({
+            present: async (inputs) => ({
                 displayName: "Go to Songs",
                 disabled: !inputs.hasAny("library", LibraryInput),
             }),

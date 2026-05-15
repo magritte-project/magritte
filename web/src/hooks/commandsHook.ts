@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import type { CommandDefinition } from "@/commands/definition"
+import type { Command } from "@/commands/base"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommandRegistry from "@/hooks/commandRegistryHook"
 
@@ -11,7 +11,7 @@ export interface UseCommandsOptions {
 export default function useCommands({ search }: UseCommandsOptions) {
     const registry = useCommandRegistry()
     const inputs = useCommandInputs()
-    const [results, setResults] = useState<readonly CommandDefinition[]>([])
+    const [results, setResults] = useState<readonly Command[]>([])
 
     useEffect(() => {
         if (!search) {

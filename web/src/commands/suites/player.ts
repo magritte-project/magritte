@@ -1,19 +1,19 @@
-import type { CommandDefinition } from "@/commands/definition"
+import type { Command } from "@/commands/base"
 import { PlayerInput } from "@/commands/inputs/playerInput"
 import type { Player } from "@/playback/player"
 
-export function playerCommands(player: Player): CommandDefinition[] {
+export function playerCommands(player: Player): Command[] {
     return [
         {
             id: "playback.skipPrevious",
             searchTerms: "skip previous",
-            present: () => ({ displayName: "Skip Previous", disabled: false }),
+            present: async () => ({ displayName: "Skip Previous", disabled: false }),
             execute: () => player.skipPrevious(),
         },
         {
             id: "playback.playPaused",
             searchTerms: "play pause",
-            present: (inputs) => {
+            present: async (inputs) => {
                 const {
                     args: { playbackState },
                 } = inputs.only("player", PlayerInput)
@@ -33,13 +33,13 @@ export function playerCommands(player: Player): CommandDefinition[] {
         {
             id: "playback.skipNext",
             searchTerms: "skip next",
-            present: () => ({ displayName: "Skip Next", disabled: false }),
+            present: async () => ({ displayName: "Skip Next", disabled: false }),
             execute: () => player.skipNext(),
         },
         {
             id: "playback.repeatOff",
             searchTerms: "repeat off",
-            present: (inputs) => {
+            present: async (inputs) => {
                 const {
                     args: { playbackModes },
                 } = inputs.only("player", PlayerInput)
@@ -51,7 +51,7 @@ export function playerCommands(player: Player): CommandDefinition[] {
         {
             id: "playback.repeatAll",
             searchTerms: "repeat all",
-            present: (inputs) => {
+            present: async (inputs) => {
                 const {
                     args: { playbackModes },
                 } = inputs.only("player", PlayerInput)
@@ -63,7 +63,7 @@ export function playerCommands(player: Player): CommandDefinition[] {
         {
             id: "playback.repeatOne",
             searchTerms: "repeat one",
-            present: (inputs) => {
+            present: async (inputs) => {
                 const {
                     args: { playbackModes },
                 } = inputs.only("player", PlayerInput)
@@ -75,7 +75,7 @@ export function playerCommands(player: Player): CommandDefinition[] {
         {
             id: "playback.shuffleOnOff",
             searchTerms: "shuffle on off toggle",
-            present: (inputs) => {
+            present: async (inputs) => {
                 const {
                     args: { playbackModes },
                 } = inputs.only("player", PlayerInput)

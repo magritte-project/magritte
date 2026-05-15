@@ -1,10 +1,10 @@
 import { useEffect, type ReactNode } from "react"
 
-import type { CommandDefinition } from "@/commands/definition"
+import type { Command } from "@/commands/base"
 import useCommandRegistry from "@/hooks/commandRegistryHook"
 
 export interface CommandsProviderProps {
-    readonly commands: readonly CommandDefinition[]
+    readonly commands: readonly Command[]
     readonly children?: ReactNode
 }
 export default function CommandsProvider({ commands, children }: CommandsProviderProps) {

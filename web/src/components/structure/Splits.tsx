@@ -1,7 +1,7 @@
 import Split from "@uiw/react-split"
 import { useCallback, useMemo, type ReactNode } from "react"
 
-import type { CommandDefinition } from "@/commands/definition"
+import type { Command } from "@/commands/base"
 import SplitPane from "@/components/structure/SplitPane"
 import CommandsProvider from "@/contexts/providers/CommandsProvider"
 import SplitsContextProvider from "@/contexts/providers/SplitsContextProvider"
@@ -59,10 +59,10 @@ export default function Splits({ hideSplit, children }: SplitsProps) {
     const splitCommands = useMemo(() => {
         return Array.from(
             registry.allOpenable(),
-            (split): CommandDefinition => ({
+            (split): Command => ({
                 id: `splits.open[${split.id}]`,
                 searchTerms: `open ${split.name}`,
-                present: () => ({
+                present: async () => ({
                     displayName: `Open ${split.name}`,
                     disabled: !split.allowsMultiple && splits.has(split.id),
                 }),

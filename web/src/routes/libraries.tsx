@@ -5,7 +5,7 @@ import { Link, Outlet, createFileRoute, useNavigate } from "@tanstack/react-rout
 import { useMemo } from "react"
 
 import { readLibraries } from "@/api/queries/libraries"
-import type { CommandDefinition } from "@/commands/definition"
+import type { Command } from "@/commands/base"
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
@@ -22,10 +22,10 @@ export const Route = createFileRoute("/libraries")({
 
         const libraryCommands = useMemo(() => {
             return libraries.map(
-                (library): CommandDefinition => ({
+                (library): Command => ({
                     id: `libraries.read[${library.id}]`,
                     searchTerms: `library ${library.name}`,
-                    present: () => ({ displayName: library.name, disabled: false }),
+                    present: async () => ({ displayName: library.name, disabled: false }),
                     execute: async () =>
                         navigate({
                             to: "/libraries/$libraryId",

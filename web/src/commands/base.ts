@@ -2,7 +2,7 @@ import type { CommandPresentation } from "@magritte/sdk/extension"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 
-export interface CommandDefinition {
+export interface Command {
     /** Unique identifier for the command */
     readonly id: string
 
@@ -10,7 +10,7 @@ export interface CommandDefinition {
     readonly searchTerms: string
 
     /** Present the command to the user with the given inputs */
-    readonly present: (inputs: CommandInputs) => CommandPresentation
+    readonly present: (inputs: CommandInputs) => Promise<CommandPresentation>
 
     /** Executes the command with the given inputs */
     readonly execute: (inputs: CommandInputs) => Promise<unknown>
