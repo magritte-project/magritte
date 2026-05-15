@@ -4,6 +4,7 @@ from sqlmodel import SQLModel
 from .album import Album
 from .artist import Artist
 from .artwork import Artwork
+from .extension import Extension
 from .library import Library
 from .notification import Notification
 from .playback_event import PlaybackEvent
@@ -20,6 +21,7 @@ __all__ = [
     "Album",
     "Artist",
     "Artwork",
+    "Extension",
     "Library",
     "Notification",
     "PlaybackEvent",

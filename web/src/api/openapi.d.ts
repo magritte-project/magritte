@@ -107,6 +107,108 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/extensions/available/import": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Import an extension so it can be installed by users */
+        readonly post: operations["import_extension_extensions_available_import_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/extensions/available/{extension_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        readonly post?: never;
+        /** Remove an extension for all users */
+        readonly delete: operations["delete_extension_extensions_available__extension_id__delete"];
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/extensions/available": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read extensions available on this instance */
+        readonly get: operations["read_available_extensions_extensions_available_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/extensions/available/{extension_id}/install": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        /** Install an extension from the available list for the current user */
+        readonly post: operations["install_extension_extensions_available__extension_id__install_post"];
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/extensions/installed/{extension_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly get?: never;
+        readonly put?: never;
+        readonly post?: never;
+        /** Uninstall an extension from for the current user */
+        readonly delete: operations["uninstall_extension_extensions_installed__extension_id__delete"];
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/extensions/installed": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /** Read the current user's installed extensions */
+        readonly get: operations["read_installed_extensions_extensions_installed_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/libraries/{library_id}/albums/{album_id}": {
         readonly parameters: {
             readonly query?: never;
@@ -659,6 +761,104 @@ export interface components {
             /** Songs */
             readonly songs: readonly components["schemas"]["IngestSong"][];
         };
+        /** ExtensionImportAdmin */
+        readonly ExtensionImportAdmin: {
+            /**
+             * Manifest Url
+             * Format: uri
+             */
+            readonly manifest_url: string;
+        };
+        /** ExtensionManifest */
+        readonly ExtensionManifest: {
+            /**
+             * Name
+             * @description A friendly name for the extension
+             */
+            readonly name: string;
+            /**
+             * Id
+             * @description A unique identifier for the extension
+             */
+            readonly id: string;
+            /**
+             * Version
+             * @description The version of the extension
+             */
+            readonly version: string;
+            /**
+             * Description
+             * @description An optional description of the extension
+             */
+            readonly description?: string | null;
+            /**
+             * Url
+             * @description The URL of the extension
+             */
+            readonly url: string;
+            /**
+             * Permissions
+             * @description An optional array of permissions required by the extension
+             * @default []
+             */
+            readonly permissions: readonly components["schemas"]["ExtensionPermissions"][] | null;
+            /**
+             * Allowsmultipleinstances
+             * @description Whether the extension allows multiple instances
+             * @default false
+             */
+            readonly allowsMultipleInstances: boolean | null;
+            /**
+             * Usecases
+             * @description An optional array of use cases for the extension
+             * @default []
+             */
+            readonly useCases: readonly (components["schemas"]["ExtensionUseCaseSplit"] | components["schemas"]["ExtensionUseCaseModal"])[] | null;
+        };
+        /**
+         * ExtensionPermissions
+         * @enum {string}
+         */
+        readonly ExtensionPermissions: "runInBackground";
+        /** ExtensionRead */
+        readonly ExtensionRead: {
+            /** Id */
+            readonly id: number;
+            readonly manifest: components["schemas"]["ExtensionManifest"];
+        };
+        /** ExtensionUseCaseModal */
+        readonly ExtensionUseCaseModal: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            readonly type: "modal";
+            /**
+             * Width
+             * @description The width of the extension in a modal
+             */
+            readonly width: string;
+            /**
+             * Height
+             * @description The height of the extension in a modal
+             */
+            readonly height: string;
+        };
+        /** ExtensionUseCaseSplit */
+        readonly ExtensionUseCaseSplit: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            readonly type: "split";
+            /**
+             * Minwidth
+             * @description The min width of the extension in a split
+             */
+            readonly minWidth: string;
+            /** @description The preferred location of the extension in a split */
+            readonly preferredLocation: components["schemas"]["PreferredLocation"];
+        };
         /** HTTPValidationError */
         readonly HTTPValidationError: {
             /** Detail */
@@ -782,6 +982,17 @@ export interface components {
             /** Total */
             readonly total: number;
         };
+        /** LibraryMediaRead[ExtensionRead] */
+        readonly LibraryMediaRead_ExtensionRead_: {
+            /** Items */
+            readonly items: readonly components["schemas"]["ExtensionRead"][];
+            /** Offset */
+            readonly offset: number;
+            /** Limit */
+            readonly limit: number;
+            /** Total */
+            readonly total: number;
+        };
         /** LibraryMediaRead[SongRead] */
         readonly LibraryMediaRead_SongRead_: {
             /** Items */
@@ -881,6 +1092,11 @@ export interface components {
             /** Row Count */
             readonly row_count?: number | null;
         };
+        /**
+         * PreferredLocation
+         * @enum {string}
+         */
+        readonly PreferredLocation: "start" | "end";
         /** SongRead */
         readonly SongRead: {
             /** Id */
@@ -1158,6 +1374,12 @@ export type ArtworkRead = components['schemas']['ArtworkRead'];
 export type ArtworkUpdate = components['schemas']['ArtworkUpdate'];
 export type BodySignInSignInPost = components['schemas']['Body_sign_in_sign_in_post'];
 export type BulkIngestSongs = components['schemas']['BulkIngestSongs'];
+export type ExtensionImportAdmin = components['schemas']['ExtensionImportAdmin'];
+export type ExtensionManifest = components['schemas']['ExtensionManifest'];
+export type ExtensionPermissions = components['schemas']['ExtensionPermissions'];
+export type ExtensionRead = components['schemas']['ExtensionRead'];
+export type ExtensionUseCaseModal = components['schemas']['ExtensionUseCaseModal'];
+export type ExtensionUseCaseSplit = components['schemas']['ExtensionUseCaseSplit'];
 export type HttpValidationError = components['schemas']['HTTPValidationError'];
 export type IngestArtwork = components['schemas']['IngestArtwork'];
 export type IngestSong = components['schemas']['IngestSong'];
@@ -1167,6 +1389,7 @@ export type LibraryCreate = components['schemas']['LibraryCreate'];
 export type LibraryHomePathRead = components['schemas']['LibraryHomePathRead'];
 export type LibraryMediaReadAlbumRead = components['schemas']['LibraryMediaRead_AlbumRead_'];
 export type LibraryMediaReadArtistRead = components['schemas']['LibraryMediaRead_ArtistRead_'];
+export type LibraryMediaReadExtensionRead = components['schemas']['LibraryMediaRead_ExtensionRead_'];
 export type LibraryMediaReadSongRead = components['schemas']['LibraryMediaRead_SongRead_'];
 export type LibraryPermissionCreate = components['schemas']['LibraryPermissionCreate'];
 export type LibraryPermissionRead = components['schemas']['LibraryPermissionRead'];
@@ -1178,6 +1401,7 @@ export type NotificationUpdate = components['schemas']['NotificationUpdate'];
 export type NotificationsRead = components['schemas']['NotificationsRead'];
 export type OAuth2Scope = components['schemas']['OAuth2Scope'];
 export type OperationResult = components['schemas']['OperationResult'];
+export type PreferredLocation = components['schemas']['PreferredLocation'];
 export type SongRead = components['schemas']['SongRead'];
 export type SongUpdate = components['schemas']['SongUpdate'];
 export type SourceCreate = components['schemas']['SourceCreate'];
@@ -1396,6 +1620,200 @@ export interface operations {
                 };
                 content: {
                     readonly "application/json": components["schemas"]["Token"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly import_extension_extensions_available_import_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody: {
+            readonly content: {
+                readonly "application/json": components["schemas"]["ExtensionImportAdmin"];
+            };
+        };
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["OperationResult"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly delete_extension_extensions_available__extension_id__delete: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly extension_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["OperationResult"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_available_extensions_extensions_available_get: {
+        readonly parameters: {
+            readonly query?: {
+                /** @description The page offset to read from */
+                readonly offset?: number;
+                /** @description How many items to read per page */
+                readonly limit?: number;
+            };
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["LibraryMediaRead_ExtensionRead_"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly install_extension_extensions_available__extension_id__install_post: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly extension_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["OperationResult"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly uninstall_extension_extensions_installed__extension_id__delete: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly extension_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["OperationResult"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readonly read_installed_extensions_extensions_installed_get: {
+        readonly parameters: {
+            readonly query?: {
+                /** @description The page offset to read from */
+                readonly offset?: number;
+                /** @description How many items to read per page */
+                readonly limit?: number;
+            };
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["LibraryMediaRead_ExtensionRead_"];
                 };
             };
             /** @description Validation Error */

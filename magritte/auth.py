@@ -50,7 +50,7 @@ def _read_access_token(token: str) -> tuple[str, set[OAuth2Scope]]:
         raise jwt.InvalidTokenError("Bad subject")
 
     scope = to_decode.get("scope")
-    if scope is not None and not isinstance(scope, str):
+    if not isinstance(scope, str):
         raise jwt.InvalidTokenError("Bad scope")
 
     scopes = OAuth2Scope.from_str(scope)

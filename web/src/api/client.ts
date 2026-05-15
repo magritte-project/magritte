@@ -10,11 +10,13 @@ import type {
     ArtworkUpdate,
     BodySignInSignInPost,
     BulkIngestSongs,
+    ExtensionImportAdmin,
     InstanceStatusRead,
     LibraryCreate,
     LibraryHomePathRead,
     LibraryMediaReadAlbumRead,
     LibraryMediaReadArtistRead,
+    LibraryMediaReadExtensionRead,
     LibraryMediaReadSongRead,
     LibraryPermissionCreate,
     LibraryPermissionRead,
@@ -525,6 +527,56 @@ export class APIClient {
     async requestSyncLibrary(library_id: number): Promise<OperationResult> {
         const response = await this._client.POST("/libraries/{library_id}/sync", {
             params: { path: { library_id } },
+        })
+        return unwrap(response)
+    }
+
+    // -- Extension Routes -- //
+
+    async importExtension(body: ExtensionImportAdmin): Promise<OperationResult> {
+        const response = await this._client.POST("/extensions/available/import", {
+            body,
+        })
+        return unwrap(response)
+    }
+
+    async deleteExtension(extension_id: number): Promise<OperationResult> {
+        const response = await this._client.DELETE("/extensions/available/{extension_id}", {
+            params: { path: { extension_id } },
+        })
+        return unwrap(response)
+    }
+
+    async readAvailableExtensions(
+        offset?: number,
+        limit?: number,
+    ): Promise<LibraryMediaReadExtensionRead> {
+        const response = await this._client.GET("/extensions/available", {
+            params: { query: { offset, limit } },
+        })
+        return unwrap(response)
+    }
+
+    async installExtension(extension_id: number): Promise<OperationResult> {
+        const response = await this._client.POST("/extensions/available/{extension_id}/install", {
+            params: { path: { extension_id } },
+        })
+        return unwrap(response)
+    }
+
+    async uninstallExtension(extension_id: number): Promise<OperationResult> {
+        const response = await this._client.DELETE("/extensions/installed/{extension_id}", {
+            params: { path: { extension_id } },
+        })
+        return unwrap(response)
+    }
+
+    async readInstalledExtensions(
+        offset?: number,
+        limit?: number,
+    ): Promise<LibraryMediaReadExtensionRead> {
+        const response = await this._client.GET("/extensions/installed", {
+            params: { query: { offset, limit } },
         })
         return unwrap(response)
     }

@@ -8,6 +8,7 @@ from magritte.model.base import LibraryModel
 from magritte.schemas.auth import OAuth2Scope
 
 if TYPE_CHECKING:
+    from .extension import Extension
     from .library import Library
     from .notification import Notification
 
@@ -54,6 +55,29 @@ class UserNotificationLink(SQLModel, table=True):
     )
 
 
+class UserExtensionLink(SQLModel, table=True):
+    """
+    Links a user to an extension they have installed.
+    """
+
+    __tablename__: str = "user_extension_links"
+
+    extension_id: int = Field(
+        default=None,
+        primary_key=True,
+        foreign_key="extensions.id",
+        ondelete="CASCADE",
+        description="The extension which is installed",
+    )
+    user_id: int = Field(
+        default=None,
+        primary_key=True,
+        foreign_key="users.id",
+        ondelete="CASCADE",
+        description="The user who installed the extension",
+    )
+
+
 class User(LibraryModel, table=True):
     __tablename__: str = "users"
 
@@ -82,6 +106,10 @@ class User(LibraryModel, table=True):
     notifications: list["Notification"] = Relationship(
         back_populates="users",
         link_model=UserNotificationLink,
+    )
+    installed_extensions: list["Extension"] = Relationship(
+        back_populates="users",
+        link_model=UserExtensionLink,
     )
 
     @property
