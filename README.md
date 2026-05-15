@@ -16,7 +16,12 @@
 
 ## Scope
 
-Magritte is intended to be installed on an in-home server with a large storage medium available e.g. a Synology DiskStation or a Raspberry Pi with an external drive attached.
+Magritte is intended to be highly flexible in how it can be configured and where it can be installed.
+
+- The first targeted configuration is in-home servers with a large storage medium available e.g. a Synology DiskStation or a Raspberry Pi with an m.2 hat.
+- In the medium term, Magritte will also be distributable as an app which can be installed on any device with a desktop class operating system.
+- Longer term, it will be possible to configure Magritte to run on cloud infrastructure. In this scenario, Magritte will default to not allowing file uploads to discourage it being used as a tool for piracy.
+- The ultimate goal is for Magritte to ship on its own dedicated hardware, likely something around the level of oomph of a Raspberry Pi 5.
 
 ### Known Working Configurations
 
