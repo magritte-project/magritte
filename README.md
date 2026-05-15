@@ -1,12 +1,13 @@
 # Magritte
 
-A personal music platform.
+## A personal music platform.
 
 - Have your own collection of music files? Install Magritte on your computer or server and start listening to your music from anywhere.
 - Use a streaming service? Magritte supports streaming from various providers through an ecosystem of extensions. Combine your own music collection with streaming to create a seamless listening experience.
-- Looking to understand your listening habits better but don't want to use a proprietary service? Magritte has built in support for scrobbling. Get insights without losing control over your data.
 - Want to share your music with your family? Magritte supports multiple users and multiple libraries. Create a separate curated library for your family to listen to together.
 - Don't want to self-host? Use a public streaming only instance instead.
+
+- Looking to understand your listening habits better but don't want to use a proprietary service? Magritte has built in support for scrobbling. Get insights without losing control over your data.
 - Like to hack on the code? Magritte is open source and contributions are welcome.
 
 [![Test](https://github.com/decarbonization/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/decarbonization/magritte/actions/workflows/test.yml)
@@ -21,7 +22,7 @@ Magritte is intended to be installed on an in-home server with a large storage m
 
 - macOS 15.5 - 26.2
 - Arch Linux
-- Raspberry Pi OS (must be packaged first)
+- Raspberry Pi OS
 
 ## Front ends
 
@@ -64,15 +65,41 @@ To execute the tests:
 just test
 ```
 
+To run a development server for a specific extension, use the `extensions::dev` recipe with the extension name as an argument:
+
+```sh
+just extensions::dev applemusic
+```
+
+### DB Migrations
+
+To create a new database migration, use the `server::db-create-migration` recipe with the migration name as an argument:
+
+```sh
+just server::db-create-migration "extensions_table"
+```
+
+This will create a new migration file in `server/migrations/` with the given name.
+
+To apply the migration to the database, use the `server::db-migrate` recipe:
+
+```sh
+just server::db-migrate
+```
+
+__Important:__ Migrations are currently not distributed with the package. This is [an open issue](https://github.com/decarbonization/magritte/issues/5).
+
+If you need to clear the database and start fresh, you can delete it from the file system and restart the server. Assuming you haven't set a custom `DATA_HOME` environment variable, the database file will be located at `~/.magritte/db.sqlite3`. You may also wish to delete the artwork cache directory at `~/.magritte/artwork/`, however this is not generally required.
+
 ## Packaging
 
 The server and web app can be packaged together for execution outside of a development environment:
 
 ```sh
-just package
+just build
 ```
 
-The package recipe will produce `dist/` directories in both `server/` and `web/` and then combine them into a single `dist/` at the project root. The combined `dist/` is intended to be passed off to a deploy pipeline – it does not include the development `uv` virtual environment, nor the `.env` or `.tool-versions` from the root project.
+The package recipe will first build the web app, then bundle the server into a python package which includes both the server and web app code. This package can then be installed and run outside of a development environment.
 
 ## Data Architecture
 
@@ -124,3 +151,7 @@ Magritte does not integrate with libraries from streaming services such as Apple
 ## Scrobbling
 
 As songs are played back from a Magritte library, front ends keep a timestamped record of all play, pause, fast forward, rewind, and skip previous/next events which occur while the song is played. These playback events are periodically uploaded to the Magritte server. Playback events can then be used to calculate play and skip counts, to generate rich reports such as what songs/artists/albums the user was listening to in a given period of time, to feed signals into recommendation features, and as means to integrate with services like last.fm.
+
+## Extensions
+
+A Magritte extension is a web app which can be run inside of a Magritte front end. Extensions communicate with their host by passing JSON messages back and forth. In the web front end, extensions are hosted inside of `<iframe>` elements and messages are passed over a message port. The connection between the extension and its host is established using the `postMessage` API.
