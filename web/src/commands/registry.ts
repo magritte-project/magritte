@@ -21,9 +21,12 @@ export class CommandRegistry {
     readonly $events: EventStream<CommandRegistryEvent>
 
     add(...commands: Command[]): void {
-        const duplicateID = commands.find((command) => this._registeredCommandIDs.has(command.id))
-        if (duplicateID !== undefined) {
-            throw new Error(`Command already registered with ID "${duplicateID.id}"`)
+        const visitedCommandIDs = new Set<string>()
+        for (const command of commands) {
+            if (this._registeredCommandIDs.has(command.id) || visitedCommandIDs.has(command.id)) {
+                throw new Error(`Command already registered with ID "${command.id}"`)
+            }
+            visitedCommandIDs.add(command.id)
         }
         for (const command of commands) {
             this._commands.add(command)

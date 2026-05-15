@@ -1,8 +1,4 @@
-import {
-    singletonCommandInputId,
-    type CommandInput,
-    type SingletonCommandInput,
-} from "@magritte/sdk/host"
+import { singletonInputID, type CommandInput, type SingletonCommandInput } from "@magritte/sdk/host"
 import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
 import z4 from "zod/v4"
 
@@ -26,7 +22,7 @@ export class CommandInputs {
             this._inputs.set(input.kind, inputsOfKind)
         }
 
-        if (input.id !== singletonCommandInputId && inputsOfKind.get(input.id) !== undefined) {
+        if (input.id !== singletonInputID && inputsOfKind.get(input.id) !== undefined) {
             throw new Error(`Input with id ${input.id} already exists for kind ${input.kind}`)
         }
         inputsOfKind.set(input.id, input)
@@ -59,7 +55,7 @@ export class CommandInputs {
         return false
     }
 
-    allOf<K extends string, T extends CommandInput & { kind: K }>(
+    allOf<K extends string, T extends CommandInput & { readonly kind: K }>(
         kind: K,
         schema: z4.ZodType<T>,
     ): T[] {
@@ -70,7 +66,7 @@ export class CommandInputs {
         return Array.from(inputsOfKind.values(), (input) => schema.parse(input))
     }
 
-    only<K extends string, T extends SingletonCommandInput & { kind: K }>(
+    only<K extends string, T extends SingletonCommandInput & { readonly kind: K }>(
         kind: K,
         schema: z4.ZodType<T>,
     ): T {
