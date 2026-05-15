@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aiosqlite>=0.21.0",
+    "alembic>=1.18.4",
     "cryptography>=46.0.3",
     "fastapi[standard]>=0.117.1",
     "greenlet>=3.2.4",
@@ -54,3 +55,15 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 docstring-code-format = false
 docstring-code-line-length = "dynamic"
+
+
+[tool.alembic]
+script_location = "%(here)s/magritte/migrations"
+prepend_sys_path = [
+    "."
+]
+[[tool.alembic.post_write_hooks]]
+name = "ruff"
+type = "exec"
+executable = "ruff"
+options = "check --fix REVISION_SCRIPT_FILENAME"

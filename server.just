@@ -25,3 +25,9 @@ generate-openapi:
         --use-standard-collections --skip-root-model --collapse-root-models \
         --snake-case-field --capitalize-enum-members --disable-timestamp
     just format lint
+
+db-create-migration slug:
+    uv run alembic revision --autogenerate -m "{{slug}}"
+
+db-migrate:
+    uv run alembic upgrade head
