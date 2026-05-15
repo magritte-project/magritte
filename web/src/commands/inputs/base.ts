@@ -1,4 +1,8 @@
-import type { CommandInput, SingletonCommandInput } from "@magritte/sdk/host"
+import {
+    singletonCommandInputId,
+    type CommandInput,
+    type SingletonCommandInput,
+} from "@magritte/sdk/host"
 import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
 import z4 from "zod/v4"
 
@@ -22,6 +26,9 @@ export class CommandInputs {
             this._inputs.set(input.kind, inputsOfKind)
         }
 
+        if (input.id !== singletonCommandInputId && inputsOfKind.get(input.id) !== undefined) {
+            throw new Error(`Input with id ${input.id} already exists for kind ${input.kind}`)
+        }
         inputsOfKind.set(input.id, input)
         this._events.dispatch({ type: "commandInputsDidChange" })
     }

@@ -7,10 +7,12 @@ export type CommandRegistryEvent = { type: "registeredCommandsDidChange" }
 
 export class CommandRegistry {
     private readonly _events: EventSink<CommandRegistryEvent>
+    private readonly _registeredCommandIDs: Set<string>
     private readonly _commands: Fuse<Command>
 
     constructor() {
         ;[this._events, this.$events] = createEvent<CommandRegistryEvent>()
+        this._registeredCommandIDs = new Set()
         this._commands = new Fuse<Command>([], {
             keys: ["searchTerms" satisfies keyof Command],
         })
@@ -19,8 +21,13 @@ export class CommandRegistry {
     readonly $events: EventStream<CommandRegistryEvent>
 
     add(...commands: Command[]): void {
+        const duplicateID = commands.find((command) => this._registeredCommandIDs.has(command.id))
+        if (duplicateID !== undefined) {
+            throw new Error(`Command already registered with ID "${duplicateID.id}"`)
+        }
         for (const command of commands) {
             this._commands.add(command)
+            this._registeredCommandIDs.add(command.id)
         }
         this._events.dispatch({ type: "registeredCommandsDidChange" })
     }
@@ -30,6 +37,9 @@ export class CommandRegistry {
         const deletedCommands = this._commands.remove((doc) => toRemove.has(doc.id))
         const deleted = deletedCommands.length > 0
         if (deleted) {
+            for (const command of deletedCommands) {
+                this._registeredCommandIDs.delete(command.id)
+            }
             this._events.dispatch({ type: "registeredCommandsDidChange" })
         }
         return deleted

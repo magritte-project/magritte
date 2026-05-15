@@ -31,8 +31,9 @@ export const CommandInput = z4.object({
 })
 export type CommandInput = z4.infer<typeof CommandInput>
 
+export const singletonCommandInputId = "__onlyOne__" as const
 export const SingletonCommandInput = CommandInput.extend({
-    id: z4.literal("__onlyOne__").readonly(),
+    id: z4.literal(singletonCommandInputId).readonly(),
 })
 export type SingletonCommandInput = z4.infer<typeof SingletonCommandInput>
 
