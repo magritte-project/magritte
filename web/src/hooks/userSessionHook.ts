@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useRouteContext, useRouter } from "@tanstack/react-router"
-import { useCallback, useSyncExternalStore } from "react"
+import { useCallback, useMemo, useSyncExternalStore } from "react"
 
 import type { Token } from "@/api/openapi"
 import type { UserSession } from "@/api/userSession"
@@ -63,5 +63,10 @@ export default function useUserSession(): UseUserSessionResult {
         userSession.current = null
     }, [userSession])
 
-    return { current: current, isSignedIn, signIn, signOut }
+    const result = useMemo(
+        (): UseUserSessionResult => ({ current: current, isSignedIn, signIn, signOut }),
+        [current, isSignedIn, signIn, signOut],
+    )
+
+    return result
 }
