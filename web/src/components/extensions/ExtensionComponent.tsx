@@ -1,6 +1,6 @@
 import { RPCBroadcaster } from "@magritte/rpc"
 import { GearIcon } from "@phosphor-icons/react"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { exportLibrary } from "@/extensions/exports/Library"
 import { exportPlayer } from "@/extensions/exports/Player"
@@ -10,6 +10,7 @@ import useAPIClient from "@/hooks/apiClientHook"
 import usePlayer from "@/hooks/playerHook"
 import useToast from "@/hooks/toastHook"
 import useUserSession from "@/hooks/userSessionHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export function buildExtensionComponent(extensionManager: ExtensionManager, id: string) {
     function ExtensionComponent() {
@@ -17,6 +18,7 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
         const userSession = useUserSession()
         const apiClient = useAPIClient()
         const player = usePlayer()
+        const [error, setError] = useState<unknown | null>(null)
         const containerRef = useRef<HTMLDivElement | null>(null)
         const instanceRef = useRef<ExtensionInstance | null>(null)
 
@@ -26,6 +28,13 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
             }
 
             const instance = extensionManager.acquireInstance(id)
+
+            const loadFaliedSubscription = instance.$events.subscribe((event) => {
+                if (event.type === "extensionInstanceLoadFailed") {
+                    setError(event.error)
+                }
+            })
+
             const broadcaster = new RPCBroadcaster()
             instance.load({
                 clientFrame: containerRef.current.getBoundingClientRect(),
@@ -55,14 +64,23 @@ export function buildExtensionComponent(extensionManager: ExtensionManager, id: 
             resizeObserver.observe(containerRef.current)
 
             return () => {
+                loadFaliedSubscription.unsubscribe()
                 extensionManager.releaseInstance(instance)
                 resizeObserver.disconnect()
             }
         }, [showToast, userSession, apiClient, player])
 
         return (
-            <div ref={containerRef} className="h-full flex items-center justify-center">
+            <div
+                ref={containerRef}
+                className="h-full flex flex-col gap-3 items-center justify-center"
+            >
                 <GearIcon size="4rem" weight="light" className="text-gray-200" />
+                {error !== null && (
+                    <div className="px-3 text-center text-sm font-medium text-gray-600">
+                        {getErrorMessage(error)}
+                    </div>
+                )}
             </div>
         )
     }

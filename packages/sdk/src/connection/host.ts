@@ -32,6 +32,7 @@ export interface WaitForExtensionConnectionOptions {
     readonly manifest: ExtensionManifest
     readonly broadcaster?: RPCBroadcaster
     readonly exports: HostExports
+    readonly timeout?: number
 }
 
 export class Extension extends ConnectionHolder {
@@ -45,9 +46,13 @@ export function waitForExtensionConnection({
     manifest,
     broadcaster,
     exports,
+    timeout = 30_000,
 }: WaitForExtensionConnectionOptions): Promise<Extension> {
     const origin = getExtensionOrigin(manifest)
     return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+            reject(new Error("Timed out waiting for extension connection"))
+        }, timeout)
         const handleMessage = (event: MessageEvent) => {
             if (event.origin !== origin) {
                 return
@@ -79,11 +84,13 @@ export function waitForExtensionConnection({
                             origin,
                             [channels.remotePorts.send, channels.remotePorts.receive],
                         )
+                        clearTimeout(timeoutId)
                         resolve(new Extension(serialNumber, connection))
                         break
                     }
                 }
             } catch (error) {
+                clearTimeout(timeoutId)
                 reject(error)
             }
             window.removeEventListener("message", handleMessage)

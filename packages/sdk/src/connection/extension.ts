@@ -29,6 +29,7 @@ export interface ConnectToExtensionHostOptions {
     readonly extensionId: string
     readonly broadcaster?: RPCBroadcaster
     readonly exports?: ExtensionExports
+    readonly timeout?: number
 }
 
 export class ExtensionHost extends ConnectionHolder {
@@ -57,6 +58,7 @@ export function connectToExtensionHost({
     extensionId,
     broadcaster,
     exports = {},
+    timeout = 10_000,
 }: ConnectToExtensionHostOptions): Promise<ExtensionHost> {
     if (!window.top || window.top === window) {
         return Promise.reject(new Error("No extension host found"))
@@ -74,6 +76,9 @@ export function connectToExtensionHost({
     }
     const data = ExtensionData.parse(JSON.parse(hostData))
     return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+            reject(new Error("Timed out waiting for extension host to respond"))
+        }, timeout)
         const handleMessage = (event: MessageEvent) => {
             if (event.origin !== hostOrigin) {
                 return
@@ -100,11 +105,13 @@ export function connectToExtensionHost({
                             broadcaster,
                             exportedObject,
                         })
+                        clearTimeout(timeoutId)
                         resolve(new ExtensionHost(serialNumber, connection, data))
                         break
                     }
                 }
             } catch (error) {
+                clearTimeout(timeoutId)
                 reject(error)
             }
             window.removeEventListener("message", handleMessage)
