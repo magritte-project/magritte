@@ -9,18 +9,14 @@ import ReactDOM from "react-dom/client"
 
 import AppleMusicPlaybackEngine from "@/extension/engine"
 import { initializeMusicKit } from "@/musickit/initialization"
-import reportWebVitals from "@/reportWebVitals.ts"
 // Import the generated route tree
+import { createDefaultClientTokenFactory } from "@/musickit/tokens/default"
+import reportWebVitals from "@/reportWebVitals.ts"
 import { routeTree } from "@/routeTree.gen"
-import createDeveloperToken from "@/utilities/token"
 
 // Set up Apple Music API
-const developerToken = await createDeveloperToken({
-    teamId: import.meta.env.VITE_TEAM_ID,
-    appId: import.meta.env.VITE_APP_ID,
-    keyId: import.meta.env.VITE_KEY_ID,
-    privateKey: import.meta.env.VITE_KEY_SECRET,
-})
+const tokenFactory = createDefaultClientTokenFactory()
+const developerToken = await tokenFactory.createDeveloperToken()
 const musicKit = await initializeMusicKit({
     developerToken,
     app: {
