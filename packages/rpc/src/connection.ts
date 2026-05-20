@@ -65,6 +65,18 @@ export interface RPCConnectionOptions {
 
     /** The broadcast to use for this connection */
     readonly broadcaster?: RPCBroadcaster
+
+    /** The default timeout for remote operations, in milliseconds  */
+    readonly timeout?: number
+}
+
+export class RPCConnectionTimeoutEvent extends Event {
+    constructor(
+        public readonly command: RPCCommand,
+        eventInit?: EventInit,
+    ) {
+        super("timeout", eventInit)
+    }
 }
 
 export class RPCConnectionInvalidatedEvent extends Event {
@@ -74,6 +86,7 @@ export class RPCConnectionInvalidatedEvent extends Event {
 }
 
 interface RPCConnectionEventMap {
+    timeout: RPCConnectionTimeoutEvent
     invalidated: RPCConnectionInvalidatedEvent
 }
 
@@ -94,6 +107,7 @@ export class RPCConnection extends EventTarget {
         super()
 
         this._isValid = true
+        this.$timeout = new Local(options.timeout ?? 7_000)
         this.pending = new Map<string, PendingSend>()
         this.transport = options.transport
         this.broadcaster = options.broadcaster ?? new RPCBroadcaster()
@@ -121,6 +135,9 @@ export class RPCConnection extends EventTarget {
     /** Read/write backing for public isValid property */
     private _isValid: boolean
 
+    /** Backing for the timeout property */
+    private readonly $timeout: Local<number>
+
     /** Tracks all pending commands that have been sent but not yet received a reply */
     private readonly pending: Map<string, PendingSend>
 
@@ -142,6 +159,22 @@ export class RPCConnection extends EventTarget {
     /** Returns true if the connection is valid (i.e. the transport is connected) */
     public get isValid(): boolean {
         return this._isValid
+    }
+
+    /** The current timeout value in milliseconds */
+    public get timeout(): number {
+        return this.$timeout.value
+    }
+
+    /**
+     * Set the timeout for a given remote operation.
+     *
+     * @param timeout The timeout value in milliseconds.
+     * @param operation The operation to perform with the given timeout.
+     * @returns The result of the operation.
+     */
+    async withTimeout<R>(timeout: number, operation: () => Promise<R>): Promise<R> {
+        return this.$timeout.withValueAsync(timeout, operation)
     }
 
     /**
@@ -185,8 +218,22 @@ export class RPCConnection extends EventTarget {
             throw new Error("Connection is invalid")
         }
         const id = crypto.randomUUID()
-        const reply = new Promise<RPCCommandResult>((resolve, reject) => {
-            this.pending.set(id, { resolve, reject })
+        const reply = new Promise<RPCCommandResult>(($resolve, $reject) => {
+            const timeoutId = setTimeout(() => {
+                $reject(new Error("Operation timed out"))
+                this.pending.delete(id)
+                this.dispatchEvent(new RPCConnectionTimeoutEvent(command))
+            }, this.timeout)
+            this.pending.set(id, {
+                resolve: (result) => {
+                    clearTimeout(timeoutId)
+                    $resolve(result)
+                },
+                reject: (reason?: unknown) => {
+                    clearTimeout(timeoutId)
+                    $reject(reason)
+                },
+            })
         })
         this.transport.postMessage({ id, type: "command", command })
         return await reply
