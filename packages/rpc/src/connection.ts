@@ -1,4 +1,5 @@
 import { RPCBroadcaster } from "./broadcaster"
+import { Local } from "./internal/local"
 import { LocalObject } from "./internal/localObject"
 import { RemoteObject } from "./internal/remoteObject"
 import { assertNever } from "./internal/utilities"
@@ -80,29 +81,13 @@ export class RPCConnection extends EventTarget {
     /**
      * Tracks the current RPC connection, if any.
      */
-    private static _current: RPCConnection | null = null
-
-    /**
-     * Executes the given function with the given connection as the current connection.
-     */
-    private static _withCurrent<T>(
-        current: RPCConnection,
-        fn: (current: RPCConnection | null) => T,
-    ): T {
-        const previous = RPCConnection._current
-        RPCConnection._current = current
-        try {
-            return fn(previous)
-        } finally {
-            RPCConnection._current = previous
-        }
-    }
+    private static readonly $current = new Local<RPCConnection | null>(null)
 
     /**
      * Returns the current RPC connection, if any.
      */
     static get current(): RPCConnection | null {
-        return RPCConnection._current
+        return RPCConnection.$current.value
     }
 
     constructor(options: RPCConnectionOptions) {
@@ -163,7 +148,7 @@ export class RPCConnection extends EventTarget {
      * Handles a message from the remote side of the connection.
      */
     private async handleMessage(message: RPCTransportMessage): Promise<void> {
-        await RPCConnection._withCurrent(this, async () => {
+        await RPCConnection.$current.withValueAsync(this, async () => {
             switch (message.type) {
                 case "command": {
                     const result = await dispatchCommand(message.command, this.exportedObject)
