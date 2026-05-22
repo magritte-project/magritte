@@ -1,7 +1,11 @@
 import { type ExtensionManifest } from "@magritte/sdk"
+import {
+    ExtensionCoordinator,
+    ExtensionInstance,
+    type ExtensionAcquisitionResult,
+    type ExtensionInstanceOptions,
+} from "@magritte/sdk/connection"
 import { createEvent, EventSink, EventStream } from "@magritte/sdk/utilities"
-
-import { ExtensionInstance } from "@/extensions/instance"
 
 export type ExtensionManagerEvent =
     | { type: "extensionInstalled"; manifest: ExtensionManifest }
@@ -17,12 +21,12 @@ export type ExtensionManagerEvent =
 
 export class ExtensionManager {
     private readonly _installed: Map<string, ExtensionManifest>
-    private _instances: ExtensionInstance[]
+    private readonly _coordinator: ExtensionCoordinator
     private readonly _events: EventSink<ExtensionManagerEvent>
 
     constructor() {
         this._installed = new Map()
-        this._instances = []
+        this._coordinator = new ExtensionCoordinator()
         ;[this._events, this.$events] = createEvent()
     }
 
@@ -40,29 +44,18 @@ export class ExtensionManager {
         this._events.dispatch({ type: "extensionInstalled", manifest })
     }
 
-    acquireInstance(id: string): ExtensionInstance {
+    acquireInstance(id: string): ExtensionAcquisitionResult {
         const manifest = this._installed.get(id)
         if (manifest === undefined) {
             throw new Error(`Extension not installed: ${id}`)
         }
-        if (
-            !manifest.allowsMultipleInstances &&
-            this._instances.some((instance) => instance.manifest.id === id)
-        ) {
-            throw new Error(`Extension already has an instance: ${id}`)
-        }
-        const instance = new ExtensionInstance(manifest)
-        this._instances.push(instance)
-        this._events.dispatch({ type: "extensionInstanceAcquired", instance })
-        return instance
+        const result = this._coordinator.acquireInstance({ manifest })
+        this._events.dispatch({ type: "extensionInstanceAcquired", instance: result.instance })
+        return result
     }
 
-    releaseInstance(instance: ExtensionInstance) {
-        const toRemove = this._instances.indexOf(instance)
-        if (toRemove !== -1) {
-            const instance = this._instances[toRemove]
-            instance.unload()
-            this._instances.splice(toRemove, 1)
+    releaseOwnedInstance(instance: ExtensionInstance) {
+        if (this._coordinator.releaseOwnedInstance(instance)) {
             this._events.dispatch({ type: "extensionInstanceReleased", instance })
         }
     }
@@ -70,11 +63,7 @@ export class ExtensionManager {
     uninstall(id: string) {
         const manifest = this._installed.get(id)
         if (manifest !== undefined) {
-            for (const instance of this._instances) {
-                if (instance.manifest.id === id) {
-                    this.releaseInstance(instance)
-                }
-            }
+            // TODO: release instances
             this._installed.delete(id)
             this._events.dispatch({ type: "extensionUninstalled", manifest })
         }
