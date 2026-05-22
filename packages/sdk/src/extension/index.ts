@@ -1,3 +1,3 @@
 export * from "./commands"
-export * from "./extension"
+export * from "./extensionHost"
 export * from "./playbackEngine"

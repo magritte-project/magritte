@@ -1,4 +1,4 @@
-import type { ExtensionHost } from "@magritte/sdk/connection"
+import type { ExtensionHost } from "@magritte/sdk/extension"
 import { queryOptions } from "@tanstack/react-query"
 
 import { libraries } from "@/api/keys/libraries"

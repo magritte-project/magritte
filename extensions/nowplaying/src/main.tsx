@@ -1,14 +1,15 @@
-import { connectToExtensionHost } from "@magritte/sdk/connection"
+import { ExtensionHost } from "@magritte/sdk/extension"
 import { StrictMode } from "react"
 
 import "./index.css"
+
 import ReactDOM from "react-dom/client"
 
 import Extension from "@/components/Extension"
 import { ExtensionHostContext } from "@/contexts/extensionHostContext"
 
 // Handshake with the extension host
-const extensionHost = await connectToExtensionHost({
+const extensionHost = await ExtensionHost.connect({
     extensionId: "magritte.nowplaying",
 })
 

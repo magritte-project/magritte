@@ -1,0 +1,85 @@
+import { cast, implement, RPCBroadcaster, RPCConnection } from "@magritte/rpc"
+import { MessageChannelTransport } from "@magritte/rpc/transports"
+
+import {
+    ChromeProtocol,
+    LibraryProtocol,
+    PlayerProtocol,
+    type Chrome,
+    type Library,
+    type Player,
+} from "."
+import { PlaybackEngineProtocol, type PlaybackEngine } from "../extension"
+import { getExtensionOrigin, type ExtensionManifest } from "../manifest"
+
+export interface HostExportsObject {
+    readonly chrome: Chrome
+    readonly library: Library
+    readonly player: Player
+}
+
+export type HostExports = HostExportsObject | (() => Promise<HostExportsObject>)
+
+async function implementExports(exports: HostExports) {
+    const { chrome, library, player } = typeof exports === "function" ? await exports() : exports
+    return [
+        implement(ChromeProtocol, chrome),
+        implement(LibraryProtocol, library),
+        implement(PlayerProtocol, player),
+    ]
+}
+
+export interface ExtensionWaitForConnectionOptions {
+    /** The iframe element pointed at the extension */
+    readonly iframe: HTMLIFrameElement
+
+    /** The manifest of the extension */
+    readonly manifest: ExtensionManifest
+
+    /** The broadcaster to use for the connection */
+    readonly broadcaster?: RPCBroadcaster
+
+    /** The exports to make available to the extension */
+    readonly exports: HostExports
+
+    /** How long to wait for the extension's connection */
+    readonly timeout?: number
+}
+
+export class Extension {
+    static async waitForConnection({
+        iframe,
+        manifest,
+        broadcaster,
+        exports,
+        timeout = 30_000,
+    }: ExtensionWaitForConnectionOptions): Promise<Extension> {
+        const origin = getExtensionOrigin(manifest)
+        const identity = manifest.id
+        const transport = await MessageChannelTransport.handshake({
+            role: "responder",
+            iframe,
+            origin,
+            identity,
+            timeout,
+        })
+        const exportedObject = await implementExports(exports)
+        const connection = new RPCConnection({
+            transport,
+            broadcaster,
+            exportedObject,
+        })
+        return new Extension(connection)
+    }
+
+    /** @private */
+    private constructor(readonly connection: RPCConnection) {}
+
+    async disconnect(): Promise<void> {
+        this.connection.invalidate()
+    }
+
+    async playbackEngine(): Promise<PlaybackEngine> {
+        return cast(PlaybackEngineProtocol, this.connection.remoteObject)
+    }
+}

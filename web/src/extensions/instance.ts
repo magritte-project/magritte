@@ -1,9 +1,5 @@
-import { type ExtensionData, getExtensionSrc, type ExtensionManifest } from "@magritte/sdk"
-import {
-    waitForExtensionConnection,
-    type Extension,
-    type WaitForExtensionConnectionOptions,
-} from "@magritte/sdk/connection"
+import { getExtensionSrc, type ExtensionData, type ExtensionManifest } from "@magritte/sdk"
+import { Extension, type ExtensionWaitForConnectionOptions } from "@magritte/sdk/host"
 import { createEvent, EventSink, EventStream } from "@magritte/sdk/utilities"
 
 export type ExtensionInstanceEvent =
@@ -16,7 +12,7 @@ export type ExtensionInstanceEvent =
     | { type: "extensionInstanceUnloaded"; instance: ExtensionInstance }
 
 export interface ExtensionInstanceLoadOptions extends Omit<
-    WaitForExtensionConnectionOptions,
+    ExtensionWaitForConnectionOptions,
     "iframe" | "manifest"
 > {
     readonly clientFrame: DOMRect
@@ -66,7 +62,7 @@ export class ExtensionInstance {
         document.body.appendChild(this._iframe)
 
         try {
-            this._extension = await waitForExtensionConnection({
+            this._extension = await Extension.waitForConnection({
                 iframe: this._iframe,
                 manifest: this.manifest,
                 ...options,
