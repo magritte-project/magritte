@@ -3,7 +3,7 @@ import { loadScript } from "@/utilities/loadScript"
 export async function initializeMusicKit(
     config: MusicKit.Configuration,
 ): Promise<MusicKit.Instance> {
-    if ('process' in window && !('version' in window.process)) {
+    if ("process" in window && !("version" in window.process)) {
         const windowThatSatisfiesTheTypeChecker = window as any
         delete windowThatSatisfiesTheTypeChecker.process
     }
