@@ -1,7 +1,7 @@
 import { protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
-import { PlayableItem, PlaybackState, PlaybackTime } from "../host"
+import { PlayableItem, PlaybackState, PlaybackTime } from "../host/playback"
 
 export type PlaybackEngineEventTypes =
     | "PlaybackEngine.playbackStateDidChange"
