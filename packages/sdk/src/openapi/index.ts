@@ -2,7 +2,6 @@
 
 export type {
     ClientOptions,
-    ExtensionData,
     ExtensionManifest,
     ExtensionPermissions,
     ExtensionUseCaseModal,

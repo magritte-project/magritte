@@ -72,7 +72,3 @@ export type ExtensionManifest = {
      */
     useCases?: Array<ExtensionUseCases>
 }
-
-export type ExtensionData = {
-    [key: string]: string
-}

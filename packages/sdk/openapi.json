@@ -102,13 +102,6 @@
                         "description": "An optional array of use cases for the extension"
                     }
                 }
-            },
-            "ExtensionData": {
-                "type": "object",
-                "additionalProperties": {
-                    "type": "string"
-                },
-                "readOnly": true
             }
         }
     }

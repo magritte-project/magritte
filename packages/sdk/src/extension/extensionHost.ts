@@ -9,7 +9,6 @@ import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transp
 
 import { LibraryProtocol, PlayerProtocol, type Library, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
-import { ExtensionData } from "../manifest"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "./playbackEngine"
 
 export interface ExtensionExportsObject {
@@ -57,11 +56,9 @@ export class ExtensionHost {
         //       2. It allows to check that we're the extension the host is expecting
         const params = new URLSearchParams(window.location.hash.substring(1))
         const originParam = params.get("h")
-        const dataParam = params.get("d")
-        if (originParam === null || params.get("e") !== extensionId || dataParam === null) {
+        if (originParam === null || params.get("e") !== extensionId) {
             return Promise.reject(new Error("Malformed host information"))
         }
-        const data = ExtensionData.parse(JSON.parse(dataParam))
 
         const transport = await MessageChannelTransport.handshake({
             role: "requester",
@@ -76,7 +73,7 @@ export class ExtensionHost {
             broadcaster,
             exportedObject,
         })
-        return new ExtensionHost(connection, data)
+        return new ExtensionHost(connection)
     }
 
     /**
@@ -92,14 +89,10 @@ export class ExtensionHost {
             exportedObject: [],
         })
         connection.invalidate()
-        const data: ExtensionData = {}
-        return new ExtensionHost(connection, data)
+        return new ExtensionHost(connection)
     }
 
-    private constructor(
-        readonly connection: RPCConnection,
-        readonly data: ExtensionData,
-    ) {}
+    private constructor(readonly connection: RPCConnection) {}
 
     async disconnect(): Promise<void> {
         this.connection.invalidate()

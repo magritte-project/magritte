@@ -6,7 +6,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, RootModel
+from pydantic import BaseModel, Field
 
 
 class ExtensionPermissions(Enum):
@@ -73,7 +73,3 @@ class ExtensionManifest(BaseModel):
         alias="useCases",
         description="An optional array of use cases for the extension",
     )
-
-
-class ExtensionData(RootModel[dict[str, str]]):
-    root: dict[str, str]

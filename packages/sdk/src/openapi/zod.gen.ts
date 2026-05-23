@@ -31,5 +31,3 @@ export const ExtensionManifest = z.object({
     allowsMultipleInstances: z.boolean().optional().default(false),
     useCases: z.array(ExtensionUseCases).optional().default([]),
 })
-
-export const ExtensionData = z.record(z.string(), z.string()).readonly()
