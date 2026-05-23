@@ -80,7 +80,10 @@ async def import_extension(
         manifest_id=manifest.id,
         manifest_url=str(import_extension.manifest_url),
         manifest_name=manifest.name,
-        manifest=manifest.model_dump(mode="json"),
+        manifest=manifest.model_dump(
+            mode="json",
+            by_alias=True,
+        ),
     )
     session.add(new_extension)
     await session.flush()

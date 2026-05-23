@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { availableExtensions, installedExtensions } from "@/api/keys/extensions"
 import type { ExtensionImportAdmin } from "@/api/openapi"
 import useAPIClient from "@/hooks/apiClientHook"
+import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 
 export function useImportExtension() {
     const apiClient = useAPIClient()
@@ -21,6 +22,7 @@ export function useImportExtension() {
 export function useDeleteExtension() {
     const apiClient = useAPIClient()
     const queryClient = useQueryClient()
+    const extensionRuntime = useExtensionRuntime()
     return useMutation({
         mutationFn: (extensionID: number) => apiClient.deleteExtension(extensionID),
         onSuccess: async () => {
@@ -32,6 +34,7 @@ export function useDeleteExtension() {
                 queryKey: installedExtensions(),
                 exact: false,
             })
+            await extensionRuntime.sync()
         },
     })
 }
@@ -39,6 +42,7 @@ export function useDeleteExtension() {
 export function useInstallExtension() {
     const apiClient = useAPIClient()
     const queryClient = useQueryClient()
+    const extensionRuntime = useExtensionRuntime()
     return useMutation({
         mutationFn: (extensionID: number) => apiClient.installExtension(extensionID),
         onSuccess: async () => {
@@ -46,6 +50,7 @@ export function useInstallExtension() {
                 queryKey: installedExtensions(),
                 exact: false,
             })
+            await extensionRuntime.sync()
         },
     })
 }
@@ -53,6 +58,7 @@ export function useInstallExtension() {
 export function useUninstallExtension() {
     const apiClient = useAPIClient()
     const queryClient = useQueryClient()
+    const extensionRuntime = useExtensionRuntime()
     return useMutation({
         mutationFn: (extensionID: number) => apiClient.uninstallExtension(extensionID),
         onSuccess: async () => {
@@ -60,6 +66,7 @@ export function useUninstallExtension() {
                 queryKey: installedExtensions(),
                 exact: false,
             })
+            await extensionRuntime.sync()
         },
     })
 }

@@ -49,37 +49,7 @@ const extensionRuntime = new ExtensionRuntime({
     apiClient,
     player,
 })
-// TODO: Don't hard code these
-extensionRuntime.add({
-    name: "Apple Music",
-    id: "magritte.applemusic",
-    version: "0.0.0",
-    url: "http://localhost:9292/",
-    permissions: [],
-    runInBackground: true,
-    autoLoad: true,
-    useCases: [
-        {
-            type: "split",
-            minWidth: "16rem",
-            preferredLocation: "end",
-        },
-    ],
-})
-extensionRuntime.add({
-    name: "Now Playing",
-    id: "magritte.nowplaying",
-    version: "0.0.0",
-    url: "http://localhost:9294/",
-    permissions: [],
-    useCases: [
-        {
-            type: "split",
-            minWidth: "16rem",
-            preferredLocation: "start",
-        },
-    ],
-})
+await extensionRuntime.sync()
 playbackEngineRegistry.subscribeTo(extensionRuntime)
 
 // Set up splits

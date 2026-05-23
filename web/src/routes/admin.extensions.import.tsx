@@ -18,7 +18,10 @@ export const Route = createFileRoute("/admin/extensions/import")({
             } satisfies ExtensionImportAdmin,
             onSubmit: async ({ value }) => {
                 try {
-                    await importMutation.mutateAsync(value)
+                    const manifest_url = !value.manifest_url.endsWith("/extension.magritte.json")
+                        ? `${value.manifest_url}/extension.magritte.json`
+                        : value.manifest_url
+                    await importMutation.mutateAsync({ manifest_url })
                     navigate({
                         to: "/admin/extensions",
                     })

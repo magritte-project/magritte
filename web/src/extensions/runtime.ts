@@ -126,6 +126,8 @@ export class ExtensionRuntime {
             this.remove(manifest.id)
         }
         this._available.set(manifest.id, manifest)
+
+        console.debug("Extension added", manifest)
         this._events.dispatch({ type: "extensionAdded", manifest })
 
         if (manifest.autoLoad) {
@@ -139,10 +141,46 @@ export class ExtensionRuntime {
             this._unload(id)
 
             this._available.delete(id)
+
+            console.debug("Extension Removed", manifest)
             this._events.dispatch({ type: "extensionRemoved", manifest })
             return true
         } else {
             return false
+        }
+    }
+
+    async sync() {
+        if (this._userSession.current === null) {
+            for (const id of Array.from(this._available.keys())) {
+                this.remove(id)
+            }
+            return
+        }
+
+        // TODO: Pagination
+        const installedExtensions = await this._apiClient.readInstalledExtensions()
+        const visitedIds = new Set<string>()
+        for (const extension of installedExtensions.items) {
+            // TODO: Fix mismatched types
+            this.add({
+                ...extension.manifest,
+                description: extension.manifest.description ?? undefined,
+                permissions: extension.manifest.permissions
+                    ? [...extension.manifest.permissions]
+                    : undefined,
+                runInBackground: extension.manifest.runInBackground ?? undefined,
+                autoLoad: extension.manifest.autoLoad ?? false,
+                useCases: extension.manifest.useCases
+                    ? [...extension.manifest.useCases]
+                    : undefined,
+            })
+            visitedIds.add(extension.manifest.id)
+        }
+        for (const id of Array.from(this._available.keys())) {
+            if (!visitedIds.has(id)) {
+                this.remove(id)
+            }
         }
     }
 

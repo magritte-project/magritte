@@ -76,6 +76,8 @@ To run a development server for a specific extension, use the `extensions::dev` 
 just extensions::dev applemusic
 ```
 
+Out of the box, Magritte does not know about any extensions. To add an extension, sign in as an administrator and navigate to the Admin area using the user menu in the top right corner. Once there, click the + import extension button and enter the extension's URL. For example, the Apple Music extension running locally would have the URL <http://localhost:9292/>. After an extension has been imported, any user can install it from the My Settings page located in the user menu.
+
 ### DB Migrations
 
 To create a new database migration, use the `server::db-create-migration` recipe with the migration name as an argument:
