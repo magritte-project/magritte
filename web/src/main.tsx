@@ -56,7 +56,8 @@ extensionRuntime.add({
     version: "0.0.0",
     url: "http://localhost:9292/",
     permissions: [],
-    allowsMultipleInstances: false,
+    runInBackground: true,
+    autoLoad: true,
     useCases: [
         {
             type: "split",
@@ -71,7 +72,6 @@ extensionRuntime.add({
     version: "0.0.0",
     url: "http://localhost:9294/",
     permissions: [],
-    allowsMultipleInstances: true,
     useCases: [
         {
             type: "split",

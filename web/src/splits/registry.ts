@@ -23,7 +23,7 @@ function getExtensionSplitDefinition(manifest: ExtensionManifest): SplitDefiniti
         icon: GearIcon,
         minWidth: splitUseCase.minWidth,
         preferredLocation: splitUseCase.preferredLocation,
-        allowsMultiple: manifest.allowsMultipleInstances ?? false,
+        allowsMultiple: false,
         requiresParameters: false,
         component: buildExtensionComponent(manifest.id),
     }

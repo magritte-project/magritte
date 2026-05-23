@@ -127,6 +127,10 @@ export class ExtensionRuntime {
         }
         this._available.set(manifest.id, manifest)
         this._events.dispatch({ type: "extensionAdded", manifest })
+
+        if (manifest.autoLoad) {
+            this._loadIfNeeded(manifest.id)
+        }
     }
 
     remove(id: string): boolean {
@@ -254,7 +258,9 @@ export class ExtensionRuntime {
             return
         }
         attachment.detach(element)
-        if (!attachment.hasAnyElements) {
+
+        const manifest = this._available.get(id)
+        if (!manifest?.runInBackground && !attachment.hasAnyElements) {
             this._unload(id)
         }
     }

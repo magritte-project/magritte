@@ -803,11 +803,17 @@ export interface components {
              */
             readonly permissions: readonly components["schemas"]["ExtensionPermissions"][] | null;
             /**
-             * Allowsmultipleinstances
-             * @description Whether the extension allows multiple instances
+             * Runinbackground
+             * @description Whether the extension can run in the background
              * @default false
              */
-            readonly allowsMultipleInstances: boolean | null;
+            readonly runInBackground: boolean | null;
+            /**
+             * Autoload
+             * @description Whether the extension wants to be auto loaded
+             * @default false
+             */
+            readonly autoLoad: boolean | null;
             /**
              * Usecases
              * @description An optional array of use cases for the extension

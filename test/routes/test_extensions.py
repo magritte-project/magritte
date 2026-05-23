@@ -27,7 +27,8 @@ async def throwaway_extension(
             description=None,
             url=manifest_url,
             permissions=None,
-            allowsMultipleInstances=None,
+            runInBackground=None,
+            autoLoad=None,
             useCases=None,
         ).model_dump(),
     )

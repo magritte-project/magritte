@@ -64,9 +64,13 @@ export type ExtensionManifest = {
      */
     permissions?: Array<ExtensionPermissions>
     /**
-     * Whether the extension allows multiple instances
+     * Whether the extension can run in the background
      */
-    allowsMultipleInstances?: boolean
+    runInBackground?: boolean
+    /**
+     * Whether the extension wants to be auto loaded
+     */
+    autoLoad?: boolean
     /**
      * An optional array of use cases for the extension
      */

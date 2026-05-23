@@ -90,10 +90,15 @@
                         "default": [],
                         "description": "An optional array of permissions required by the extension"
                     },
-                    "allowsMultipleInstances": {
+                    "runInBackground": {
                         "type": "boolean",
                         "default": false,
-                        "description": "Whether the extension allows multiple instances"
+                        "description": "Whether the extension can run in the background"
+                    },
+                    "autoLoad": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Whether the extension wants to be auto loaded"
                     },
                     "useCases": {
                         "type": "array",

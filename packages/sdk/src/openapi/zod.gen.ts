@@ -28,6 +28,7 @@ export const ExtensionManifest = z.object({
     description: z.string().optional(),
     url: z.string(),
     permissions: z.array(ExtensionPermissions).optional().default([]),
-    allowsMultipleInstances: z.boolean().optional().default(false),
+    runInBackground: z.boolean().optional().default(false),
+    autoLoad: z.boolean().optional().default(false),
     useCases: z.array(ExtensionUseCases).optional().default([]),
 })

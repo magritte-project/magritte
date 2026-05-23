@@ -55,10 +55,15 @@ class ExtensionManifest(BaseModel):
     permissions: list[ExtensionPermissions] | None = Field(
         [], description="An optional array of permissions required by the extension"
     )
-    allows_multiple_instances: bool | None = Field(
+    run_in_background: bool | None = Field(
         False,
-        alias="allowsMultipleInstances",
-        description="Whether the extension allows multiple instances",
+        alias="runInBackground",
+        description="Whether the extension can run in the background",
+    )
+    auto_load: bool | None = Field(
+        False,
+        alias="autoLoad",
+        description="Whether the extension wants to be auto loaded",
     )
     use_cases: (
         list[
