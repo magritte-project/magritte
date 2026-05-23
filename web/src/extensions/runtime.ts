@@ -273,7 +273,7 @@ class ExtensionAttachment {
 
     constructor() {
         this._elements = []
-        this._resizeObserver = new ResizeObserver(() => this._updateFrame())
+        this._resizeObserver = new ResizeObserver(() => this._update())
         this._iframe = null
     }
 
@@ -281,7 +281,7 @@ class ExtensionAttachment {
         return this._elements.length > 0
     }
 
-    private _updateFrame() {
+    private _update() {
         if (this._iframe === null) {
             return
         }
@@ -291,11 +291,13 @@ class ExtensionAttachment {
             this._iframe.style.top = `${clientFrame.y}px`
             this._iframe.style.width = `${clientFrame.width}px`
             this._iframe.style.height = `${clientFrame.height}px`
+            this._iframe.style.display = "block"
         } else {
             this._iframe.style.left = ""
             this._iframe.style.top = ""
             this._iframe.style.width = ""
             this._iframe.style.height = ""
+            this._iframe.style.display = "none"
         }
     }
 
@@ -320,13 +322,12 @@ class ExtensionAttachment {
                 this._resizeObserver.unobserve(document.body)
             }
         }
-        this._updateFrame()
+        this._update()
     }
 
     didLoad(iframe: HTMLIFrameElement) {
         this._iframe = iframe
-        this._iframe.style.display = "block"
-        this._updateFrame()
+        this._update()
     }
 
     didUnload(iframe: HTMLIFrameElement) {
@@ -335,6 +336,6 @@ class ExtensionAttachment {
         }
         this._iframe.style.display = "none"
         this._iframe = null
-        this._updateFrame()
+        this._update()
     }
 }
