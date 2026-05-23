@@ -10,7 +10,7 @@ import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
 import AppCommandPalette from "@/components/structure/AppCommandPalette"
 import RootLayout from "@/components/structure/RootLayout"
-import type { ExtensionManager } from "@/extensions/manager"
+import type { ExtensionRuntime } from "@/extensions/runtime"
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
 import type { Player } from "@/playback/player"
 import type SplitRegistry from "@/splits/registry"
@@ -21,9 +21,9 @@ export interface MagritteRouterContext {
     readonly apiClient: APIClient
     readonly commandInputs: CommandInputs
     readonly commandRegistry: CommandRegistry
-    readonly extensionManager: ExtensionManager
     readonly userEvents: UserEvents
     readonly player: Player
+    readonly extensionRuntime: ExtensionRuntime
     readonly splitRegister: SplitRegistry
 }
 

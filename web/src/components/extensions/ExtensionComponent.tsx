@@ -1,74 +1,45 @@
-import { RPCBroadcaster } from "@magritte/rpc"
 import { GearIcon } from "@phosphor-icons/react"
 import { useEffect, useRef, useState } from "react"
 
-import { exportLibrary } from "@/extensions/exports/Library"
-import { exportPlayer } from "@/extensions/exports/Player"
-import type { ExtensionInstance } from "@/extensions/instance"
-import type { ExtensionManager } from "@/extensions/manager"
-import useAPIClient from "@/hooks/apiClientHook"
-import usePlayer from "@/hooks/playerHook"
-import useToast from "@/hooks/toastHook"
-import useUserSession from "@/hooks/userSessionHook"
+import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import { getErrorMessage } from "@/utilities/errors"
 
-export function buildExtensionComponent(extensionManager: ExtensionManager, id: string) {
+export function buildExtensionComponent(id: string) {
     function ExtensionComponent() {
-        const { showToast } = useToast()
-        const userSession = useUserSession()
-        const apiClient = useAPIClient()
-        const player = usePlayer()
-        const [error, setError] = useState<unknown | null>(null)
+        const extensionRuntime = useExtensionRuntime()
         const containerRef = useRef<HTMLDivElement | null>(null)
-        const instanceRef = useRef<ExtensionInstance | null>(null)
+        const [error, setError] = useState<unknown | null>(null)
 
         useEffect(() => {
             if (!containerRef.current) {
                 return
             }
 
-            const instance = extensionManager.acquireInstance(id)
-
-            const loadFaliedSubscription = instance.$events.subscribe((event) => {
-                if (event.type === "extensionInstanceLoadFailed") {
-                    setError(event.error)
+            const subscription = extensionRuntime.$events.subscribe((event) => {
+                switch (event.type) {
+                    case "extensionLoaded":
+                        if (event.extension.manifest.id === id) {
+                            setError(null)
+                        }
+                        break
+                    case "extensionLoadFailed":
+                        if (event.manifest.id === id) {
+                            setError(event.error)
+                        }
+                        break
+                    default:
+                        break
                 }
             })
 
-            const broadcaster = new RPCBroadcaster()
-            instance.load({
-                clientFrame: containerRef.current.getBoundingClientRect(),
-                broadcaster,
-                exports: {
-                    chrome: {
-                        showToast: async (options: {
-                            message: string
-                            type: "error" | "success" | "info"
-                        }) => {
-                            showToast(options)
-                        },
-                    },
-                    library: exportLibrary(userSession?.current, apiClient),
-                    player: exportPlayer(broadcaster, player),
-                },
-            })
-            instanceRef.current = instance
-
-            const resizeObserver = new ResizeObserver(() => {
-                if (!containerRef.current) {
-                    return
-                }
-                instance.updateClientFrame(containerRef.current.getBoundingClientRect())
-            })
-            resizeObserver.observe(document.body)
-            resizeObserver.observe(containerRef.current)
+            const container = containerRef.current
+            extensionRuntime.attach(id, container)
 
             return () => {
-                loadFaliedSubscription.unsubscribe()
-                extensionManager.releaseInstance(instance)
-                resizeObserver.disconnect()
+                extensionRuntime.detach(id, container)
+                subscription.unsubscribe()
             }
-        }, [showToast, userSession, apiClient, player])
+        }, [extensionRuntime])
 
         return (
             <div

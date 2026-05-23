@@ -11,7 +11,7 @@ import { CommandRegistry } from "@/commands/registry"
 import { libraryCommands } from "@/commands/suites/library"
 import { playerCommands } from "@/commands/suites/player"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider"
-import { ExtensionManager } from "@/extensions/manager"
+import { ExtensionRuntime } from "@/extensions/runtime"
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx"
 import BuiltInPlaybackEngine from "@/playback/builtInEngine"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
@@ -33,10 +33,24 @@ const apiClient = new APIClient(userSession)
 const commandInputs = new CommandInputs()
 const commandRegistry = new CommandRegistry()
 
+// Set up user events
+const userEvents = new UserEvents(apiClient, userSession)
+
+// Set up playback
+const playbackEngineRegistry = new PlaybackEngineRegistry({
+    defaultEngine: new BuiltInPlaybackEngine(userSession),
+})
+const player = new Player(playbackEngineRegistry)
+
 // Set up extensions
-const extensionManager = new ExtensionManager()
+const extensionRuntime = new ExtensionRuntime({
+    container: document.body,
+    userSession,
+    apiClient,
+    player,
+})
 // TODO: Don't hard code these
-extensionManager.install({
+extensionRuntime.add({
     name: "Apple Music",
     id: "magritte.applemusic",
     version: "0.0.0",
@@ -51,7 +65,7 @@ extensionManager.install({
         },
     ],
 })
-extensionManager.install({
+extensionRuntime.add({
     name: "Now Playing",
     id: "magritte.nowplaying",
     version: "0.0.0",
@@ -66,20 +80,10 @@ extensionManager.install({
         },
     ],
 })
-
-// Set up user events
-const userEvents = new UserEvents(apiClient, userSession)
-
-// Set up playback
-const player = new Player(
-    new PlaybackEngineRegistry({
-        extensionManager,
-        defaultEngine: new BuiltInPlaybackEngine(userSession),
-    }),
-)
+playbackEngineRegistry.subscribeTo(extensionRuntime)
 
 // Set up splits
-const splitRegister = new SplitRegistry(extensionManager)
+const splitRegister = new SplitRegistry(extensionRuntime)
 
 // Create a new router instance
 
@@ -91,9 +95,9 @@ const router = createRouter({
         apiClient,
         commandInputs,
         commandRegistry,
-        extensionManager,
         userEvents,
         player,
+        extensionRuntime,
         splitRegister,
         ...TanStackQueryProviderContext,
     },

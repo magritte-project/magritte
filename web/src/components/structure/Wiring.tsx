@@ -3,7 +3,9 @@ import { useEffect, type ReactNode } from "react"
 
 import { library } from "@/api/keys/libraries"
 import { userMeNotification, userMeNotifications } from "@/api/keys/users"
+import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import usePlayer from "@/hooks/playerHook"
+import useToast from "@/hooks/toastHook"
 import useUserEvents from "@/hooks/userEventsHook"
 
 export interface WiringProps {
@@ -98,6 +100,23 @@ export default function Wiring({ children }: WiringProps) {
             subscription.unsubscribe()
         }
     }, [player])
+
+    const extensionRuntime = useExtensionRuntime()
+    const { showToast } = useToast()
+    useEffect(() => {
+        const toastSubscription = extensionRuntime.$events.subscribe((event) => {
+            switch (event.type) {
+                case "extensionRequestedToast":
+                    showToast({ message: event.message, type: event.toastType })
+                    break
+                default:
+                    break
+            }
+        })
+        return () => {
+            toastSubscription.unsubscribe()
+        }
+    }, [extensionRuntime, showToast])
 
     return <>{children}</>
 }

@@ -69,11 +69,14 @@ export class Extension {
             broadcaster,
             exportedObject,
         })
-        return new Extension(connection)
+        return new Extension(connection, manifest)
     }
 
     /** @private */
-    private constructor(readonly connection: RPCConnection) {}
+    private constructor(
+        readonly connection: RPCConnection,
+        readonly manifest: ExtensionManifest,
+    ) {}
 
     async disconnect(): Promise<void> {
         this.connection.invalidate()

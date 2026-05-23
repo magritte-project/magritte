@@ -3,7 +3,7 @@ import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/uti
 import { GearIcon } from "@phosphor-icons/react"
 
 import { buildExtensionComponent } from "@/components/extensions/ExtensionComponent"
-import { type ExtensionManager, type ExtensionManagerEvent } from "@/extensions/manager"
+import type { ExtensionRuntime, ExtensionRuntimeEvent } from "@/extensions/runtime"
 import type { Split, SplitDefinition, SplitID, SplitParameter } from "@/splits/base"
 import { QuickMixSplit } from "@/splits/definitions/QuickMixSplit"
 import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
@@ -12,10 +12,7 @@ function getExtensionSplitID(manifest: ExtensionManifest): SplitID {
     return `extension.${manifest.id}`
 }
 
-function getExtensionSplitDefinition(
-    extensionManager: ExtensionManager,
-    manifest: ExtensionManifest,
-): SplitDefinition | undefined {
+function getExtensionSplitDefinition(manifest: ExtensionManifest): SplitDefinition | undefined {
     const splitUseCase = manifest.useCases?.find((useCase) => useCase.type === "split")
     if (splitUseCase === undefined) {
         return undefined
@@ -28,7 +25,7 @@ function getExtensionSplitDefinition(
         preferredLocation: splitUseCase.preferredLocation,
         allowsMultiple: manifest.allowsMultipleInstances ?? false,
         requiresParameters: false,
-        component: buildExtensionComponent(extensionManager, manifest.id),
+        component: buildExtensionComponent(manifest.id),
     }
 }
 
@@ -37,12 +34,10 @@ export type SplitRegistryEvent =
     | { type: "splitDefinitionRemove"; id: SplitID }
 
 export default class SplitRegistry {
-    private readonly extensionManager: ExtensionManager
     private readonly splitDefinitions: Map<SplitID, SplitDefinition>
     private readonly _events: EventSink<SplitRegistryEvent>
 
-    constructor(extensionManager: ExtensionManager) {
-        this.extensionManager = extensionManager
+    constructor(extensionRuntime: ExtensionRuntime) {
         this.splitDefinitions = new Map()
         ;[this._events, this.$events] = createEvent<SplitRegistryEvent>()
 
@@ -50,27 +45,27 @@ export default class SplitRegistry {
         this.registerSplit(QuickMixSplit)
         this.registerSplit(SongEditorSplit)
 
-        for (const installed of extensionManager.installed) {
-            const split = getExtensionSplitDefinition(extensionManager, installed)
+        for (const installed of extensionRuntime.available) {
+            const split = getExtensionSplitDefinition(installed)
             if (split !== undefined) {
                 this.registerSplit(split)
             }
         }
-        extensionManager.$events.subscribe((event) => {
+        extensionRuntime.$events.subscribe((event) => {
             this.handleExtensionEvent(event)
         })
     }
 
-    private handleExtensionEvent(event: ExtensionManagerEvent) {
+    private handleExtensionEvent(event: ExtensionRuntimeEvent) {
         switch (event.type) {
-            case "extensionInstalled": {
-                const split = getExtensionSplitDefinition(this.extensionManager, event.manifest)
+            case "extensionAdded": {
+                const split = getExtensionSplitDefinition(event.manifest)
                 if (split !== undefined) {
                     this.registerSplit(split)
                 }
                 break
             }
-            case "extensionUninstalled": {
+            case "extensionRemoved": {
                 this.unregisterSplit(getExtensionSplitID(event.manifest))
                 break
             }
