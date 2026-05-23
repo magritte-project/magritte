@@ -1,5 +1,5 @@
 import { MenuButton } from "@headlessui/react"
-import { CaretDownIcon, CrownIcon, SignOutIcon } from "@phosphor-icons/react"
+import { CaretDownIcon, CrownIcon, SignOutIcon, UserIcon } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { Link, useNavigate } from "@tanstack/react-router"
 
@@ -43,6 +43,17 @@ export default function UserButton() {
                     ),
                     onClick: () => {
                         navigate({ to: "/admin" })
+                    },
+                },
+                {
+                    key: "me",
+                    label: (
+                        <>
+                            <UserIcon /> My Settings
+                        </>
+                    ),
+                    onClick: () => {
+                        navigate({ to: "/user/me" })
                     },
                 },
                 {
