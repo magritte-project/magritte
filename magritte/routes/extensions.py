@@ -34,7 +34,7 @@ async def import_extension(
     # TODO: Figure out how to unit test this
 
     manifest_url_path = import_extension.manifest_url.path
-    if manifest_url_path is None or manifest_url_path.endswith(
+    if manifest_url_path is None or not manifest_url_path.endswith(
         "/extension.magritte.json"
     ):
         raise HTTPException(
@@ -64,7 +64,7 @@ async def import_extension(
             detail="Manifest could not be fetched",
         )
 
-    manifest = ExtensionManifest(**response.json())
+    manifest = ExtensionManifest.model_validate_json(response.text)
 
     if await Extension.exists(
         where=[col(Extension.manifest_id) == manifest.id],
@@ -80,7 +80,7 @@ async def import_extension(
         manifest_id=manifest.id,
         manifest_url=str(import_extension.manifest_url),
         manifest_name=manifest.name,
-        manifest=manifest.model_dump(),
+        manifest=manifest.model_dump(mode="json"),
     )
     session.add(new_extension)
     await session.flush()

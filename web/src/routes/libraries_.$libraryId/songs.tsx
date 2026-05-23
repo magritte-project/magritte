@@ -1,8 +1,7 @@
 import { MenuButton } from "@headlessui/react"
-import { DotsThreeCircleVerticalIcon, TrashIcon } from "@phosphor-icons/react"
-import { PencilIcon } from "@phosphor-icons/react"
+import { DotsThreeCircleVerticalIcon, PencilIcon, TrashIcon } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { useCallback } from "react"
 import { z } from "zod"
 
@@ -79,7 +78,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             sort_by: sortBy,
             offset,
         } = Route.useSearch()
-        const navigate = useNavigate({ from: Route.fullPath })
+        const navigate = Route.useNavigate()
         const apiClient = useAPIClient()
         const pageQuery = useQuery(
             readLibrarySongs(apiClient, {

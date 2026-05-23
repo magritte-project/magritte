@@ -14,12 +14,15 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as LibrariesRouteImport } from './routes/libraries'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as LibrariesAddRouteImport } from './routes/libraries.add'
+import { Route as AdminExtensionsRouteImport } from './routes/admin.extensions'
 import { Route as LibrariesLibraryIdRouteRouteImport } from './routes/libraries_.$libraryId/route'
 import { Route as LibrariesLibraryIdIndexRouteImport } from './routes/libraries_.$libraryId/index'
 import { Route as LibrariesLibraryIdSongsRouteImport } from './routes/libraries_.$libraryId/songs'
 import { Route as LibrariesLibraryIdArtistsRouteImport } from './routes/libraries_.$libraryId/artists'
 import { Route as LibrariesLibraryIdAlbumsRouteImport } from './routes/libraries_.$libraryId/albums'
+import { Route as AdminExtensionsImportRouteImport } from './routes/admin.extensions.import'
 import { Route as LibrariesManageLibraryIdRouteRouteImport } from './routes/libraries.manage.$libraryId/route'
 import { Route as LibrariesManageLibraryIdIndexRouteImport } from './routes/libraries.manage.$libraryId/index'
 import { Route as LibrariesManageLibraryIdPermissionsRouteImport } from './routes/libraries.manage.$libraryId/permissions'
@@ -49,10 +52,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const LibrariesAddRoute = LibrariesAddRouteImport.update({
   id: '/add',
   path: '/add',
   getParentRoute: () => LibrariesRoute,
+} as any)
+const AdminExtensionsRoute = AdminExtensionsRouteImport.update({
+  id: '/extensions',
+  path: '/extensions',
+  getParentRoute: () => AdminRoute,
 } as any)
 const LibrariesLibraryIdRouteRoute = LibrariesLibraryIdRouteRouteImport.update({
   id: '/libraries_/$libraryId',
@@ -81,6 +94,11 @@ const LibrariesLibraryIdAlbumsRoute =
     path: '/albums',
     getParentRoute: () => LibrariesLibraryIdRouteRoute,
   } as any)
+const AdminExtensionsImportRoute = AdminExtensionsImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AdminExtensionsRoute,
+} as any)
 const LibrariesManageLibraryIdRouteRoute =
   LibrariesManageLibraryIdRouteRouteImport.update({
     id: '/manage/$libraryId',
@@ -102,13 +120,16 @@ const LibrariesManageLibraryIdPermissionsRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
+  '/admin/extensions': typeof AdminExtensionsRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
+  '/admin/': typeof AdminIndexRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
+  '/admin/extensions/import': typeof AdminExtensionsImportRoute
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
@@ -118,11 +139,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/admin/extensions': typeof AdminExtensionsRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/extensions/import': typeof AdminExtensionsImportRoute
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
@@ -133,13 +156,16 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/libraries_/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
+  '/admin/extensions': typeof AdminExtensionsRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
+  '/admin/': typeof AdminIndexRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
+  '/admin/extensions/import': typeof AdminExtensionsImportRoute
   '/libraries_/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries_/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries_/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
@@ -156,8 +182,11 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/libraries/$libraryId'
+    | '/admin/extensions'
     | '/libraries/add'
+    | '/admin/'
     | '/libraries/manage/$libraryId'
+    | '/admin/extensions/import'
     | '/libraries/$libraryId/albums'
     | '/libraries/$libraryId/artists'
     | '/libraries/$libraryId/songs'
@@ -167,11 +196,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/libraries'
     | '/sign-in'
     | '/sign-up'
+    | '/admin/extensions'
     | '/libraries/add'
+    | '/admin'
+    | '/admin/extensions/import'
     | '/libraries/$libraryId/albums'
     | '/libraries/$libraryId/artists'
     | '/libraries/$libraryId/songs'
@@ -186,8 +217,11 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/libraries_/$libraryId'
+    | '/admin/extensions'
     | '/libraries/add'
+    | '/admin/'
     | '/libraries/manage/$libraryId'
+    | '/admin/extensions/import'
     | '/libraries_/$libraryId/albums'
     | '/libraries_/$libraryId/artists'
     | '/libraries_/$libraryId/songs'
@@ -198,7 +232,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   LibrariesRoute: typeof LibrariesRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
@@ -242,12 +276,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/libraries/add': {
       id: '/libraries/add'
       path: '/add'
       fullPath: '/libraries/add'
       preLoaderRoute: typeof LibrariesAddRouteImport
       parentRoute: typeof LibrariesRoute
+    }
+    '/admin/extensions': {
+      id: '/admin/extensions'
+      path: '/extensions'
+      fullPath: '/admin/extensions'
+      preLoaderRoute: typeof AdminExtensionsRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/libraries_/$libraryId': {
       id: '/libraries_/$libraryId'
@@ -284,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibrariesLibraryIdAlbumsRouteImport
       parentRoute: typeof LibrariesLibraryIdRouteRoute
     }
+    '/admin/extensions/import': {
+      id: '/admin/extensions/import'
+      path: '/import'
+      fullPath: '/admin/extensions/import'
+      preLoaderRoute: typeof AdminExtensionsImportRouteImport
+      parentRoute: typeof AdminExtensionsRoute
+    }
     '/libraries/manage/$libraryId': {
       id: '/libraries/manage/$libraryId'
       path: '/manage/$libraryId'
@@ -307,6 +362,30 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminExtensionsRouteChildren {
+  AdminExtensionsImportRoute: typeof AdminExtensionsImportRoute
+}
+
+const AdminExtensionsRouteChildren: AdminExtensionsRouteChildren = {
+  AdminExtensionsImportRoute: AdminExtensionsImportRoute,
+}
+
+const AdminExtensionsRouteWithChildren = AdminExtensionsRoute._addFileChildren(
+  AdminExtensionsRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminExtensionsRoute: typeof AdminExtensionsRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminExtensionsRoute: AdminExtensionsRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface LibrariesManageLibraryIdRouteRouteChildren {
   LibrariesManageLibraryIdPermissionsRoute: typeof LibrariesManageLibraryIdPermissionsRoute
@@ -362,7 +441,7 @@ const LibrariesLibraryIdRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   LibrariesRoute: LibrariesRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
