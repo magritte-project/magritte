@@ -211,7 +211,7 @@ export class ExtensionRuntime {
         iframe.style.background = "white"
         iframe.style.display = "none"
         iframe.style.position = "absolute"
-        iframe.allow = "autoplay"
+        iframe.allow = "encrypted-media *; autoplay"
         iframe.src = getExtensionSrc(manifest, {
             hostOrigin: window.location.origin,
         })
