@@ -153,6 +153,7 @@ declare namespace MusicKit {
         readonly currentPlaybackTime: number
         readonly currentPlaybackTimeRemaining: number
         readonly isAuthorized: boolean
+        readonly browserSupportsVideoDrm: boolean
         readonly isPlaying: boolean
         readonly nowPlayingItem: MediaItem
         readonly nowPlayingItemIndex: number

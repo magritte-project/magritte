@@ -37,6 +37,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         this._musicKit = musicKit
         this._playingItem = null
 
+        this._musicKit.addEventListener("drmUnsupported", () => console.error("drmUnsupported"))
         this._musicKit.addEventListener("mediaPlaybackError", () =>
             this._handleMediaPlaybackError(),
         )
