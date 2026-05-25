@@ -1,4 +1,4 @@
-import { importPKCS8, SignJWT } from "jose"
+import { importJWK, importPKCS8, SignJWT } from "jose"
 
 import type { MusicKitTokenFactory } from "@/musickit/tokens/base"
 
@@ -27,7 +27,10 @@ export class ClientTokenFactory implements MusicKitTokenFactory {
     }
 
     async createDeveloperToken(): Promise<string> {
-        const privateKeyPKCS8 = await importPKCS8(this.options.privateKey, "ES256")
+        const privateKeyPKCS8 = this.options.privateKey.startsWith("{")
+            ? await importJWK(JSON.parse(this.options.privateKey), "ES256")
+            : await importPKCS8(this.options.privateKey, "ES256")
+
         const signBearerTokenPayload = new SignJWT({ sub: this.options.appId })
             .setIssuer(this.options.teamId)
             .setIssuedAt()
