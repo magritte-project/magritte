@@ -1,5 +1,4 @@
-import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
-import type { EventStream } from "@magritte/sdk/utilities"
+import type { EventStream, PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk"
 
 import type { PlaybackModes } from "@/playback/modes"
 

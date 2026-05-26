@@ -1,4 +1,4 @@
-import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
+import { createEvent, type EventSink, type EventStream } from "@magritte/sdk"
 
 import type { APIClient } from "@/api/client"
 import type { UserSessionManager, UserSessionManagerEvent } from "@/api/userSession"

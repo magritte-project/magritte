@@ -1,5 +1,11 @@
-import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
-import { type EventSink, type EventStream, createEvent } from "@magritte/sdk/utilities"
+import {
+    createEvent,
+    PlayableItem,
+    PlaybackState,
+    PlaybackTime,
+    type EventSink,
+    type EventStream,
+} from "@magritte/sdk"
 
 import type { UserSessionManager } from "@/api/userSession"
 import type {

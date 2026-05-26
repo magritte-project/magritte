@@ -1,4 +1,4 @@
-import { CommandInput, SingletonCommandInput, singletonInputID } from "@magritte/sdk/host"
+import { CommandInput, SingletonCommandInput, singletonInputID } from "@magritte/sdk"
 import { describe, expect, it, vi } from "vitest"
 import z4 from "zod"
 

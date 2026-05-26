@@ -1,5 +1,10 @@
-import type { Extension, PlayableItem } from "@magritte/sdk/host"
-import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
+import {
+    createEvent,
+    type EventSink,
+    type EventStream,
+    type Extension,
+    type PlayableItem,
+} from "@magritte/sdk"
 
 import { ExtensionPlaybackEngineProxy } from "@/extensions/playbackEngine"
 import type { ExtensionRuntime, ExtensionRuntimeEvent } from "@/extensions/runtime"

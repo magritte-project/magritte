@@ -1,4 +1,4 @@
-import type { ExtensionHost } from "@magritte/sdk/extension"
+import type { ExtensionHost } from "@magritte/sdk"
 import { createContext } from "react"
 
 export const ExtensionHostContext = createContext<ExtensionHost | undefined>(undefined)

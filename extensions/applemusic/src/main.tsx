@@ -1,7 +1,7 @@
 import { RPCBroadcaster } from "@magritte/rpc"
 
 import "@/styles.css"
-import { ExtensionHost } from "@magritte/sdk/extension"
+import { ExtensionHost } from "@magritte/sdk"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"

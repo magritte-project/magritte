@@ -1,4 +1,4 @@
-import type { PlaybackTime } from "@magritte/sdk/host"
+import type { PlaybackTime } from "@magritte/sdk"
 import { useState, useCallback, useEffect } from "react"
 
 import useExtensionHost from "@/hooks/extensionHostHook"

@@ -1,4 +1,4 @@
-import type { PlayableItem } from "@magritte/sdk/host"
+import type { PlayableItem } from "@magritte/sdk"
 import { useSyncExternalStore } from "react"
 
 import usePlayer from "@/hooks/playerHook"

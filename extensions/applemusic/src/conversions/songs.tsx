@@ -1,4 +1,4 @@
-import type { LibraryIngestableSong, PlayableItem } from "@magritte/sdk/host"
+import type { LibraryIngestableSong, PlayableItem } from "@magritte/sdk"
 
 import type { SongResource } from "@/musickit/models/song"
 

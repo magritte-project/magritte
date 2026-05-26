@@ -1,4 +1,4 @@
-import type { EventStream } from "@magritte/sdk/utilities"
+import type { EventStream } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 
 import type { APIClient } from "@/api/client"

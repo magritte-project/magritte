@@ -1,4 +1,4 @@
-import { createEvent, EventStream, type EventSink } from "@magritte/sdk/utilities"
+import { createEvent, EventStream, type EventSink } from "@magritte/sdk"
 
 import type { OAuth2Scope } from "@/api/openapi"
 

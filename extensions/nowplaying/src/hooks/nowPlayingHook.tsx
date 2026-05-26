@@ -1,5 +1,5 @@
 import type { RPCIncomingBroadcastEvent } from "@magritte/rpc"
-import { NowPlaying, PlayerProtocol } from "@magritte/sdk/host"
+import { NowPlaying, PlayerProtocol } from "@magritte/sdk"
 import { useEffect, useState } from "react"
 
 import useExtensionHost from "@/hooks/extensionHostHook"

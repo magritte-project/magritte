@@ -1,4 +1,4 @@
-import type { PlayableItemArtwork } from "@magritte/sdk/host"
+import type { PlayableItemArtwork } from "@magritte/sdk"
 import classNames from "classnames"
 import type React from "react"
 

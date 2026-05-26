@@ -4,8 +4,10 @@ import {
     type PlaybackEngine,
     type PlaybackEngineEnqueueOptions,
     type PlaybackModes,
-} from "@magritte/sdk/extension"
-import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
+    type PlayableItem,
+    type PlaybackState,
+    type PlaybackTime,
+} from "@magritte/sdk"
 
 function _getPlaybackState(playbackState: MusicKit.PlaybackStates): PlaybackState {
     switch (playbackState) {

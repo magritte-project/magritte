@@ -1,5 +1,4 @@
-import { PlaybackModes } from "@magritte/sdk/extension"
-import { PlayableItem, PlaybackState, SingletonCommandInput } from "@magritte/sdk/host"
+import { PlayableItem, PlaybackModes, PlaybackState, SingletonCommandInput } from "@magritte/sdk"
 import z4 from "zod"
 
 import type { CommandInputs } from "@/commands/inputs/base"

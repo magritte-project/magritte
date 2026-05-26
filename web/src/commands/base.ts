@@ -1,4 +1,4 @@
-import type { CommandPresentation } from "@magritte/sdk/extension"
+import type { CommandPresentation } from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 

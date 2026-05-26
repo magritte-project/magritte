@@ -1,5 +1,11 @@
-import { singletonInputID, type CommandInput, type SingletonCommandInput } from "@magritte/sdk/host"
-import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
+import {
+    createEvent,
+    singletonInputID,
+    type CommandInput,
+    type EventSink,
+    type EventStream,
+    type SingletonCommandInput,
+} from "@magritte/sdk"
 import z4 from "zod/v4"
 
 export type CommandInputsEvent = { readonly type: "commandInputsDidChange" }

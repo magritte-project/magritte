@@ -7,8 +7,9 @@ import {
 } from "@magritte/rpc"
 import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transports"
 
-import { LibraryProtocol, PlayerProtocol, type Library, type Player } from "../host"
 import { ChromeProtocol, type Chrome } from "../host/chrome"
+import { LibraryProtocol, type Library } from "../host/library"
+import { PlayerProtocol, type Player } from "../host/playback"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "./playbackEngine"
 
 export interface ExtensionExportsObject {

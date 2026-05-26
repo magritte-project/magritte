@@ -1,5 +1,5 @@
 import type { RPCIncomingBroadcastEvent } from "@magritte/rpc"
-import { type PlaybackState, type PlayableItem, PlayerProtocol } from "@magritte/sdk/host"
+import { type PlaybackState, type PlayableItem, PlayerProtocol } from "@magritte/sdk"
 import { createFileRoute } from "@tanstack/react-router"
 import { useState, useEffect } from "react"
 

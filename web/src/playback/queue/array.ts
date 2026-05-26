@@ -1,4 +1,4 @@
-import { createEvent, EventSink, type EventStream } from "@magritte/sdk/utilities"
+import { createEvent, EventSink, type EventStream } from "@magritte/sdk"
 
 import type { Queue, QueueEvent, RandomItemContext } from "@/playback/queue/base"
 

@@ -1,4 +1,4 @@
-import { CommandInput } from "@magritte/sdk/host"
+import { CommandInput } from "@magritte/sdk"
 import z4 from "zod"
 
 export const LibraryInput = CommandInput.extend({

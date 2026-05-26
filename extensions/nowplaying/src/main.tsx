@@ -1,4 +1,4 @@
-import { ExtensionHost } from "@magritte/sdk/extension"
+import { ExtensionHost } from "@magritte/sdk"
 import { StrictMode } from "react"
 
 import "./index.css"

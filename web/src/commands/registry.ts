@@ -1,4 +1,4 @@
-import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
+import { createEvent, type EventSink, type EventStream } from "@magritte/sdk"
 import Fuse from "fuse.js"
 
 import type { Command } from "@/commands/base"

@@ -1,7 +1,12 @@
 import { RPCBroadcaster } from "@magritte/rpc"
-import { getExtensionSrc, type ExtensionManifest } from "@magritte/sdk"
-import { Extension } from "@magritte/sdk/host"
-import { createEvent, EventSink, EventStream } from "@magritte/sdk/utilities"
+import {
+    createEvent,
+    EventSink,
+    EventStream,
+    Extension,
+    getExtensionSrc,
+    type ExtensionManifest,
+} from "@magritte/sdk"
 
 import type { APIClient } from "@/api/client"
 import type { UserSessionManager } from "@/api/userSession"

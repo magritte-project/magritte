@@ -1,4 +1,4 @@
-import type { CommandInput } from "@magritte/sdk/host"
+import type { CommandInput } from "@magritte/sdk"
 import { useEffect, type ReactNode } from "react"
 
 import useCommandInputs from "@/hooks/commandInputsHook"

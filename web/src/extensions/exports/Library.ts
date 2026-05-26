@@ -1,4 +1,4 @@
-import type { Library } from "@magritte/sdk/host"
+import type { Library } from "@magritte/sdk"
 
 import type { APIClient } from "@/api/client"
 import type { UserSession } from "@/api/userSession"

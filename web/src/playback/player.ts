@@ -1,10 +1,10 @@
-import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk/host"
+import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk"
 import {
     type EventSink,
     type EventStream,
     type EventSubscription,
     createEvent,
-} from "@magritte/sdk/utilities"
+} from "@magritte/sdk"
 
 import type {
     PlaybackEngine,

@@ -1,4 +1,4 @@
-import type { ExtensionHost } from "@magritte/sdk/extension"
+import type { ExtensionHost } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 

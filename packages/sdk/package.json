@@ -10,18 +10,6 @@
         ".": {
             "types": "./src/index.ts",
             "default": "./src/index.ts"
-        },
-        "./extension": {
-            "types": "./src/extension/index.ts",
-            "default": "./src/extension/index.ts"
-        },
-        "./host": {
-            "types": "./src/host/index.ts",
-            "default": "./src/host/index.ts"
-        },
-        "./utilities": {
-            "types": "./src/utilities/index.ts",
-            "default": "./src/utilities/index.ts"
         }
     },
     "scripts": {

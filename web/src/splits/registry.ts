@@ -1,5 +1,9 @@
-import type { ExtensionManifest } from "@magritte/sdk"
-import { createEvent, type EventSink, type EventStream } from "@magritte/sdk/utilities"
+import {
+    createEvent,
+    type EventSink,
+    type EventStream,
+    type ExtensionManifest,
+} from "@magritte/sdk"
 import { GearIcon } from "@phosphor-icons/react"
 
 import { buildExtensionComponent } from "@/components/extensions/ExtensionComponent"

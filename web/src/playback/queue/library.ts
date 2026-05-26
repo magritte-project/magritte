@@ -1,5 +1,4 @@
-import type { PlayableItem } from "@magritte/sdk/host"
-import { createEvent, type EventStream } from "@magritte/sdk/utilities"
+import { createEvent, type EventStream, type PlayableItem } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 
 import type { APIClient } from "@/api/client"
