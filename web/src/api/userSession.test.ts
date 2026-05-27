@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { StorageUserSessionManager, UserSessionManager } from "./userSession"
+import { StorageUserSessionManager } from "./userSession"
 
 function mockStorage() {
     const items = new Map<string, string>()
@@ -27,26 +27,13 @@ function mockStorage() {
 }
 
 describe("userSession", () => {
-    describe("#UserSessionManager", () => {
-        it("should raise for abstract members", () => {
-            const subject = new UserSessionManager()
-            expect(() => subject.current).toThrowError()
-            expect(() => {
-                subject.current = null
-            }).toThrowError()
-        })
-    })
-
     describe("#StorageUserSessionManager", () => {
         it("should post currentDidChange event", async () => {
             const subject = new StorageUserSessionManager(mockStorage())
-            let didPost = false
-            subject.$events.subscribe((event) => {
-                expect(event.type).toStrictEqual("currentDidChange")
-                didPost = true
-            })
+            const subscriber = vi.fn()
+            subject.$current.subscribe(subscriber)
             subject.current = { accessToken: "<NOISE>", scopes: [] }
-            expect(didPost).toStrictEqual(true)
+            expect(subscriber).toHaveBeenCalled()
         })
     })
 })

@@ -1,4 +1,4 @@
-import { createEvent, EventStream, type EventSink } from "@magritte/sdk"
+import { $oneWayMap, $state, type Property, type ReadonlyProperty } from "@magritte/sdk"
 
 import type { OAuth2Scope } from "@/api/openapi"
 
@@ -7,37 +7,14 @@ export interface UserSession {
     readonly scopes: readonly OAuth2Scope[]
 }
 
-export type UserSessionManagerEvent = { type: "currentDidChange"; current: UserSession | null }
+export interface UserSessionManager {
+    readonly $current: Property<UserSession | null>
+    current: UserSession | null
 
-export class UserSessionManager {
-    private readonly _events: EventSink<UserSessionManagerEvent>
+    readonly $isSignedIn: ReadonlyProperty<boolean>
+    readonly isSignedIn: boolean
 
-    constructor() {
-        ;[this._events, this.$events] = createEvent<UserSessionManagerEvent>()
-    }
-
-    readonly $events: EventStream<UserSessionManagerEvent>
-
-    get current(): UserSession | null {
-        throw new Error("Unimplemented")
-    }
-
-    set current(_userSession: UserSession | null) {
-        throw new Error("Unimplemented")
-    }
-
-    get isSignedIn(): boolean {
-        return this.current !== null
-    }
-
-    hasScope(scope: OAuth2Scope): boolean {
-        const current = this.current
-        return current !== null && current.scopes.includes(scope)
-    }
-
-    _dispatchCurrentDidChange() {
-        this._events.dispatch({ type: "currentDidChange", current: this.current })
-    }
+    hasScope(scope: OAuth2Scope): boolean
 }
 
 function retrieveUserSession(storage: Storage): UserSession | null {
@@ -53,7 +30,7 @@ function retrieveUserSession(storage: Storage): UserSession | null {
     }
 }
 
-function storeUserSession(storage: Storage, userSession: UserSession | null): UserSession | null {
+function storeUserSession(storage: Storage, userSession: UserSession | null) {
     if (userSession != null) {
         storage.setItem("userSession.accessToken", userSession.accessToken)
         storage.setItem("userSession.scope", userSession.scopes.join(" "))
@@ -61,27 +38,37 @@ function storeUserSession(storage: Storage, userSession: UserSession | null): Us
         storage.removeItem("userSession.accessToken")
         storage.removeItem("userSession.scope")
     }
-    return userSession
 }
 
-export class StorageUserSessionManager extends UserSessionManager {
+export class StorageUserSessionManager implements UserSessionManager {
     static readonly local = new StorageUserSessionManager(localStorage)
 
     constructor(storage: Storage) {
-        super()
-        this._storage = storage
-        this._current = retrieveUserSession(storage)
+        this.$current = $state(retrieveUserSession(storage))
+        this.$isSignedIn = $oneWayMap(this.$current, (current) => current != null)
+        this.$current.subscribe((current) => {
+            storeUserSession(storage, current)
+        })
     }
 
-    readonly _storage: Storage
-    private _current: UserSession | null
+    readonly $current: Property<UserSession | null>
 
-    override get current(): UserSession | null {
-        return this._current
+    get current(): UserSession | null {
+        return this.$current.wrappedValue
     }
 
-    override set current(userSession: UserSession | null) {
-        this._current = storeUserSession(this._storage, userSession)
-        this._dispatchCurrentDidChange()
+    set current(userSession: UserSession | null) {
+        this.$current.wrappedValue = userSession
+    }
+
+    readonly $isSignedIn: ReadonlyProperty<boolean>
+
+    get isSignedIn(): boolean {
+        return this.$isSignedIn.wrappedValue
+    }
+
+    hasScope(scope: OAuth2Scope): boolean {
+        const current = this.current
+        return current !== null && current.scopes.includes(scope)
     }
 }

@@ -22,24 +22,19 @@ export default function useUserSession(): UseUserSessionResult {
     })
     const current = useSyncExternalStore(
         (onStoreChange) => {
-            const subscription = userSession.$events.subscribe(async (event) => {
-                switch (event.type) {
-                    case "currentDidChange":
-                        if (
-                            event.current === null &&
-                            !router.state.matches.some((match) => match.staticData.noAuth === true)
-                        ) {
-                            // NOTE: We must redirect before invalidating the queries
-                            //       or we can end up in an infinite loop.
-                            setTimeout(() => {
-                                navigate({ to: "/sign-in" })
-                            }, 16)
-                        }
-                        onStoreChange()
-                        queryClient.clear()
-                        break
-                    default:
-                        break
+            const subscription = userSession.$current.subscribe((current) => {
+                if (
+                    current === null &&
+                    !router.state.matches.some((match) => match.staticData.noAuth === true)
+                ) {
+                    // NOTE: We must redirect before invalidating the queries
+                    //       or we can end up in an infinite loop.
+                    setTimeout(() => {
+                        navigate({ to: "/sign-in" })
+                    }, 16)
+                } else {
+                    onStoreChange()
+                    queryClient.clear()
                 }
             })
             return () => subscription.unsubscribe()
@@ -48,7 +43,15 @@ export default function useUserSession(): UseUserSessionResult {
             return userSession.current
         },
     )
-    const isSignedIn = current !== null
+    const isSignedIn = useSyncExternalStore(
+        (onStoreChange) => {
+            const subscription = userSession.$isSignedIn.subscribe(() => onStoreChange())
+            return () => subscription.unsubscribe()
+        },
+        () => {
+            return userSession.isSignedIn
+        },
+    )
 
     const signIn = useCallback(
         async (token: Token) => {

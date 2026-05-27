@@ -1,7 +1,7 @@
 import { createEvent, type EventSink, type EventStream } from "@magritte/sdk"
 
 import type { APIClient } from "@/api/client"
-import type { UserSessionManager, UserSessionManagerEvent } from "@/api/userSession"
+import type { UserSessionManager } from "@/api/userSession"
 
 type UserEventsState =
     | { type: "notConnected" }
@@ -24,21 +24,11 @@ export class UserEvents {
         ;[this._events, this.$events] = createEvent<UserEvent>()
         this._state = { type: "notConnected" }
 
-        userSession.$events.subscribe((event) => this._onUserSessionManagerEvent(event))
+        userSession.$current.subscribe(() => this._syncWithUserSession())
         this._syncWithUserSession()
     }
 
     readonly $events: EventStream<UserEvent>
-
-    private _onUserSessionManagerEvent(event: UserSessionManagerEvent) {
-        switch (event.type) {
-            case "currentDidChange":
-                this._syncWithUserSession()
-                break
-            default:
-                break
-        }
-    }
 
     async _syncWithUserSession() {
         if (this.userSession.current !== null) {
