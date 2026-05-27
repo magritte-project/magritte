@@ -110,6 +110,8 @@ export class ExtensionRuntime {
         this._attachments = new Map()
         this._extensions = new Map()
         ;[this._events, this.$events] = createEvent()
+
+        this._userSession.$current.subscribe(() => this.sync())
     }
 
     readonly $events: EventStream<ExtensionRuntimeEvent>
