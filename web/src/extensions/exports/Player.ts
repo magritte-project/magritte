@@ -1,64 +1,76 @@
 import type { RPCBroadcaster } from "@magritte/rpc"
 import {
+    ExtensionManifest,
     PlayerProtocol as ExtensionPlayerProtocol,
     type Player as ExtensionPlayer,
 } from "@magritte/sdk"
 
+import { checkPermissions } from "@/extensions/exports/permissions"
 import type { Player as HostPlayer } from "@/playback/player"
 import ArrayQueue from "@/playback/queue/array"
 
-export function exportPlayer(broadcaster: RPCBroadcaster, player: HostPlayer): ExtensionPlayer {
-    const subscription = player.$events.subscribe(async (event) => {
-        switch (event.type) {
-            case "playbackStateDidChange":
-            case "playingItemChanged":
-                broadcaster.send("nowPlayingDidChange", ExtensionPlayerProtocol.name)
-                break
-            default:
-                break
-        }
-    })
-    broadcaster.addEventListener("invalidated", () => {
-        subscription.unsubscribe()
-    })
+export function exportPlayer(
+    manifest: ExtensionManifest,
+    broadcaster: RPCBroadcaster,
+    player: HostPlayer,
+): ExtensionPlayer {
+    if (manifest.permissions?.includes("playback:read")) {
+        const subscription = player.$events.subscribe(async (event) => {
+            switch (event.type) {
+                case "playbackStateDidChange":
+                case "playingItemChanged":
+                    broadcaster.send("nowPlayingDidChange", ExtensionPlayerProtocol.name)
+                    break
+                default:
+                    break
+            }
+        })
+        broadcaster.addEventListener("invalidated", () => {
+            subscription.unsubscribe()
+        })
+    }
     return {
-        getCurrentTime: async () => {
+        getCurrentTime: checkPermissions(manifest, ["playback:read"], async () => {
             return await player.getCurrentTime()
-        },
+        }),
 
-        seek: async ({ newTime }) => {
+        seek: checkPermissions(manifest, ["playback:control"], async ({ newTime }) => {
             await player.seek(newTime)
-        },
+        }),
 
-        getNowPlaying: async () => {
+        getNowPlaying: checkPermissions(manifest, ["playback:read"], async () => {
             return {
                 state: player.playbackState,
                 item: player.playingItem,
             }
-        },
+        }),
 
-        replaceQueue: async ({ newQueueItems, startingItem, playNow }) => {
-            await player.replaceQueue({
-                newQueue: new ArrayQueue(newQueueItems),
-                startingItem,
-                playNow,
-            })
-        },
+        replaceQueue: checkPermissions(
+            manifest,
+            ["playback:control"],
+            async ({ newQueueItems, startingItem, playNow }) => {
+                await player.replaceQueue({
+                    newQueue: new ArrayQueue(newQueueItems),
+                    startingItem,
+                    playNow,
+                })
+            },
+        ),
 
-        pause: async () => {
+        pause: checkPermissions(manifest, ["playback:control"], async () => {
             await player.pause()
-        },
+        }),
 
-        resume: async () => {
+        resume: checkPermissions(manifest, ["playback:control"], async () => {
             await player.resume()
-        },
+        }),
 
-        skipPrevious: async () => {
+        skipPrevious: checkPermissions(manifest, ["playback:control"], async () => {
             await player.skipPrevious()
-        },
+        }),
 
-        skipNext: async () => {
+        skipNext: checkPermissions(manifest, ["playback:control"], async () => {
             await player.skipNext()
-        },
+        }),
     }
 }

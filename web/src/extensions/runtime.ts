@@ -242,8 +242,8 @@ export class ExtensionRuntime {
                             })
                         },
                     },
-                    library: exportLibrary(this._userSession.current, this._apiClient),
-                    player: exportPlayer(broadcaster, this._player),
+                    library: exportLibrary(manifest, this._userSession, this._apiClient),
+                    player: exportPlayer(manifest, broadcaster, this._player),
                 },
             })
 
