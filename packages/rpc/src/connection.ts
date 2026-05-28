@@ -60,9 +60,6 @@ export interface RPCConnectionOptions {
     /** The object that will be exported to the remote side */
     readonly exportedObject: readonly ProtocolImplementation[]
 
-    /** The capabilities of the connection, usable for permissions and feature detection */
-    readonly capabilities?: Record<string, unknown>
-
     /** The broadcast to use for this connection */
     readonly broadcaster?: RPCBroadcaster
 
@@ -111,7 +108,6 @@ export class RPCConnection extends EventTarget {
         this.pending = new Map<string, PendingSend>()
         this.transport = options.transport
         this.broadcaster = options.broadcaster ?? new RPCBroadcaster()
-        this.capabilities = options.capabilities ?? {}
         this.exportedObject = new LocalObject(options.exportedObject)
         this.remoteObject = new RemoteObject(async (command) => {
             const reply = await this.send(command)
@@ -146,9 +142,6 @@ export class RPCConnection extends EventTarget {
 
     /** The broadcaster forwarded to the remote side of the connection */
     public readonly broadcaster: RPCBroadcaster
-
-    /** The capabilities of the connection, usable for permissions and feature detection */
-    public readonly capabilities: Record<string, unknown>
 
     /** The object exported by this side of the connection */
     public readonly exportedObject: RPCObject
