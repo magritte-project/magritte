@@ -8,57 +8,16 @@
         "schemas": {
             "ExtensionPermissions": {
                 "type": "string",
-                "enum": ["runInBackground"]
-            },
-            "ExtensionUseCaseSplit": {
-                "type": "object",
-                "required": ["type", "minWidth", "preferredLocation"],
-                "properties": {
-                    "type": {
-                        "type": "string",
-                        "enum": ["split"]
-                    },
-                    "minWidth": {
-                        "type": "string",
-                        "description": "The min width of the extension in a split"
-                    },
-                    "preferredLocation": {
-                        "type": "string",
-                        "enum": ["start", "end"],
-                        "description": "The preferred location of the extension in a split"
-                    }
-                }
-            },
-            "ExtensionUseCaseModal": {
-                "type": "object",
-                "required": ["type", "width", "height"],
-                "properties": {
-                    "type": {
-                        "type": "string",
-                        "enum": ["modal"]
-                    },
-                    "width": {
-                        "type": "string",
-                        "description": "The width of the extension in a modal"
-                    },
-                    "height": {
-                        "type": "string",
-                        "description": "The height of the extension in a modal"
-                    }
-                }
-            },
-            "ExtensionUseCases": {
-                "oneOf": [
-                    { "$ref": "#/components/schemas/ExtensionUseCaseSplit" },
-                    { "$ref": "#/components/schemas/ExtensionUseCaseModal" }
-                ],
-                "discriminator": {
-                    "propertyName": "type",
-                    "mapping": {
-                        "split": "#/components/schemas/ExtensionUseCaseSplit",
-                        "modal": "#/components/schemas/ExtensionUseCaseModal"
-                    }
-                }
+                "enum": [
+                    "run:background",
+                    "run:eager",
+                    "commands:input:read",
+                    "commands:input:add",
+                    "libraries:read",
+                    "libraries:write",
+                    "playback:read",
+                    "playback:control"
+                ]
             },
             "ExtensionManifest": {
                 "type": "object",
@@ -84,27 +43,27 @@
                         "type": "string",
                         "description": "The URL of the extension"
                     },
+                    "preferredWidth": {
+                        "type": "string",
+                        "description": "The preferred width of the extension as a CSS dimension"
+                    },
+                    "preferredHeight": {
+                        "type": "string",
+                        "description": "The preferred height of the extension as a CSS dimension"
+                    },
                     "permissions": {
                         "type": "array",
                         "items": { "$ref": "#/components/schemas/ExtensionPermissions" },
                         "default": [],
                         "description": "An optional array of permissions required by the extension"
                     },
-                    "runInBackground": {
-                        "type": "boolean",
-                        "default": false,
-                        "description": "Whether the extension can run in the background"
-                    },
-                    "autoLoad": {
-                        "type": "boolean",
-                        "default": false,
-                        "description": "Whether the extension wants to be auto loaded"
-                    },
-                    "useCases": {
+                    "sourceSchemes": {
                         "type": "array",
-                        "items": { "$ref": "#/components/schemas/ExtensionUseCases" },
+                        "items": {
+                            "type": "string"
+                        },
                         "default": [],
-                        "description": "An optional array of use cases for the extension"
+                        "description": "An optional array of source schemes supported by the extension"
                     }
                 }
             }

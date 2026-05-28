@@ -137,7 +137,7 @@ export class ExtensionRuntime {
         console.debug("Extension added", manifest)
         this._events.dispatch({ type: "extensionAdded", manifest })
 
-        if (manifest.autoLoad) {
+        if (manifest.permissions?.includes("run:eager")) {
             this._loadIfNeeded(manifest.id)
         }
     }
@@ -173,13 +173,13 @@ export class ExtensionRuntime {
             this.add({
                 ...extension.manifest,
                 description: extension.manifest.description ?? undefined,
+                preferredWidth: extension.manifest.preferredWidth ?? undefined,
+                preferredHeight: extension.manifest.preferredHeight ?? undefined,
                 permissions: extension.manifest.permissions
                     ? [...extension.manifest.permissions]
                     : undefined,
-                runInBackground: extension.manifest.runInBackground ?? undefined,
-                autoLoad: extension.manifest.autoLoad ?? false,
-                useCases: extension.manifest.useCases
-                    ? [...extension.manifest.useCases]
+                sourceSchemes: extension.manifest.sourceSchemes
+                    ? [...extension.manifest.sourceSchemes]
                     : undefined,
             })
             visitedIds.add(extension.manifest.id)
@@ -306,7 +306,7 @@ export class ExtensionRuntime {
         attachment.detach(element)
 
         const manifest = this._available.get(id)
-        if (!manifest?.runInBackground && !attachment.hasAnyElements) {
+        if (!manifest?.permissions?.includes("run:background") && !attachment.hasAnyElements) {
             this._unload(id)
         }
     }

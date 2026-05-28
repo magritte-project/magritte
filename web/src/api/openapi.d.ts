@@ -797,73 +797,38 @@ export interface components {
              */
             readonly url: string;
             /**
+             * Preferredwidth
+             * @description The preferred width of the extension as a CSS dimension
+             */
+            readonly preferredWidth?: string | null;
+            /**
+             * Preferredheight
+             * @description The preferred height of the extension as a CSS dimension
+             */
+            readonly preferredHeight?: string | null;
+            /**
              * Permissions
              * @description An optional array of permissions required by the extension
              * @default []
              */
             readonly permissions: readonly components["schemas"]["ExtensionPermissions"][] | null;
             /**
-             * Runinbackground
-             * @description Whether the extension can run in the background
-             * @default false
-             */
-            readonly runInBackground: boolean | null;
-            /**
-             * Autoload
-             * @description Whether the extension wants to be auto loaded
-             * @default false
-             */
-            readonly autoLoad: boolean | null;
-            /**
-             * Usecases
-             * @description An optional array of use cases for the extension
+             * Sourceschemes
+             * @description An optional array of source schemes supported by the extension
              * @default []
              */
-            readonly useCases: readonly (components["schemas"]["ExtensionUseCaseSplit"] | components["schemas"]["ExtensionUseCaseModal"])[] | null;
+            readonly sourceSchemes: readonly string[] | null;
         };
         /**
          * ExtensionPermissions
          * @enum {string}
          */
-        readonly ExtensionPermissions: "runInBackground";
+        readonly ExtensionPermissions: "run:background" | "run:eager" | "commands:input:read" | "commands:input:add" | "libraries:read" | "libraries:write" | "playback:read" | "playback:control";
         /** ExtensionRead */
         readonly ExtensionRead: {
             /** Id */
             readonly id: number;
             readonly manifest: components["schemas"]["ExtensionManifest"];
-        };
-        /** ExtensionUseCaseModal */
-        readonly ExtensionUseCaseModal: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            readonly type: "modal";
-            /**
-             * Width
-             * @description The width of the extension in a modal
-             */
-            readonly width: string;
-            /**
-             * Height
-             * @description The height of the extension in a modal
-             */
-            readonly height: string;
-        };
-        /** ExtensionUseCaseSplit */
-        readonly ExtensionUseCaseSplit: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            readonly type: "split";
-            /**
-             * Minwidth
-             * @description The min width of the extension in a split
-             */
-            readonly minWidth: string;
-            /** @description The preferred location of the extension in a split */
-            readonly preferredLocation: components["schemas"]["PreferredLocation"];
         };
         /** HTTPValidationError */
         readonly HTTPValidationError: {
@@ -1098,11 +1063,6 @@ export interface components {
             /** Row Count */
             readonly row_count?: number | null;
         };
-        /**
-         * PreferredLocation
-         * @enum {string}
-         */
-        readonly PreferredLocation: "start" | "end";
         /** SongRead */
         readonly SongRead: {
             /** Id */
@@ -1384,8 +1344,6 @@ export type ExtensionImportAdmin = components['schemas']['ExtensionImportAdmin']
 export type ExtensionManifest = components['schemas']['ExtensionManifest'];
 export type ExtensionPermissions = components['schemas']['ExtensionPermissions'];
 export type ExtensionRead = components['schemas']['ExtensionRead'];
-export type ExtensionUseCaseModal = components['schemas']['ExtensionUseCaseModal'];
-export type ExtensionUseCaseSplit = components['schemas']['ExtensionUseCaseSplit'];
 export type HttpValidationError = components['schemas']['HTTPValidationError'];
 export type IngestArtwork = components['schemas']['IngestArtwork'];
 export type IngestSong = components['schemas']['IngestSong'];
@@ -1407,7 +1365,6 @@ export type NotificationUpdate = components['schemas']['NotificationUpdate'];
 export type NotificationsRead = components['schemas']['NotificationsRead'];
 export type OAuth2Scope = components['schemas']['OAuth2Scope'];
 export type OperationResult = components['schemas']['OperationResult'];
-export type PreferredLocation = components['schemas']['PreferredLocation'];
 export type SongRead = components['schemas']['SongRead'];
 export type SongUpdate = components['schemas']['SongUpdate'];
 export type SourceCreate = components['schemas']['SourceCreate'];

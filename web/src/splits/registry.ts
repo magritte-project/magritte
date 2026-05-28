@@ -17,16 +17,12 @@ function getExtensionSplitID(manifest: ExtensionManifest): SplitID {
 }
 
 function getExtensionSplitDefinition(manifest: ExtensionManifest): SplitDefinition | undefined {
-    const splitUseCase = manifest.useCases?.find((useCase) => useCase.type === "split")
-    if (splitUseCase === undefined) {
-        return undefined
-    }
     return {
         id: getExtensionSplitID(manifest),
         name: manifest.name,
         icon: GearIcon,
-        minWidth: splitUseCase.minWidth,
-        preferredLocation: splitUseCase.preferredLocation,
+        minWidth: manifest.preferredWidth ?? "16em",
+        preferredLocation: "end",
         allowsMultiple: false,
         requiresParameters: false,
         component: buildExtensionComponent(manifest.id),

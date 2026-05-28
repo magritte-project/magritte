@@ -5,12 +5,6 @@ export const ExtensionManifest = Schemas.ExtensionManifest
 export type ExtensionManifest = Types.ExtensionManifest
 export const ExtensionPermissions = Schemas.ExtensionPermissions
 export type ExtensionPermissions = Types.ExtensionPermissions
-export const ExtensionUseCaseModal = Schemas.ExtensionUseCaseModal
-export type ExtensionUseCaseModal = Types.ExtensionUseCaseModal
-export const ExtensionUseCases = Schemas.ExtensionUseCases
-export type ExtensionUseCases = Types.ExtensionUseCases
-export const ExtensionUseCaseSplit = Schemas.ExtensionUseCaseSplit
-export type ExtensionUseCaseSplit = Types.ExtensionUseCaseSplit
 
 /**
  * Returns the origin of the extension.

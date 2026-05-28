@@ -2,23 +2,15 @@
 
 import * as z from "zod"
 
-export const ExtensionPermissions = z.enum(["runInBackground"])
-
-export const ExtensionUseCaseSplit = z.object({
-    type: z.enum(["split"]),
-    minWidth: z.string(),
-    preferredLocation: z.enum(["start", "end"]),
-})
-
-export const ExtensionUseCaseModal = z.object({
-    type: z.enum(["modal"]),
-    width: z.string(),
-    height: z.string(),
-})
-
-export const ExtensionUseCases = z.discriminatedUnion("type", [
-    ExtensionUseCaseSplit.extend({ type: z.literal("split") }),
-    ExtensionUseCaseModal.extend({ type: z.literal("modal") }),
+export const ExtensionPermissions = z.enum([
+    "run:background",
+    "run:eager",
+    "commands:input:read",
+    "commands:input:add",
+    "libraries:read",
+    "libraries:write",
+    "playback:read",
+    "playback:control",
 ])
 
 export const ExtensionManifest = z.object({
@@ -27,8 +19,8 @@ export const ExtensionManifest = z.object({
     version: z.string(),
     description: z.string().optional(),
     url: z.string(),
+    preferredWidth: z.string().optional(),
+    preferredHeight: z.string().optional(),
     permissions: z.array(ExtensionPermissions).optional().default([]),
-    runInBackground: z.boolean().optional().default(false),
-    autoLoad: z.boolean().optional().default(false),
-    useCases: z.array(ExtensionUseCases).optional().default([]),
+    sourceSchemes: z.array(z.string()).optional().default([]),
 })

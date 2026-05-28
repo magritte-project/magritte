@@ -4,39 +4,15 @@ export type ClientOptions = {
     baseUrl: `${string}://${string}` | (string & {})
 }
 
-export type ExtensionPermissions = "runInBackground"
-
-export type ExtensionUseCaseSplit = {
-    type: "split"
-    /**
-     * The min width of the extension in a split
-     */
-    minWidth: string
-    /**
-     * The preferred location of the extension in a split
-     */
-    preferredLocation: "start" | "end"
-}
-
-export type ExtensionUseCaseModal = {
-    type: "modal"
-    /**
-     * The width of the extension in a modal
-     */
-    width: string
-    /**
-     * The height of the extension in a modal
-     */
-    height: string
-}
-
-export type ExtensionUseCases =
-    | ({
-          type: "split"
-      } & ExtensionUseCaseSplit)
-    | ({
-          type: "modal"
-      } & ExtensionUseCaseModal)
+export type ExtensionPermissions =
+    | "run:background"
+    | "run:eager"
+    | "commands:input:read"
+    | "commands:input:add"
+    | "libraries:read"
+    | "libraries:write"
+    | "playback:read"
+    | "playback:control"
 
 export type ExtensionManifest = {
     /**
@@ -60,19 +36,19 @@ export type ExtensionManifest = {
      */
     url: string
     /**
+     * The preferred width of the extension as a CSS dimension
+     */
+    preferredWidth?: string
+    /**
+     * The preferred height of the extension as a CSS dimension
+     */
+    preferredHeight?: string
+    /**
      * An optional array of permissions required by the extension
      */
     permissions?: Array<ExtensionPermissions>
     /**
-     * Whether the extension can run in the background
+     * An optional array of source schemes supported by the extension
      */
-    runInBackground?: boolean
-    /**
-     * Whether the extension wants to be auto loaded
-     */
-    autoLoad?: boolean
-    /**
-     * An optional array of use cases for the extension
-     */
-    useCases?: Array<ExtensionUseCases>
+    sourceSchemes?: Array<string>
 }

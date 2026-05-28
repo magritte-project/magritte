@@ -1,16 +1,11 @@
 {
-    "name": "Apple Music",
+    "name": "Magritte - Apple Music",
+    "description": "Play Apple Music tracks and add them to your library",
     "id": "magritte.applemusic",
     "version": "0.0.0",
     "url": "http://localhost:9292/",
-    "permissions": [],
-    "runInBackground": true,
-    "autoLoad": true,
-    "useCases": [
-        {
-            "type": "split",
-            "minWidth": "16rem",
-            "preferredLocation": "end"
-        }
-    ]
+    "preferredWidth": "16rem",
+    "preferredHeight": "16rem",
+    "permissions": ["run:background", "run:eager", "libraries:read", "libraries:write"],
+    "sourceSchemes": ["applemusic"]
 }

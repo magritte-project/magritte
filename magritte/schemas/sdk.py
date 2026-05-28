@@ -4,44 +4,19 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
 
 class ExtensionPermissions(Enum):
-    RUN_IN_BACKGROUND = "runInBackground"
-
-
-class Type(Enum):
-    SPLIT = "split"
-
-
-class PreferredLocation(Enum):
-    START = "start"
-    END = "end"
-
-
-class ExtensionUseCaseSplit(BaseModel):
-    type: Literal["split"]
-    min_width: str = Field(
-        ..., alias="minWidth", description="The min width of the extension in a split"
-    )
-    preferred_location: PreferredLocation = Field(
-        ...,
-        alias="preferredLocation",
-        description="The preferred location of the extension in a split",
-    )
-
-
-class Type1(Enum):
-    MODAL = "modal"
-
-
-class ExtensionUseCaseModal(BaseModel):
-    type: Literal["modal"]
-    width: str = Field(..., description="The width of the extension in a modal")
-    height: str = Field(..., description="The height of the extension in a modal")
+    RUN_BACKGROUND = "run:background"
+    RUN_EAGER = "run:eager"
+    COMMANDS_INPUT_READ = "commands:input:read"
+    COMMANDS_INPUT_ADD = "commands:input:add"
+    LIBRARIES_READ = "libraries:read"
+    LIBRARIES_WRITE = "libraries:write"
+    PLAYBACK_READ = "playback:read"
+    PLAYBACK_CONTROL = "playback:control"
 
 
 class ExtensionManifest(BaseModel):
@@ -52,29 +27,21 @@ class ExtensionManifest(BaseModel):
         None, description="An optional description of the extension"
     )
     url: str = Field(..., description="The URL of the extension")
+    preferred_width: str | None = Field(
+        None,
+        alias="preferredWidth",
+        description="The preferred width of the extension as a CSS dimension",
+    )
+    preferred_height: str | None = Field(
+        None,
+        alias="preferredHeight",
+        description="The preferred height of the extension as a CSS dimension",
+    )
     permissions: list[ExtensionPermissions] | None = Field(
         [], description="An optional array of permissions required by the extension"
     )
-    run_in_background: bool | None = Field(
-        False,
-        alias="runInBackground",
-        description="Whether the extension can run in the background",
-    )
-    auto_load: bool | None = Field(
-        False,
-        alias="autoLoad",
-        description="Whether the extension wants to be auto loaded",
-    )
-    use_cases: (
-        list[
-            Annotated[
-                ExtensionUseCaseSplit | ExtensionUseCaseModal,
-                Field(discriminator="type"),
-            ]
-        ]
-        | None
-    ) = Field(
+    source_schemes: list[str] | None = Field(
         [],
-        alias="useCases",
-        description="An optional array of use cases for the extension",
+        alias="sourceSchemes",
+        description="An optional array of source schemes supported by the extension",
     )
