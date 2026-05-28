@@ -32,10 +32,26 @@ export default class PlaybackEngineRegistry {
     readonly $events: EventStream<PlaybackEngineRegistryEvent>
 
     private async _registerExtension(extension: Extension) {
+        if (!extension.manifest.sourceSchemes || extension.manifest.sourceSchemes.length === 0) {
+            console.debug(
+                "Skipping playback engine registration for extension with no source schemes",
+                extension.manifest.id,
+            )
+            return
+        }
+        if (extension.manifest.sourceSchemes.includes("magritte")) {
+            console.error(
+                "*** Extensions may not override handling of Magritte sources",
+                extension.manifest.id,
+            )
+            return
+        }
+
         try {
             const engine = new ExtensionPlaybackEngineProxy(
                 extension.connection.broadcaster,
                 await extension.playbackEngine(),
+                extension.manifest.sourceSchemes,
             )
             this._engines.set(extension.manifest.id, engine)
 

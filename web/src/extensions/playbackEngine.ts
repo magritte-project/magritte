@@ -25,6 +25,7 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
     constructor(
         broadcaster: RPCBroadcaster,
         private readonly engine: ExtensionPlaybackEngine,
+        private readonly sourceSchemes: readonly string[],
     ) {
         ;[this._events, this.$events] = createEvent()
         this._playingItem = null
@@ -75,7 +76,13 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
     }
 
     async canEnqueue(item: PlayableItem): Promise<boolean> {
-        return await this.engine.canEnqueue({ item })
+        const sources = item.sources?.filter((source) =>
+            this.sourceSchemes.some((scheme) => source.url.startsWith(`${scheme}:`)),
+        )
+        if (!sources || sources.length === 0) {
+            return false
+        }
+        return await this.engine.canEnqueue({ item: { ...item, sources } })
     }
 
     async enqueue(options: PlaybackEngineEnqueueOptions): Promise<void> {
