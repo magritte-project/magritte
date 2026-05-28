@@ -1,4 +1,8 @@
 #!/bin/bash
 
 cd "$(dirname "$0")"
-uv run python admin.py "$@"
+if [ "$#" -eq 0 ]; then
+    uv run python -m magritte -h
+else
+    uv run python -m magritte "$@"
+fi
