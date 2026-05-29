@@ -85,7 +85,7 @@ declare module "@tanstack/react-router" {
 }
 
 // Hook up commands
-commandRegistry.add(...libraryCommands(router))
+commandRegistry.add(...libraryCommands(router, apiClient, TanStackQueryProviderContext.queryClient))
 commandRegistry.add(...playerCommands(player))
 wirePlayerInput(player, commandInputs)
 

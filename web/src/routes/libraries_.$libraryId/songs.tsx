@@ -1,25 +1,22 @@
-import { MenuButton } from "@headlessui/react"
-import { DotsThreeCircleVerticalIcon, PencilIcon, TrashIcon } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
-import { createFileRoute, Outlet } from "@tanstack/react-router"
-import { useCallback } from "react"
+import { createFileRoute } from "@tanstack/react-router"
+import { useCallback, useMemo } from "react"
 import { z } from "zod"
 
-import { useDeleteLibrarySong } from "@/api/mutations/libraries"
 import type { SongRead } from "@/api/openapi"
 import { readLibrarySongs } from "@/api/queries/libraries"
+import type { LibrarySongInput } from "@/commands/inputs/libraryInput"
 import AppForm from "@/components/reusable/AppForm"
 import TableFooter from "@/components/reusable/TableFooter"
 import SongSortButton from "@/components/SongSortButton"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
-import ThemedPopUpMenu from "@/components/theme/ThemedPopUpMenu"
+import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 import useAPIClient from "@/hooks/apiClientHook"
 import { useAppForm } from "@/hooks/formHook"
 import usePlayer from "@/hooks/playerHook"
 import useQueueContext from "@/hooks/queueContextHook"
-import useSplits from "@/hooks/splitsHook"
+import useSelection from "@/hooks/selectionHook"
 import LibraryQueue from "@/playback/queue/library"
-import { SongEditorSplit } from "@/splits/definitions/SongEditorSplit"
 import { resolveNewValue } from "@/utilities/react"
 
 function formatDuration(seconds: number) {
@@ -114,31 +111,16 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             [],
         )
 
-        const { openSplit } = useSplits()
-        const handleEdit = useCallback(
-            (song: SongRead) => {
-                openSplit({
-                    id: SongEditorSplit.id,
-                    parameters: [Number(libraryId), song.id],
-                })
-            },
-            [libraryId, openSplit],
-        )
-
-        const deleteLibrarySong = useDeleteLibrarySong(Number(libraryId))
-        const handleRemove = useCallback(
-            async (song: SongRead) => {
-                const confirmed = confirm(`Are you sure you want to remove ${song.title}?`)
-                if (!confirmed) {
-                    return
-                }
-                await deleteLibrarySong.mutateAsync(song.id)
-            },
-            [deleteLibrarySong],
-        )
-
         const queueShardContext = useQueueContext()
         const player = usePlayer()
+
+        const { selection, isSelected, toggle } = useSelection()
+        const commandInputs = useMemo(() => {
+            return Array.from(
+                selection,
+                (id) => ({ kind: "library.song", id }) satisfies LibrarySongInput,
+            )
+        }, [selection])
 
         const facetForm = useAppForm({
             defaultValues: {
@@ -154,7 +136,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
         }
 
         return (
-            <>
+            <CommandInputProvider value={commandInputs}>
                 <div className="m-2 flex flex-col gap-2 cursor-default">
                     <AppForm form={facetForm}>
                         <facetForm.AppField name="query">
@@ -170,14 +152,14 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                     <table className="w-full">
                         <thead>
                             <tr className="text-left font-semibold text-sm">
+                                <th>
+                                    <SongSortButton order={sortBy} setOrder={handleChangeSortBy} />
+                                </th>
                                 <th className="p-2">Title</th>
                                 <th className="p-2">Time</th>
                                 <th className="p-2">Artist</th>
                                 <th className="p-2">Album</th>
                                 <th className="p-2">Genre</th>
-                                <th className="p-2">
-                                    <SongSortButton order={sortBy} setOrder={handleChangeSortBy} />
-                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -207,6 +189,15 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                         }
                                         onKeyDown={() => {}}
                                     >
+                                        <td className="px-2 py-1">
+                                            <input
+                                                type="checkbox"
+                                                name={`songs[${song.id}]`}
+                                                checked={isSelected(song.id)}
+                                                onChange={() => toggle(song.id)}
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                        </td>
                                         <td className="px-2 py-1">{song.title}</td>
                                         <td className="px-2 py-1">
                                             {formatDuration(song.end_time - song.start_time)}
@@ -214,41 +205,6 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                         <td className="px-2 py-1">{song.album_title}</td>
                                         <td className="px-2 py-1">{song.artist_name}</td>
                                         <td className="px-2 py-1">{song.genre}</td>
-                                        <td className="px-2 py-1">
-                                            <ThemedPopUpMenu
-                                                button={
-                                                    <MenuButton
-                                                        className="text-blue-600 p-2"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        <DotsThreeCircleVerticalIcon
-                                                            weight="bold"
-                                                            aria-label="Actions"
-                                                        />
-                                                    </MenuButton>
-                                                }
-                                                items={[
-                                                    {
-                                                        key: "edit",
-                                                        label: (
-                                                            <>
-                                                                <PencilIcon /> Edit
-                                                            </>
-                                                        ),
-                                                        onClick: () => handleEdit(song),
-                                                    },
-                                                    {
-                                                        key: "remove",
-                                                        label: (
-                                                            <>
-                                                                <TrashIcon /> Remove
-                                                            </>
-                                                        ),
-                                                        onClick: () => handleRemove(song),
-                                                    },
-                                                ]}
-                                            />
-                                        </td>
                                     </tr>
                                 ))}
                         </tbody>
@@ -276,8 +232,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                         )
                     )}
                 </div>
-                <Outlet />
-            </>
+            </CommandInputProvider>
         )
     },
 })
