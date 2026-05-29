@@ -1,4 +1,4 @@
-import { RPCBroadcaster } from "./broadcaster"
+import { RPCBroadcaster } from "./broadcasts"
 import { Local } from "./internal/local"
 import { LocalObject } from "./internal/localObject"
 import { RemoteObject } from "./internal/remoteObject"
@@ -120,8 +120,8 @@ export class RPCConnection extends EventTarget {
             return reply
         })
 
-        this.broadcaster.onsend = (what, topic, data) => {
-            this.transport.postMessage({ type: "broadcast", what, topic, data })
+        this.broadcaster._connection_onsend = (channel, what, data) => {
+            this.transport.postMessage({ type: "broadcast", channel, what, data })
         }
         this.transport.onmessage = (reply) => {
             this.handleMessage(reply)
@@ -190,7 +190,11 @@ export class RPCConnection extends EventTarget {
                     break
                 }
                 case "broadcast": {
-                    this.broadcaster.receive(this, message.what, message.topic, message.data)
+                    this.broadcaster._connection_receive(
+                        message.channel,
+                        message.what,
+                        message.data,
+                    )
                     break
                 }
                 default: {

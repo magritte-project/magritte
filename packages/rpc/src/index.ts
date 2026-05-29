@@ -1,4 +1,4 @@
-export * from "./broadcaster"
+export * from "./broadcasts"
 export * from "./connection"
 export * from "./object"
 export * from "./protocol"

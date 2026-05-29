@@ -1,8 +1,11 @@
-import type { RPCBroadcaster, RPCIncomingBroadcastEvent } from "@magritte/rpc"
+import type { RPCBroadcaster } from "@magritte/rpc"
 import {
     createEvent,
     EventSink,
-    PlaybackEngineProtocol,
+    PlaybackEngineEncounteredError,
+    PlaybackEngineEndOfAudio,
+    PlaybackEnginePlaybackStateDidChange,
+    PlaybackEnginePlayingItemChanged,
     type EventStream,
     type PlaybackEngine as ExtensionPlaybackEngine,
     type PlayableItem,
@@ -30,39 +33,26 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
         ;[this._events, this.$events] = createEvent()
         this._playingItem = null
 
-        broadcaster.addEventListener("incomingBroadcast", (event) => {
-            this.handleEvent(event)
+        broadcaster.subscribe(PlaybackEnginePlaybackStateDidChange, async () => {
+            const { playbackState, playingItem: item } = await this.engine.getNowPlaying()
+            this._playingItem = item
+            this._events.dispatch({ type: "playbackStateDidChange", playbackState })
         })
-    }
-
-    private async handleEvent(event: RPCIncomingBroadcastEvent) {
-        if (event.topic !== PlaybackEngineProtocol.name) {
-            return
-        }
-        switch (event.what) {
-            case "playbackStateDidChange":
-                const { playbackState, playingItem: item } = await this.engine.getNowPlaying()
-                this._playingItem = item
-                this._events.dispatch({ type: "playbackStateDidChange", playbackState })
-                break
-            case "playingItemChanged":
-                const { playingItem } = await this.engine.getNowPlaying()
-                this._playingItem = playingItem
-                this._events.dispatch({ type: "playingItemChanged" })
-                break
-            case "encounteredError":
-                this._events.dispatch({
-                    type: "encounteredError",
-                    error: new Error(event.data?.message ?? ""),
-                })
-                break
-            case "endOfAudio":
-                this._events.dispatch({ type: "endOfAudio", lastItem: this._playingItem })
-                this._playingItem = null
-                break
-            default:
-                break
-        }
+        broadcaster.subscribe(PlaybackEnginePlayingItemChanged, async () => {
+            const { playingItem } = await this.engine.getNowPlaying()
+            this._playingItem = playingItem
+            this._events.dispatch({ type: "playingItemChanged" })
+        })
+        broadcaster.subscribe(PlaybackEngineEncounteredError, async (data) => {
+            this._events.dispatch({
+                type: "encounteredError",
+                error: new Error(data?.message ?? ""),
+            })
+        })
+        broadcaster.subscribe(PlaybackEngineEndOfAudio, async () => {
+            this._events.dispatch({ type: "endOfAudio", lastItem: this._playingItem })
+            this._playingItem = null
+        })
     }
 
     readonly $events: EventStream<PlaybackEngineEvent>

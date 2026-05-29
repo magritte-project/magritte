@@ -1,4 +1,4 @@
-import { protocol, type ProtocolObject } from "@magritte/rpc"
+import { defineBroadcast, protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod"
 
 export const PlayableItemArtwork = z4
@@ -123,3 +123,9 @@ export const PlayerProtocol = protocol("Magritte.Host.Player", {
 })
 
 export type Player = ProtocolObject<typeof PlayerProtocol>
+
+export const PlayerNowPlayingDidChange = defineBroadcast(
+    PlayerProtocol.name,
+    "nowPlayingDidChange",
+    z4.void(),
+)

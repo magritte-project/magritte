@@ -57,9 +57,9 @@ export const RPCTransportMessage = z4.union([
     }),
     z4.object({
         type: z4.literal("broadcast"),
+        channel: z4.string(),
         what: z4.string(),
-        topic: z4.string(),
-        data: z4.record(z4.string(), z4.string().optional()).optional(),
+        data: z4.unknown(),
     }),
 ])
 export type RPCTransportMessage = z4.infer<typeof RPCTransportMessage>

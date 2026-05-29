@@ -1,4 +1,4 @@
-import { protocol, type ProtocolObject } from "@magritte/rpc"
+import { defineBroadcast, protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
 import { PlayableItem, PlaybackState, PlaybackTime } from "../host/playback"
@@ -110,3 +110,24 @@ export const PlaybackEngineProtocol = protocol("Magritte.Extension.PlaybackEngin
 })
 
 export type PlaybackEngine = ProtocolObject<typeof PlaybackEngineProtocol>
+
+export const PlaybackEnginePlaybackStateDidChange = defineBroadcast(
+    PlaybackEngineProtocol.name,
+    "playbackStateDidChange",
+    z4.void(),
+)
+export const PlaybackEnginePlayingItemChanged = defineBroadcast(
+    PlaybackEngineProtocol.name,
+    "playingItemChanged",
+    z4.void(),
+)
+export const PlaybackEngineEncounteredError = defineBroadcast(
+    PlaybackEngineProtocol.name,
+    "encounteredError",
+    z4.object({ message: z4.string() }).optional(),
+)
+export const PlaybackEngineEndOfAudio = defineBroadcast(
+    PlaybackEngineProtocol.name,
+    "endOfAudio",
+    z4.void(),
+)

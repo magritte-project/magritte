@@ -1,10 +1,13 @@
 import type { RPCBroadcaster } from "@magritte/rpc"
 import {
-    PlaybackEngineProtocol,
+    PlaybackEngineEncounteredError,
+    PlaybackEngineEndOfAudio,
+    PlaybackEnginePlaybackStateDidChange,
+    PlaybackEnginePlayingItemChanged,
+    type PlayableItem,
     type PlaybackEngine,
     type PlaybackEngineEnqueueOptions,
     type PlaybackModes,
-    type PlayableItem,
     type PlaybackState,
     type PlaybackTime,
 } from "@magritte/sdk"
@@ -39,7 +42,11 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         this._musicKit = musicKit
         this._playingItem = null
 
-        this._musicKit.addEventListener("drmUnsupported", () => console.error("drmUnsupported"))
+        this._musicKit.addEventListener("drmUnsupported", () => {
+            console.error(
+                "*** This browser does not support DRM, playback will be limited to previews",
+            )
+        })
         this._musicKit.addEventListener("mediaPlaybackError", () =>
             this._handleMediaPlaybackError(),
         )
@@ -49,17 +56,17 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
     }
 
     private _handleMediaPlaybackError() {
-        this._broadcaster.send("encounteredError", PlaybackEngineProtocol.name)
+        this._broadcaster.send(PlaybackEngineEncounteredError, undefined)
     }
 
     private _handlePlaybackStateDidChange(event: Parameters<MusicKit.StateChangeEventCallback>[0]) {
-        this._broadcaster.send("playbackStateDidChange", PlaybackEngineProtocol.name)
+        this._broadcaster.send(PlaybackEnginePlaybackStateDidChange, undefined)
 
         switch (event.state) {
             case MusicKit.PlaybackStates.ended:
             case MusicKit.PlaybackStates.completed: {
                 this.stop()
-                this._broadcaster.send("endOfAudio", PlaybackEngineProtocol.name)
+                this._broadcaster.send(PlaybackEngineEndOfAudio, undefined)
                 break
             }
             default:
@@ -129,7 +136,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         }
 
         this._playingItem = itemToPlay
-        this._broadcaster.send("playingItemChanged", PlaybackEngineProtocol.name)
+        this._broadcaster.send(PlaybackEnginePlayingItemChanged, undefined)
     }
 
     async skipPreviousInQueue(): Promise<boolean> {

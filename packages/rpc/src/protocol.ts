@@ -1,11 +1,11 @@
-import * as z4 from "zod/v4/core"
+import z4 from "zod/v4"
 
 import type { RPCObject } from "./object"
 
 export interface MethodSignatures {
     readonly [selector: string]: {
-        readonly input: z4.$ZodType
-        readonly output: z4.$ZodType
+        readonly input: z4.ZodType
+        readonly output: z4.ZodType
     }
 }
 
@@ -74,10 +74,10 @@ export interface ProtocolProxyInvocation {
     readonly selector: string
 
     /** The input schema for the method */
-    readonly input: z4.$ZodType
+    readonly input: z4.ZodType
 
     /** The output schema for the method */
-    readonly output: z4.$ZodType
+    readonly output: z4.ZodType
 
     /** The unparsed parameters passed to the method */
     readonly parameters: unknown

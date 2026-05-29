@@ -1,7 +1,7 @@
-import type { RPCBroadcaster } from "@magritte/rpc"
+import { RPCBroadcaster } from "@magritte/rpc"
 import {
     ExtensionManifest,
-    PlayerProtocol as ExtensionPlayerProtocol,
+    PlayerNowPlayingDidChange,
     type Player as ExtensionPlayer,
 } from "@magritte/sdk"
 
@@ -19,13 +19,13 @@ export function exportPlayer(
             switch (event.type) {
                 case "playbackStateDidChange":
                 case "playingItemChanged":
-                    broadcaster.send("nowPlayingDidChange", ExtensionPlayerProtocol.name)
+                    broadcaster.send(PlayerNowPlayingDidChange, undefined)
                     break
                 default:
                     break
             }
         })
-        broadcaster.addEventListener("invalidated", () => {
+        broadcaster.subscribe(RPCBroadcaster.invalidated, () => {
             subscription.unsubscribe()
         })
     }
