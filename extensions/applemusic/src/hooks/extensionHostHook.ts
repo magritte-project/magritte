@@ -1,10 +1,12 @@
 import type { ExtensionHost } from "@magritte/sdk"
-import { useRouteContext } from "@tanstack/react-router"
+import { useContext } from "react"
+
+import { ExtensionHostContext } from "@/contexts/extensionHostContext"
 
 export default function useExtensionHost(): ExtensionHost {
-    const host = useRouteContext({
-        from: "__root__",
-        select: (context) => context.extensionHost,
-    })
-    return host
+    const extensionHost = useContext(ExtensionHostContext)
+    if (extensionHost === undefined) {
+        throw new Error("useExtensionHost used outside of <ExtensionHostContext.Provider>")
+    }
+    return extensionHost
 }

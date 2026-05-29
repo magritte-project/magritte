@@ -1,4 +1,4 @@
-import ArtworkImage from "@/components/ArtworkImage"
+import ArtworkImage from "@/components/reusable/ArtworkImage"
 import type { MusicArtwork } from "@/musickit/models/base"
 
 export interface SearchResultLabelProps {
