@@ -9,14 +9,12 @@ export interface PanelsTabLayoutProps {
     readonly definitions: readonly PanelDefinition[]
     readonly selectedPanelId: string | undefined
     readonly selectPanel: (panelId: string | undefined) => void
-    readonly preferCompactLayout: boolean
 }
 
 export default function PanelsTabLayout({
     selectedPanelId,
     selectPanel,
     definitions,
-    preferCompactLayout,
 }: PanelsTabLayoutProps) {
     const selectedPanel = useMemo(
         () => definitions.find((panel) => panel.id === selectedPanelId),
@@ -24,13 +22,7 @@ export default function PanelsTabLayout({
     )
     const SelectedComponent = selectedPanel?.component
     return (
-        <div
-            style={
-                preferCompactLayout
-                    ? { minHeight: selectedPanel?.preferredHeight ?? "16em" }
-                    : { minWidth: selectedPanel?.preferredWidth ?? "16em" }
-            }
-        >
+        <>
             <SecondaryHeader>
                 <div className="flex items-center gap-0">
                     {definitions.map((panel, index) => (
@@ -49,7 +41,9 @@ export default function PanelsTabLayout({
                     ))}
                 </div>
             </SecondaryHeader>
-            <main className="min-h-0 h-screen">{SelectedComponent && <SelectedComponent />}</main>
-        </div>
+            <main className="min-h-0 h-full md:h-screen">
+                {SelectedComponent && <SelectedComponent />}
+            </main>
+        </>
     )
 }

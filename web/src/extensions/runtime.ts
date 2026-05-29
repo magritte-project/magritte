@@ -350,9 +350,14 @@ class ExtensionAttachment {
             this._resizeObserver.observe(document.body)
         } else {
             this._resizeObserver.unobserve(this._elements[this._elements.length - 1])
+            console.debug(
+                "ExtensionAttachment: Stopped observing",
+                this._elements[this._elements.length - 1],
+            )
         }
         this._resizeObserver.observe(element)
         this._elements.push(element)
+        console.debug("ExtensionAttachment: Started observing", element)
     }
 
     detach(element: HTMLElement) {
@@ -360,6 +365,10 @@ class ExtensionAttachment {
         if (toRemove !== -1) {
             if (toRemove === this._elements.length - 1) {
                 this._resizeObserver.unobserve(element)
+                console.debug(
+                    "ExtensionAttachment: Stopped observing",
+                    this._elements[this._elements.length - 1],
+                )
             }
             this._elements.splice(toRemove, 1)
             if (this._elements.length === 0) {

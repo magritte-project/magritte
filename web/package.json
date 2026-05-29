@@ -31,7 +31,6 @@
         "@tanstack/react-router-devtools": "1.166.13",
         "@tanstack/router-plugin": "catalog:",
         "@uidotdev/usehooks": "2.4.1",
-        "@uiw/react-split": "5.9.4",
         "classnames": "catalog:",
         "fuse.js": "7.3.0",
         "motion": "catalog:",
@@ -39,6 +38,7 @@
         "rc-slider": "11.1.9",
         "react": "catalog:",
         "react-dom": "catalog:",
+        "react-resizable-panels": "^4.11.2",
         "tailwindcss": "catalog:",
         "zod": "catalog:"
     },

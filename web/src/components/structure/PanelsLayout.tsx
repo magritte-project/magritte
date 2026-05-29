@@ -1,6 +1,6 @@
 import { useMediaQuery } from "@uidotdev/usehooks"
-import Split from "@uiw/react-split"
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
+import { Group, Panel, Separator } from "react-resizable-panels"
 
 import type { Command } from "@/commands/base"
 import PanelsTabLayout from "@/components/structure/PanelsTabLayout"
@@ -53,21 +53,22 @@ export default function PanelsLayout({ hidePanels = false, children }: PanelsPro
     ) : (
         <PanelsContextProvider value={{ revealPanel }}>
             <CommandsProvider commands={panelCommands}>
-                <Split
-                    mode={preferCompactLayout ? "vertical" : "horizontal"}
-                    lineBar={!preferCompactLayout}
+                <Group
+                    orientation={preferCompactLayout ? "vertical" : "horizontal"}
                     className="min-h-screen"
                 >
-                    <div className="flex-1 relative md:h-screen overflow-auto pb-32">
+                    <Panel className="flex-1 relative md:h-screen overflow-auto md:pb-32">
                         {children}
-                    </div>
-                    <PanelsTabLayout
-                        definitions={definitions}
-                        selectedPanelId={selectedPanelId}
-                        selectPanel={setSelectedPanelId}
-                        preferCompactLayout={preferCompactLayout}
-                    />
-                </Split>
+                    </Panel>
+                    <Separator className="h-1 md:w-1 md:h-auto rounded-full bg-gray-200" />
+                    <Panel collapsible defaultSize="16rem">
+                        <PanelsTabLayout
+                            definitions={definitions}
+                            selectedPanelId={selectedPanelId}
+                            selectPanel={setSelectedPanelId}
+                        />
+                    </Panel>
+                </Group>
             </CommandsProvider>
         </PanelsContextProvider>
     )
