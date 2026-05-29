@@ -8,12 +8,14 @@ import { resolveUrl } from "@/utilities/resources"
 export interface ArtworkImageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
     readonly artworks?: readonly PlayableItemArtwork[]
     readonly itemTitle?: string | null
+    readonly accessory?: React.ReactNode
 }
 
 export default function ArtworkImage({
     className,
     artworks,
     itemTitle,
+    accessory,
     ...rest
 }: ArtworkImageProps) {
     // TODO: Fix up session token and URL building...
@@ -37,6 +39,7 @@ export default function ArtworkImage({
                 className="absolute top-0 left-0 w-full h-full rounded-md border border-black/10"
                 aria-hidden
             />
+            {accessory}
         </div>
     )
 }

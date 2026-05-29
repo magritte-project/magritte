@@ -56,7 +56,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                                 <field.InputField
                                     className="w-full"
                                     type="search"
-                                    placeholder="Filter Songs..."
+                                    placeholder="Filter Artists..."
                                 />
                             )}
                         </facetForm.AppField>
@@ -70,6 +70,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                             >
                                 <input
                                     type="checkbox"
+                                    name={`artists[${artist.id}]`}
                                     checked={isSelected(artist.id)}
                                     onChange={() => toggle(artist.id)}
                                 />

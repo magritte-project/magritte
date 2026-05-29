@@ -10,3 +10,8 @@ export const LibraryArtistInput = CommandInput.extend({
     kind: z4.literal("library.artist"),
 })
 export type LibraryArtistInput = z4.infer<typeof LibraryArtistInput>
+
+export const LibraryAlbumInput = CommandInput.extend({
+    kind: z4.literal("library.album"),
+})
+export type LibraryAlbumInput = z4.infer<typeof LibraryAlbumInput>
