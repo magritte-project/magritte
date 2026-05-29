@@ -1,5 +1,6 @@
 import { MenuButton } from "@headlessui/react"
 import { CaretDownIcon, CrownIcon, SignOutIcon, UserIcon } from "@phosphor-icons/react"
+import { BooksIcon } from "@phosphor-icons/react/dist/ssr"
 import { useQuery } from "@tanstack/react-query"
 import { Link, useNavigate } from "@tanstack/react-router"
 
@@ -33,6 +34,17 @@ export default function UserButton() {
                 </ThemedSubtleButton>
             }
             items={[
+                {
+                    key: "libraries",
+                    label: (
+                        <>
+                            <BooksIcon /> Libraries
+                        </>
+                    ),
+                    onClick: () => {
+                        navigate({ to: "/libraries" })
+                    },
+                },
                 {
                     key: "admin",
                     requiresScopes: ["admin"],
