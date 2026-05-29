@@ -1,6 +1,6 @@
 import type { ExtensionManifest, ExtensionPermissions } from "@magritte/sdk"
 
-export function checkPermissions<Args extends any[], R>(
+export function enforcePermissions<Args extends any[], R>(
     manifest: ExtensionManifest,
     permissions: readonly ExtensionPermissions[],
     method: (...args: Args) => R,

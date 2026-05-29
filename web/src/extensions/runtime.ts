@@ -10,8 +10,8 @@ import {
 
 import type { APIClient } from "@/api/client"
 import type { UserSessionManager } from "@/api/userSession"
-import { exportLibrary } from "@/extensions/exports/Library"
-import { exportPlayer } from "@/extensions/exports/Player"
+import { exportLibrary } from "@/extensions/exports/exportLibrary"
+import { exportPlayer } from "@/extensions/exports/exportPlayer"
 import type { Player } from "@/playback/player"
 
 export interface ExtensionRuntimeOptions {

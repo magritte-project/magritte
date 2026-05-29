@@ -5,7 +5,7 @@ import {
     type Player as ExtensionPlayer,
 } from "@magritte/sdk"
 
-import { checkPermissions } from "@/extensions/exports/permissions"
+import { enforcePermissions } from "@/extensions/exports/permissions"
 import type { Player as HostPlayer } from "@/playback/player"
 import ArrayQueue from "@/playback/queue/array"
 
@@ -30,22 +30,22 @@ export function exportPlayer(
         })
     }
     return {
-        getCurrentTime: checkPermissions(manifest, ["playback:read"], async () => {
+        getCurrentTime: enforcePermissions(manifest, ["playback:read"], async () => {
             return await player.getCurrentTime()
         }),
 
-        seek: checkPermissions(manifest, ["playback:control"], async ({ newTime }) => {
+        seek: enforcePermissions(manifest, ["playback:control"], async ({ newTime }) => {
             await player.seek(newTime)
         }),
 
-        getNowPlaying: checkPermissions(manifest, ["playback:read"], async () => {
+        getNowPlaying: enforcePermissions(manifest, ["playback:read"], async () => {
             return {
                 state: player.playbackState,
                 item: player.playingItem,
             }
         }),
 
-        replaceQueue: checkPermissions(
+        replaceQueue: enforcePermissions(
             manifest,
             ["playback:control"],
             async ({ newQueueItems, startingItem, playNow }) => {
@@ -57,19 +57,19 @@ export function exportPlayer(
             },
         ),
 
-        pause: checkPermissions(manifest, ["playback:control"], async () => {
+        pause: enforcePermissions(manifest, ["playback:control"], async () => {
             await player.pause()
         }),
 
-        resume: checkPermissions(manifest, ["playback:control"], async () => {
+        resume: enforcePermissions(manifest, ["playback:control"], async () => {
             await player.resume()
         }),
 
-        skipPrevious: checkPermissions(manifest, ["playback:control"], async () => {
+        skipPrevious: enforcePermissions(manifest, ["playback:control"], async () => {
             await player.skipPrevious()
         }),
 
-        skipNext: checkPermissions(manifest, ["playback:control"], async () => {
+        skipNext: enforcePermissions(manifest, ["playback:control"], async () => {
             await player.skipNext()
         }),
     }
