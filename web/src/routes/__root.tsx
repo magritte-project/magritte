@@ -13,7 +13,7 @@ import RootLayout from "@/components/structure/RootLayout"
 import type { ExtensionRuntime } from "@/extensions/runtime"
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
 import type { Player } from "@/playback/player"
-import type SplitRegistry from "@/splits/registry"
+import type { PanelRegistry } from "@/utilities/panelRegistry"
 
 export interface MagritteRouterContext {
     readonly queryClient: QueryClient
@@ -24,7 +24,7 @@ export interface MagritteRouterContext {
     readonly userEvents: UserEvents
     readonly player: Player
     readonly extensionRuntime: ExtensionRuntime
-    readonly splitRegister: SplitRegistry
+    readonly panelRegistry: PanelRegistry
 }
 
 declare module "@tanstack/react-router" {

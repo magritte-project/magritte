@@ -1,6 +1,6 @@
 import { Outlet, useRouterState } from "@tanstack/react-router"
 
-import Splits from "@/components/structure/Splits"
+import PanelsLayout from "@/components/structure/PanelsLayout"
 import ToastLayout from "@/components/structure/ToastLayout"
 import Wiring from "@/components/structure/Wiring"
 
@@ -11,9 +11,9 @@ export default function RootLayout() {
     return (
         <ToastLayout>
             <Wiring>
-                <Splits hideSplit={hideSplit}>
+                <PanelsLayout hidePanels={hideSplit}>
                     <Outlet />
-                </Splits>
+                </PanelsLayout>
             </Wiring>
         </ToastLayout>
     )

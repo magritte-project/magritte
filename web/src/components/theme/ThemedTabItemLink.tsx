@@ -8,7 +8,7 @@ import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 interface BasicLinkProps
     extends
         React.AnchorHTMLAttributes<HTMLAnchorElement>,
-        Omit<ThemedTabItemLabelProps, "isActive"> {
+        Pick<ThemedTabItemLabelProps, "icon" | "label"> {
     readonly ref?: React.Ref<HTMLAnchorElement>
 }
 

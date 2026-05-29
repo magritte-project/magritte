@@ -1,8 +1,10 @@
+import type { ExtensionManifest } from "@magritte/sdk"
 import { GearIcon } from "@phosphor-icons/react"
 import { useEffect, useRef, useState } from "react"
 
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import { getErrorMessage } from "@/utilities/errors"
+import type { PanelDefinition } from "@/utilities/panelRegistry"
 
 export function buildExtensionComponent(id: string) {
     function ExtensionComponent() {
@@ -56,4 +58,18 @@ export function buildExtensionComponent(id: string) {
         )
     }
     return ExtensionComponent
+}
+
+export function getExtensionPanelID(manifest: ExtensionManifest): string {
+    return `extension.${manifest.id}`
+}
+
+export function getExtensionPanelDefinition(manifest: ExtensionManifest): PanelDefinition {
+    return {
+        id: getExtensionPanelID(manifest),
+        name: manifest.name,
+        preferredWidth: manifest.preferredWidth,
+        preferredHeight: manifest.preferredHeight,
+        component: buildExtensionComponent(manifest.id),
+    }
 }

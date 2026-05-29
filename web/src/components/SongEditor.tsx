@@ -5,27 +5,30 @@ import z from "zod"
 import { useUpdateLibrarySong } from "@/api/mutations/libraries"
 import type { SongRead, SongUpdate } from "@/api/openapi"
 import { readLibrarySong } from "@/api/queries/libraries"
+import { LibraryInput, LibrarySongInput } from "@/commands/inputs/libraryInput"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPIClient from "@/hooks/apiClientHook"
+import useCommandInputs from "@/hooks/commandInputsHook"
 import { useAppForm } from "@/hooks/formHook"
 import useToast from "@/hooks/toastHook"
-import type { SplitComponentProps } from "@/splits/base"
 import { getErrorMessage } from "@/utilities/errors"
 
-export type SongEditorProps = SplitComponentProps
-
-export default function SongEditor({ parameters }: SongEditorProps) {
+export default function SongEditor() {
     const apiClient = useAPIClient()
+    const commandInputs = useCommandInputs()
     const [libraryId, songId] = useMemo(() => {
-        const numberParameters = parameters.filter((parameter) => typeof parameter === "number")
-        if (numberParameters.length === 2) {
-            return numberParameters
-        } else {
+        const libraryInputs = commandInputs.allOf("library", LibraryInput)
+        if (libraryInputs.length === 0) {
             return [null, null]
         }
-    }, [parameters])
+        const songInputs = commandInputs.allOf("library.song", LibrarySongInput)
+        if (songInputs.length === 0) {
+            return [null, null]
+        }
+        return [libraryInputs[0].id, songInputs[0].id]
+    }, [commandInputs])
 
     const songQuery = useQuery({
         ...readLibrarySong(apiClient, libraryId ?? 0, songId ?? 0),

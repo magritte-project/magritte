@@ -2,16 +2,21 @@ import type { Icon } from "@phosphor-icons/react"
 import classNames from "classnames"
 import type { ReactNode } from "react"
 
-export interface ThemedTabItemLabelProps {
+export interface ThemedTabItemLabelProps extends Omit<
+    React.HTMLAttributes<HTMLDivElement>,
+    "children"
+> {
     readonly isActive: boolean
     readonly icon: Icon
     readonly label: ReactNode
 }
 
 export default function ThemedTabItemLabel({
+    className,
     isActive,
     icon: Icon,
     label,
+    ...rest
 }: ThemedTabItemLabelProps) {
     return (
         <div
@@ -21,8 +26,10 @@ export default function ThemedTabItemLabel({
                 "not-group-last:border-r border-gray-100",
                 "bg-gray-50 active:bg-gray-100 disabled:bg-transparent",
                 "rounded data-[active=true]:text-blue-500 active:bg-gray-100",
+                className,
             )}
             data-active={isActive}
+            {...rest}
         >
             <Icon size="2em" weight="light" />
             {label}
