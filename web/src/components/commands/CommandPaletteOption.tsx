@@ -15,7 +15,7 @@ export default function CommandPaletteOption({ inputs, command }: CommandPalette
 
     return (
         <ComboboxOption
-            className="px-4 py-2 not-last:border-b border-gray-200 data-focus:bg-blue-100 data-disabled:opacity-50"
+            className="px-4 py-2 text-sm not-last:border-b border-gray-200 data-focus:bg-blue-100 data-disabled:text-gray-400"
             value={command}
             disabled={presentation.disabled}
         >

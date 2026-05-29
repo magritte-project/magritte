@@ -15,7 +15,10 @@ const variants = {
 
 export type ThemedContentUnavailableVariant = keyof typeof variants
 
-export interface ThemedContentUnavailableProps {
+export interface ThemedContentUnavailableProps extends Omit<
+    React.HTMLAttributes<HTMLDivElement>,
+    "children"
+> {
     readonly variant?: ThemedContentUnavailableVariant
     readonly className?: string
     readonly error?: unknown
@@ -24,20 +27,22 @@ export interface ThemedContentUnavailableProps {
 }
 
 export default function ThemedContentUnavailable({
-    variant: variantKey = "fullScreen",
+    variant = "fullScreen",
     className,
     error,
     onRetry,
     retryLabel = "Retry",
+    ...rest
 }: ThemedContentUnavailableProps) {
-    const variant = variants[variantKey]
+    const { containerClassName } = variants[variant]
     return (
         <div
             className={classNames(
                 "flex flex-col text-center items-center justify-center gap-2",
-                variant.containerClassName,
+                containerClassName,
                 className,
             )}
+            {...rest}
         >
             {error ? (
                 <>
