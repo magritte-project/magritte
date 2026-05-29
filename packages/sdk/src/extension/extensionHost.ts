@@ -12,14 +12,21 @@ import { LibraryProtocol, type Library } from "../host/library"
 import { PlayerProtocol, type Player } from "../host/playback"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "./playbackEngine"
 
+export interface ExtensionExportsOptions {
+    /** The broadcaster to use for communication with the extension host */
+    readonly broadcaster: RPCBroadcaster
+}
+
 export interface ExtensionExportsObject {
     readonly playbackEngine?: PlaybackEngine
 }
 
-export type ExtensionExports = ExtensionExportsObject | (() => Promise<ExtensionExportsObject>)
+export type ExtensionExports =
+    | ExtensionExportsObject
+    | ((options: ExtensionExportsOptions) => Promise<ExtensionExportsObject>)
 
-async function implementExports(exports: ExtensionExports) {
-    const { playbackEngine } = typeof exports === "function" ? await exports() : exports
+async function implementExports(options: ExtensionExportsOptions, exports: ExtensionExports) {
+    const { playbackEngine } = typeof exports === "function" ? await exports(options) : exports
     const implementations: ProtocolImplementation[] = []
     if (playbackEngine) {
         implementations.push(implement(PlaybackEngineProtocol, playbackEngine))
@@ -44,7 +51,7 @@ export interface ExtensionHostConnectOptions {
 export class ExtensionHost {
     static async connect({
         extensionId,
-        broadcaster,
+        broadcaster = new RPCBroadcaster(),
         exports = {},
         timeout = 10_000,
     }: ExtensionHostConnectOptions): Promise<ExtensionHost> {
@@ -68,7 +75,7 @@ export class ExtensionHost {
             identity: extensionId,
             timeout,
         })
-        const exportedObject = await implementExports(exports)
+        const exportedObject = await implementExports({ broadcaster }, exports)
         const connection = new RPCConnection({
             transport,
             broadcaster,

@@ -7,16 +7,27 @@ import { type Chrome, ChromeProtocol } from "./chrome"
 import { type Library, LibraryProtocol } from "./library"
 import { type Player, PlayerProtocol } from "./playback"
 
+export interface HostExportsOptions {
+    /** The manifest of the extension */
+    readonly manifest: ExtensionManifest
+
+    /** The broadcaster to use for communication with the extension */
+    readonly broadcaster: RPCBroadcaster
+}
+
 export interface HostExportsObject {
     readonly chrome: Chrome
     readonly library: Library
     readonly player: Player
 }
 
-export type HostExports = HostExportsObject | (() => Promise<HostExportsObject>)
+export type HostExports =
+    | HostExportsObject
+    | ((options: HostExportsOptions) => Promise<HostExportsObject>)
 
-async function implementExports(exports: HostExports) {
-    const { chrome, library, player } = typeof exports === "function" ? await exports() : exports
+async function implementExports(options: HostExportsOptions, exports: HostExports) {
+    const { chrome, library, player } =
+        typeof exports === "function" ? await exports(options) : exports
     return [
         implement(ChromeProtocol, chrome),
         implement(LibraryProtocol, library),
@@ -31,7 +42,7 @@ export interface ExtensionWaitForConnectionOptions {
     /** The manifest of the extension */
     readonly manifest: ExtensionManifest
 
-    /** The broadcaster to use for the connection */
+    /** The broadcaster to use for communication with the extension */
     readonly broadcaster?: RPCBroadcaster
 
     /** The exports to make available to the extension */
@@ -45,7 +56,7 @@ export class Extension {
     static async waitForConnection({
         iframe,
         manifest,
-        broadcaster,
+        broadcaster = new RPCBroadcaster(),
         exports,
         timeout = 30_000,
     }: ExtensionWaitForConnectionOptions): Promise<Extension> {
@@ -58,7 +69,7 @@ export class Extension {
             identity,
             timeout,
         })
-        const exportedObject = await implementExports(exports)
+        const exportedObject = await implementExports({ manifest, broadcaster }, exports)
         const connection = new RPCConnection({
             transport,
             broadcaster,

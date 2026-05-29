@@ -1,9 +1,9 @@
-import { RPCBroadcaster } from "@magritte/rpc"
 import {
     createEvent,
     EventSink,
     EventStream,
     Extension,
+    getExtensionAllow,
     getExtensionSrc,
     type ExtensionManifest,
 } from "@magritte/sdk"
@@ -218,19 +218,17 @@ export class ExtensionRuntime {
         iframe.style.background = "white"
         iframe.style.display = "none"
         iframe.style.position = "absolute"
-        iframe.allow = "encrypted-media *; autoplay"
+        iframe.allow = getExtensionAllow(manifest)
         iframe.src = getExtensionSrc(manifest, {
             hostOrigin: window.location.origin,
         })
         this._container.appendChild(iframe)
 
         try {
-            const broadcaster = new RPCBroadcaster()
             const extension = await Extension.waitForConnection({
                 iframe,
                 manifest,
-                broadcaster,
-                exports: {
+                exports: async ({ manifest, broadcaster }) => ({
                     chrome: {
                         showToast: async (options) => {
                             // NOTE: This is currently handled by <Wiring>
@@ -244,7 +242,7 @@ export class ExtensionRuntime {
                     },
                     library: exportLibrary(manifest, this._userSession, this._apiClient),
                     player: exportPlayer(manifest, broadcaster, this._player),
-                },
+                }),
             })
 
             const oldState = this._extensions.get(id) ?? { status: "unloaded" }

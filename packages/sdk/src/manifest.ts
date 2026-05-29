@@ -34,3 +34,12 @@ export function getExtensionSrc(
     ]).toString()
     return src.toString()
 }
+
+export function getExtensionAllow(manifest: ExtensionManifest): string {
+    const allows: string[] = []
+    if (manifest.sourceSchemes && manifest.sourceSchemes.length > 0) {
+        allows.push("encrypted-media *")
+        allows.push("autoplay")
+    }
+    return allows.join("; ")
+}
