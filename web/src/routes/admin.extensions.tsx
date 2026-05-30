@@ -1,15 +1,20 @@
 import { PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
+import { useCallback } from "react"
 import { z } from "zod"
 
 import { useDeleteExtension } from "@/api/mutations/extensions"
 import { readAvailableExtensions } from "@/api/queries/extensions"
+import PermissionInfo from "@/components/extensions/PermissionInfo"
+import AsyncButton from "@/components/reusable/AsyncButton"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPIClient from "@/hooks/apiClientHook"
+import useToast from "@/hooks/toastHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/admin/extensions")({
     validateSearch: z.object({ offset: z.number().optional(), limit: z.number().optional() }),
@@ -29,7 +34,27 @@ export const Route = createFileRoute("/admin/extensions")({
         const { data: availableExtensions } = useSuspenseQuery(
             readAvailableExtensions(apiClient, offset, limit),
         )
+        const { showToast } = useToast()
         const deleteMutation = useDeleteExtension()
+        const handleDeleteClick = useCallback(
+            async (extensionId: number) => {
+                const confirmed = confirm(
+                    "Are you sure you want to delete this extension? It will be uninstalled for all users on this instance.",
+                )
+                if (!confirmed) {
+                    return
+                }
+                try {
+                    await deleteMutation.mutateAsync(extensionId)
+                } catch (error) {
+                    showToast({
+                        message: `Could not delete extension: ${getErrorMessage(error)}`,
+                        type: "error",
+                    })
+                }
+            },
+            [deleteMutation, showToast],
+        )
 
         return (
             <div className="flex flex-col gap-3">
@@ -45,17 +70,27 @@ export const Route = createFileRoute("/admin/extensions")({
                             key={`extension-${extension.id}`}
                             className="py-1 bg-gray-50 odd:bg-inherit flex items-center gap-2"
                         >
-                            <div className="flex-1 flex flex-col gap-0.5">
-                                <span className="font-bold">{extension.manifest.name}</span>
-                                <span className="text-sm text-gray-500">
+                            <div className="flex-1 flex flex-col">
+                                <span className="font-bold pb-0.5">{extension.manifest.name}</span>
+                                <span className="text-sm text-gray-500 pb-1">
                                     {extension.manifest.description}
                                 </span>
-                                <span className="text-xs text-gray-300">
+                                <span className="text-xs text-gray-300 pb-1.5">
                                     {extension.manifest.url}
+                                </span>
+                                <span className="flex items-center flex-wrap gap-1">
+                                    {extension.manifest.permissions?.map((permission) => (
+                                        <PermissionInfo
+                                            key={permission}
+                                            permission={permission}
+                                            compact
+                                        />
+                                    ))}
                                 </span>
                             </div>
                             <ThemedSubtleButton
-                                onClick={() => deleteMutation.mutateAsync(extension.id)}
+                                buttonComponent={AsyncButton}
+                                onClick={() => handleDeleteClick(extension.id)}
                             >
                                 <TrashIcon aria-label="Delete" />
                             </ThemedSubtleButton>

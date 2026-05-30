@@ -1,15 +1,22 @@
-import { MinusIcon, PlusIcon } from "@phosphor-icons/react"
+import { PlusIcon } from "@phosphor-icons/react"
+import { CaretDownIcon, CaretRightIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
+import classNames from "classnames"
+import { useCallback, useState } from "react"
 import z from "zod"
 
 import { useUninstallExtension } from "@/api/mutations/extensions"
 import { readInstalledExtensions } from "@/api/queries/extensions"
+import PermissionInfo from "@/components/extensions/PermissionInfo"
+import AsyncButton from "@/components/reusable/AsyncButton"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPIClient from "@/hooks/apiClientHook"
+import useToast from "@/hooks/toastHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/user/me/extensions")({
     validateSearch: z.object({ offset: z.number().optional(), limit: z.number().optional() }),
@@ -29,7 +36,28 @@ export const Route = createFileRoute("/user/me/extensions")({
         const { data: installedExtensions } = useSuspenseQuery(
             readInstalledExtensions(apiClient, offset, limit),
         )
+
+        const [expandedExtension, setExpandedExtension] = useState<number | null>(null)
+
+        const { showToast } = useToast()
         const uninstallMutation = useUninstallExtension()
+        const handleUninstallClick = useCallback(
+            async (extensionId: number) => {
+                const confirmed = confirm("Are you sure you want to uninstall this extension?")
+                if (!confirmed) {
+                    return
+                }
+                try {
+                    await uninstallMutation.mutateAsync(extensionId)
+                } catch (error) {
+                    showToast({
+                        message: `Could not uninstall extension: ${getErrorMessage(error)}`,
+                        type: "error",
+                    })
+                }
+            },
+            [uninstallMutation, showToast],
+        )
 
         return (
             <div className="flex flex-col gap-3">
@@ -45,19 +73,51 @@ export const Route = createFileRoute("/user/me/extensions")({
                             key={`extension-${extension.id}`}
                             className="py-1 bg-gray-50 odd:bg-inherit flex items-center gap-2"
                         >
-                            <div className="flex-1 flex flex-col gap-0.5">
-                                <span className="font-bold">{extension.manifest.name}</span>
-                                <span className="text-sm text-gray-500">
+                            <div className="flex-1 flex flex-col">
+                                <span className="font-bold pb-0.5">{extension.manifest.name}</span>
+                                <span className="text-sm text-gray-500 pb-2">
                                     {extension.manifest.description}
                                 </span>
-                                <span className="text-xs text-gray-300">
-                                    {extension.manifest.url}
-                                </span>
+                                <div className="text-left flex items-start gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setExpandedExtension((prev) =>
+                                                prev === extension.id ? null : extension.id,
+                                            )
+                                        }
+                                    >
+                                        <span className="py-1">
+                                            {expandedExtension === extension.id ? (
+                                                <CaretDownIcon />
+                                            ) : (
+                                                <CaretRightIcon />
+                                            )}
+                                        </span>
+                                    </button>
+                                    <span
+                                        className={classNames("flex", {
+                                            "flex-col items-start gap-2":
+                                                expandedExtension === extension.id,
+                                            "flex-row items-center flex-wrap gap-1":
+                                                expandedExtension !== extension.id,
+                                        })}
+                                    >
+                                        {extension.manifest.permissions?.map((permission) => (
+                                            <PermissionInfo
+                                                key={permission}
+                                                permission={permission}
+                                                compact={expandedExtension !== extension.id}
+                                            />
+                                        ))}
+                                    </span>
+                                </div>
                             </div>
                             <ThemedSubtleButton
-                                onClick={() => uninstallMutation.mutateAsync(extension.id)}
+                                buttonComponent={AsyncButton}
+                                onClick={() => handleUninstallClick(extension.id)}
                             >
-                                <MinusIcon aria-label="Uninstall" />
+                                <TrashIcon aria-label="Uninstall" />
                             </ThemedSubtleButton>
                         </li>
                     ))}
