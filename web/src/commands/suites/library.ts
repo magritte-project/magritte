@@ -16,7 +16,7 @@ export function libraryCommands(
             id: `libraries.artists`,
             searchTerms: "library artists",
             present: async (inputs) => ({
-                displayName: "Go to Artists",
+                displayName: "library: Artists",
                 disabled: !inputs.hasAny("library", LibraryInput),
             }),
             execute: async (inputs) => {
@@ -31,7 +31,7 @@ export function libraryCommands(
             id: `libraries.albums`,
             searchTerms: "library albums",
             present: async (inputs) => ({
-                displayName: "Go to Albums",
+                displayName: "library: Albums",
                 disabled: !inputs.hasAny("library", LibraryInput),
             }),
             execute: async (inputs) => {
@@ -46,7 +46,7 @@ export function libraryCommands(
             id: `libraries.songs`,
             searchTerms: "library songs",
             present: async (inputs) => ({
-                displayName: "Go to Songs",
+                displayName: "library: Songs",
                 disabled: !inputs.hasAny("library", LibraryInput),
             }),
             execute: async (inputs) => {
@@ -59,9 +59,9 @@ export function libraryCommands(
         },
         {
             id: `libraries.deleteSongs`,
-            searchTerms: "remove delete songs",
+            searchTerms: "library remove delete songs",
             present: async (inputs) => ({
-                displayName: "Delete Songs…",
+                displayName: "library: Delete Selected Songs…",
                 disabled:
                     !inputs.hasAny("library", LibraryInput) ||
                     !inputs.hasAny("library.song", LibrarySongInput),

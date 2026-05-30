@@ -10,9 +10,9 @@ export function panelCommands(
         panels,
         (panel): Command => ({
             id: `panels.reveal[${panel.id}]`,
-            searchTerms: `show ${panel.name}`,
+            searchTerms: `show open ${panel.name} panel`,
             present: async () => ({
-                displayName: `Show ${panel.name}`,
+                displayName: `panels: ${panel.name}`,
                 disabled: false,
             }),
             execute: async () => revealPanel({ id: panel.id }),
