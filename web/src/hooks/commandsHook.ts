@@ -11,11 +11,11 @@ export interface UseCommandsOptions {
 export default function useCommands({ search }: UseCommandsOptions) {
     const registry = useCommandRegistry()
     const inputs = useCommandInputs()
-    const [results, setResults] = useState<readonly Command[]>([])
+    const [results, setResults] = useState<readonly Command[]>(() => registry.all)
 
     useEffect(() => {
         if (!search) {
-            setResults([])
+            setResults(registry.all)
             return
         }
         function refreshResults() {

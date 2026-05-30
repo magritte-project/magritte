@@ -20,6 +20,10 @@ export class CommandRegistry {
 
     readonly $events: EventStream<CommandRegistryEvent>
 
+    get all(): readonly Command[] {
+        return this._commands.getIndex().docs
+    }
+
     add(...commands: Command[]): void {
         const visitedCommandIDs = new Set<string>()
         for (const command of commands) {
