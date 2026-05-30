@@ -8,11 +8,13 @@ import { useDeleteExtension } from "@/api/mutations/extensions"
 import { readAvailableExtensions } from "@/api/queries/extensions"
 import PermissionInfo from "@/components/extensions/PermissionInfo"
 import AsyncButton from "@/components/reusable/AsyncButton"
+import ConfirmDialog from "@/components/reusable/ConfirmDialog"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPIClient from "@/hooks/apiClientHook"
+import usePresentation from "@/hooks/presentationHook"
 import useToast from "@/hooks/toastHook"
 import { getErrorMessage } from "@/utilities/errors"
 
@@ -34,13 +36,13 @@ export const Route = createFileRoute("/admin/extensions")({
         const { data: availableExtensions } = useSuspenseQuery(
             readAvailableExtensions(apiClient, offset, limit),
         )
+
+        const { isPresented, dismiss, present } = usePresentation<boolean>()
         const { showToast } = useToast()
         const deleteMutation = useDeleteExtension()
         const handleDeleteClick = useCallback(
             async (extensionId: number) => {
-                const confirmed = confirm(
-                    "Are you sure you want to delete this extension? It will be uninstalled for all users on this instance.",
-                )
+                const confirmed = await present()
                 if (!confirmed) {
                     return
                 }
@@ -53,7 +55,7 @@ export const Route = createFileRoute("/admin/extensions")({
                     })
                 }
             },
-            [deleteMutation, showToast],
+            [present, deleteMutation, showToast],
         )
 
         return (
@@ -114,6 +116,14 @@ export const Route = createFileRoute("/admin/extensions")({
                     }
                 />
                 <Outlet />
+                <ConfirmDialog
+                    isPresented={isPresented}
+                    dismiss={dismiss}
+                    title="Are you sure you want to delete this extension?"
+                    message="It will be uninstalled for all users on this instance. This cannot be undone."
+                    cancel="Cancel"
+                    confirm="Delete"
+                />
             </div>
         )
     },

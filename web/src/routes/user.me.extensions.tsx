@@ -10,11 +10,13 @@ import { useUninstallExtension } from "@/api/mutations/extensions"
 import { readInstalledExtensions } from "@/api/queries/extensions"
 import PermissionInfo from "@/components/extensions/PermissionInfo"
 import AsyncButton from "@/components/reusable/AsyncButton"
+import ConfirmDialog from "@/components/reusable/ConfirmDialog"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPIClient from "@/hooks/apiClientHook"
+import usePresentation from "@/hooks/presentationHook"
 import useToast from "@/hooks/toastHook"
 import { getErrorMessage } from "@/utilities/errors"
 
@@ -39,11 +41,12 @@ export const Route = createFileRoute("/user/me/extensions")({
 
         const [expandedExtension, setExpandedExtension] = useState<number | null>(null)
 
+        const { isPresented, dismiss, present } = usePresentation<boolean>()
         const { showToast } = useToast()
         const uninstallMutation = useUninstallExtension()
         const handleUninstallClick = useCallback(
             async (extensionId: number) => {
-                const confirmed = confirm("Are you sure you want to uninstall this extension?")
+                const confirmed = await present()
                 if (!confirmed) {
                     return
                 }
@@ -56,7 +59,7 @@ export const Route = createFileRoute("/user/me/extensions")({
                     })
                 }
             },
-            [uninstallMutation, showToast],
+            [present, uninstallMutation, showToast],
         )
 
         return (
@@ -139,6 +142,14 @@ export const Route = createFileRoute("/user/me/extensions")({
                     }
                 />
                 <Outlet />
+                <ConfirmDialog
+                    isPresented={isPresented}
+                    dismiss={dismiss}
+                    title="Are you sure you want to uninstall this extension?"
+                    message="You may reinstall this extension later as long as it remains available on this instance."
+                    cancel="Cancel"
+                    confirm="Uninstall"
+                />
             </div>
         )
     },
