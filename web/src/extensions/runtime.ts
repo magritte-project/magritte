@@ -222,7 +222,8 @@ export class ExtensionRuntime {
         iframe.src = getExtensionSrc(manifest, {
             hostOrigin: window.location.origin,
         })
-        this._container.appendChild(iframe)
+        // TODO: this is a hack
+        this._container.insertBefore(iframe, this._container.querySelector("#app-modals"))
 
         try {
             const extension = await Extension.waitForConnection({

@@ -1,75 +1,116 @@
+import { XIcon } from "@phosphor-icons/react"
 import { useMediaQuery } from "@uidotdev/usehooks"
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
+import classNames from "classnames"
+import { useCallback, useMemo, type ReactNode } from "react"
 import { Group, Panel, Separator } from "react-resizable-panels"
 
-import type { Command } from "@/commands/base"
-import PanelsTabLayout from "@/components/structure/PanelsTabLayout"
+import ThemedHeader from "@/components/theme/ThemedHeader"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
+import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 import type { RevealPanelOptions } from "@/contexts/panelsContext"
-import CommandsProvider from "@/contexts/providers/CommandsProvider"
+import DismissContextProvider from "@/contexts/providers/DismissContextProvider"
 import PanelsContextProvider from "@/contexts/providers/PanelsProvider"
 import usePanelRegistry from "@/hooks/panelRegistryHook"
+import useStorageValue from "@/hooks/storageValueHook"
 
 export interface PanelsProps {
-    readonly hidePanels?: boolean
     readonly children?: ReactNode
 }
 
-export default function PanelsLayout({ hidePanels = false, children }: PanelsProps) {
-    const preferCompactLayout = useMediaQuery("(max-width: 768px)")
+export default function PanelsLayout({ children }: PanelsProps) {
+    const preferVerticalOrientation = useMediaQuery("(max-width: 768px)")
 
-    const panelRegistry = usePanelRegistry()
-    const [definitions, setDefinitions] = useState(panelRegistry.definitions)
-    useEffect(() => {
-        const subscription = panelRegistry.$events.subscribe((_event) => {
-            setDefinitions(panelRegistry.definitions)
-        })
-        return () => subscription.unsubscribe()
-    }, [panelRegistry])
+    const { panels } = usePanelRegistry()
+    const [selectedId, setSelectedId] = useStorageValue<string | null>("panels.selectedId", null)
+    const [SelectedComponent, preferredWidth = "16rem", preferredHeight = "16rem"] = useMemo(() => {
+        const selectedPanel = panels.find((panel) => panel.id === selectedId)
+        return [
+            selectedPanel?.component,
+            selectedPanel?.preferredWidth,
+            selectedPanel?.preferredHeight,
+        ] as const
+    }, [selectedId, panels])
 
-    const [selectedPanelId, setSelectedPanelId] = useState<string | undefined>(
-        () => definitions[0]?.id,
+    const revealPanel = useCallback(
+        ({ id }: RevealPanelOptions) => {
+            setSelectedId(id)
+        },
+        [setSelectedId],
     )
-    const revealPanel = useCallback(({ id }: RevealPanelOptions) => {
-        setSelectedPanelId(id)
-    }, [])
+    const hidePanels = useCallback(() => {
+        setSelectedId(null)
+    }, [setSelectedId])
 
-    const panelCommands = useMemo(() => {
-        return Array.from(
-            definitions,
-            (definition): Command => ({
-                id: `panels.reveal[${definition.id}]`,
-                searchTerms: `show ${definition.name}`,
-                present: async () => ({
-                    displayName: `Show ${definition.name}`,
-                    disabled: false,
-                }),
-                execute: async () => revealPanel({ id: definition.id }),
-            }),
-        )
-    }, [definitions, revealPanel])
-
-    return hidePanels ? (
-        children
-    ) : (
-        <PanelsContextProvider value={{ revealPanel }}>
-            <CommandsProvider commands={panelCommands}>
-                <Group
-                    orientation={preferCompactLayout ? "vertical" : "horizontal"}
-                    className="min-h-screen"
+    return (
+        <PanelsContextProvider value={{ panels, revealPanel, hidePanels }}>
+            <Group
+                orientation={preferVerticalOrientation ? "vertical" : "horizontal"}
+                className="min-h-screen"
+            >
+                <Panel
+                    className={classNames("relative overflow-auto pb-32", {
+                        "h-screen": !preferVerticalOrientation,
+                    })}
                 >
-                    <Panel className="flex-1 relative md:h-screen overflow-auto md:pb-32">
-                        {children}
-                    </Panel>
-                    <Separator className="h-1 md:w-1 md:h-auto rounded-full bg-gray-200" />
-                    <Panel collapsible defaultSize="16rem">
-                        <PanelsTabLayout
-                            definitions={definitions}
-                            selectedPanelId={selectedPanelId}
-                            selectPanel={setSelectedPanelId}
+                    {children}
+                </Panel>
+                {SelectedComponent && (
+                    <>
+                        <Separator
+                            className={classNames({
+                                "rounded-t-full bg-linear-to-b from-gray-200 to-transparent h-2":
+                                    preferVerticalOrientation,
+                                "rounded-full bg-gray-200 w-1": !preferVerticalOrientation,
+                            })}
                         />
-                    </Panel>
-                </Group>
-            </CommandsProvider>
+                        <Panel
+                            collapsible
+                            defaultSize={
+                                preferVerticalOrientation ? preferredHeight : preferredWidth
+                            }
+                        >
+                            <DismissContextProvider value={hidePanels}>
+                                <ThemedHeader
+                                    supplementaryStart={
+                                        <ThemedSubtleButton
+                                            type="button"
+                                            onClick={hidePanels}
+                                            title="Close"
+                                        >
+                                            <XIcon />
+                                        </ThemedSubtleButton>
+                                    }
+                                >
+                                    <div className="flex items-center gap-0 overflow-x-auto">
+                                        {panels.map((panel, index) => (
+                                            <button
+                                                key={`panels[${panel.id}@${index}]`}
+                                                type="button"
+                                                className="group"
+                                                onClick={() => setSelectedId(panel.id)}
+                                            >
+                                                <ThemedTabItemLabel
+                                                    icon={panel.icon}
+                                                    label={panel.name}
+                                                    isActive={selectedId === panel.id}
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+                                </ThemedHeader>
+                                <main
+                                    className={classNames("min-h-0", {
+                                        "h-full": preferVerticalOrientation,
+                                        "h-screen": !preferVerticalOrientation,
+                                    })}
+                                >
+                                    <SelectedComponent />
+                                </main>
+                            </DismissContextProvider>
+                        </Panel>
+                    </>
+                )}
+            </Group>
         </PanelsContextProvider>
     )
 }

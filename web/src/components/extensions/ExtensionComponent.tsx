@@ -68,6 +68,7 @@ export function getExtensionPanelDefinition(manifest: ExtensionManifest): PanelD
     return {
         id: getExtensionPanelID(manifest),
         name: manifest.name,
+        icon: GearIcon,
         preferredWidth: manifest.preferredWidth,
         preferredHeight: manifest.preferredHeight,
         component: buildExtensionComponent(manifest.id),

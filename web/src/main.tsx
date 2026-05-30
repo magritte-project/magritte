@@ -10,22 +10,22 @@ import { wirePlayerInput } from "@/commands/inputs/playerInput"
 import { CommandRegistry } from "@/commands/registry"
 import { libraryCommands } from "@/commands/suites/library"
 import { playerCommands } from "@/commands/suites/player"
+import {
+    getExtensionPanelDefinition,
+    getExtensionPanelID,
+} from "@/components/extensions/ExtensionComponent"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider"
 import { ExtensionRuntime } from "@/extensions/runtime"
-// Import the generated route tree
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider"
 import BuiltInPlaybackEngine from "@/playback/builtInEngine"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
+// Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
 import { PanelRegistry } from "@/utilities/panelRegistry"
 
 import "@/styles.css"
-import {
-    getExtensionPanelDefinition,
-    getExtensionPanelID,
-} from "./components/extensions/ExtensionComponent"
 
 // Set up user session
 const userSession = StorageUserSessionManager.local

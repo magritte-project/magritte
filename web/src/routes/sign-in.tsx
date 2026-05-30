@@ -85,7 +85,7 @@ export const Route = createFileRoute("/sign-in")({
         )
     },
     staticData: {
-        hideSplit: true,
+        wantsFullPageLayout: true,
         noAuth: true,
     },
 })

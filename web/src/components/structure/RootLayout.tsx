@@ -5,15 +5,20 @@ import ToastLayout from "@/components/structure/ToastLayout"
 import Wiring from "@/components/structure/Wiring"
 
 export default function RootLayout() {
-    const hideSplit = useRouterState({
-        select: ({ matches }) => matches.some((match) => match.staticData?.hideSplit === true),
+    const wantsFullPageLayout = useRouterState({
+        select: ({ matches }) =>
+            matches.some((match) => match.staticData?.wantsFullPageLayout === true),
     })
     return (
         <ToastLayout>
             <Wiring>
-                <PanelsLayout hidePanels={hideSplit}>
+                {wantsFullPageLayout ? (
                     <Outlet />
-                </PanelsLayout>
+                ) : (
+                    <PanelsLayout>
+                        <Outlet />
+                    </PanelsLayout>
+                )}
             </Wiring>
         </ToastLayout>
     )
