@@ -1,27 +1,9 @@
 import { defineBroadcast, protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
-import { PlayableItem, PlaybackState, PlaybackTime } from "../host/playback"
-
-export type PlaybackEngineEventTypes =
-    | "PlaybackEngine.playbackStateDidChange"
-    | "PlaybackEngine.playingItemChanged"
-    | "PlaybackEngine.encounteredError"
-    | "PlaybackEngine.endOfAudio"
-
-export const RepeatMode = z4.enum(["off", "one", "all"])
-export type RepeatMode = z4.infer<typeof RepeatMode>
-
-export const ShuffleMode = z4.enum(["off", "on"])
-export type ShuffleMode = z4.infer<typeof ShuffleMode>
-
-export const PlaybackModes = z4
-    .object({
-        repeat: RepeatMode,
-        shuffle: ShuffleMode,
-    })
-    .readonly()
-export type PlaybackModes = z4.infer<typeof PlaybackModes>
+import { PlayableItem } from "./items"
+import { PlaybackTime } from "./player"
+import { PlaybackState, PlaybackModes } from "./state"
 
 export const PlaybackEngineEnqueueOptions = z4
     .object({

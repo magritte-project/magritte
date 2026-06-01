@@ -7,10 +7,10 @@ import {
 } from "@magritte/rpc"
 import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transports"
 
-import { ChromeProtocol, type Chrome } from "../host/chrome"
-import { LibraryProtocol, type Library } from "../host/library"
-import { PlayerProtocol, type Player } from "../host/playback"
-import { PlaybackEngineProtocol, type PlaybackEngine } from "./playbackEngine"
+import { ChromeProtocol, type Chrome } from "../chrome"
+import { LibraryProtocol, type Library } from "../library"
+import { PlaybackEngineProtocol, type PlaybackEngine } from "../playback/playbackEngine"
+import { PlayerProtocol, type Player } from "../playback/player"
 
 export interface ExtensionExportsOptions {
     /** The broadcaster to use for communication with the extension host */

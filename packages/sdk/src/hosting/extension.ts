@@ -1,11 +1,11 @@
 import { cast, implement, RPCBroadcaster, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
-import { type PlaybackEngine, PlaybackEngineProtocol } from "../extension/playbackEngine"
+import { type Chrome, ChromeProtocol } from "../chrome"
+import { type Library, LibraryProtocol } from "../library"
 import { type ExtensionManifest, getExtensionOrigin } from "../manifest"
-import { type Chrome, ChromeProtocol } from "./chrome"
-import { type Library, LibraryProtocol } from "./library"
-import { type Player, PlayerProtocol } from "./playback"
+import { type PlaybackEngine, PlaybackEngineProtocol } from "../playback/playbackEngine"
+import { type Player, PlayerProtocol } from "../playback/player"
 
 export interface HostExportsOptions {
     /** The manifest of the extension */

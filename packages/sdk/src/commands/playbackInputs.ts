@@ -1,7 +1,7 @@
 import z4 from "zod"
 
-import { PlaybackModes } from "../extension/playbackEngine"
-import { PlayableItem, PlaybackState } from "../host/playback"
+import { PlayableItem } from "../playback/items"
+import { PlaybackModes, PlaybackState } from "../playback/state"
 import { CommandInput, onlyOne } from "./inputs"
 
 export const PlaybackStateInput = CommandInput.extend({
