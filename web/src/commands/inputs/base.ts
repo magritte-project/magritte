@@ -1,4 +1,4 @@
-import { onlyOne, type CommandInput } from "@magritte/sdk"
+import { getCommandInputKind, onlyOne, type CommandInput } from "@magritte/sdk"
 import z4 from "zod/v4"
 
 import { CountedSet } from "@/utilities/countedSet"
@@ -53,14 +53,14 @@ export class CommandInputs {
     hasAny<TShape extends z4.ZodRawShape & { kind: z4.ZodReadonly<z4.ZodLiteral<string>> }>(
         schema: z4.ZodObject<TShape>,
     ): boolean {
-        const kind = schema.shape.kind.unwrap().value
+        const kind = getCommandInputKind(schema)
         return this.hasAllOf(kind)
     }
 
     allOf<TShape extends z4.ZodRawShape & { kind: z4.ZodReadonly<z4.ZodLiteral<string>> }>(
         schema: z4.ZodObject<TShape>,
     ): z4.infer<z4.ZodObject<TShape>>[] {
-        const kind = schema.shape.kind.unwrap().value
+        const kind = getCommandInputKind(schema)
         return this._inputs
             .filter((input) => input.kind === kind)
             .map((input) => schema.parse(input))
@@ -72,7 +72,7 @@ export class CommandInputs {
             id: z4.ZodReadonly<z4.ZodLiteral<typeof onlyOne>>
         },
     >(schema: z4.ZodObject<TShape>): z4.infer<z4.ZodObject<TShape>> {
-        const kind = schema.shape.kind.unwrap().value
+        const kind = getCommandInputKind(schema)
         const inputsOfKind = this._inputs.filter((input) => input.kind === kind)
         if (inputsOfKind.length !== 1) {
             throw new Error(

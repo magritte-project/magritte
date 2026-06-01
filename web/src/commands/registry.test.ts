@@ -10,6 +10,7 @@ describe("CommandRegistry", () => {
                 subject.add({
                     id: "foo",
                     searchTerms: "foo",
+                    requiredInputKinds: [],
                     present: async () => ({ displayName: "", disabled: false }),
                     execute: async () => {},
                 }),
@@ -22,6 +23,7 @@ describe("CommandRegistry", () => {
                 subject.add({
                     id: "foo",
                     searchTerms: "foo",
+                    requiredInputKinds: [],
                     present: async () => ({ displayName: "", disabled: false }),
                     execute: async () => {},
                 }),
@@ -37,12 +39,14 @@ describe("CommandRegistry", () => {
                     {
                         id: "foo",
                         searchTerms: "foo",
+                        requiredInputKinds: [],
                         present: async () => ({ displayName: "", disabled: false }),
                         execute: async () => {},
                     },
                     {
                         id: "foo",
                         searchTerms: "foo",
+                        requiredInputKinds: [],
                         present: async () => ({ displayName: "", disabled: false }),
                         execute: async () => {},
                     },
@@ -59,6 +63,7 @@ describe("CommandRegistry", () => {
                 subject.add({
                     id: "foo",
                     searchTerms: "foo",
+                    requiredInputKinds: [],
                     present: async () => ({ displayName: "", disabled: false }),
                     execute: async () => {},
                 }),
@@ -75,6 +80,7 @@ describe("CommandRegistry", () => {
                 subject.add({
                     id: "foo",
                     searchTerms: "foo",
+                    requiredInputKinds: [],
                     present: async () => ({ displayName: "", disabled: false }),
                     execute: async () => {},
                 }),
@@ -87,6 +93,7 @@ describe("CommandRegistry", () => {
                 subject.remove({
                     id: "foo",
                     searchTerms: "foo",
+                    requiredInputKinds: [],
                     present: async () => ({ displayName: "", disabled: false }),
                     execute: async () => {},
                 }),
@@ -104,6 +111,7 @@ describe("CommandRegistry", () => {
                 subject.remove({
                     id: "foo",
                     searchTerms: "foo",
+                    requiredInputKinds: [],
                     present: async () => ({ displayName: "", disabled: false }),
                     execute: async () => {},
                 }),

@@ -12,7 +12,7 @@ export const CommandPresentation = z4.object({
     displayName: z4.string().readonly(),
 
     /** Whether the command is currently disabled */
-    disabled: z4.boolean().readonly(),
+    disabled: z4.boolean().readonly().optional(),
 })
 export type CommandPresentation = z4.infer<typeof CommandPresentation>
 

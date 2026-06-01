@@ -11,9 +11,9 @@ export function panelCommands(
         (panel): Command => ({
             id: `panels.reveal[${panel.id}]`,
             searchTerms: `show open ${panel.name} panel`,
+            requiredInputKinds: [],
             present: async () => ({
                 displayName: `panels: ${panel.name}`,
-                disabled: false,
             }),
             execute: async () => revealPanel({ id: panel.id }),
         }),

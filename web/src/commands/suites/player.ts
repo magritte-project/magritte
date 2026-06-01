@@ -1,3 +1,5 @@
+import { getCommandInputKind } from "@magritte/sdk"
+
 import type { Command } from "@/commands/base"
 import { PlayerInput } from "@/commands/inputs/playerInput"
 import type { Player } from "@/playback/player"
@@ -7,12 +9,14 @@ export function playerCommands(player: Player): Command[] {
         {
             id: "playback.skipPrevious",
             searchTerms: "playback skip previous",
+            requiredInputKinds: [getCommandInputKind(PlayerInput)],
             present: async () => ({ displayName: "playback: Skip Previous", disabled: false }),
             execute: () => player.skipPrevious(),
         },
         {
             id: "playback.playPaused",
             searchTerms: "playback play pause",
+            requiredInputKinds: [getCommandInputKind(PlayerInput)],
             present: async (inputs) => {
                 const { playbackState } = inputs.only(PlayerInput)
                 return {
@@ -31,12 +35,14 @@ export function playerCommands(player: Player): Command[] {
         {
             id: "playback.skipNext",
             searchTerms: "playback skip next",
+            requiredInputKinds: [getCommandInputKind(PlayerInput)],
             present: async () => ({ displayName: "playback: Skip Next", disabled: false }),
             execute: () => player.skipNext(),
         },
         {
             id: "playback.repeatOff",
             searchTerms: "playback repeat off",
+            requiredInputKinds: [getCommandInputKind(PlayerInput)],
             present: async (inputs) => {
                 const { playbackModes } = inputs.only(PlayerInput)
                 return {
@@ -50,6 +56,7 @@ export function playerCommands(player: Player): Command[] {
         {
             id: "playback.repeatAll",
             searchTerms: "playback repeat all",
+            requiredInputKinds: [getCommandInputKind(PlayerInput)],
             present: async (inputs) => {
                 const { playbackModes } = inputs.only(PlayerInput)
                 return {
@@ -63,6 +70,7 @@ export function playerCommands(player: Player): Command[] {
         {
             id: "playback.repeatOne",
             searchTerms: "playback repeat one",
+            requiredInputKinds: [getCommandInputKind(PlayerInput)],
             present: async (inputs) => {
                 const { playbackModes } = inputs.only(PlayerInput)
                 return {
@@ -76,6 +84,7 @@ export function playerCommands(player: Player): Command[] {
         {
             id: "playback.shuffleOnOff",
             searchTerms: "playback shuffle on off toggle",
+            requiredInputKinds: [getCommandInputKind(PlayerInput)],
             present: async (inputs) => {
                 const { playbackModes } = inputs.only(PlayerInput)
                 return {
@@ -83,7 +92,6 @@ export function playerCommands(player: Player): Command[] {
                         playbackModes.shuffle === "on"
                             ? "playback: Shuffle Off"
                             : "playback: Shuffle On",
-                    disabled: false,
                 }
             },
             execute: () =>

@@ -14,6 +14,12 @@ export const CommandInput = z4.looseObject({
 })
 export type CommandInput = z4.infer<typeof CommandInput>
 
+export function getCommandInputKind<TKind extends string>(
+    schema: z4.ZodObject<{ kind: z4.ZodReadonly<z4.ZodLiteral<TKind>> }>,
+): TKind {
+    return schema.shape.kind.unwrap().value
+}
+
 export const CommandInputQuery = z4.object({
     /** The kind of input to query for */
     kind: z4.string().readonly(),

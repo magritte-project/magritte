@@ -1,3 +1,4 @@
+import { getCommandInputKind } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
@@ -15,9 +16,9 @@ export function libraryCommands(
         {
             id: `libraries.artists`,
             searchTerms: "library artists",
-            present: async (inputs) => ({
+            requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            present: async () => ({
                 displayName: "library: Artists",
-                disabled: !inputs.hasAny(LibraryInput),
             }),
             execute: async (inputs) => {
                 const [library] = inputs.allOf(LibraryInput)
@@ -30,9 +31,9 @@ export function libraryCommands(
         {
             id: `libraries.albums`,
             searchTerms: "library albums",
-            present: async (inputs) => ({
+            requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            present: async () => ({
                 displayName: "library: Albums",
-                disabled: !inputs.hasAny(LibraryInput),
             }),
             execute: async (inputs) => {
                 const [library] = inputs.allOf(LibraryInput)
@@ -45,9 +46,9 @@ export function libraryCommands(
         {
             id: `libraries.songs`,
             searchTerms: "library songs",
-            present: async (inputs) => ({
+            requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            present: async () => ({
                 displayName: "library: Songs",
-                disabled: !inputs.hasAny(LibraryInput),
             }),
             execute: async (inputs) => {
                 const [library] = inputs.allOf(LibraryInput)
@@ -60,9 +61,12 @@ export function libraryCommands(
         {
             id: `libraries.deleteSongs`,
             searchTerms: "library remove delete songs",
-            present: async (inputs) => ({
+            requiredInputKinds: [
+                getCommandInputKind(LibraryInput),
+                getCommandInputKind(LibrarySongInput),
+            ],
+            present: async () => ({
                 displayName: "library: Delete Selected Songs…",
-                disabled: !inputs.hasAny(LibraryInput) || !inputs.hasAny(LibrarySongInput),
             }),
             execute: async (inputs) => {
                 const [library] = inputs.allOf(LibraryInput)
