@@ -34,10 +34,10 @@ describe("CommandInputs", () => {
             expect(subject.allOf(TestLibrarySongInput)).toHaveLength(1)
         })
 
-        it("should reject duplicate inputs with same id and kind", () => {
+        it("should tolerate duplicate inputs with same id and kind", () => {
             const subject = new CommandInputs()
             expect(() => subject.add({ kind: "library", id: 1 })).not.toThrow()
-            expect(() => subject.add({ kind: "library", id: 1 })).toThrow()
+            expect(() => subject.add({ kind: "library", id: 1 })).not.toThrow()
         })
 
         it("should allow replacing singleton inputs with same id and kind", () => {

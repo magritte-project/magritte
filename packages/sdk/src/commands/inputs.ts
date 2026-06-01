@@ -1,5 +1,8 @@
 import z4 from "zod/v4"
 
+/**
+ * Sentinel value indicating there is only one input for a command kind.
+ */
 export const onlyOne = "__onlyOne__" as const
 
 export const CommandInput = z4.looseObject({
