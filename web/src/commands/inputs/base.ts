@@ -35,13 +35,13 @@ export class CommandInputs {
         this._events.dispatch({ type: "commandInputsDidChange" })
     }
 
-    remove(input: CommandInput): void {
+    remove(kind: string, id: string | number): void {
         const toRemove = this._inputs.findIndex(
-            (candidate) => candidate.kind === input.kind && candidate.id === input.id,
+            (candidate) => candidate.kind === kind && candidate.id === id,
         )
         if (toRemove !== -1) {
             this._inputs.splice(toRemove, 1)
-            this._kinds.delete(input.kind)
+            this._kinds.delete(kind)
             this._events.dispatch({ type: "commandInputsDidChange" })
         }
     }

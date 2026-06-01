@@ -1,27 +1,28 @@
 import { getCommandInputKind } from "@magritte/sdk"
 
 import type { Command } from "@/commands/base"
-import { PlayerInput } from "@/commands/inputs/playerInput"
 import type { Player } from "@/playback/player"
+
+import { PlaybackModesInput, PlaybackStateInput } from "../inputs/playerInput"
 
 export function playerCommands(player: Player): Command[] {
     return [
         {
             id: "playback.skipPrevious",
             searchTerms: "playback skip previous",
-            requiredInputKinds: [getCommandInputKind(PlayerInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackStateInput)],
             present: async () => ({ displayName: "playback: Skip Previous", disabled: false }),
             execute: () => player.skipPrevious(),
         },
         {
             id: "playback.playPaused",
             searchTerms: "playback play pause",
-            requiredInputKinds: [getCommandInputKind(PlayerInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackStateInput)],
             present: async (inputs) => {
-                const { playbackState } = inputs.only(PlayerInput)
+                const { current } = inputs.only(PlaybackStateInput)
                 return {
-                    displayName: playbackState === "playing" ? "playback: Pause" : "playback: Play",
-                    disabled: playbackState === "stopped",
+                    displayName: current === "playing" ? "playback: Pause" : "playback: Play",
+                    disabled: current === "stopped",
                 }
             },
             execute: async () => {
@@ -35,19 +36,19 @@ export function playerCommands(player: Player): Command[] {
         {
             id: "playback.skipNext",
             searchTerms: "playback skip next",
-            requiredInputKinds: [getCommandInputKind(PlayerInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackStateInput)],
             present: async () => ({ displayName: "playback: Skip Next", disabled: false }),
             execute: () => player.skipNext(),
         },
         {
             id: "playback.repeatOff",
             searchTerms: "playback repeat off",
-            requiredInputKinds: [getCommandInputKind(PlayerInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackModesInput)],
             present: async (inputs) => {
-                const { playbackModes } = inputs.only(PlayerInput)
+                const { current } = inputs.only(PlaybackModesInput)
                 return {
                     displayName: "playback: Repeat Off",
-                    disabled: playbackModes.repeat === "off",
+                    disabled: current.repeat === "off",
                 }
             },
             execute: () =>
@@ -56,12 +57,12 @@ export function playerCommands(player: Player): Command[] {
         {
             id: "playback.repeatAll",
             searchTerms: "playback repeat all",
-            requiredInputKinds: [getCommandInputKind(PlayerInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackModesInput)],
             present: async (inputs) => {
-                const { playbackModes } = inputs.only(PlayerInput)
+                const { current } = inputs.only(PlaybackModesInput)
                 return {
                     displayName: "playback: Repeat All",
-                    disabled: playbackModes.repeat === "all",
+                    disabled: current.repeat === "all",
                 }
             },
             execute: () =>
@@ -70,12 +71,12 @@ export function playerCommands(player: Player): Command[] {
         {
             id: "playback.repeatOne",
             searchTerms: "playback repeat one",
-            requiredInputKinds: [getCommandInputKind(PlayerInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackModesInput)],
             present: async (inputs) => {
-                const { playbackModes } = inputs.only(PlayerInput)
+                const { current } = inputs.only(PlaybackModesInput)
                 return {
                     displayName: "playback: Repeat One",
-                    disabled: playbackModes.repeat === "one",
+                    disabled: current.repeat === "one",
                 }
             },
             execute: () =>
@@ -84,14 +85,12 @@ export function playerCommands(player: Player): Command[] {
         {
             id: "playback.shuffleOnOff",
             searchTerms: "playback shuffle on off toggle",
-            requiredInputKinds: [getCommandInputKind(PlayerInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackModesInput)],
             present: async (inputs) => {
-                const { playbackModes } = inputs.only(PlayerInput)
+                const { current } = inputs.only(PlaybackModesInput)
                 return {
                     displayName:
-                        playbackModes.shuffle === "on"
-                            ? "playback: Shuffle Off"
-                            : "playback: Shuffle On",
+                        current.shuffle === "on" ? "playback: Shuffle Off" : "playback: Shuffle On",
                 }
             },
             execute: () =>

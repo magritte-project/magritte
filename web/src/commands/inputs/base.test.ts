@@ -71,7 +71,7 @@ describe("CommandInputs", () => {
             subject.$events.subscribe(subscriber)
 
             subject.add({ kind: "library", id: 1 })
-            subject.remove({ kind: "library", id: 1 })
+            subject.remove("library", 1)
             expect(subject.allOf(TestLibraryInput)).toHaveLength(0)
 
             expect(subscriber).toHaveBeenCalledWith({ type: "commandInputsDidChange" })
@@ -82,7 +82,7 @@ describe("CommandInputs", () => {
             const subscriber = vi.fn()
             subject.$events.subscribe(subscriber)
 
-            expect(() => subject.remove({ kind: "library", id: 1 })).not.toThrow()
+            expect(() => subject.remove("library", 1)).not.toThrow()
 
             expect(subscriber).not.toHaveBeenCalledWith({ type: "commandInputsDidChange" })
         })

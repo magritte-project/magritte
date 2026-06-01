@@ -1,4 +1,4 @@
-import type { CommandInput } from "@magritte/sdk"
+import { type CommandInput } from "@magritte/sdk"
 import { useEffect, type ReactNode } from "react"
 
 import useCommandInputs from "@/hooks/commandInputsHook"
@@ -16,7 +16,7 @@ export default function CommandInputProvider({ value, children }: CommandInputPr
         }
         return () => {
             for (const input of value) {
-                inputs.remove(input)
+                inputs.remove(input.kind, input.id)
             }
         }
     }, [inputs, value])
