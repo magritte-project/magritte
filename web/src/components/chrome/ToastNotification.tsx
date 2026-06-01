@@ -1,9 +1,8 @@
+import type { ToastOptions, ToastType } from "@magritte/sdk"
 import { CheckCircleIcon, type Icon } from "@phosphor-icons/react"
 import { CircleIcon, WarningCircleIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 import { motion } from "motion/react"
-
-import type { Toast, ToastType } from "@/contexts/toastContext"
 
 const ICONS = {
     success: { icon: CheckCircleIcon, label: "Success" },
@@ -11,7 +10,7 @@ const ICONS = {
     info: { icon: CircleIcon, label: "Notice" },
 } satisfies Record<ToastType, { icon: Icon; label: string }>
 
-export interface ToastNotificationProps extends Toast {
+export interface ToastNotificationProps extends ToastOptions {
     readonly className?: string
 }
 

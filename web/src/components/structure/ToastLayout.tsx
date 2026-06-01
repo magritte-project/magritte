@@ -1,17 +1,17 @@
+import type { ToastOptions } from "@magritte/sdk"
 import { AnimatePresence } from "motion/react"
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
 import { createPortal } from "react-dom"
 
 import ToastNotification from "@/components/chrome/ToastNotification"
 import ToastContextProvider from "@/contexts/providers/ToastContextProvider"
-import type { Toast } from "@/contexts/toastContext"
 
 export interface ToastLayoutProps {
     readonly children?: ReactNode
 }
 
 export default function ToastLayout({ children }: ToastLayoutProps) {
-    const [toasts, setToasts] = useState<readonly Toast[]>([])
+    const [toasts, setToasts] = useState<readonly ToastOptions[]>([])
     useEffect(() => {
         if (toasts.length === 0) {
             return
@@ -21,7 +21,7 @@ export default function ToastLayout({ children }: ToastLayoutProps) {
         }, 3000)
         return () => clearTimeout(timeout)
     }, [toasts])
-    const showToast = useCallback((toast: Toast) => {
+    const showToast = useCallback((toast: ToastOptions) => {
         setToasts((toasts) => [...toasts, toast])
     }, [])
     const presentedToast = useMemo(() => {
