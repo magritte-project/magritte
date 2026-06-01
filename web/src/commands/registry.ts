@@ -1,7 +1,7 @@
-import { createEvent, type EventSink, type EventStream } from "@magritte/sdk"
 import Fuse from "fuse.js"
 
 import type { Command } from "@/commands/base"
+import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export type CommandRegistryEvent = { type: "registeredCommandsDidChange" }
 

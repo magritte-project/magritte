@@ -1,6 +1,5 @@
-import { createEvent, type EventStream } from "@magritte/sdk"
-
 import type { Queue, QueueEvent, RandomItemContext } from "@/playback/queue/base"
+import { createEvent, type EventStream } from "@/utilities/events"
 
 export default class EmptyQueue<Item extends { id: unknown }> implements Queue<Item> {
     constructor() {

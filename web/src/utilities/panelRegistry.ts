@@ -1,5 +1,6 @@
-import { createEvent, EventStream, type EventSink } from "@magritte/sdk"
 import type { Icon } from "@phosphor-icons/react"
+
+import { createEvent, EventStream, type EventSink } from "@/utilities/events"
 
 export interface PanelDefinition {
     /** Unique identifier for the panel */

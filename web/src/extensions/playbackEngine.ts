@@ -1,12 +1,9 @@
 import type { RPCBroadcaster } from "@magritte/rpc"
 import {
-    createEvent,
-    EventSink,
     PlaybackEngineEncounteredError,
     PlaybackEngineEndOfAudio,
     PlaybackEnginePlaybackStateDidChange,
     PlaybackEnginePlayingItemChanged,
-    type EventStream,
     type PlaybackEngine as ExtensionPlaybackEngine,
     type PlayableItem,
     type PlaybackTime,
@@ -18,6 +15,7 @@ import type {
     PlaybackEngineEvent,
 } from "@/playback/engine"
 import type { PlaybackModes } from "@/playback/modes"
+import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 // TODO: Finish this
 

@@ -1,6 +1,5 @@
-import { $oneWayMap, $state, type Property, type ReadonlyProperty } from "@magritte/sdk"
-
 import type { OAuth2Scope } from "@/api/openapi"
+import { $oneWayMap, $state, type Property, type ReadonlyProperty } from "@/utilities/state"
 
 export interface UserSession {
     readonly accessToken: string

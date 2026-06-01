@@ -1,14 +1,9 @@
-import {
-    createEvent,
-    type EventSink,
-    type EventStream,
-    type Extension,
-    type PlayableItem,
-} from "@magritte/sdk"
+import { type Extension, type PlayableItem } from "@magritte/sdk"
 
 import { ExtensionPlaybackEngineProxy } from "@/extensions/playbackEngine"
 import type { ExtensionRuntime, ExtensionRuntimeEvent } from "@/extensions/runtime"
 import type { PlaybackEngine } from "@/playback/engine"
+import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export type PlaybackEngineRegistryEvent =
     | { type: "playbackEngineRegistered"; engine: PlaybackEngine }

@@ -1,7 +1,4 @@
 import {
-    createEvent,
-    EventSink,
-    EventStream,
     Extension,
     getExtensionAllow,
     getExtensionSrc,
@@ -13,6 +10,7 @@ import type { UserSessionManager } from "@/api/userSession"
 import { exportLibrary } from "@/extensions/exports/exportLibrary"
 import { exportPlayer } from "@/extensions/exports/exportPlayer"
 import type { Player } from "@/playback/player"
+import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export interface ExtensionRuntimeOptions {
     readonly container: HTMLElement

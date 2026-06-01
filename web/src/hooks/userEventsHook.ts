@@ -1,8 +1,8 @@
-import type { EventCallback } from "@magritte/sdk"
 import { useRouteContext } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
 
 import type { UserEvent } from "@/api/userEvents"
+import type { EventCallback } from "@/utilities/events"
 
 export interface UseUserEventsOptions {
     readonly onEvent?: EventCallback<UserEvent>
