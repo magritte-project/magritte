@@ -6,6 +6,7 @@ import { RPCBroadcaster } from "./broadcasts"
 
 const ArithmeticAdded = defineBroadcast("Arithmetic", "added", z4.number())
 const ArithmeticSubtracted = defineBroadcast("Arithmetic", "subtracted", z4.number())
+const ArithmeticCompleted = defineBroadcast("Arithmetic", "completed", z4.void())
 
 describe("RPCBroadcaster", () => {
     it("should route broadcasts to subscribers", () => {
@@ -13,12 +14,16 @@ describe("RPCBroadcaster", () => {
         subject._connection_onsend = subject._connection_receive
         const addedSubscriber = vi.fn()
         const subtractedSubscriber = vi.fn()
+        const completedSubscriber = vi.fn()
         subject.subscribe(ArithmeticAdded, addedSubscriber)
         subject.subscribe(ArithmeticSubtracted, subtractedSubscriber)
+        subject.subscribe(ArithmeticCompleted, completedSubscriber)
         subject.send(ArithmeticAdded, 5)
         subject.send(ArithmeticSubtracted, 3)
+        subject.send(ArithmeticCompleted, undefined)
         expect(addedSubscriber).toHaveBeenCalledWith(5)
         expect(subtractedSubscriber).toHaveBeenCalledWith(3)
+        expect(completedSubscriber).toHaveBeenCalledWith(undefined)
     })
 
     it("should be possible to unsubscribe", () => {

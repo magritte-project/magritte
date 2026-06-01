@@ -2,6 +2,7 @@ import { cast, implement, RPCBroadcaster, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { type Chrome, ChromeProtocol } from "../chrome"
+import { type CommandCoordinator, CommandCoordinatorProtocol } from "../commands/coordinator"
 import { type Library, LibraryProtocol } from "../library"
 import { type ExtensionManifest, getExtensionOrigin } from "../manifest"
 import { type PlaybackEngine, PlaybackEngineProtocol } from "../playback/playbackEngine"
@@ -16,6 +17,7 @@ export interface HostExportsOptions {
 }
 
 export interface HostExportsObject {
+    readonly commandCoordinator: CommandCoordinator
     readonly chrome: Chrome
     readonly library: Library
     readonly player: Player
@@ -26,9 +28,10 @@ export type HostExports =
     | ((options: HostExportsOptions) => Promise<HostExportsObject>)
 
 async function implementExports(options: HostExportsOptions, exports: HostExports) {
-    const { chrome, library, player } =
+    const { commandCoordinator, chrome, library, player } =
         typeof exports === "function" ? await exports(options) : exports
     return [
+        implement(CommandCoordinatorProtocol, commandCoordinator),
         implement(ChromeProtocol, chrome),
         implement(LibraryProtocol, library),
         implement(PlayerProtocol, player),

@@ -1,4 +1,4 @@
-import { protocol, type ProtocolObject } from "@magritte/rpc"
+import { defineBroadcast, protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
 import { CommandDefinition } from "./definition"
@@ -36,3 +36,12 @@ export const CommandCoordinatorProtocol = protocol("Magritte.Host.CommandCoordin
     },
 })
 export type CommandCoordinator = ProtocolObject<typeof CommandCoordinatorProtocol>
+
+/**
+ * Broadcast signaling that the available command inputs have changed.
+ */
+export const CommandInputsDidChange = defineBroadcast(
+    CommandCoordinatorProtocol.name,
+    "commandInputsDidChange",
+    z4.void(),
+)

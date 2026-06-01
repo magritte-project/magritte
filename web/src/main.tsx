@@ -48,6 +48,8 @@ const player = new Player(playbackEngineRegistry)
 // Set up extensions
 const extensionRuntime = new ExtensionRuntime({
     container: document.body,
+    commandInputs,
+    commandRegistry,
     userSession,
     apiClient,
     player,

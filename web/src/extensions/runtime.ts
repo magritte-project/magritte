@@ -7,13 +7,19 @@ import {
 
 import type { APIClient } from "@/api/client"
 import type { UserSessionManager } from "@/api/userSession"
+import type { CommandInputs } from "@/commands/inputs/base"
+import type { CommandRegistry } from "@/commands/registry"
 import { exportLibrary } from "@/extensions/exports/exportLibrary"
 import { exportPlayer } from "@/extensions/exports/exportPlayer"
 import type { Player } from "@/playback/player"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
+import { exportCommandCoordinator } from "./exports/exportComamandCoordinator"
+
 export interface ExtensionRuntimeOptions {
     readonly container: HTMLElement
+    readonly commandInputs: CommandInputs
+    readonly commandRegistry: CommandRegistry
     readonly userSession: UserSessionManager
     readonly apiClient: APIClient
     readonly player: Player
@@ -79,6 +85,12 @@ export class ExtensionRuntime {
     /** The container the extension iframes are hosted in */
     private readonly _container: HTMLElement
 
+    /** The command inputs */
+    private readonly _commandInputs: CommandInputs
+
+    /** The command registry */
+    private readonly _commandRegistry: CommandRegistry
+
     /** The user session */
     private readonly _userSession: UserSessionManager
 
@@ -101,6 +113,8 @@ export class ExtensionRuntime {
 
     constructor(options: ExtensionRuntimeOptions) {
         this._container = options.container
+        this._commandInputs = options.commandInputs
+        this._commandRegistry = options.commandRegistry
         this._userSession = options.userSession
         this._apiClient = options.apiClient
         this._player = options.player
@@ -228,6 +242,12 @@ export class ExtensionRuntime {
                 iframe,
                 manifest,
                 exports: async ({ manifest, broadcaster }) => ({
+                    commandCoordinator: exportCommandCoordinator(
+                        manifest,
+                        broadcaster,
+                        this._commandInputs,
+                        this._commandRegistry,
+                    ),
                     chrome: {
                         showToast: async (options) => {
                             // NOTE: This is currently handled by <Wiring>
