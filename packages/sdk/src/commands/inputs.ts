@@ -1,4 +1,3 @@
-import { protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
 export type CommandInputArg =
@@ -42,45 +41,3 @@ export const CommandInputQuery = z4.object({
     kind: z4.string().readonly(),
 })
 export type CommandInputQuery = z4.infer<typeof CommandInputQuery>
-
-export const CommandDefinition = z4.object({
-    /** Unique identifier for the command */
-    id: z4.string().readonly(),
-
-    /** The static search terms for the command */
-    searchTerms: z4.string().readonly(),
-})
-export type CommandDefinition = z4.infer<typeof CommandDefinition>
-
-export const CommandCoordinatorProtocol = protocol("Magritte.Host.CommandCoordinator", {
-    /** Register a new command definition */
-    registerCommand: {
-        input: CommandDefinition,
-        output: z4.void(),
-    },
-
-    /** Unregister a command definition */
-    unregisterCommand: {
-        input: CommandDefinition,
-        output: z4.void(),
-    },
-
-    /** Add an input to the command system */
-    addInput: {
-        input: CommandInput,
-        output: z4.void(),
-    },
-
-    /** Remove an input from the command system */
-    removeInput: {
-        input: CommandInput,
-        output: z4.void(),
-    },
-
-    /** Get all inputs that match the given query */
-    getInputsMatching: {
-        input: CommandInputQuery,
-        output: z4.array(CommandInput),
-    },
-})
-export type CommandCoordinator = ProtocolObject<typeof CommandCoordinatorProtocol>
