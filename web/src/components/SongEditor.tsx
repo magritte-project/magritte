@@ -19,11 +19,11 @@ export default function SongEditor() {
     const apiClient = useAPIClient()
     const commandInputs = useCommandInputs()
     const [libraryId, songId] = useMemo(() => {
-        const libraryInputs = commandInputs.allOf("library", LibraryInput)
+        const libraryInputs = commandInputs.allOf(LibraryInput)
         if (libraryInputs.length === 0) {
             return [null, null]
         }
-        const songInputs = commandInputs.allOf("library.song", LibrarySongInput)
+        const songInputs = commandInputs.allOf(LibrarySongInput)
         if (songInputs.length === 0) {
             return [null, null]
         }

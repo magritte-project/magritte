@@ -1,4 +1,4 @@
-import { singletonInputID, type CommandInput, type SingletonCommandInput } from "@magritte/sdk"
+import { onlyOne, type CommandInput } from "@magritte/sdk"
 import z4 from "zod/v4"
 
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
@@ -23,7 +23,7 @@ export class CommandInputs {
             this._inputs.set(input.kind, inputsOfKind)
         }
 
-        if (input.id !== singletonInputID && inputsOfKind.get(input.id) !== undefined) {
+        if (input.id !== onlyOne && inputsOfKind.get(input.id) !== undefined) {
             throw new Error(`Input with id ${input.id} already exists for kind ${input.kind}`)
         }
         inputsOfKind.set(input.id, input)
@@ -40,10 +40,10 @@ export class CommandInputs {
         }
     }
 
-    hasAny<K extends string, T extends CommandInput & { kind: K }>(
-        kind: K,
-        schema: z4.ZodType<T>,
+    hasAny<TShape extends z4.ZodRawShape & { kind: z4.ZodReadonly<z4.ZodLiteral<string>> }>(
+        schema: z4.ZodObject<TShape>,
     ): boolean {
+        const kind = schema.shape.kind.unwrap().value
         const inputsOfKind = this._inputs.get(kind)
         if (inputsOfKind === undefined) {
             return false
@@ -56,10 +56,10 @@ export class CommandInputs {
         return false
     }
 
-    allOf<K extends string, T extends CommandInput & { readonly kind: K }>(
-        kind: K,
-        schema: z4.ZodType<T>,
-    ): T[] {
+    allOf<TShape extends z4.ZodRawShape & { kind: z4.ZodReadonly<z4.ZodLiteral<string>> }>(
+        schema: z4.ZodObject<TShape>,
+    ): z4.infer<z4.ZodObject<TShape>>[] {
+        const kind = schema.shape.kind.unwrap().value
         const inputsOfKind = this._inputs.get(kind)
         if (inputsOfKind === undefined) {
             return []
@@ -67,10 +67,13 @@ export class CommandInputs {
         return Array.from(inputsOfKind.values(), (input) => schema.parse(input))
     }
 
-    only<K extends string, T extends SingletonCommandInput & { readonly kind: K }>(
-        kind: K,
-        schema: z4.ZodType<T>,
-    ): T {
+    only<
+        TShape extends z4.ZodRawShape & {
+            kind: z4.ZodReadonly<z4.ZodLiteral<string>>
+            id: z4.ZodReadonly<z4.ZodLiteral<typeof onlyOne>>
+        },
+    >(schema: z4.ZodObject<TShape>): z4.infer<z4.ZodObject<TShape>> {
+        const kind = schema.shape.kind.unwrap().value
         const inputsOfKind = this._inputs.get(kind)
         if (inputsOfKind === undefined || inputsOfKind.size !== 1) {
             throw new Error(

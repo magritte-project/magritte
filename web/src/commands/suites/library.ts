@@ -17,10 +17,10 @@ export function libraryCommands(
             searchTerms: "library artists",
             present: async (inputs) => ({
                 displayName: "library: Artists",
-                disabled: !inputs.hasAny("library", LibraryInput),
+                disabled: !inputs.hasAny(LibraryInput),
             }),
             execute: async (inputs) => {
-                const [library] = inputs.allOf("library", LibraryInput)
+                const [library] = inputs.allOf(LibraryInput)
                 router.navigate({
                     to: "/libraries/$libraryId/artists",
                     params: { libraryId: String(library.id) },
@@ -32,10 +32,10 @@ export function libraryCommands(
             searchTerms: "library albums",
             present: async (inputs) => ({
                 displayName: "library: Albums",
-                disabled: !inputs.hasAny("library", LibraryInput),
+                disabled: !inputs.hasAny(LibraryInput),
             }),
             execute: async (inputs) => {
-                const [library] = inputs.allOf("library", LibraryInput)
+                const [library] = inputs.allOf(LibraryInput)
                 router.navigate({
                     to: "/libraries/$libraryId/albums",
                     params: { libraryId: String(library.id) },
@@ -47,10 +47,10 @@ export function libraryCommands(
             searchTerms: "library songs",
             present: async (inputs) => ({
                 displayName: "library: Songs",
-                disabled: !inputs.hasAny("library", LibraryInput),
+                disabled: !inputs.hasAny(LibraryInput),
             }),
             execute: async (inputs) => {
-                const [library] = inputs.allOf("library", LibraryInput)
+                const [library] = inputs.allOf(LibraryInput)
                 router.navigate({
                     to: "/libraries/$libraryId/songs",
                     params: { libraryId: String(library.id) },
@@ -62,13 +62,11 @@ export function libraryCommands(
             searchTerms: "library remove delete songs",
             present: async (inputs) => ({
                 displayName: "library: Delete Selected Songs…",
-                disabled:
-                    !inputs.hasAny("library", LibraryInput) ||
-                    !inputs.hasAny("library.song", LibrarySongInput),
+                disabled: !inputs.hasAny(LibraryInput) || !inputs.hasAny(LibrarySongInput),
             }),
             execute: async (inputs) => {
-                const [library] = inputs.allOf("library", LibraryInput)
-                const songs = inputs.allOf("library.song", LibrarySongInput)
+                const [library] = inputs.allOf(LibraryInput)
+                const songs = inputs.allOf(LibrarySongInput)
                 const confirmed = confirm(
                     `Are you sure you want to remove ${songs.length} song${songs.length !== 1 ? "s" : ""}?`,
                 )

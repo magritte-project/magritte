@@ -1,17 +1,18 @@
-import { CommandInput, SingletonCommandInput, singletonInputID } from "@magritte/sdk"
+import { CommandInput, onlyOne } from "@magritte/sdk"
 import { describe, expect, it, vi } from "vitest"
 import z4 from "zod"
 
 import { CommandInputs } from "./base"
 
 const TestLibraryInput = CommandInput.extend({
-    kind: z4.literal("library"),
+    kind: z4.literal("library").readonly(),
 })
 const TestLibrarySongInput = CommandInput.extend({
-    kind: z4.literal("library.song"),
+    kind: z4.literal("library.song").readonly(),
 })
-const TestUserSessionInput = SingletonCommandInput.extend({
-    kind: z4.literal("user.session"),
+const TestUserSessionInput = CommandInput.extend({
+    kind: z4.literal("user.session").readonly(),
+    id: z4.literal(onlyOne).readonly(),
 })
 
 describe("CommandInputs", () => {
@@ -22,15 +23,15 @@ describe("CommandInputs", () => {
             expect(() => subject.add({ kind: "library", id: 2 })).not.toThrow()
             expect(() => subject.add({ kind: "library", id: 3 })).not.toThrow()
 
-            expect(subject.allOf("library", TestLibraryInput)).toHaveLength(3)
+            expect(subject.allOf(TestLibraryInput)).toHaveLength(3)
         })
 
         it("should allow adding inputs with same id but different kinds", () => {
             const subject = new CommandInputs()
             expect(() => subject.add({ kind: "library", id: 1 })).not.toThrow()
             expect(() => subject.add({ kind: "library.song", id: 1 })).not.toThrow()
-            expect(subject.allOf("library", TestLibraryInput)).toHaveLength(1)
-            expect(subject.allOf("library.song", TestLibrarySongInput)).toHaveLength(1)
+            expect(subject.allOf(TestLibraryInput)).toHaveLength(1)
+            expect(subject.allOf(TestLibrarySongInput)).toHaveLength(1)
         })
 
         it("should reject duplicate inputs with same id and kind", () => {
@@ -42,12 +43,12 @@ describe("CommandInputs", () => {
         it("should allow replacing singleton inputs with same id and kind", () => {
             const subject = new CommandInputs()
             expect(() =>
-                subject.add({ kind: "user.session", id: singletonInputID, args: { token: "123" } }),
+                subject.add({ kind: "user.session", id: onlyOne, args: { token: "123" } }),
             ).not.toThrow()
             expect(() =>
-                subject.add({ kind: "user.session", id: singletonInputID, args: { token: "456" } }),
+                subject.add({ kind: "user.session", id: onlyOne, args: { token: "456" } }),
             ).not.toThrow()
-            expect(subject.only("user.session", TestUserSessionInput)).toEqual(
+            expect(subject.only(TestUserSessionInput)).toEqual(
                 expect.objectContaining({ args: { token: "456" } }),
             )
         })
@@ -71,7 +72,7 @@ describe("CommandInputs", () => {
 
             subject.add({ kind: "library", id: 1 })
             subject.remove({ kind: "library", id: 1 })
-            expect(subject.allOf("library", TestLibraryInput)).toHaveLength(0)
+            expect(subject.allOf(TestLibraryInput)).toHaveLength(0)
 
             expect(subscriber).toHaveBeenCalledWith({ type: "commandInputsDidChange" })
         })
