@@ -1,10 +1,10 @@
+import type { LibraryAlbumInput } from "@magritte/sdk"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { z } from "zod"
 
 import { readLibraryAlbums } from "@/api/queries/libraries"
-import type { LibraryAlbumInput } from "@/commands/inputs/libraryInput"
 import AppForm from "@/components/reusable/AppForm"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import TableFooter from "@/components/reusable/TableFooter"

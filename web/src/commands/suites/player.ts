@@ -1,9 +1,14 @@
-import { getCommandInputKind } from "@magritte/sdk"
+import {
+    getCommandInputKind,
+    onlyOne,
+    PlaybackModesInput,
+    PlaybackStateInput,
+    PlayingItemInput,
+} from "@magritte/sdk"
 
 import type { Command } from "@/commands/base"
+import type { CommandInputs } from "@/commands/inputs/base"
 import type { Player } from "@/playback/player"
-
-import { PlaybackModesInput, PlaybackStateInput } from "../inputs/playerInput"
 
 export function playerCommands(player: Player): Command[] {
     return [
@@ -97,4 +102,40 @@ export function playerCommands(player: Player): Command[] {
                 player.setPlaybackModes((playbackModes) => playbackModes.withNextShuffle()),
         },
     ]
+}
+
+export function wirePlaybackInputs(player: Player, inputs: CommandInputs) {
+    function updatePlayerInputs() {
+        inputs.add({
+            kind: "playbackState",
+            id: onlyOne,
+            current: player.playbackState,
+        } satisfies PlaybackStateInput)
+        inputs.add({
+            kind: "playbackModes",
+            id: onlyOne,
+            current: { ...player.playbackModes },
+        } satisfies PlaybackModesInput)
+        if (player.playingItem !== null) {
+            inputs.add({
+                kind: "playingItem",
+                id: onlyOne,
+                current: player.playingItem,
+            } satisfies PlayingItemInput)
+        } else {
+            inputs.remove(getCommandInputKind(PlayingItemInput), onlyOne)
+        }
+    }
+    updatePlayerInputs()
+    player.$events.subscribe((event) => {
+        switch (event.type) {
+            case "playbackStateDidChange":
+            case "playbackModesDidChange":
+            case "playingItemChanged":
+                updatePlayerInputs()
+                break
+            default:
+                break
+        }
+    })
 }

@@ -6,10 +6,9 @@ import { APIClient } from "@/api/client"
 import { UserEvents } from "@/api/userEvents"
 import { StorageUserSessionManager } from "@/api/userSession"
 import { CommandInputs } from "@/commands/inputs/base"
-import { wirePlayerInput } from "@/commands/inputs/playerInput"
 import { CommandRegistry } from "@/commands/registry"
 import { libraryCommands } from "@/commands/suites/library"
-import { playerCommands } from "@/commands/suites/player"
+import { playerCommands, wirePlaybackInputs } from "@/commands/suites/player"
 import {
     getExtensionPanelDefinition,
     getExtensionPanelID,
@@ -109,7 +108,7 @@ declare module "@tanstack/react-router" {
 // Hook up commands
 commandRegistry.add(...libraryCommands(router, apiClient, TanStackQueryProviderContext.queryClient))
 commandRegistry.add(...playerCommands(player))
-wirePlayerInput(player, commandInputs)
+wirePlaybackInputs(player, commandInputs)
 
 // Render the app
 const rootElement = document.getElementById("app")

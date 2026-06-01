@@ -1,3 +1,4 @@
+import type { LibrarySongInput } from "@magritte/sdk"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { useCallback, useMemo } from "react"
@@ -5,7 +6,6 @@ import { z } from "zod"
 
 import type { SongRead } from "@/api/openapi"
 import { readLibrarySongs } from "@/api/queries/libraries"
-import type { LibrarySongInput } from "@/commands/inputs/libraryInput"
 import AppForm from "@/components/reusable/AppForm"
 import TableFooter from "@/components/reusable/TableFooter"
 import SongSortButton from "@/components/SongSortButton"

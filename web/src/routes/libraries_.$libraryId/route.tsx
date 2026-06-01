@@ -1,7 +1,7 @@
+import { LibraryInput } from "@magritte/sdk"
 import { DiscIcon, MicrophoneIcon, MusicNotesIcon } from "@phosphor-icons/react"
 import { Outlet, createFileRoute } from "@tanstack/react-router"
 
-import { LibraryInput } from "@/commands/inputs/libraryInput"
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import TransportControls from "@/components/chrome/TransportControls"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"

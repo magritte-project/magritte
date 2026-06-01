@@ -1,5 +1,6 @@
-import { CommandInput } from "@magritte/sdk"
 import z4 from "zod"
+
+import { CommandInput } from "./inputs"
 
 export const LibraryInput = CommandInput.extend({
     kind: z4.literal("library").readonly(),

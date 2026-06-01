@@ -1,11 +1,10 @@
-import { getCommandInputKind } from "@magritte/sdk"
+import { getCommandInputKind, LibraryInput, LibrarySongInput } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
 import type { APIClient } from "@/api/client"
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import type { Command } from "@/commands/base"
-import { LibraryInput, LibrarySongInput } from "@/commands/inputs/libraryInput"
 
 export function libraryCommands(
     router: RegisteredRouter,
