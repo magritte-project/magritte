@@ -8,6 +8,7 @@ import {
 import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { ChromeProtocol, type Chrome } from "../chrome"
+import { CommandCoordinatorProtocol, type CommandCoordinator } from "../commands/coordinator"
 import { CommandResponderProtocol, type CommandResponder } from "../commands/responder"
 import { LibraryProtocol, type Library } from "../library"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../playback/playbackEngine"
@@ -110,6 +111,10 @@ export class ExtensionHost {
 
     async disconnect(): Promise<void> {
         this.connection.invalidate()
+    }
+
+    async commandCoordinator(): Promise<CommandCoordinator> {
+        return cast(CommandCoordinatorProtocol, this.connection.remoteObject)
     }
 
     async chrome(): Promise<Chrome> {
