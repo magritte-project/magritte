@@ -1,11 +1,5 @@
 import { RPCBroadcaster } from "@magritte/rpc"
-import {
-    type CommandCoordinator,
-    CommandInput,
-    CommandInputsDidChange,
-    ExtensionManifest,
-} from "@magritte/sdk"
-import z4 from "zod/v4"
+import { type CommandCoordinator, CommandInputsDidChange, ExtensionManifest } from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
@@ -42,7 +36,7 @@ export function exportCommandCoordinator(
             manifest,
             ["commands:input:read"],
             async ({ kind }) => {
-                return inputs.allOf(CommandInput.extend({ kind: z4.literal(kind).readonly() }))
+                return inputs.allMatching([kind])
             },
         ),
     }

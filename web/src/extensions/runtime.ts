@@ -14,7 +14,7 @@ import { exportPlayer } from "@/extensions/exports/exportPlayer"
 import type { Player } from "@/playback/player"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
-import { exportCommandCoordinator } from "./exports/exportComamandCoordinator"
+import { exportCommandCoordinator } from "./exports/exportCommandCoordinator"
 
 export interface ExtensionRuntimeOptions {
     readonly container: HTMLElement

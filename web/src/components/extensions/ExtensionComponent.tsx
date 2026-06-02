@@ -120,9 +120,12 @@ export async function getExtensionCommands(extension: Extension): Promise<readon
                 id: getExtensionCommandID(extension.manifest, definition),
                 searchTerms: `${extension.manifest.name} ${definition.searchTerms}`,
                 requiredInputKinds: definition.requiredInputKinds,
-                present: async (_inputs: CommandInputs) => {
+                present: async (inputs: CommandInputs) => {
                     try {
-                        const presentation = await responder.presentCommand({ id: definition.id })
+                        const presentation = await responder.presentCommand({
+                            id: definition.id,
+                            inputs: inputs.allMatching(definition.requiredInputKinds),
+                        })
                         return {
                             ...presentation,
                             displayName: `${extension.manifest.name}: ${presentation.displayName}`,
@@ -130,6 +133,7 @@ export async function getExtensionCommands(extension: Extension): Promise<readon
                     } catch (error) {
                         console.error(
                             "*** Could not get presentation for command",
+                            error,
                             extension.manifest.id,
                             definition.id,
                         )
@@ -139,8 +143,11 @@ export async function getExtensionCommands(extension: Extension): Promise<readon
                         }
                     }
                 },
-                execute: async (_inputs: CommandInputs) => {
-                    return await responder.executeCommand({ id: definition.id })
+                execute: async (inputs: CommandInputs) => {
+                    return await responder.executeCommand({
+                        id: definition.id,
+                        inputs: inputs.allMatching(definition.requiredInputKinds),
+                    })
                 },
             }),
         )

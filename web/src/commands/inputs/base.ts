@@ -1,4 +1,10 @@
-import { getCommandInputKind, onlyOne, type CommandInput } from "@magritte/sdk"
+import {
+    CommandInputID,
+    allCommandInputsOf,
+    onlyCommandInputOf,
+    onlyOne,
+    type CommandInput,
+} from "@magritte/sdk"
 import z4 from "zod/v4"
 
 import { CountedSet } from "@/utilities/countedSet"
@@ -35,7 +41,7 @@ export class CommandInputs {
         this._events.dispatch({ type: "commandInputsDidChange" })
     }
 
-    remove(kind: string, id: string | number): void {
+    remove(kind: string, id: CommandInputID): void {
         const toRemove = this._inputs.findIndex(
             (candidate) => candidate.kind === kind && candidate.id === id,
         )
@@ -50,20 +56,14 @@ export class CommandInputs {
         return !kinds.some((kind) => !this._kinds.has(kind))
     }
 
-    hasAny<TShape extends z4.ZodRawShape & { kind: z4.ZodReadonly<z4.ZodLiteral<string>> }>(
-        schema: z4.ZodObject<TShape>,
-    ): boolean {
-        const kind = getCommandInputKind(schema)
-        return this.hasAllOf(kind)
+    allMatching(kinds: readonly string[]): CommandInput[] {
+        return kinds.length > 0 ? this._inputs.filter((input) => kinds.includes(input.kind)) : []
     }
 
     allOf<TShape extends z4.ZodRawShape & { kind: z4.ZodReadonly<z4.ZodLiteral<string>> }>(
         schema: z4.ZodObject<TShape>,
     ): z4.infer<z4.ZodObject<TShape>>[] {
-        const kind = getCommandInputKind(schema)
-        return this._inputs
-            .filter((input) => input.kind === kind)
-            .map((input) => schema.parse(input))
+        return allCommandInputsOf(this._inputs, schema)
     }
 
     only<
@@ -72,13 +72,6 @@ export class CommandInputs {
             id: z4.ZodReadonly<z4.ZodLiteral<typeof onlyOne>>
         },
     >(schema: z4.ZodObject<TShape>): z4.infer<z4.ZodObject<TShape>> {
-        const kind = getCommandInputKind(schema)
-        const inputsOfKind = this._inputs.filter((input) => input.kind === kind)
-        if (inputsOfKind.length !== 1) {
-            throw new Error(
-                `Expected exactly one input of kind ${kind}, but got ${inputsOfKind.length}`,
-            )
-        }
-        return schema.parse(inputsOfKind[0])
+        return onlyCommandInputOf(this._inputs, schema)
     }
 }

@@ -1,9 +1,9 @@
-import type { CommandPresentation, CommandResponder, CommandSelector } from "@magritte/sdk"
+import type { CommandPresentation, CommandResponder, CommandContext } from "@magritte/sdk"
 
 export default class AppleMusicCommandResponder implements CommandResponder {
     constructor(private readonly musicKit: MusicKit.Instance) {}
 
-    async presentCommand({ id }: CommandSelector): Promise<CommandPresentation> {
+    async presentCommand({ id }: CommandContext): Promise<CommandPresentation> {
         switch (id) {
             case "account.authorize":
                 return {
@@ -14,7 +14,7 @@ export default class AppleMusicCommandResponder implements CommandResponder {
         }
     }
 
-    async executeCommand({ id }: CommandSelector): Promise<void> {
+    async executeCommand({ id }: CommandContext): Promise<void> {
         switch (id) {
             case "account.authorize":
                 if (this.musicKit.isAuthorized) {
