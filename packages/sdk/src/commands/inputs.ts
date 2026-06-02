@@ -47,7 +47,7 @@ export function onlyCommandInputOf<
 }
 
 export const CommandInputQuery = z4.object({
-    /** The kind of input to query for */
-    kind: z4.string().readonly(),
+    /** The kinds of input to query for */
+    kinds: z4.array(z4.string()).readonly(),
 })
 export type CommandInputQuery = z4.infer<typeof CommandInputQuery>

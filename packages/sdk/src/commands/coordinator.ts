@@ -17,7 +17,7 @@ export const CommandCoordinatorProtocol = protocol("Magritte.Host.CommandCoordin
     },
 
     /** Get all inputs that match the given query */
-    getInputsMatching: {
+    allMatching: {
         input: CommandInputQuery,
         output: z4.array(CommandInput),
     },

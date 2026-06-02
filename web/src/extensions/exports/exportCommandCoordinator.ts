@@ -32,12 +32,8 @@ export function exportCommandCoordinator(
         removeInput: enforcePermissions(manifest, ["commands:input:add"], async ({ kind, id }) => {
             inputs.remove(kind, id)
         }),
-        getInputsMatching: enforcePermissions(
-            manifest,
-            ["commands:input:read"],
-            async ({ kind }) => {
-                return inputs.allMatching([kind])
-            },
-        ),
+        allMatching: enforcePermissions(manifest, ["commands:input:read"], async ({ kinds }) => {
+            return inputs.allMatching(kinds)
+        }),
     }
 }
