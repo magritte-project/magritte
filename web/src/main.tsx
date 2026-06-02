@@ -8,10 +8,10 @@ import { StorageUserSessionManager } from "@/api/userSession"
 import { CommandInputs } from "@/commands/inputs/base"
 import { CommandRegistry } from "@/commands/registry"
 import { libraryCommands } from "@/commands/suites/library"
-import { playerCommands, wirePlaybackInputs } from "@/commands/suites/player"
+import { playerCommands, wirePlayerCommandInputs } from "@/commands/suites/player"
 import {
-    getExtensionPanelDefinition,
-    getExtensionPanelID,
+    wireExtensionCommands,
+    wireExtensionPanels,
 } from "@/components/extensions/ExtensionComponent"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider"
 import { ExtensionRuntime } from "@/extensions/runtime"
@@ -59,24 +59,7 @@ playbackEngineRegistry.subscribeTo(extensionRuntime)
 
 // Set up panels
 const panelRegistry = new PanelRegistry()
-for (const manifest of extensionRuntime.available) {
-    panelRegistry.register(getExtensionPanelDefinition(manifest))
-}
-extensionRuntime.$events.subscribe((event) => {
-    switch (event.type) {
-        case "extensionAdded": {
-            panelRegistry.register(getExtensionPanelDefinition(event.manifest))
-            break
-        }
-        case "extensionRemoved": {
-            panelRegistry.unregister(getExtensionPanelID(event.manifest))
-            break
-        }
-        default: {
-            break
-        }
-    }
-})
+wireExtensionPanels(panelRegistry, extensionRuntime)
 
 // Create a new router instance
 
@@ -110,7 +93,8 @@ declare module "@tanstack/react-router" {
 // Hook up commands
 commandRegistry.add(...libraryCommands(router, apiClient, TanStackQueryProviderContext.queryClient))
 commandRegistry.add(...playerCommands(player))
-wirePlaybackInputs(player, commandInputs)
+wirePlayerCommandInputs(player, commandInputs)
+wireExtensionCommands(commandRegistry, extensionRuntime)
 
 // Render the app
 const rootElement = document.getElementById("app")

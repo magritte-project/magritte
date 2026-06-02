@@ -104,7 +104,7 @@ export function playerCommands(player: Player): Command[] {
     ]
 }
 
-export function wirePlaybackInputs(player: Player, inputs: CommandInputs) {
+export function wirePlayerCommandInputs(player: Player, inputs: CommandInputs) {
     function updatePlayerInputs() {
         inputs.add({
             kind: "playbackState",

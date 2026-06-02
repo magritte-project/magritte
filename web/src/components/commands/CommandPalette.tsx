@@ -1,12 +1,11 @@
 import { Combobox, ComboboxInput, ComboboxOptions } from "@headlessui/react"
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr"
 import { AnimatePresence, motion } from "motion/react"
-import { Suspense, useCallback } from "react"
+import { useCallback } from "react"
 import { createPortal } from "react-dom"
 
 import type { Command } from "@/commands/base"
 import CommandPaletteOption from "@/components/commands/CommandPaletteOption"
-import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommands from "@/hooks/commandsHook"
 
@@ -84,17 +83,13 @@ export default function CommandPalette({
                                         No commands found
                                     </p>
                                 ) : (
-                                    <Suspense
-                                        fallback={<ThemedContentUnavailable variant="inline" />}
-                                    >
-                                        {commands.map((command) => (
-                                            <CommandPaletteOption
-                                                key={command.id}
-                                                inputs={inputs}
-                                                command={command}
-                                            />
-                                        ))}
-                                    </Suspense>
+                                    commands.map((command) => (
+                                        <CommandPaletteOption
+                                            key={command.id}
+                                            inputs={inputs}
+                                            command={command}
+                                        />
+                                    ))
                                 )}
                             </ComboboxOptions>
                         </div>

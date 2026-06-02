@@ -1,10 +1,14 @@
-import type { ExtensionManifest } from "@magritte/sdk"
+import type { Extension, ExtensionCommand, ExtensionManifest } from "@magritte/sdk"
 import { GearIcon } from "@phosphor-icons/react"
 import { useEffect, useRef, useState } from "react"
 
+import type { Command } from "@/commands/base"
+import type { CommandInputs } from "@/commands/inputs/base"
+import type { CommandRegistry } from "@/commands/registry"
+import type { ExtensionRuntime } from "@/extensions/runtime"
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import { getErrorMessage } from "@/utilities/errors"
-import type { PanelDefinition } from "@/utilities/panelRegistry"
+import type { PanelDefinition, PanelRegistry } from "@/utilities/panelRegistry"
 
 export function buildExtensionComponent(id: string) {
     function ExtensionComponent() {
@@ -73,4 +77,113 @@ export function getExtensionPanelDefinition(manifest: ExtensionManifest): PanelD
         preferredHeight: manifest.preferredHeight,
         component: buildExtensionComponent(manifest.id),
     }
+}
+
+export function wireExtensionPanels(
+    panelRegistry: PanelRegistry,
+    extensionRuntime: ExtensionRuntime,
+): void {
+    for (const manifest of extensionRuntime.available) {
+        panelRegistry.register(getExtensionPanelDefinition(manifest))
+    }
+    extensionRuntime.$events.subscribe((event) => {
+        switch (event.type) {
+            case "extensionAdded": {
+                panelRegistry.register(getExtensionPanelDefinition(event.manifest))
+                break
+            }
+            case "extensionRemoved": {
+                panelRegistry.unregister(getExtensionPanelID(event.manifest))
+                break
+            }
+            default: {
+                break
+            }
+        }
+    })
+}
+
+function getExtensionCommandID(manifest: ExtensionManifest, definition: ExtensionCommand) {
+    return `${manifest.id}:${definition.id}`
+}
+
+export async function getExtensionCommands(extension: Extension): Promise<readonly Command[]> {
+    const definitions = extension.manifest.commands ?? []
+    if (definitions.length === 0) {
+        return []
+    }
+
+    try {
+        const responder = await extension.commandResponder()
+        return definitions.map(
+            (definition): Command => ({
+                id: getExtensionCommandID(extension.manifest, definition),
+                searchTerms: `${extension.manifest.name} ${definition.searchTerms}`,
+                requiredInputKinds: definition.requiredInputKinds,
+                present: async (_inputs: CommandInputs) => {
+                    try {
+                        const presentation = await responder.presentCommand({ id: definition.id })
+                        return {
+                            ...presentation,
+                            displayName: `${extension.manifest.name}: ${presentation.displayName}`,
+                        }
+                    } catch (error) {
+                        console.error(
+                            "*** Could not get presentation for command",
+                            extension.manifest.id,
+                            definition.id,
+                        )
+                        return {
+                            displayName: `${extension.manifest.name}: ???`,
+                            disabled: true,
+                        }
+                    }
+                },
+                execute: async (_inputs: CommandInputs) => {
+                    return await responder.executeCommand({ id: definition.id })
+                },
+            }),
+        )
+    } catch (error) {
+        console.error(
+            "*** Extension declares commands in manifest but does not export a responder",
+            extension.manifest.id,
+            error,
+        )
+        return []
+    }
+}
+
+export function wireExtensionCommands(
+    commandRegistry: CommandRegistry,
+    extensionRuntime: ExtensionRuntime,
+): void {
+    Promise.allSettled(
+        extensionRuntime.running.map(async (extension) => {
+            const commands = await getExtensionCommands(extension)
+            commandRegistry.add(...commands)
+        }),
+    )
+    extensionRuntime.$events.subscribe(async (event) => {
+        switch (event.type) {
+            case "extensionLoaded": {
+                const commands = await getExtensionCommands(event.extension)
+                commandRegistry.add(...commands)
+                console.debug("Registered commands for extension", event.extension.manifest.id)
+                break
+            }
+            case "extensionUnloaded": {
+                const definitions = event.extension.manifest.commands ?? []
+                const commandIDs = definitions.map((definition) =>
+                    getExtensionCommandID(event.extension.manifest, definition),
+                )
+                commandRegistry.removeByID(...commandIDs)
+                console.debug("Unregistered commands for extension", event.extension.manifest.id)
+                break
+            }
+            default: {
+                break
+            }
+        }
+    })
 }

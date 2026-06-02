@@ -39,8 +39,8 @@ export class CommandRegistry {
         this._events.dispatch({ type: "registeredCommandsDidChange" })
     }
 
-    remove(...commands: Command[]): boolean {
-        const toRemove = new Set(commands.map((d) => d.id))
+    removeByID(...commandIDs: string[]): boolean {
+        const toRemove = new Set(commandIDs)
         const deletedCommands = this._commands.remove((doc) => toRemove.has(doc.id))
         const deleted = deletedCommands.length > 0
         if (deleted) {
@@ -50,6 +50,10 @@ export class CommandRegistry {
             this._events.dispatch({ type: "registeredCommandsDidChange" })
         }
         return deleted
+    }
+
+    remove(...commands: Command[]): boolean {
+        return this.removeByID(...commands.map((d) => d.id))
     }
 
     search(query: string): Command[] {

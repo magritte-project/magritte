@@ -1,4 +1,4 @@
-import { protocol } from "@magritte/rpc"
+import { protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
 export const CommandSelector = z4.object({
@@ -29,3 +29,5 @@ export const CommandResponderProtocol = protocol("Magritte.Extension.CommandResp
         output: z4.void(),
     },
 })
+
+export type CommandResponder = ProtocolObject<typeof CommandResponderProtocol>

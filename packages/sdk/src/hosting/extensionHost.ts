@@ -8,6 +8,7 @@ import {
 import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { ChromeProtocol, type Chrome } from "../chrome"
+import { CommandResponderProtocol, type CommandResponder } from "../commands/responder"
 import { LibraryProtocol, type Library } from "../library"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../playback/playbackEngine"
 import { PlayerProtocol, type Player } from "../playback/player"
@@ -18,6 +19,7 @@ export interface ExtensionExportsOptions {
 }
 
 export interface ExtensionExportsObject {
+    readonly commandResponder?: CommandResponder
     readonly playbackEngine?: PlaybackEngine
 }
 
@@ -26,8 +28,12 @@ export type ExtensionExports =
     | ((options: ExtensionExportsOptions) => Promise<ExtensionExportsObject>)
 
 async function implementExports(options: ExtensionExportsOptions, exports: ExtensionExports) {
-    const { playbackEngine } = typeof exports === "function" ? await exports(options) : exports
+    const { commandResponder, playbackEngine } =
+        typeof exports === "function" ? await exports(options) : exports
     const implementations: ProtocolImplementation[] = []
+    if (commandResponder) {
+        implementations.push(implement(CommandResponderProtocol, commandResponder))
+    }
     if (playbackEngine) {
         implementations.push(implement(PlaybackEngineProtocol, playbackEngine))
     }

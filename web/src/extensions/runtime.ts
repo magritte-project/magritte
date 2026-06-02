@@ -140,6 +140,12 @@ export class ExtensionRuntime {
             .map((s) => s.extension)
     }
 
+    /** Get a currently running extension */
+    getRunning(id: string): Extension | null {
+        const state = this._extensions.get(id)
+        return state?.status === "loaded" ? state.extension : null
+    }
+
     add(manifest: ExtensionManifest) {
         if (this._available.has(manifest.id)) {
             this.remove(manifest.id)
