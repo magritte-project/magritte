@@ -19,6 +19,18 @@ class ExtensionPermissions(Enum):
     PLAYBACK_CONTROL = "playback:control"
 
 
+class ExtensionCommand(BaseModel):
+    id: str = Field(..., description="Unique identifier for the command")
+    search_terms: str = Field(
+        ..., alias="searchTerms", description="The static search terms for the command"
+    )
+    required_input_kinds: list[str] = Field(
+        ...,
+        alias="requiredInputKinds",
+        description="The kinds of the inputs this command requires to execute",
+    )
+
+
 class ExtensionManifest(BaseModel):
     name: str = Field(..., description="A friendly name for the extension")
     id: str = Field(..., description="A unique identifier for the extension")
@@ -44,4 +56,8 @@ class ExtensionManifest(BaseModel):
         [],
         alias="sourceSchemes",
         description="An optional array of source schemes supported by the extension",
+    )
+    commands: list[ExtensionCommand] | None = Field(
+        default_factory=list,
+        description="An optional array of commands supported by the extension",
     )

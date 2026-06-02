@@ -14,6 +14,21 @@ export type ExtensionPermissions =
     | "playback:read"
     | "playback:control"
 
+export type ExtensionCommand = {
+    /**
+     * Unique identifier for the command
+     */
+    id: string
+    /**
+     * The static search terms for the command
+     */
+    searchTerms: string
+    /**
+     * The kinds of the inputs this command requires to execute
+     */
+    requiredInputKinds: Array<string>
+}
+
 export type ExtensionManifest = {
     /**
      * A friendly name for the extension
@@ -51,4 +66,8 @@ export type ExtensionManifest = {
      * An optional array of source schemes supported by the extension
      */
     sourceSchemes?: Array<string>
+    /**
+     * An optional array of commands supported by the extension
+     */
+    commands?: Array<ExtensionCommand>
 }

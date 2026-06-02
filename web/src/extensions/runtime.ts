@@ -193,6 +193,12 @@ export class ExtensionRuntime {
                 sourceSchemes: extension.manifest.sourceSchemes
                     ? [...extension.manifest.sourceSchemes]
                     : undefined,
+                commands: extension.manifest.commands
+                    ? extension.manifest.commands.map((command) => ({
+                          ...command,
+                          requiredInputKinds: [...command.requiredInputKinds],
+                      }))
+                    : undefined,
             })
             visitedIds.add(extension.manifest.id)
         }

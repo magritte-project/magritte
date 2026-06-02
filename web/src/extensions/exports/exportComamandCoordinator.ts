@@ -32,12 +32,6 @@ export function exportCommandCoordinator(
         })
     }
     return {
-        registerCommand: enforcePermissions(manifest, [], async (_command) => {
-            throw new Error("Not implemented")
-        }),
-        unregisterCommand: enforcePermissions(manifest, [], async (_command) => {
-            throw new Error("Not implemented")
-        }),
         addInput: enforcePermissions(manifest, ["commands:input:add"], async (input) => {
             inputs.add(input)
         }),

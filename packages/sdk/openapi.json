@@ -19,6 +19,28 @@
                     "playback:control"
                 ]
             },
+            "ExtensionCommand": {
+                "type": "object",
+                "required": ["id", "searchTerms", "requiredInputKinds"],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier for the command"
+                    },
+                    "searchTerms": {
+                        "type": "string",
+                        "description": "The static search terms for the command"
+                    },
+                    "requiredInputKinds": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [],
+                        "description": "The kinds of the inputs this command requires to execute"
+                    }
+                }
+            },
             "ExtensionManifest": {
                 "type": "object",
                 "required": ["name", "id", "version", "url"],
@@ -64,6 +86,12 @@
                         },
                         "default": [],
                         "description": "An optional array of source schemes supported by the extension"
+                    },
+                    "commands": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/ExtensionCommand" },
+                        "default": [],
+                        "description": "An optional array of commands supported by the extension"
                     }
                 }
             }

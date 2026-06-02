@@ -13,6 +13,12 @@ export const ExtensionPermissions = z.enum([
     "playback:control",
 ])
 
+export const ExtensionCommand = z.object({
+    id: z.string(),
+    searchTerms: z.string(),
+    requiredInputKinds: z.array(z.string()).default([]),
+})
+
 export const ExtensionManifest = z.object({
     name: z.string(),
     id: z.string(),
@@ -23,4 +29,5 @@ export const ExtensionManifest = z.object({
     preferredHeight: z.string().optional(),
     permissions: z.array(ExtensionPermissions).optional().default([]),
     sourceSchemes: z.array(z.string()).optional().default([]),
+    commands: z.array(ExtensionCommand).optional().default([]),
 })

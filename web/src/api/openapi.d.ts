@@ -761,6 +761,24 @@ export interface components {
             /** Songs */
             readonly songs: readonly components["schemas"]["IngestSong"][];
         };
+        /** ExtensionCommand */
+        readonly ExtensionCommand: {
+            /**
+             * Id
+             * @description Unique identifier for the command
+             */
+            readonly id: string;
+            /**
+             * Searchterms
+             * @description The static search terms for the command
+             */
+            readonly searchTerms: string;
+            /**
+             * Requiredinputkinds
+             * @description The kinds of the inputs this command requires to execute
+             */
+            readonly requiredInputKinds: readonly string[];
+        };
         /** ExtensionImportAdmin */
         readonly ExtensionImportAdmin: {
             /**
@@ -818,6 +836,11 @@ export interface components {
              * @default []
              */
             readonly sourceSchemes: readonly string[] | null;
+            /**
+             * Commands
+             * @description An optional array of commands supported by the extension
+             */
+            readonly commands?: readonly components["schemas"]["ExtensionCommand"][] | null;
         };
         /**
          * ExtensionPermissions
@@ -1340,6 +1363,7 @@ export type ArtworkRead = components['schemas']['ArtworkRead'];
 export type ArtworkUpdate = components['schemas']['ArtworkUpdate'];
 export type BodySignInSignInPost = components['schemas']['Body_sign_in_sign_in_post'];
 export type BulkIngestSongs = components['schemas']['BulkIngestSongs'];
+export type ExtensionCommand = components['schemas']['ExtensionCommand'];
 export type ExtensionImportAdmin = components['schemas']['ExtensionImportAdmin'];
 export type ExtensionManifest = components['schemas']['ExtensionManifest'];
 export type ExtensionPermissions = components['schemas']['ExtensionPermissions'];

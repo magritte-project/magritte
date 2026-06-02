@@ -1,22 +1,9 @@
 import { defineBroadcast, protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
-import { CommandDefinition } from "./definition"
 import { CommandInput, CommandInputQuery } from "./inputs"
 
 export const CommandCoordinatorProtocol = protocol("Magritte.Host.CommandCoordinator", {
-    /** Register a new command definition */
-    registerCommand: {
-        input: CommandDefinition,
-        output: z4.void(),
-    },
-
-    /** Unregister a command definition */
-    unregisterCommand: {
-        input: CommandDefinition,
-        output: z4.void(),
-    },
-
     /** Add an input to the command system */
     addInput: {
         input: CommandInput,

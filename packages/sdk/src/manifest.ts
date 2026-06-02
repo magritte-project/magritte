@@ -5,6 +5,8 @@ export const ExtensionManifest = Schemas.ExtensionManifest
 export type ExtensionManifest = Types.ExtensionManifest
 export const ExtensionPermissions = Schemas.ExtensionPermissions
 export type ExtensionPermissions = Types.ExtensionPermissions
+export const ExtensionCommand = Schemas.ExtensionCommand
+export type ExtensionCommand = Types.ExtensionCommand
 
 /**
  * Returns the origin of the extension.
