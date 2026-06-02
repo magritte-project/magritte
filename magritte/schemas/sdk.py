@@ -13,6 +13,8 @@ class ExtensionPermissions(Enum):
     RUN_EAGER = "run:eager"
     COMMANDS_INPUT_READ = "commands:input:read"
     COMMANDS_INPUT_ADD = "commands:input:add"
+    COMMANDS_QUERY = "commands:query"
+    COMMANDS_RUN = "commands:run"
     LIBRARIES_READ = "libraries:read"
     LIBRARIES_WRITE = "libraries:write"
     PLAYBACK_READ = "playback:read"

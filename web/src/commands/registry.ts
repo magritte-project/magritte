@@ -56,6 +56,10 @@ export class CommandRegistry {
         return this.removeByID(...commands.map((d) => d.id))
     }
 
+    getByID(id: string): Command | undefined {
+        return this._commands.getIndex().docs.find((doc) => doc.id === id)
+    }
+
     search(query: string): Command[] {
         return this._commands.search(query).map((match) => match.item)
     }

@@ -846,7 +846,7 @@ export interface components {
          * ExtensionPermissions
          * @enum {string}
          */
-        readonly ExtensionPermissions: "run:background" | "run:eager" | "commands:input:read" | "commands:input:add" | "libraries:read" | "libraries:write" | "playback:read" | "playback:control";
+        readonly ExtensionPermissions: "run:background" | "run:eager" | "commands:input:read" | "commands:input:add" | "commands:query" | "commands:run" | "libraries:read" | "libraries:write" | "playback:read" | "playback:control";
         /** ExtensionRead */
         readonly ExtensionRead: {
             /** Id */

@@ -22,6 +22,14 @@ const info: Readonly<Record<ExtensionPermissions, Info>> = {
         name: "Adds To On Screen Context",
         description: "The extension can add information about what's on screen in Magritte.",
     },
+    "commands:query": {
+        name: "Queries Commands",
+        description: "The extension can query what commands are available.",
+    },
+    "commands:run": {
+        name: "Runs Commands",
+        description: "The extension can run commands.",
+    },
     "libraries:read": {
         name: "Reads Library Data",
         description: "The extension can read any library data you have access to.",

@@ -7,6 +7,8 @@ export const ExtensionPermissions = z.enum([
     "run:eager",
     "commands:input:read",
     "commands:input:add",
+    "commands:query",
+    "commands:run",
     "libraries:read",
     "libraries:write",
     "playback:read",

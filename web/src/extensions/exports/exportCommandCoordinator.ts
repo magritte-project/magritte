@@ -1,5 +1,10 @@
 import { RPCBroadcaster } from "@magritte/rpc"
-import { type CommandCoordinator, CommandInputsDidChange, ExtensionManifest } from "@magritte/sdk"
+import {
+    type CommandCoordinator,
+    CommandInputsDidChange,
+    CommandQueryResult,
+    ExtensionManifest,
+} from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
@@ -9,7 +14,7 @@ export function exportCommandCoordinator(
     manifest: ExtensionManifest,
     broadcaster: RPCBroadcaster,
     inputs: CommandInputs,
-    _registry: CommandRegistry,
+    registry: CommandRegistry,
 ): CommandCoordinator {
     if (manifest.permissions?.includes("commands:input:read")) {
         const subscription = inputs.$events.subscribe(async (event) => {
@@ -26,6 +31,32 @@ export function exportCommandCoordinator(
         })
     }
     return {
+        queryRunnable: enforcePermissions(manifest, ["commands:query"], async ({ query }) => {
+            // TODO: Show confirmation before returning matching commands
+            const commands = query ? registry.search(query) : registry.all
+            return await Promise.all(
+                commands
+                    .filter((command) => inputs.hasAllOf(...command.requiredInputKinds))
+                    .map(async (command) => {
+                        const presentation = await command.present(inputs)
+                        return {
+                            id: command.id,
+                            displayName: presentation.displayName,
+                        } satisfies CommandQueryResult
+                    }),
+            )
+        }),
+        runCommand: enforcePermissions(manifest, ["commands:run"], async ({ id }) => {
+            // TODO: Show confirmation before running the command
+            const command = registry.getByID(id)
+            if (!command) {
+                throw new Error(`Command not found: ${id}`)
+            }
+            if (!inputs.hasAllOf(...command.requiredInputKinds)) {
+                throw new Error("Unsatisfied command inputs")
+            }
+            await command.execute(inputs)
+        }),
         addInput: enforcePermissions(manifest, ["commands:input:add"], async (input) => {
             inputs.add(input)
         }),
@@ -33,6 +64,7 @@ export function exportCommandCoordinator(
             inputs.remove(kind, id)
         }),
         allMatching: enforcePermissions(manifest, ["commands:input:read"], async ({ kinds }) => {
+            // TODO: Show confirmation before returning matching inputs
             return inputs.allMatching(kinds)
         }),
     }
