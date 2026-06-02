@@ -11,6 +11,7 @@ import ContentUnavailable from "@/components/structure/ContentUnavailable"
 import { ExtensionHostContext } from "@/contexts/extensionHostContext"
 import { MusicKitContext } from "@/contexts/musicKitContext"
 import AppleMusicPlaybackEngine from "@/extension/engine"
+import AppleMusicCommandResponder from "@/extension/responder"
 import { initializeMusicKit } from "@/musickit/initialization"
 import { createDefaultClientTokenFactory } from "@/musickit/tokens/default"
 
@@ -30,6 +31,7 @@ try {
         extensionId: "magritte.applemusic",
         exports: async ({ broadcaster }) => {
             return {
+                commandResponder: new AppleMusicCommandResponder(musicKit),
                 playbackEngine: new AppleMusicPlaybackEngine(broadcaster, musicKit),
             }
         },

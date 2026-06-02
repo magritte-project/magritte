@@ -14,5 +14,12 @@
         "playback:read",
         "playback:control"
     ],
-    "sourceSchemes": ["applemusic"]
+    "sourceSchemes": ["applemusic"],
+    "commands": [
+        {
+            "id": "account.authorize",
+            "searchTerms": "authorize deauthorize",
+            "requiredInputKinds": []
+        }
+    ]
 }
