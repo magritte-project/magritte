@@ -1,6 +1,6 @@
+import type { SourceCreate } from "@magritte/api"
 import { useMutation } from "@tanstack/react-query"
 
-import type { SourceCreate } from "@/api/openapi"
 import useAPIClient from "@/hooks/apiClientHook"
 
 export function useCreateSource() {

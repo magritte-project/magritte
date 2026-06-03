@@ -1,3 +1,5 @@
+import type { APIClient } from "@magritte/api"
+import type { UserSessionManager } from "@magritte/api"
 import {
     Extension,
     getExtensionAllow,
@@ -5,8 +7,6 @@ import {
     type ExtensionManifest,
 } from "@magritte/sdk"
 
-import type { APIClient } from "@/api/client"
-import type { UserSessionManager } from "@/api/userSession"
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
 import { exportLibrary } from "@/extensions/exports/exportLibrary"
@@ -123,7 +123,7 @@ export class ExtensionRuntime {
         this._extensions = new Map()
         ;[this._events, this.$events] = createEvent()
 
-        this._userSession.$current.subscribe(() => this.sync())
+        this._userSession.addEventListener("usersessionchanged", () => this.sync())
     }
 
     readonly $events: EventStream<ExtensionRuntimeEvent>

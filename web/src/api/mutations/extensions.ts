@@ -1,7 +1,7 @@
+import type { ExtensionImportAdmin } from "@magritte/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { availableExtensions, installedExtensions } from "@/api/keys/extensions"
-import type { ExtensionImportAdmin } from "@/api/openapi"
 import useAPIClient from "@/hooks/apiClientHook"
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 

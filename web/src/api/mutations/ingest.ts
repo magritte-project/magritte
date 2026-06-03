@@ -1,7 +1,7 @@
+import type { BulkIngestSongs } from "@magritte/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
-import type { BulkIngestSongs } from "@/api/openapi"
 import useAPIClient from "@/hooks/apiClientHook"
 
 export function useIngestSongs(libraryId: number) {

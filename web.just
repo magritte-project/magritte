@@ -22,4 +22,4 @@ build:
     pnpm build
 
 generate-openapi:
-    ../admin dump-openapi | pnpm openapi-typescript --immutable --properties-required-by-default --root-types --root-types-no-schema-prefix --output src/api/openapi.d.ts
+    ../admin dump-openapi > ../packages/api/openapi.json

@@ -1,9 +1,8 @@
+import type { Token } from "@magritte/api"
+import type { UserSession } from "@magritte/api"
 import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useRouteContext, useRouter } from "@tanstack/react-router"
 import { useCallback, useMemo, useSyncExternalStore } from "react"
-
-import type { Token } from "@/api/openapi"
-import type { UserSession } from "@/api/userSession"
 
 export interface UseUserSessionResult {
     readonly current: UserSession | null
@@ -22,9 +21,9 @@ export default function useUserSession(): UseUserSessionResult {
     })
     const current = useSyncExternalStore(
         (onStoreChange) => {
-            const subscription = userSession.$current.subscribe((current) => {
+            const listener = () => {
                 if (
-                    current === null &&
+                    !userSession.isSignedIn &&
                     !router.state.matches.some((match) => match.staticData.noAuth === true)
                 ) {
                     // NOTE: We must redirect before invalidating the queries
@@ -36,8 +35,9 @@ export default function useUserSession(): UseUserSessionResult {
                     onStoreChange()
                     queryClient.clear()
                 }
-            })
-            return () => subscription.unsubscribe()
+            }
+            userSession.addEventListener("usersessionchanged", listener)
+            return () => userSession.removeEventListener("usersessionchanged", listener)
         },
         () => {
             return userSession.current
@@ -45,8 +45,8 @@ export default function useUserSession(): UseUserSessionResult {
     )
     const isSignedIn = useSyncExternalStore(
         (onStoreChange) => {
-            const subscription = userSession.$isSignedIn.subscribe(() => onStoreChange())
-            return () => subscription.unsubscribe()
+            userSession.addEventListener("usersessionchanged", onStoreChange)
+            return () => userSession.removeEventListener("usersessionchanged", onStoreChange)
         },
         () => {
             return userSession.isSignedIn

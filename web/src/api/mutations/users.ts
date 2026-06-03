@@ -1,7 +1,7 @@
+import type { NotificationUpdate, UserProfileUpdate } from "@magritte/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { userMeNotification, userMeNotifications, userMeProfile } from "@/api/keys/users"
-import type { NotificationUpdate, UserProfileUpdate } from "@/api/openapi"
 import useAPIClient from "@/hooks/apiClientHook"
 
 export function useUpdateUserProfile() {

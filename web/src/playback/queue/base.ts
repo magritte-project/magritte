@@ -1,6 +1,6 @@
+import type { APIClient } from "@magritte/api"
 import type { QueryClient } from "@tanstack/react-query"
 
-import type { APIClient } from "@/api/client"
 import type { EventStream } from "@/utilities/events"
 
 export type QueueEvent = { type: "queueDidChange" }

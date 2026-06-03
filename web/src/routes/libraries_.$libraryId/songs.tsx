@@ -1,10 +1,10 @@
+import type { SongRead } from "@magritte/api"
 import type { LibrarySongInput } from "@magritte/sdk"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { useCallback, useMemo } from "react"
 import { z } from "zod"
 
-import type { SongRead } from "@/api/openapi"
 import { readLibrarySongs } from "@/api/queries/libraries"
 import AppForm from "@/components/reusable/AppForm"
 import TableFooter from "@/components/reusable/TableFooter"
@@ -200,7 +200,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                         </td>
                                         <td className="px-2 py-1">{song.title}</td>
                                         <td className="px-2 py-1">
-                                            {formatDuration(song.end_time - song.start_time)}
+                                            {formatDuration(song.end_time - (song.start_time ?? 0))}
                                         </td>
                                         <td className="px-2 py-1">{song.album_title}</td>
                                         <td className="px-2 py-1">{song.artist_name}</td>

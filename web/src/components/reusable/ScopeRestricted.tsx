@@ -1,6 +1,6 @@
+import type { OAuth2Scope } from "@magritte/api"
 import type { ReactNode } from "react"
 
-import type { OAuth2Scope } from "@/api/openapi"
 import useUserSession from "@/hooks/userSessionHook"
 
 export interface ScopeRestrictedProps {

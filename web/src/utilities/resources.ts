@@ -1,4 +1,4 @@
-import type { UserSession } from "@/api/userSession"
+import type { UserSession } from "@magritte/api"
 
 export function resolveUrl(
     url: string | undefined,

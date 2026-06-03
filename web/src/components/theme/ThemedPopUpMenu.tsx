@@ -1,7 +1,7 @@
 import { Menu, MenuItem, MenuItems } from "@headlessui/react"
+import type { OAuth2Scope } from "@magritte/api"
 import type { ReactNode } from "react"
 
-import type { OAuth2Scope } from "@/api/openapi"
 import AsyncButton from "@/components/reusable/AsyncButton"
 
 import ScopeRestricted from "../reusable/ScopeRestricted"

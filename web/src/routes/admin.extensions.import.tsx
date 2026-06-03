@@ -1,8 +1,8 @@
+import type { ExtensionImportAdmin } from "@magritte/api"
 import { createFileRoute } from "@tanstack/react-router"
 import z from "zod"
 
 import { useImportExtension } from "@/api/mutations/extensions"
-import type { ExtensionImportAdmin } from "@/api/openapi"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import AppForm from "@/components/reusable/AppForm"
 import Modal from "@/components/reusable/Modal"

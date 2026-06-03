@@ -1,3 +1,10 @@
+import type {
+    LibraryCreate,
+    LibraryPermissionCreate,
+    LibraryPermissionUpdate,
+    LibraryUpdate,
+    SongUpdate,
+} from "@magritte/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import {
@@ -9,13 +16,6 @@ import {
     librarySong,
     librarySongs,
 } from "@/api/keys/libraries"
-import type {
-    LibraryCreate,
-    LibraryPermissionCreate,
-    LibraryPermissionUpdate,
-    LibraryUpdate,
-    SongUpdate,
-} from "@/api/openapi"
 import useAPIClient from "@/hooks/apiClientHook"
 
 export function useCreateLibrary() {

@@ -1,6 +1,5 @@
+import type { APIClient } from "@magritte/api"
 import { useRouteContext } from "@tanstack/react-router"
-
-import type { APIClient } from "@/api/client"
 
 export default function useAPIClient(): APIClient {
     const apiClient = useRouteContext({

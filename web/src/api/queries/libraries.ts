@@ -1,6 +1,6 @@
+import type { APIClient, ReadLibrarySongsSortBy } from "@magritte/api"
 import { infiniteQueryOptions, keepPreviousData, queryOptions } from "@tanstack/react-query"
 
-import type { APIClient, ReadLibrarySongsSortBy } from "@/api/client"
 import {
     libraries,
     library,

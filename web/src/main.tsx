@@ -1,10 +1,10 @@
+import { APIClient } from "@magritte/api"
+import { StorageUserSessionManager } from "@magritte/api"
 import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
-import { APIClient } from "@/api/client"
 import { UserEvents } from "@/api/userEvents"
-import { StorageUserSessionManager } from "@/api/userSession"
 import { CommandInputs } from "@/commands/inputs/base"
 import { CommandRegistry } from "@/commands/registry"
 import { libraryCommands } from "@/commands/suites/library"
@@ -30,7 +30,10 @@ import "@/styles.css"
 const userSession = StorageUserSessionManager.local
 
 // Set up API client
-const apiClient = new APIClient(userSession)
+const apiClient = new APIClient({
+    baseUrl: import.meta.env.VITE_API_URL,
+    userSessionManager: userSession,
+})
 
 // Set up commands
 const commandInputs = new CommandInputs()

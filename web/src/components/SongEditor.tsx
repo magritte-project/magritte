@@ -1,10 +1,10 @@
+import type { SongRead, SongUpdate } from "@magritte/api"
 import { LibraryInput, LibrarySongInput } from "@magritte/sdk"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import z from "zod"
 
 import { useUpdateLibrarySong } from "@/api/mutations/libraries"
-import type { SongRead, SongUpdate } from "@/api/openapi"
 import { readLibrarySong } from "@/api/queries/libraries"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"

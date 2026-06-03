@@ -18,17 +18,25 @@ export default defineConfig({
             name: "zod",
             compatibilityVersion: 4,
             definitions: {
-                name: (name: string) => name,
+                name: (name: string) => `${name}Schema`,
                 case: "PascalCase",
-                types: {
-                    infer: {
-                        enabled: true,
-                        name: (name: string) => name,
-                    },
-                },
             },
             requests: false,
             responses: false,
         },
     ],
+    parser: {
+        patch: async (openApiDoc) => {
+            // Recursively strip 'default' fields from schemas and parameters
+            const removeDefaults = (obj: any) => {
+                if (obj && typeof obj === "object") {
+                    delete obj.default
+                    for (const key in obj) {
+                        removeDefaults(obj[key])
+                    }
+                }
+            }
+            removeDefaults(openApiDoc)
+        },
+    },
 })

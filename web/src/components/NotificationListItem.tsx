@@ -1,9 +1,9 @@
+import type { NotificationRead } from "@magritte/api"
 import { CircleIcon, CheckIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 import { useCallback } from "react"
 
 import { useUpdateNotification } from "@/api/mutations/users"
-import type { NotificationRead } from "@/api/openapi"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 
 export interface NotificationListItemProps extends Omit<

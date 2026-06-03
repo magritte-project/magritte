@@ -1,3 +1,4 @@
+import type { LibraryPermissionRead, LibraryPermissionUpdate } from "@magritte/api"
 import { PlusIcon, TrashIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -9,7 +10,6 @@ import {
     useDeleteLibraryPermission,
     useUpdateLibraryPermission,
 } from "@/api/mutations/libraries"
-import type { LibraryPermissionRead, LibraryPermissionUpdate } from "@/api/openapi"
 import { readLibraryPermissions } from "@/api/queries/libraries"
 import { readAllUsers } from "@/api/queries/users"
 import AsyncButton from "@/components/reusable/AsyncButton"

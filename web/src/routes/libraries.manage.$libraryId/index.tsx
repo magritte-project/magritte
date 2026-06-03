@@ -1,8 +1,8 @@
+import type { LibraryUpdate } from "@magritte/api"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 
 import { useUpdateLibrary } from "@/api/mutations/libraries"
-import type { LibraryUpdate } from "@/api/openapi"
 import { readLibrary } from "@/api/queries/libraries"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"

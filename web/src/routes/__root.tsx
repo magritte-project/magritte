@@ -1,11 +1,11 @@
+import type { APIClient } from "@magritte/api"
+import type { UserSessionManager } from "@magritte/api"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 
-import type { APIClient } from "@/api/client"
 import type { UserEvents } from "@/api/userEvents"
-import type { UserSessionManager } from "@/api/userSession"
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
 import AppCommandPalette from "@/components/structure/AppCommandPalette"

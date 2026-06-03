@@ -1,6 +1,6 @@
+import type { APIClient } from "@magritte/api"
 import { queryOptions } from "@tanstack/react-query"
 
-import type { APIClient } from "@/api/client"
 import { userMeNotification, userMeNotifications, userMeProfile, usersAll } from "@/api/keys/users"
 
 export function userProfile(apiClient: APIClient, enabled = true) {

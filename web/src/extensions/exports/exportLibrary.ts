@@ -1,7 +1,7 @@
+import type { APIClient } from "@magritte/api"
+import type { UserSessionManager } from "@magritte/api"
 import type { ExtensionManifest, Library } from "@magritte/sdk"
 
-import type { APIClient } from "@/api/client"
-import type { UserSessionManager } from "@/api/userSession"
 import { enforcePermissions } from "@/extensions/exports/permissions"
 import { resolveUrl } from "@/utilities/resources"
 

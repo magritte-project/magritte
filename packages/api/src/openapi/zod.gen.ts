@@ -5,59 +5,49 @@ import * as z from "zod"
 /**
  * AlbumUpdate
  */
-export const AlbumUpdate = z.object({
+export const AlbumUpdateSchema = z.object({
     title: z.string().nullish(),
     artist_id: z.int().nullish(),
 })
 
-export type AlbumUpdate = z.infer<typeof AlbumUpdate>
-
 /**
  * ArtistRead
  */
-export const ArtistRead = z.object({
+export const ArtistReadSchema = z.object({
     id: z.int(),
     name: z.string(),
 })
 
-export type ArtistRead = z.infer<typeof ArtistRead>
-
 /**
  * ArtistUpdate
  */
-export const ArtistUpdate = z.object({
+export const ArtistUpdateSchema = z.object({
     name: z.string().nullish(),
 })
-
-export type ArtistUpdate = z.infer<typeof ArtistUpdate>
 
 /**
  * ArtworkKind
  */
-export const ArtworkKind = z.enum(["front_cover"])
-
-export type ArtworkKind = z.infer<typeof ArtworkKind>
+export const ArtworkKindSchema = z.enum(["front_cover"])
 
 /**
  * ArtworkCreate
  */
-export const ArtworkCreate = z.object({
-    kind: ArtworkKind,
+export const ArtworkCreateSchema = z.object({
+    kind: ArtworkKindSchema,
     image_url: z.string(),
     background_color: z.string().nullable(),
     primary_color: z.string().nullable(),
     secondary_color: z.string().nullable(),
     tertiary_color: z.string().nullable(),
 })
-
-export type ArtworkCreate = z.infer<typeof ArtworkCreate>
 
 /**
  * ArtworkRead
  */
-export const ArtworkRead = z.object({
+export const ArtworkReadSchema = z.object({
     id: z.int(),
-    kind: ArtworkKind,
+    kind: ArtworkKindSchema,
     image_url: z.string(),
     background_color: z.string().nullable(),
     primary_color: z.string().nullable(),
@@ -65,25 +55,21 @@ export const ArtworkRead = z.object({
     tertiary_color: z.string().nullable(),
 })
 
-export type ArtworkRead = z.infer<typeof ArtworkRead>
-
 /**
  * AlbumRead
  */
-export const AlbumRead = z.object({
+export const AlbumReadSchema = z.object({
     id: z.int(),
     title: z.string(),
     artist_id: z.int().nullable(),
-    artworks: z.array(ArtworkRead).optional(),
+    artworks: z.array(ArtworkReadSchema).optional(),
 })
-
-export type AlbumRead = z.infer<typeof AlbumRead>
 
 /**
  * ArtworkUpdate
  */
-export const ArtworkUpdate = z.object({
-    kind: ArtworkKind.nullish(),
+export const ArtworkUpdateSchema = z.object({
+    kind: ArtworkKindSchema.nullish(),
     image_url: z.string().nullish(),
     background_color: z.string().nullish(),
     primary_color: z.string().nullish(),
@@ -91,49 +77,41 @@ export const ArtworkUpdate = z.object({
     tertiary_color: z.string().nullish(),
 })
 
-export type ArtworkUpdate = z.infer<typeof ArtworkUpdate>
-
 /**
  * Body_sign_in_sign_in_post
  */
-export const BodySignInSignInPost = z.object({
+export const BodySignInSignInPostSchema = z.object({
     grant_type: z
         .string()
         .regex(/^password$/)
         .nullish(),
     username: z.string(),
     password: z.string(),
-    scope: z.string().optional().default(""),
+    scope: z.string().optional(),
     client_id: z.string().nullish(),
     client_secret: z.string().nullish(),
 })
 
-export type BodySignInSignInPost = z.infer<typeof BodySignInSignInPost>
-
 /**
  * ExtensionCommand
  */
-export const ExtensionCommand = z.object({
+export const ExtensionCommandSchema = z.object({
     id: z.string(),
     searchTerms: z.string(),
     requiredInputKinds: z.array(z.string()),
 })
 
-export type ExtensionCommand = z.infer<typeof ExtensionCommand>
-
 /**
  * ExtensionImportAdmin
  */
-export const ExtensionImportAdmin = z.object({
+export const ExtensionImportAdminSchema = z.object({
     manifest_url: z.url().min(1).max(2083),
 })
-
-export type ExtensionImportAdmin = z.infer<typeof ExtensionImportAdmin>
 
 /**
  * ExtensionPermissions
  */
-export const ExtensionPermissions = z.enum([
+export const ExtensionPermissionsSchema = z.enum([
     "run:background",
     "run:eager",
     "commands:input:read",
@@ -146,12 +124,10 @@ export const ExtensionPermissions = z.enum([
     "playback:control",
 ])
 
-export type ExtensionPermissions = z.infer<typeof ExtensionPermissions>
-
 /**
  * ExtensionManifest
  */
-export const ExtensionManifest = z.object({
+export const ExtensionManifestSchema = z.object({
     name: z.string(),
     id: z.string(),
     version: z.string(),
@@ -159,28 +135,24 @@ export const ExtensionManifest = z.object({
     url: z.string(),
     preferredWidth: z.string().nullish(),
     preferredHeight: z.string().nullish(),
-    permissions: z.array(ExtensionPermissions).nullish().default([]),
-    sourceSchemes: z.array(z.string()).nullish().default([]),
-    commands: z.array(ExtensionCommand).nullish(),
+    permissions: z.array(ExtensionPermissionsSchema).nullish(),
+    sourceSchemes: z.array(z.string()).nullish(),
+    commands: z.array(ExtensionCommandSchema).nullish(),
 })
-
-export type ExtensionManifest = z.infer<typeof ExtensionManifest>
 
 /**
  * ExtensionRead
  */
-export const ExtensionRead = z.object({
+export const ExtensionReadSchema = z.object({
     id: z.int(),
-    manifest: ExtensionManifest,
+    manifest: ExtensionManifestSchema,
 })
-
-export type ExtensionRead = z.infer<typeof ExtensionRead>
 
 /**
  * IngestArtwork
  */
-export const IngestArtwork = z.object({
-    kind: ArtworkKind,
+export const IngestArtworkSchema = z.object({
+    kind: ArtworkKindSchema,
     image_url: z.string(),
     background_color: z.string().nullable(),
     primary_color: z.string().nullable(),
@@ -188,26 +160,22 @@ export const IngestArtwork = z.object({
     tertiary_color: z.string().nullable(),
 })
 
-export type IngestArtwork = z.infer<typeof IngestArtwork>
-
 /**
  * IngestSource
  */
-export const IngestSource = z.object({
+export const IngestSourceSchema = z.object({
     url: z.string(),
     mime_type: z.string().nullable(),
 })
 
-export type IngestSource = z.infer<typeof IngestSource>
-
 /**
  * IngestSong
  */
-export const IngestSong = z.object({
+export const IngestSongSchema = z.object({
     artist_name: z.string().nullable(),
     album_title: z.string().nullable(),
-    artworks: z.array(IngestArtwork),
-    sources: z.array(IngestSource),
+    artworks: z.array(IngestArtworkSchema),
+    sources: z.array(IngestSourceSchema),
     start_time: z.number(),
     end_time: z.number(),
     title: z.string().nullable(),
@@ -230,99 +198,81 @@ export const IngestSong = z.object({
     music_brainz_recording_id: z.string().nullable(),
 })
 
-export type IngestSong = z.infer<typeof IngestSong>
-
 /**
  * BulkIngestSongs
  */
-export const BulkIngestSongs = z.object({
-    songs: z.array(IngestSong).max(50),
+export const BulkIngestSongsSchema = z.object({
+    songs: z.array(IngestSongSchema).max(50),
 })
-
-export type BulkIngestSongs = z.infer<typeof BulkIngestSongs>
 
 /**
  * InstanceStatusRead
  */
-export const InstanceStatusRead = z.object({
+export const InstanceStatusReadSchema = z.object({
     env: z.enum(["dev", "ci", "prod"]),
     first_setup_complete: z.boolean(),
 })
 
-export type InstanceStatusRead = z.infer<typeof InstanceStatusRead>
-
 /**
  * LibraryCreate
  */
-export const LibraryCreate = z.object({
+export const LibraryCreateSchema = z.object({
     name: z.string(),
     home_path: z.string().nullable(),
 })
 
-export type LibraryCreate = z.infer<typeof LibraryCreate>
-
 /**
  * LibraryHomePathRead
  */
-export const LibraryHomePathRead = z.object({
+export const LibraryHomePathReadSchema = z.object({
     relative_to: z.string(),
     subpaths: z.array(z.string()),
 })
 
-export type LibraryHomePathRead = z.infer<typeof LibraryHomePathRead>
-
 /**
  * LibraryMediaRead[AlbumRead]
  */
-export const LibraryMediaReadAlbumRead = z.object({
-    items: z.array(AlbumRead),
+export const LibraryMediaReadAlbumReadSchema = z.object({
+    items: z.array(AlbumReadSchema),
     offset: z.int(),
     limit: z.int(),
     total: z.int(),
 })
-
-export type LibraryMediaReadAlbumRead = z.infer<typeof LibraryMediaReadAlbumRead>
 
 /**
  * LibraryMediaRead[ArtistRead]
  */
-export const LibraryMediaReadArtistRead = z.object({
-    items: z.array(ArtistRead),
+export const LibraryMediaReadArtistReadSchema = z.object({
+    items: z.array(ArtistReadSchema),
     offset: z.int(),
     limit: z.int(),
     total: z.int(),
 })
-
-export type LibraryMediaReadArtistRead = z.infer<typeof LibraryMediaReadArtistRead>
 
 /**
  * LibraryMediaRead[ExtensionRead]
  */
-export const LibraryMediaReadExtensionRead = z.object({
-    items: z.array(ExtensionRead),
+export const LibraryMediaReadExtensionReadSchema = z.object({
+    items: z.array(ExtensionReadSchema),
     offset: z.int(),
     limit: z.int(),
     total: z.int(),
 })
 
-export type LibraryMediaReadExtensionRead = z.infer<typeof LibraryMediaReadExtensionRead>
-
 /**
  * LibraryPermissionCreate
  */
-export const LibraryPermissionCreate = z.object({
+export const LibraryPermissionCreateSchema = z.object({
     user_id: z.int(),
     can_add: z.boolean(),
     can_edit: z.boolean(),
     can_remove: z.boolean(),
 })
 
-export type LibraryPermissionCreate = z.infer<typeof LibraryPermissionCreate>
-
 /**
  * LibraryPermissionRead
  */
-export const LibraryPermissionRead = z.object({
+export const LibraryPermissionReadSchema = z.object({
     user_id: z.int(),
     username: z.string(),
     can_add: z.boolean(),
@@ -330,43 +280,35 @@ export const LibraryPermissionRead = z.object({
     can_remove: z.boolean(),
 })
 
-export type LibraryPermissionRead = z.infer<typeof LibraryPermissionRead>
-
 /**
  * LibraryPermissionUpdate
  */
-export const LibraryPermissionUpdate = z.object({
+export const LibraryPermissionUpdateSchema = z.object({
     can_add: z.boolean().nullish(),
     can_edit: z.boolean().nullish(),
     can_remove: z.boolean().nullish(),
 })
 
-export type LibraryPermissionUpdate = z.infer<typeof LibraryPermissionUpdate>
-
 /**
  * LibraryRead
  */
-export const LibraryRead = z.object({
+export const LibraryReadSchema = z.object({
     id: z.int(),
     name: z.string(),
     home_path: z.string().nullable(),
 })
 
-export type LibraryRead = z.infer<typeof LibraryRead>
-
 /**
  * LibraryUpdate
  */
-export const LibraryUpdate = z.object({
+export const LibraryUpdateSchema = z.object({
     name: z.string().nullish(),
 })
-
-export type LibraryUpdate = z.infer<typeof LibraryUpdate>
 
 /**
  * NotificationRead
  */
-export const NotificationRead = z.object({
+export const NotificationReadSchema = z.object({
     id: z.int(),
     title: z.string(),
     description: z.string().nullable(),
@@ -374,50 +316,40 @@ export const NotificationRead = z.object({
     is_read: z.boolean(),
 })
 
-export type NotificationRead = z.infer<typeof NotificationRead>
-
 /**
  * NotificationUpdate
  */
-export const NotificationUpdate = z.object({
+export const NotificationUpdateSchema = z.object({
     is_read: z.boolean().nullish(),
 })
-
-export type NotificationUpdate = z.infer<typeof NotificationUpdate>
 
 /**
  * NotificationsRead
  */
-export const NotificationsRead = z.object({
-    items: z.array(NotificationRead),
+export const NotificationsReadSchema = z.object({
+    items: z.array(NotificationReadSchema),
     offset: z.int(),
     limit: z.int(),
     total: z.int(),
 })
 
-export type NotificationsRead = z.infer<typeof NotificationsRead>
-
 /**
  * OAuth2Scope
  */
-export const OAuth2Scope = z.enum(["profile", "library:read", "library:write", "admin"])
-
-export type OAuth2Scope = z.infer<typeof OAuth2Scope>
+export const OAuth2ScopeSchema = z.enum(["profile", "library:read", "library:write", "admin"])
 
 /**
  * OperationResult
  */
-export const OperationResult = z.object({
+export const OperationResultSchema = z.object({
     message: z.string(),
     row_count: z.int().nullish(),
 })
 
-export type OperationResult = z.infer<typeof OperationResult>
-
 /**
  * SongUpdate
  */
-export const SongUpdate = z.object({
+export const SongUpdateSchema = z.object({
     artist_id: z.int().nullish(),
     album_id: z.int().nullish(),
     artwork_ids: z.array(z.int()).nullish(),
@@ -444,42 +376,36 @@ export const SongUpdate = z.object({
     music_brainz_recording_id: z.string().nullish(),
 })
 
-export type SongUpdate = z.infer<typeof SongUpdate>
-
 /**
  * SourceCreate
  */
-export const SourceCreate = z.object({
+export const SourceCreateSchema = z.object({
     url: z.string(),
     mime_type: z.string().nullable(),
 })
 
-export type SourceCreate = z.infer<typeof SourceCreate>
-
 /**
  * SourceRead
  */
-export const SourceRead = z.object({
+export const SourceReadSchema = z.object({
     id: z.int(),
     url: z.string(),
     mime_type: z.string().nullable(),
     is_invalid: z.boolean(),
 })
 
-export type SourceRead = z.infer<typeof SourceRead>
-
 /**
  * SongRead
  */
-export const SongRead = z.object({
+export const SongReadSchema = z.object({
     id: z.int(),
     artist_id: z.int().nullish(),
     artist_name: z.string().nullish(),
     album_id: z.int().nullish(),
     album_title: z.string().nullish(),
-    artworks: z.array(ArtworkRead).optional(),
-    sources: z.array(SourceRead).optional(),
-    start_time: z.number().optional().default(0),
+    artworks: z.array(ArtworkReadSchema).optional(),
+    sources: z.array(SourceReadSchema).optional(),
+    start_time: z.number().optional(),
     end_time: z.number(),
     title: z.string().nullish(),
     album_artist: z.string().nullish(),
@@ -501,109 +427,87 @@ export const SongRead = z.object({
     music_brainz_recording_id: z.string().nullish(),
 })
 
-export type SongRead = z.infer<typeof SongRead>
-
 /**
  * LibraryMediaRead[SongRead]
  */
-export const LibraryMediaReadSongRead = z.object({
-    items: z.array(SongRead),
+export const LibraryMediaReadSongReadSchema = z.object({
+    items: z.array(SongReadSchema),
     offset: z.int(),
     limit: z.int(),
     total: z.int(),
 })
 
-export type LibraryMediaReadSongRead = z.infer<typeof LibraryMediaReadSongRead>
-
 /**
  * SourceUpdate
  */
-export const SourceUpdate = z.object({
+export const SourceUpdateSchema = z.object({
     url: z.string().nullish(),
     mime_type: z.string().nullish(),
     is_invalid: z.boolean().nullish(),
 })
 
-export type SourceUpdate = z.infer<typeof SourceUpdate>
-
 /**
  * Token
  */
-export const Token = z.object({
-    scopes: z.array(OAuth2Scope),
+export const TokenSchema = z.object({
+    scopes: z.array(OAuth2ScopeSchema),
     access_token: z.string(),
     token_type: z.literal("bearer"),
 })
 
-export type Token = z.infer<typeof Token>
-
 /**
  * UserEventPreflight
  */
-export const UserEventPreflight = z.object({
+export const UserEventPreflightSchema = z.object({
     token: z.string(),
 })
-
-export type UserEventPreflight = z.infer<typeof UserEventPreflight>
 
 /**
  * UserProfileRead
  */
-export const UserProfileRead = z.object({
+export const UserProfileReadSchema = z.object({
     id: z.int(),
     username: z.string(),
     preferred_name: z.string().nullable(),
 })
 
-export type UserProfileRead = z.infer<typeof UserProfileRead>
-
 /**
  * UserProfileUpdate
  */
-export const UserProfileUpdate = z.object({
+export const UserProfileUpdateSchema = z.object({
     preferred_name: z.string().nullable(),
 })
-
-export type UserProfileUpdate = z.infer<typeof UserProfileUpdate>
 
 /**
  * UserProfilesRead
  */
-export const UserProfilesRead = z.object({
-    users: z.array(UserProfileRead),
+export const UserProfilesReadSchema = z.object({
+    users: z.array(UserProfileReadSchema),
     offset: z.int(),
     limit: z.int(),
     total: z.int(),
 })
 
-export type UserProfilesRead = z.infer<typeof UserProfilesRead>
-
 /**
  * UserSignUp
  */
-export const UserSignUp = z.object({
+export const UserSignUpSchema = z.object({
     username: z.string(),
     password: z.string(),
 })
 
-export type UserSignUp = z.infer<typeof UserSignUp>
-
 /**
  * ValidationError
  */
-export const ValidationError = z.object({
+export const ValidationErrorSchema = z.object({
     loc: z.array(z.union([z.string(), z.int()])),
     msg: z.string(),
     type: z.string(),
 })
 
-export type ValidationError = z.infer<typeof ValidationError>
-
 /**
  * HTTPValidationError
  */
-export const HttpValidationError = z.object({
-    detail: z.array(ValidationError).optional(),
+export const HttpValidationErrorSchema = z.object({
+    detail: z.array(ValidationErrorSchema).optional(),
 })
-
-export type HttpValidationError = z.infer<typeof HttpValidationError>

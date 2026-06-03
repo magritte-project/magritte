@@ -1,9 +1,9 @@
+import type { SongRead } from "@magritte/api"
 import { type PlayableItem } from "@magritte/sdk"
 import { CassetteTapeIcon, TrashIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
-import type { SongRead } from "@/api/openapi"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"

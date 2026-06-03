@@ -1,6 +1,6 @@
+import type { UserSessionManager } from "@magritte/api"
 import { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk"
 
-import type { UserSessionManager } from "@/api/userSession"
 import type {
     PlaybackEngine,
     PlaybackEngineEnqueueOptions,

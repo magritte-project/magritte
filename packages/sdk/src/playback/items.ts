@@ -28,7 +28,7 @@ export const PlayableItem = z4
         album_title: z4.string().nullish(),
         artworks: z4.array(PlayableItemArtwork).readonly().optional(),
         sources: z4.array(PlayableItemSource).readonly().optional(),
-        start_time: z4.number(),
+        start_time: z4.number().optional(),
         end_time: z4.number(),
         title: z4.string().nullish(),
         genre: z4.string().nullish(),

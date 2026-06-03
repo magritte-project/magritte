@@ -1,8 +1,8 @@
+import type { LibraryCreate } from "@magritte/api"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import z from "zod"
 
 import { useCreateLibrary } from "@/api/mutations/libraries"
-import type { LibraryCreate } from "@/api/openapi"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"

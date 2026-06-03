@@ -1,6 +1,6 @@
+import type { APIClient } from "@magritte/api"
 import { queryOptions } from "@tanstack/react-query"
 
-import type { APIClient } from "@/api/client"
 import { availableExtensions, installedExtensions } from "@/api/keys/extensions"
 
 export function readAvailableExtensions(apiClient: APIClient, offset?: number, limit?: number) {

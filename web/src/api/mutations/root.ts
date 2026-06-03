@@ -1,6 +1,6 @@
+import type { BodySignInSignInPost, UserSignUp } from "@magritte/api"
 import { useMutation } from "@tanstack/react-query"
 
-import type { BodySignInSignInPost, UserSignUp } from "@/api/openapi"
 import useAPIClient from "@/hooks/apiClientHook"
 
 export function useSignUp() {
