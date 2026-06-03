@@ -1,3 +1,14 @@
+import { useLocalStorage } from "@uidotdev/usehooks"
+
+import SignedInLayout from "@/components/SignedInLayout"
+import SignedOutLayout from "@/components/SignedOutLayout"
+
 export default function Extension() {
-    return <div className="flex flex-col gap-2 p-4"></div>
+    const [apiKey, setApiKey] = useLocalStorage<string | null>("claude.apiKey", null)
+
+    return apiKey ? (
+        <SignedInLayout apiKey={apiKey} />
+    ) : (
+        <SignedOutLayout apiKey={apiKey} setApiKey={setApiKey} />
+    )
 }

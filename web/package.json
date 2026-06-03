@@ -31,7 +31,7 @@
         "@tanstack/react-router": "catalog:",
         "@tanstack/react-router-devtools": "1.166.13",
         "@tanstack/router-plugin": "catalog:",
-        "@uidotdev/usehooks": "2.4.1",
+        "@uidotdev/usehooks": "catalog:",
         "classnames": "catalog:",
         "fuse.js": "7.3.0",
         "motion": "catalog:",

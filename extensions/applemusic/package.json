@@ -22,7 +22,7 @@
         "@tailwindcss/vite": "catalog:",
         "@tanstack/react-form": "catalog:",
         "@tanstack/react-query": "catalog:",
-        "@uidotdev/usehooks": "2.4.1",
+        "@uidotdev/usehooks": "catalog:",
         "classnames": "catalog:",
         "jose": "6.2.3",
         "react": "catalog:",

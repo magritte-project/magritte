@@ -15,11 +15,14 @@
         "check": "oxlint && oxfmt --check"
     },
     "dependencies": {
+        "@anthropic-ai/sdk": "0.100.1",
         "@headlessui/react": "catalog:",
         "@magritte/rpc": "workspace:*",
         "@magritte/sdk": "workspace:*",
         "@phosphor-icons/react": "catalog:",
         "@tailwindcss/vite": "catalog:",
+        "@tanstack/react-query": "catalog:",
+        "@uidotdev/usehooks": "catalog:",
         "classnames": "catalog:",
         "react": "catalog:",
         "react-dom": "catalog:",

@@ -1,8 +1,9 @@
 import { ExtensionHost } from "@magritte/sdk"
-import { StrictMode } from "react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import "@/index.css"
 
+import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
 import ContentUnavailable from "@/components/ContentUnavailable"
@@ -15,15 +16,20 @@ try {
         extensionId: "magritte.claude",
     })
 
+    // Set up query client
+    const queryClient = new QueryClient()
+
     // Render the app
     const rootElement = document.getElementById("app")
     if (rootElement && !rootElement.innerHTML) {
         const root = ReactDOM.createRoot(rootElement)
         root.render(
             <StrictMode>
-                <ExtensionHostContext.Provider value={extensionHost}>
-                    <Extension />
-                </ExtensionHostContext.Provider>
+                <QueryClientProvider client={queryClient}>
+                    <ExtensionHostContext.Provider value={extensionHost}>
+                        <Extension />
+                    </ExtensionHostContext.Provider>
+                </QueryClientProvider>
             </StrictMode>,
         )
     }
