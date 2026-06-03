@@ -8,6 +8,13 @@ export default defineConfig({
     },
     plugins: [
         {
+            name: "@hey-api/client-fetch",
+        },
+        {
+            name: "@hey-api/sdk",
+            responseStyle: "data",
+        },
+        {
             name: "zod",
             compatibilityVersion: 4,
             definitions: {
