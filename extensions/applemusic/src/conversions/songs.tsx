@@ -1,8 +1,9 @@
-import type { LibraryIngestableSong, PlayableItem } from "@magritte/sdk"
+import type { IngestSong } from "@magritte/api"
+import type { PlayableItem } from "@magritte/sdk"
 
 import type { SongResource } from "@/musickit/models/song"
 
-export function songResourceToLibraryIngestableSong(song: SongResource): LibraryIngestableSong {
+export function songResourceToIngestSong(song: SongResource): IngestSong {
     return {
         start_time: 0,
         end_time: (song.attributes?.durationInMillis ?? 0) / 1000,
@@ -52,6 +53,6 @@ export function songResourceToLibraryIngestableSong(song: SongResource): Library
 export function songResourceToPlayableItem(song: SongResource): PlayableItem {
     return {
         id: song.id,
-        ...songResourceToLibraryIngestableSong(song),
+        ...songResourceToIngestSong(song),
     }
 }

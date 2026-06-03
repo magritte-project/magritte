@@ -20,6 +20,7 @@
         "generate-openapi": "openapi-ts"
     },
     "dependencies": {
+        "@magritte/api": "workspace:*",
         "@magritte/rpc": "workspace:*",
         "zod": "catalog:"
     },

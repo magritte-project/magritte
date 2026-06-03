@@ -15,6 +15,7 @@
     },
     "dependencies": {
         "@headlessui/react": "catalog:",
+        "@magritte/api": "workspace:*",
         "@magritte/rpc": "workspace:*",
         "@magritte/sdk": "workspace:*",
         "@phosphor-icons/react": "catalog:",

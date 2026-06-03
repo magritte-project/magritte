@@ -9,10 +9,7 @@ import { readLibraries } from "@/api/queries/library"
 import { searchSongs } from "@/api/queries/search"
 import SearchResultLabel from "@/components/SearchResultLabel"
 import ContentUnavailable from "@/components/structure/ContentUnavailable"
-import {
-    songResourceToLibraryIngestableSong,
-    songResourceToPlayableItem,
-} from "@/conversions/songs"
+import { songResourceToIngestSong, songResourceToPlayableItem } from "@/conversions/songs"
 import useExtensionHost from "@/hooks/extensionHostHook"
 import useMusicKit from "@/hooks/musicKitHook"
 
@@ -89,11 +86,7 @@ export default function Search() {
                                                 onClick={() => {
                                                     ingestMutation.mutate({
                                                         libraryId: library.id,
-                                                        songs: [
-                                                            songResourceToLibraryIngestableSong(
-                                                                song,
-                                                            ),
-                                                        ],
+                                                        songs: [songResourceToIngestSong(song)],
                                                     })
                                                 }}
                                             >

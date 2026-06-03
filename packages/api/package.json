@@ -1,0 +1,34 @@
+{
+    "name": "@magritte/api",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [],
+    "license": "ISC",
+    "author": "",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./src/index.ts",
+            "default": "./src/index.ts"
+        }
+    },
+    "scripts": {
+        "test": "vitest run",
+        "format": "oxfmt",
+        "lint": "oxlint",
+        "check": "oxlint && oxfmt --check",
+        "generate-openapi": "openapi-ts"
+    },
+    "dependencies": {
+        "@magritte/rpc": "workspace:*",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@hey-api/openapi-ts": "0.97.1",
+        "oxfmt": "catalog:",
+        "oxlint": "catalog:",
+        "typescript": "catalog:",
+        "vitest": "catalog:"
+    },
+    "packageManager": "pnpm@10.24.0"
+}

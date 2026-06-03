@@ -15,6 +15,7 @@ export function exportLibrary(
             return (await apiClient.readLibraries()).map((library) => ({
                 id: library.id,
                 name: library.name,
+                home_path: null,
             }))
         }),
         bulkIngestSongs: enforcePermissions(
