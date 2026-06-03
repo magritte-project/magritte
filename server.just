@@ -21,6 +21,7 @@ build:
 
 generate-openapi:
     ./admin dump-openapi > packages/api/openapi.json
+    just format
 
 db-create-migration slug:
     uv run alembic revision --autogenerate -m "{{slug}}"
