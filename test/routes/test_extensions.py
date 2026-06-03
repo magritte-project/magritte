@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from conftest import SignIn
 from magritte.model.extension import Extension
-from magritte.schemas.sdk import ExtensionManifest
+from magritte.schemas.extension import ExtensionManifest
 
 
 @pytest_asyncio.fixture

@@ -1,12 +1,4 @@
-import * as Types from "./openapi/types.gen"
-import * as Schemas from "./openapi/zod.gen"
-
-export const ExtensionManifest = Schemas.ExtensionManifest
-export type ExtensionManifest = Types.ExtensionManifest
-export const ExtensionPermissions = Schemas.ExtensionPermissions
-export type ExtensionPermissions = Types.ExtensionPermissions
-export const ExtensionCommand = Schemas.ExtensionCommand
-export type ExtensionCommand = Types.ExtensionCommand
+import type { ExtensionManifest } from "@magritte/api"
 
 /**
  * Returns the origin of the extension.

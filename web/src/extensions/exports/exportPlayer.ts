@@ -1,9 +1,6 @@
+import type { ExtensionManifest } from "@magritte/api"
 import { RPCBroadcaster } from "@magritte/rpc"
-import {
-    ExtensionManifest,
-    PlayerNowPlayingDidChange,
-    type Player as ExtensionPlayer,
-} from "@magritte/sdk"
+import { PlayerNowPlayingDidChange, type Player as ExtensionPlayer } from "@magritte/sdk"
 
 import { enforcePermissions } from "@/extensions/exports/permissions"
 import type { Player as HostPlayer } from "@/playback/player"

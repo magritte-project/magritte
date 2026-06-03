@@ -12,9 +12,12 @@ from magritte.model.extension import Extension
 from magritte.model.user import User, UserExtensionLink
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.base import OperationResult
-from magritte.schemas.extension import ExtensionImportAdmin, ExtensionRead
+from magritte.schemas.extension import (
+    ExtensionImportAdmin,
+    ExtensionManifest,
+    ExtensionRead,
+)
 from magritte.schemas.library import LibraryMediaRead
-from magritte.schemas.sdk import ExtensionManifest
 
 router = APIRouter(prefix="/extensions")
 

@@ -1,4 +1,4 @@
-import type { ExtensionPermissions } from "@magritte/sdk"
+import type { ExtensionPermissions } from "@magritte/api"
 
 interface Info {
     readonly name: string

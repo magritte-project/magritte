@@ -18,7 +18,7 @@ format: server::format web::format packages::format packages::format extensions:
 
 check-types: server::check-types web::check-types packages::check-types extensions::check-types
 
-generate-openapi: server::generate-openapi web::generate-openapi packages::generate-openapi
+generate-openapi: server::generate-openapi packages::generate-openapi
 
 clean: server::clean web::clean
 

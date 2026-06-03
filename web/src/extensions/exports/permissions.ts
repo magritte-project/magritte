@@ -1,4 +1,4 @@
-import type { ExtensionManifest, ExtensionPermissions } from "@magritte/sdk"
+import type { ExtensionManifest, ExtensionPermissions } from "@magritte/api"
 
 export function enforcePermissions<Args extends any[], R>(
     manifest: ExtensionManifest,

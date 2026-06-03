@@ -1,4 +1,5 @@
-import type { Extension, ExtensionCommand, ExtensionManifest } from "@magritte/sdk"
+import type { ExtensionCommand, ExtensionManifest } from "@magritte/api"
+import type { Extension } from "@magritte/sdk"
 import { GearIcon } from "@phosphor-icons/react"
 import { useEffect, useRef, useState } from "react"
 
@@ -73,8 +74,8 @@ export function getExtensionPanelDefinition(manifest: ExtensionManifest): PanelD
         id: getExtensionPanelID(manifest),
         name: manifest.name,
         icon: GearIcon,
-        preferredWidth: manifest.preferredWidth,
-        preferredHeight: manifest.preferredHeight,
+        preferredWidth: manifest.preferredWidth ?? undefined,
+        preferredHeight: manifest.preferredHeight ?? undefined,
         component: buildExtensionComponent(manifest.id),
     }
 }

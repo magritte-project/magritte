@@ -20,6 +20,3 @@ clean:
 
 build:
     pnpm build
-
-generate-openapi:
-    ../admin dump-openapi > ../packages/api/openapi.json

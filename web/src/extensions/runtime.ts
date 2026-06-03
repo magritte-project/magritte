@@ -1,11 +1,6 @@
-import type { APIClient } from "@magritte/api"
+import type { APIClient, ExtensionManifest } from "@magritte/api"
 import type { UserSessionManager } from "@magritte/api"
-import {
-    Extension,
-    getExtensionAllow,
-    getExtensionSrc,
-    type ExtensionManifest,
-} from "@magritte/sdk"
+import { Extension, getExtensionAllow, getExtensionSrc } from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
