@@ -1,0 +1,9 @@
+{
+    "name": "Claude",
+    "id": "magritte.claude",
+    "version": "0.0.0",
+    "url": "http://localhost:2563/",
+    "preferredWidth": "16rem",
+    "preferredHeight": "16rem",
+    "permissions": ["playback:read", "playback:control"]
+}

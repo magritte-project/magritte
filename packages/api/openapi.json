@@ -1,1 +1,3065 @@
-{"openapi": "3.1.0", "info": {"title": "FastAPI", "description": "The API server for a Magritte instance", "version": "0.1.0"}, "paths": {"/artworks/create": {"post": {"summary": "Create an artwork", "operationId": "create_artwork_artworks_create_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArtworkCreate"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArtworkRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}, "security": [{"OAuth2PasswordBearer": ["library:write"]}]}}, "/artworks/{artwork_id}": {"patch": {"summary": "Update an artwork", "operationId": "update_artwork_artworks__artwork_id__patch", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "artwork_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Artwork Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArtworkUpdate"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArtworkRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "delete": {"summary": "Delete an artwork", "operationId": "delete_artwork_artworks__artwork_id__delete", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "artwork_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Artwork Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/artworks/{artwork_id}/image": {"get": {"summary": "Get the image of an artwork", "operationId": "read_artwork_image_artworks__artwork_id__image_get", "parameters": [{"name": "artwork_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Artwork Id"}}, {"name": "token", "in": "query", "required": true, "schema": {"type": "string", "description": "The token authenticating this artwork image read", "title": "Token"}, "description": "The token authenticating this artwork image read"}], "responses": {"200": {"description": "Successful Response"}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/status": {"get": {"summary": "Read the status of this instance", "operationId": "read_instance_status_status_get", "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/InstanceStatusRead"}}}}}}}, "/sign-up": {"post": {"summary": "Sign up a new user", "operationId": "sign_up_sign_up_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserSignUp"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserProfileRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/sign-in": {"post": {"summary": "Sign in as a user", "operationId": "sign_in_sign_in_post", "requestBody": {"content": {"application/x-www-form-urlencoded": {"schema": {"$ref": "#/components/schemas/Body_sign_in_sign_in_post"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Token"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/extensions/available/import": {"post": {"summary": "Import an extension so it can be installed by users", "operationId": "import_extension_extensions_available_import_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ExtensionImportAdmin"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OperationResult"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}, "security": [{"OAuth2PasswordBearer": ["admin"]}]}}, "/extensions/available/{extension_id}": {"delete": {"summary": "Remove an extension for all users", "operationId": "delete_extension_extensions_available__extension_id__delete", "security": [{"OAuth2PasswordBearer": ["admin"]}], "parameters": [{"name": "extension_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Extension Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OperationResult"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/extensions/available": {"get": {"summary": "Read extensions available on this instance", "operationId": "read_available_extensions_extensions_available_get", "security": [{"OAuth2PasswordBearer": []}], "parameters": [{"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "description": "The page offset to read from", "default": 0, "title": "Offset"}, "description": "The page offset to read from"}, {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "description": "How many items to read per page", "default": 100, "title": "Limit"}, "description": "How many items to read per page"}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryMediaRead_ExtensionRead_"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/extensions/available/{extension_id}/install": {"post": {"summary": "Install an extension from the available list for the current user", "operationId": "install_extension_extensions_available__extension_id__install_post", "security": [{"OAuth2PasswordBearer": []}], "parameters": [{"name": "extension_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Extension Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OperationResult"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/extensions/installed/{extension_id}": {"delete": {"summary": "Uninstall an extension from for the current user", "operationId": "uninstall_extension_extensions_installed__extension_id__delete", "security": [{"OAuth2PasswordBearer": []}], "parameters": [{"name": "extension_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Extension Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OperationResult"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/extensions/installed": {"get": {"summary": "Read the current user's installed extensions", "operationId": "read_installed_extensions_extensions_installed_get", "security": [{"OAuth2PasswordBearer": []}], "parameters": [{"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "description": "The page offset to read from", "default": 0, "title": "Offset"}, "description": "The page offset to read from"}, {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "description": "How many items to read per page", "default": 100, "title": "Limit"}, "description": "How many items to read per page"}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryMediaRead_ExtensionRead_"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/albums/{album_id}": {"get": {"summary": "Read an album", "operationId": "read_library_album_libraries__library_id__albums__album_id__get", "security": [{"OAuth2PasswordBearer": ["library:read"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "album_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Album Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AlbumRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "patch": {"summary": "Update an album", "operationId": "update_library_album_libraries__library_id__albums__album_id__patch", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "album_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Album Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AlbumUpdate"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AlbumRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "delete": {"summary": "Delete an album", "operationId": "delete_library_album_libraries__library_id__albums__album_id__delete", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "album_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Album Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/albums": {"get": {"summary": "Read a page of albums in a library", "operationId": "read_library_albums_libraries__library_id__albums_get", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "query", "in": "query", "required": false, "schema": {"anyOf": [{"type": "string"}, {"type": "null"}], "description": "Query string to filter the albums by", "title": "Query"}, "description": "Query string to filter the albums by"}, {"name": "artist_id", "in": "query", "required": false, "schema": {"anyOf": [{"type": "integer"}, {"type": "null"}], "description": "ID of the artist to filter the songs by", "title": "Artist Id"}, "description": "ID of the artist to filter the songs by"}, {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "description": "The page offset to read from", "default": 0, "title": "Offset"}, "description": "The page offset to read from"}, {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "description": "How many items to read per page", "default": 100, "title": "Limit"}, "description": "How many items to read per page"}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryMediaRead_AlbumRead_"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/artists/{artist_id}": {"get": {"summary": "Read an artist", "operationId": "read_library_artist_libraries__library_id__artists__artist_id__get", "security": [{"OAuth2PasswordBearer": ["library:read"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "artist_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Artist Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArtistRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "patch": {"summary": "Update an artist", "operationId": "update_library_artist_libraries__library_id__artists__artist_id__patch", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "artist_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Artist Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArtistUpdate"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArtistRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "delete": {"summary": "Delete an artist", "operationId": "delete_library_artist_libraries__library_id__artists__artist_id__delete", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "artist_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Artist Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/artists": {"get": {"summary": "Read a page of albums in a library", "operationId": "read_library_artists_libraries__library_id__artists_get", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "query", "in": "query", "required": false, "schema": {"anyOf": [{"type": "string"}, {"type": "null"}], "description": "Query string to filter the artists by", "title": "Query"}, "description": "Query string to filter the artists by"}, {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "description": "The page offset to read from", "default": 0, "title": "Offset"}, "description": "The page offset to read from"}, {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "description": "How many items to read per page", "default": 100, "title": "Limit"}, "description": "How many items to read per page"}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryMediaRead_ArtistRead_"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/ingest/songs": {"post": {"summary": "Bulk ingest new songs without uploading files", "operationId": "ingest_songs_libraries__library_id__ingest_songs_post", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BulkIngestSongs"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/SongRead"}, "title": "Response Ingest Songs Libraries  Library Id  Ingest Songs Post"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/sync": {"post": {"summary": "Request that a library sync its songs with the file system", "operationId": "request_sync_library_libraries__library_id__sync_post", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OperationResult"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/": {"get": {"summary": "Read the libraries the signed in user has access to", "operationId": "read_libraries_libraries__get", "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"items": {"$ref": "#/components/schemas/LibraryRead"}, "type": "array", "title": "Response Read Libraries Libraries  Get"}}}}}, "security": [{"OAuth2PasswordBearer": ["library:write"]}]}}, "/libraries/home-subpaths": {"get": {"summary": "Read subpaths a library can be configured to use as a home", "operationId": "read_library_home_subpaths_libraries_home_subpaths_get", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "relative_to", "in": "query", "required": true, "schema": {"type": "string", "title": "Relative To"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryHomePathRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/create": {"post": {"summary": "Create an empty library owned by the signed in user", "operationId": "create_library_libraries_create_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryCreate"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}, "security": [{"OAuth2PasswordBearer": ["library:write"]}]}}, "/libraries/{library_id}": {"patch": {"summary": "Update a library by its ID", "operationId": "update_library_libraries__library_id__patch", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryUpdate"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "get": {"summary": "Read a library by its ID", "operationId": "read_library_libraries__library_id__get", "security": [{"OAuth2PasswordBearer": ["library:read"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/permissions": {"get": {"summary": "Read a library's permissions", "operationId": "read_library_permissions_libraries__library_id__permissions_get", "security": [{"OAuth2PasswordBearer": ["library:read"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/LibraryPermissionRead"}, "title": "Response Read Library Permissions Libraries  Library Id  Permissions Get"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/permission/create": {"post": {"summary": "Create library permission for a new user", "operationId": "create_library_permission_libraries__library_id__permission_create_post", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryPermissionCreate"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryPermissionRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/permission/{user_id}": {"patch": {"summary": "Update library permission for one user", "operationId": "update_library_permission_libraries__library_id__permission__user_id__patch", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "user_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "User Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryPermissionUpdate"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryPermissionRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "delete": {"summary": "Delete library permission for one user", "operationId": "delete_library_permission_libraries__library_id__permission__user_id__delete", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "user_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "User Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OperationResult"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/songs/{song_id}": {"get": {"summary": "Read a song", "operationId": "read_library_song_libraries__library_id__songs__song_id__get", "security": [{"OAuth2PasswordBearer": ["library:read"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "song_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Song Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SongRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "patch": {"summary": "Update a song", "operationId": "update_library_song_libraries__library_id__songs__song_id__patch", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "song_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Song Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SongUpdate"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SongRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "delete": {"summary": "Delete a song", "operationId": "delete_library_song_libraries__library_id__songs__song_id__delete", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "song_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Song Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/libraries/{library_id}/songs": {"get": {"summary": "Read a page of songs in a library", "operationId": "read_library_songs_libraries__library_id__songs_get", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "library_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Library Id"}}, {"name": "query", "in": "query", "required": false, "schema": {"anyOf": [{"type": "string"}, {"type": "null"}], "description": "Query string to filter the songs by", "title": "Query"}, "description": "Query string to filter the songs by"}, {"name": "album_id", "in": "query", "required": false, "schema": {"anyOf": [{"type": "integer"}, {"type": "null"}], "description": "ID of the album to filter the songs by", "title": "Album Id"}, "description": "ID of the album to filter the songs by"}, {"name": "artist_id", "in": "query", "required": false, "schema": {"anyOf": [{"type": "integer"}, {"type": "null"}], "description": "ID of the artist to filter the songs by", "title": "Artist Id"}, "description": "ID of the artist to filter the songs by"}, {"name": "sort_by", "in": "query", "required": false, "schema": {"type": "array", "items": {"enum": ["+artist_name", "-artist_name", "+album_title", "-album_title", "+title", "-title", "+album_artist", "-album_artist", "+composer", "-composer", "+genre", "-genre", "+release_date", "-release_date", "+track_number", "-track_number", "+track_total", "-track_total", "+disc_number", "-disc_number", "+disc_total", "-disc_total", "+rating", "-rating", "+bpm", "-bpm", "+grouping", "-grouping"], "type": "string"}, "description": "How to sort the items", "title": "Sort By"}, "description": "How to sort the items"}, {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "description": "The page offset to read from", "default": 0, "title": "Offset"}, "description": "The page offset to read from"}, {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "description": "How many items to read per page", "default": 100, "title": "Limit"}, "description": "How many items to read per page"}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LibraryMediaRead_SongRead_"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/sources/create": {"post": {"summary": "Create a source", "operationId": "create_source_sources_create_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/SourceCreate"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SourceRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}, "security": [{"OAuth2PasswordBearer": ["library:write"]}]}}, "/sources/{source_id}": {"patch": {"summary": "Update a source", "operationId": "update_source_sources__source_id__patch", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "source_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Source Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SourceUpdate"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SourceRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "delete": {"summary": "Delete a source", "operationId": "delete_source_sources__source_id__delete", "security": [{"OAuth2PasswordBearer": ["library:write"]}], "parameters": [{"name": "source_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Source Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "get": {"summary": "Read a source", "operationId": "read_source_sources__source_id__get", "security": [{"OAuth2PasswordBearer": ["library:read"]}], "parameters": [{"name": "source_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Source Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SourceRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/sources/{source_id}/file": {"get": {"summary": "Stream the file of a source", "operationId": "stream_source_file_sources__source_id__file_get", "parameters": [{"name": "source_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Source Id"}}, {"name": "token", "in": "query", "required": true, "schema": {"type": "string", "description": "The token authenticating this source stream", "title": "Token"}, "description": "The token authenticating this source stream"}], "responses": {"200": {"description": "Successful Response"}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/users/me": {"get": {"summary": "Read the signed in user's profile", "operationId": "read_me_users_me_get", "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserProfileRead"}}}}}, "security": [{"OAuth2PasswordBearer": ["profile"]}]}, "post": {"summary": "Update the signed in user's profile", "operationId": "update_me_users_me_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserProfileUpdate"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserProfileRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}, "security": [{"OAuth2PasswordBearer": ["profile"]}]}}, "/users/notifications": {"get": {"summary": "Read a page of the signed in user's notifications", "operationId": "read_notifications_users_notifications_get", "security": [{"OAuth2PasswordBearer": ["profile"]}], "parameters": [{"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "description": "The page offset to read from", "default": 0, "title": "Offset"}, "description": "The page offset to read from"}, {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "description": "How many items to read per page", "default": 100, "title": "Limit"}, "description": "How many items to read per page"}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NotificationsRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/users/notifications/{notification_id}": {"get": {"summary": "Read a single notification for the signed in user", "operationId": "read_notification_users_notifications__notification_id__get", "security": [{"OAuth2PasswordBearer": ["profile"]}], "parameters": [{"name": "notification_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Notification Id"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NotificationRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}, "patch": {"summary": "Update a single notification for the signed in user", "operationId": "update_notification_users_notifications__notification_id__patch", "security": [{"OAuth2PasswordBearer": ["profile"]}], "parameters": [{"name": "notification_id", "in": "path", "required": true, "schema": {"type": "integer", "title": "Notification Id"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NotificationUpdate"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NotificationRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/users/notifications/mark-all-read": {"post": {"summary": "Mark all notifications as read for the signed in user", "operationId": "mark_all_notifications_read_users_notifications_mark_all_read_post", "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OperationResult"}}}}}, "security": [{"OAuth2PasswordBearer": ["profile"]}]}}, "/users/events/preflight": {"post": {"summary": "Prepare to stream events for the signed in user", "operationId": "stream_user_events_preflight_users_events_preflight_post", "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserEventPreflight"}}}}}, "security": [{"OAuth2PasswordBearer": ["profile"]}]}}, "/users/all": {"get": {"summary": "Read details about users on this instance", "operationId": "read_users_users_all_get", "security": [{"OAuth2PasswordBearer": ["profile"]}], "parameters": [{"name": "query", "in": "query", "required": false, "schema": {"anyOf": [{"type": "string"}, {"type": "null"}], "description": "Query string to filter the users by", "title": "Query"}, "description": "Query string to filter the users by"}, {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "description": "The page offset to read from", "default": 0, "title": "Offset"}, "description": "The page offset to read from"}, {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "description": "How many items to read per page", "default": 100, "title": "Limit"}, "description": "How many items to read per page"}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserProfilesRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/users/all/{id_or_username}": {"get": {"summary": "Read details a users on this instance", "operationId": "read_user_users_all__id_or_username__get", "security": [{"OAuth2PasswordBearer": ["profile"]}], "parameters": [{"name": "id_or_username", "in": "path", "required": true, "schema": {"type": "string", "title": "Id Or Username"}}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserProfileRead"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}}, "components": {"schemas": {"AlbumRead": {"properties": {"id": {"type": "integer", "title": "Id"}, "title": {"type": "string", "title": "Title"}, "artist_id": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Artist Id"}, "artworks": {"items": {"$ref": "#/components/schemas/ArtworkRead"}, "type": "array", "title": "Artworks", "description": "The artworks of this song"}}, "type": "object", "required": ["id", "title", "artist_id"], "title": "AlbumRead"}, "AlbumUpdate": {"properties": {"title": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Title"}, "artist_id": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Artist Id"}}, "type": "object", "title": "AlbumUpdate"}, "ArtistRead": {"properties": {"id": {"type": "integer", "title": "Id"}, "name": {"type": "string", "title": "Name"}}, "type": "object", "required": ["id", "name"], "title": "ArtistRead"}, "ArtistUpdate": {"properties": {"name": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Name"}}, "type": "object", "title": "ArtistUpdate"}, "ArtworkCreate": {"properties": {"kind": {"$ref": "#/components/schemas/ArtworkKind"}, "image_url": {"type": "string", "title": "Image Url"}, "background_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Background Color"}, "primary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Primary Color"}, "secondary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Secondary Color"}, "tertiary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Tertiary Color"}}, "type": "object", "required": ["kind", "image_url", "background_color", "primary_color", "secondary_color", "tertiary_color"], "title": "ArtworkCreate"}, "ArtworkKind": {"type": "string", "enum": ["front_cover"], "title": "ArtworkKind"}, "ArtworkRead": {"properties": {"id": {"type": "integer", "title": "Id"}, "kind": {"$ref": "#/components/schemas/ArtworkKind"}, "image_url": {"type": "string", "title": "Image Url"}, "background_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Background Color"}, "primary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Primary Color"}, "secondary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Secondary Color"}, "tertiary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Tertiary Color"}}, "type": "object", "required": ["id", "kind", "image_url", "background_color", "primary_color", "secondary_color", "tertiary_color"], "title": "ArtworkRead"}, "ArtworkUpdate": {"properties": {"kind": {"anyOf": [{"$ref": "#/components/schemas/ArtworkKind"}, {"type": "null"}]}, "image_url": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Image Url"}, "background_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Background Color"}, "primary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Primary Color"}, "secondary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Secondary Color"}, "tertiary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Tertiary Color"}}, "type": "object", "title": "ArtworkUpdate"}, "Body_sign_in_sign_in_post": {"properties": {"grant_type": {"anyOf": [{"type": "string", "pattern": "^password$"}, {"type": "null"}], "title": "Grant Type"}, "username": {"type": "string", "title": "Username"}, "password": {"type": "string", "format": "password", "title": "Password"}, "scope": {"type": "string", "title": "Scope", "default": ""}, "client_id": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Client Id"}, "client_secret": {"anyOf": [{"type": "string"}, {"type": "null"}], "format": "password", "title": "Client Secret"}}, "type": "object", "required": ["username", "password"], "title": "Body_sign_in_sign_in_post"}, "BulkIngestSongs": {"properties": {"songs": {"items": {"$ref": "#/components/schemas/IngestSong"}, "type": "array", "maxItems": 50, "title": "Songs"}}, "type": "object", "required": ["songs"], "title": "BulkIngestSongs"}, "ExtensionCommand": {"properties": {"id": {"type": "string", "title": "Id", "description": "Unique identifier for the command"}, "searchTerms": {"type": "string", "title": "Searchterms", "description": "The static search terms for the command"}, "requiredInputKinds": {"items": {"type": "string"}, "type": "array", "title": "Requiredinputkinds", "description": "The kinds of the inputs this command requires to execute"}}, "type": "object", "required": ["id", "searchTerms", "requiredInputKinds"], "title": "ExtensionCommand"}, "ExtensionImportAdmin": {"properties": {"manifest_url": {"type": "string", "maxLength": 2083, "minLength": 1, "format": "uri", "title": "Manifest Url"}}, "type": "object", "required": ["manifest_url"], "title": "ExtensionImportAdmin"}, "ExtensionManifest": {"properties": {"name": {"type": "string", "title": "Name", "description": "A friendly name for the extension"}, "id": {"type": "string", "title": "Id", "description": "A unique identifier for the extension"}, "version": {"type": "string", "title": "Version", "description": "The version of the extension"}, "description": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Description", "description": "An optional description of the extension"}, "url": {"type": "string", "title": "Url", "description": "The URL of the extension"}, "preferredWidth": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Preferredwidth", "description": "The preferred width of the extension as a CSS dimension"}, "preferredHeight": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Preferredheight", "description": "The preferred height of the extension as a CSS dimension"}, "permissions": {"anyOf": [{"items": {"$ref": "#/components/schemas/ExtensionPermissions"}, "type": "array"}, {"type": "null"}], "title": "Permissions", "description": "An optional array of permissions required by the extension", "default": []}, "sourceSchemes": {"anyOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}], "title": "Sourceschemes", "description": "An optional array of source schemes supported by the extension", "default": []}, "commands": {"anyOf": [{"items": {"$ref": "#/components/schemas/ExtensionCommand"}, "type": "array"}, {"type": "null"}], "title": "Commands", "description": "An optional array of commands supported by the extension"}}, "type": "object", "required": ["name", "id", "version", "url"], "title": "ExtensionManifest"}, "ExtensionPermissions": {"type": "string", "enum": ["run:background", "run:eager", "commands:input:read", "commands:input:add", "commands:query", "commands:run", "libraries:read", "libraries:write", "playback:read", "playback:control"], "title": "ExtensionPermissions"}, "ExtensionRead": {"properties": {"id": {"type": "integer", "title": "Id"}, "manifest": {"$ref": "#/components/schemas/ExtensionManifest"}}, "type": "object", "required": ["id", "manifest"], "title": "ExtensionRead"}, "HTTPValidationError": {"properties": {"detail": {"items": {"$ref": "#/components/schemas/ValidationError"}, "type": "array", "title": "Detail"}}, "type": "object", "title": "HTTPValidationError"}, "IngestArtwork": {"properties": {"kind": {"$ref": "#/components/schemas/ArtworkKind"}, "image_url": {"type": "string", "title": "Image Url"}, "background_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Background Color"}, "primary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Primary Color"}, "secondary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Secondary Color"}, "tertiary_color": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Tertiary Color"}}, "type": "object", "required": ["kind", "image_url", "background_color", "primary_color", "secondary_color", "tertiary_color"], "title": "IngestArtwork"}, "IngestSong": {"properties": {"artist_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Artist Name"}, "album_title": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Album Title"}, "artworks": {"items": {"$ref": "#/components/schemas/IngestArtwork"}, "type": "array", "title": "Artworks"}, "sources": {"items": {"$ref": "#/components/schemas/IngestSource"}, "type": "array", "title": "Sources"}, "start_time": {"type": "number", "title": "Start Time"}, "end_time": {"type": "number", "title": "End Time"}, "title": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Title"}, "album_artist": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Album Artist"}, "composer": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Composer"}, "genre": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Genre"}, "release_date": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Release Date"}, "track_number": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Track Number"}, "track_total": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Track Total"}, "disc_number": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Disc Number"}, "disc_total": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Disc Total"}, "lyrics": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Lyrics"}, "rating": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Rating"}, "bpm": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Bpm"}, "comment": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Comment"}, "grouping": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Grouping"}, "mcn": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Mcn"}, "isrc": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Isrc"}, "music_brainz_release_id": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Music Brainz Release Id"}, "music_brainz_recording_id": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Music Brainz Recording Id"}}, "type": "object", "required": ["artist_name", "album_title", "artworks", "sources", "start_time", "end_time", "title", "album_artist", "composer", "genre", "release_date", "track_number", "track_total", "disc_number", "disc_total", "lyrics", "rating", "bpm", "comment", "grouping", "mcn", "isrc", "music_brainz_release_id", "music_brainz_recording_id"], "title": "IngestSong"}, "IngestSource": {"properties": {"url": {"type": "string", "title": "Url"}, "mime_type": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Mime Type"}}, "type": "object", "required": ["url", "mime_type"], "title": "IngestSource"}, "InstanceStatusRead": {"properties": {"env": {"type": "string", "enum": ["dev", "ci", "prod"], "title": "Env"}, "first_setup_complete": {"type": "boolean", "title": "First Setup Complete"}}, "type": "object", "required": ["env", "first_setup_complete"], "title": "InstanceStatusRead"}, "LibraryCreate": {"properties": {"name": {"type": "string", "title": "Name"}, "home_path": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Home Path"}}, "type": "object", "required": ["name", "home_path"], "title": "LibraryCreate"}, "LibraryHomePathRead": {"properties": {"relative_to": {"type": "string", "title": "Relative To"}, "subpaths": {"items": {"type": "string"}, "type": "array", "title": "Subpaths"}}, "type": "object", "required": ["relative_to", "subpaths"], "title": "LibraryHomePathRead"}, "LibraryMediaRead_AlbumRead_": {"properties": {"items": {"items": {"$ref": "#/components/schemas/AlbumRead"}, "type": "array", "title": "Items"}, "offset": {"type": "integer", "title": "Offset"}, "limit": {"type": "integer", "title": "Limit"}, "total": {"type": "integer", "title": "Total"}}, "type": "object", "required": ["items", "offset", "limit", "total"], "title": "LibraryMediaRead[AlbumRead]"}, "LibraryMediaRead_ArtistRead_": {"properties": {"items": {"items": {"$ref": "#/components/schemas/ArtistRead"}, "type": "array", "title": "Items"}, "offset": {"type": "integer", "title": "Offset"}, "limit": {"type": "integer", "title": "Limit"}, "total": {"type": "integer", "title": "Total"}}, "type": "object", "required": ["items", "offset", "limit", "total"], "title": "LibraryMediaRead[ArtistRead]"}, "LibraryMediaRead_ExtensionRead_": {"properties": {"items": {"items": {"$ref": "#/components/schemas/ExtensionRead"}, "type": "array", "title": "Items"}, "offset": {"type": "integer", "title": "Offset"}, "limit": {"type": "integer", "title": "Limit"}, "total": {"type": "integer", "title": "Total"}}, "type": "object", "required": ["items", "offset", "limit", "total"], "title": "LibraryMediaRead[ExtensionRead]"}, "LibraryMediaRead_SongRead_": {"properties": {"items": {"items": {"$ref": "#/components/schemas/SongRead"}, "type": "array", "title": "Items"}, "offset": {"type": "integer", "title": "Offset"}, "limit": {"type": "integer", "title": "Limit"}, "total": {"type": "integer", "title": "Total"}}, "type": "object", "required": ["items", "offset", "limit", "total"], "title": "LibraryMediaRead[SongRead]"}, "LibraryPermissionCreate": {"properties": {"user_id": {"type": "integer", "title": "User Id"}, "can_add": {"type": "boolean", "title": "Can Add"}, "can_edit": {"type": "boolean", "title": "Can Edit"}, "can_remove": {"type": "boolean", "title": "Can Remove"}}, "type": "object", "required": ["user_id", "can_add", "can_edit", "can_remove"], "title": "LibraryPermissionCreate"}, "LibraryPermissionRead": {"properties": {"user_id": {"type": "integer", "title": "User Id"}, "username": {"type": "string", "title": "Username"}, "can_add": {"type": "boolean", "title": "Can Add"}, "can_edit": {"type": "boolean", "title": "Can Edit"}, "can_remove": {"type": "boolean", "title": "Can Remove"}}, "type": "object", "required": ["user_id", "username", "can_add", "can_edit", "can_remove"], "title": "LibraryPermissionRead"}, "LibraryPermissionUpdate": {"properties": {"can_add": {"anyOf": [{"type": "boolean"}, {"type": "null"}], "title": "Can Add"}, "can_edit": {"anyOf": [{"type": "boolean"}, {"type": "null"}], "title": "Can Edit"}, "can_remove": {"anyOf": [{"type": "boolean"}, {"type": "null"}], "title": "Can Remove"}}, "type": "object", "title": "LibraryPermissionUpdate"}, "LibraryRead": {"properties": {"id": {"type": "integer", "title": "Id"}, "name": {"type": "string", "title": "Name"}, "home_path": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Home Path"}}, "type": "object", "required": ["id", "name", "home_path"], "title": "LibraryRead"}, "LibraryUpdate": {"properties": {"name": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Name"}}, "type": "object", "title": "LibraryUpdate"}, "NotificationRead": {"properties": {"id": {"type": "integer", "title": "Id"}, "title": {"type": "string", "title": "Title"}, "description": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Description"}, "progress": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Progress"}, "is_read": {"type": "boolean", "title": "Is Read"}}, "type": "object", "required": ["id", "title", "description", "progress", "is_read"], "title": "NotificationRead"}, "NotificationUpdate": {"properties": {"is_read": {"anyOf": [{"type": "boolean"}, {"type": "null"}], "title": "Is Read"}}, "type": "object", "title": "NotificationUpdate"}, "NotificationsRead": {"properties": {"items": {"items": {"$ref": "#/components/schemas/NotificationRead"}, "type": "array", "title": "Items"}, "offset": {"type": "integer", "title": "Offset"}, "limit": {"type": "integer", "title": "Limit"}, "total": {"type": "integer", "title": "Total"}}, "type": "object", "required": ["items", "offset", "limit", "total"], "title": "NotificationsRead"}, "OAuth2Scope": {"type": "string", "enum": ["profile", "library:read", "library:write", "admin"], "title": "OAuth2Scope"}, "OperationResult": {"properties": {"message": {"type": "string", "title": "Message"}, "row_count": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Row Count"}}, "type": "object", "required": ["message"], "title": "OperationResult"}, "SongRead": {"properties": {"id": {"type": "integer", "title": "Id"}, "artist_id": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Artist Id", "description": "ID of this song's artist, if any"}, "artist_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Artist Name", "description": "Name of this song's song, if any"}, "album_id": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Album Id", "description": "ID of this song's album, if any"}, "album_title": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Album Title", "description": "Title of this song's album, if any"}, "artworks": {"items": {"$ref": "#/components/schemas/ArtworkRead"}, "type": "array", "title": "Artworks", "description": "The artworks of this song"}, "sources": {"items": {"$ref": "#/components/schemas/SourceRead"}, "type": "array", "title": "Sources", "description": "The sources of this song"}, "start_time": {"type": "number", "title": "Start Time", "description": "Where in the song to start playback", "default": 0}, "end_time": {"type": "number", "title": "End Time", "description": "Where in the song to end playback"}, "title": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Title", "description": "The title of the song"}, "album_artist": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Album Artist", "description": "The song's album artist"}, "composer": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Composer", "description": "The composer of the song"}, "genre": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Genre", "description": "The genre of the song"}, "release_date": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Release Date", "description": "The release date of the song"}, "track_number": {"anyOf": [{"type": "integer", "minimum": 0.0}, {"type": "null"}], "title": "Track Number", "description": "The track number of the song"}, "track_total": {"anyOf": [{"type": "integer", "minimum": 0.0}, {"type": "null"}], "title": "Track Total", "description": "The total number of tracks on the album"}, "disc_number": {"anyOf": [{"type": "integer", "minimum": 0.0}, {"type": "null"}], "title": "Disc Number", "description": "The disc number in the album"}, "disc_total": {"anyOf": [{"type": "integer", "minimum": 0.0}, {"type": "null"}], "title": "Disc Total", "description": "The total number of discs in the album"}, "lyrics": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Lyrics", "description": "The lyrics of the song"}, "rating": {"anyOf": [{"type": "number", "maximum": 1.0, "minimum": 0.0}, {"type": "null"}], "title": "Rating", "description": "The rating of the song"}, "bpm": {"anyOf": [{"type": "integer", "minimum": 0.0}, {"type": "null"}], "title": "Bpm", "description": "The beats per minute of the song"}, "comment": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Comment", "description": "A user defined comment"}, "grouping": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Grouping", "description": "The grouping of the song"}, "mcn": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Mcn"}, "isrc": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Isrc"}, "music_brainz_release_id": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Music Brainz Release Id"}, "music_brainz_recording_id": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Music Brainz Recording Id"}}, "type": "object", "required": ["id", "end_time"], "title": "SongRead"}, "SongUpdate": {"properties": {"artist_id": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Artist Id"}, "album_id": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Album Id"}, "artwork_ids": {"anyOf": [{"items": {"type": "integer"}, "type": "array"}, {"type": "null"}], "title": "Artwork Ids"}, "source_ids": {"anyOf": [{"items": {"type": "integer"}, "type": "array"}, {"type": "null"}], "title": "Source Ids"}, "start_time": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Start Time"}, "end_time": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "End Time"}, "title": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Title"}, "album_artist": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Album Artist"}, "composer": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Composer"}, "genre": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Genre"}, "release_date": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Release Date"}, "track_number": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Track Number"}, "track_total": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Track Total"}, "disc_number": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Disc Number"}, "disc_total": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Disc Total"}, "lyrics": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Lyrics"}, "rating": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Rating"}, "bpm": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Bpm"}, "comment": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Comment"}, "grouping": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Grouping"}, "mcn": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Mcn"}, "isrc": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Isrc"}, "music_brainz_release_id": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Music Brainz Release Id"}, "music_brainz_recording_id": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Music Brainz Recording Id"}}, "type": "object", "title": "SongUpdate"}, "SourceCreate": {"properties": {"url": {"type": "string", "title": "Url"}, "mime_type": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Mime Type"}}, "type": "object", "required": ["url", "mime_type"], "title": "SourceCreate"}, "SourceRead": {"properties": {"id": {"type": "integer", "title": "Id"}, "url": {"type": "string", "title": "Url"}, "mime_type": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Mime Type"}, "is_invalid": {"type": "boolean", "title": "Is Invalid"}}, "type": "object", "required": ["id", "url", "mime_type", "is_invalid"], "title": "SourceRead"}, "SourceUpdate": {"properties": {"url": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Url"}, "mime_type": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Mime Type"}, "is_invalid": {"anyOf": [{"type": "boolean"}, {"type": "null"}], "title": "Is Invalid"}}, "type": "object", "title": "SourceUpdate"}, "Token": {"properties": {"scopes": {"items": {"$ref": "#/components/schemas/OAuth2Scope"}, "type": "array", "title": "Scopes"}, "access_token": {"type": "string", "title": "Access Token"}, "token_type": {"type": "string", "const": "bearer", "title": "Token Type"}}, "type": "object", "required": ["scopes", "access_token", "token_type"], "title": "Token"}, "UserEventPreflight": {"properties": {"token": {"type": "string", "title": "Token"}}, "type": "object", "required": ["token"], "title": "UserEventPreflight"}, "UserProfileRead": {"properties": {"id": {"type": "integer", "title": "Id"}, "username": {"type": "string", "title": "Username"}, "preferred_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Preferred Name"}}, "type": "object", "required": ["id", "username", "preferred_name"], "title": "UserProfileRead"}, "UserProfileUpdate": {"properties": {"preferred_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Preferred Name"}}, "type": "object", "required": ["preferred_name"], "title": "UserProfileUpdate"}, "UserProfilesRead": {"properties": {"users": {"items": {"$ref": "#/components/schemas/UserProfileRead"}, "type": "array", "title": "Users"}, "offset": {"type": "integer", "title": "Offset"}, "limit": {"type": "integer", "title": "Limit"}, "total": {"type": "integer", "title": "Total"}}, "type": "object", "required": ["users", "offset", "limit", "total"], "title": "UserProfilesRead"}, "UserSignUp": {"properties": {"username": {"type": "string", "title": "Username"}, "password": {"type": "string", "title": "Password"}}, "type": "object", "required": ["username", "password"], "title": "UserSignUp"}, "ValidationError": {"properties": {"loc": {"items": {"anyOf": [{"type": "string"}, {"type": "integer"}]}, "type": "array", "title": "Location"}, "msg": {"type": "string", "title": "Message"}, "type": {"type": "string", "title": "Error Type"}}, "type": "object", "required": ["loc", "msg", "type"], "title": "ValidationError"}}, "securitySchemes": {"OAuth2PasswordBearer": {"type": "oauth2", "flows": {"password": {"scopes": {"profile": "Access the user's own profile", "library:read": "Access libraries on this instance", "library:write": "Change libraries on this instance", "admin": "Administer this instance"}, "tokenUrl": "/sign-in"}}}}}}
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "FastAPI",
+        "description": "The API server for a Magritte instance",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/artworks/create": {
+            "post": {
+                "summary": "Create an artwork",
+                "operationId": "create_artwork_artworks_create_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/ArtworkCreate" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/ArtworkRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }]
+            }
+        },
+        "/artworks/{artwork_id}": {
+            "patch": {
+                "summary": "Update an artwork",
+                "operationId": "update_artwork_artworks__artwork_id__patch",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "artwork_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Artwork Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/ArtworkUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/ArtworkRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete an artwork",
+                "operationId": "delete_artwork_artworks__artwork_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "artwork_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Artwork Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/artworks/{artwork_id}/image": {
+            "get": {
+                "summary": "Get the image of an artwork",
+                "operationId": "read_artwork_image_artworks__artwork_id__image_get",
+                "parameters": [
+                    {
+                        "name": "artwork_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Artwork Id" }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "The token authenticating this artwork image read",
+                            "title": "Token"
+                        },
+                        "description": "The token authenticating this artwork image read"
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Successful Response" },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/status": {
+            "get": {
+                "summary": "Read the status of this instance",
+                "operationId": "read_instance_status_status_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/InstanceStatusRead" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sign-up": {
+            "post": {
+                "summary": "Sign up a new user",
+                "operationId": "sign_up_sign_up_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/UserSignUp" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserProfileRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sign-in": {
+            "post": {
+                "summary": "Sign in as a user",
+                "operationId": "sign_in_sign_in_post",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": { "$ref": "#/components/schemas/Body_sign_in_sign_in_post" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/Token" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/extensions/available/import": {
+            "post": {
+                "summary": "Import an extension so it can be installed by users",
+                "operationId": "import_extension_extensions_available_import_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/ExtensionImportAdmin" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["admin"] }]
+            }
+        },
+        "/extensions/available/{extension_id}": {
+            "delete": {
+                "summary": "Remove an extension for all users",
+                "operationId": "delete_extension_extensions_available__extension_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["admin"] }],
+                "parameters": [
+                    {
+                        "name": "extension_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Extension Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/extensions/available": {
+            "get": {
+                "summary": "Read extensions available on this instance",
+                "operationId": "read_available_extensions_extensions_available_get",
+                "security": [{ "OAuth2PasswordBearer": [] }],
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LibraryMediaRead_ExtensionRead_"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/extensions/available/{extension_id}/install": {
+            "post": {
+                "summary": "Install an extension from the available list for the current user",
+                "operationId": "install_extension_extensions_available__extension_id__install_post",
+                "security": [{ "OAuth2PasswordBearer": [] }],
+                "parameters": [
+                    {
+                        "name": "extension_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Extension Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/extensions/installed/{extension_id}": {
+            "delete": {
+                "summary": "Uninstall an extension from for the current user",
+                "operationId": "uninstall_extension_extensions_installed__extension_id__delete",
+                "security": [{ "OAuth2PasswordBearer": [] }],
+                "parameters": [
+                    {
+                        "name": "extension_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Extension Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/extensions/installed": {
+            "get": {
+                "summary": "Read the current user's installed extensions",
+                "operationId": "read_installed_extensions_extensions_installed_get",
+                "security": [{ "OAuth2PasswordBearer": [] }],
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LibraryMediaRead_ExtensionRead_"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/albums/{album_id}": {
+            "get": {
+                "summary": "Read an album",
+                "operationId": "read_library_album_libraries__library_id__albums__album_id__get",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "album_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Album Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/AlbumRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update an album",
+                "operationId": "update_library_album_libraries__library_id__albums__album_id__patch",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "album_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Album Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/AlbumUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/AlbumRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete an album",
+                "operationId": "delete_library_album_libraries__library_id__albums__album_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "album_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Album Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/albums": {
+            "get": {
+                "summary": "Read a page of albums in a library",
+                "operationId": "read_library_albums_libraries__library_id__albums_get",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "string" }, { "type": "null" }],
+                            "description": "Query string to filter the albums by",
+                            "title": "Query"
+                        },
+                        "description": "Query string to filter the albums by"
+                    },
+                    {
+                        "name": "artist_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                            "description": "ID of the artist to filter the songs by",
+                            "title": "Artist Id"
+                        },
+                        "description": "ID of the artist to filter the songs by"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LibraryMediaRead_AlbumRead_"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/artists/{artist_id}": {
+            "get": {
+                "summary": "Read an artist",
+                "operationId": "read_library_artist_libraries__library_id__artists__artist_id__get",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "artist_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Artist Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/ArtistRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update an artist",
+                "operationId": "update_library_artist_libraries__library_id__artists__artist_id__patch",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "artist_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Artist Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/ArtistUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/ArtistRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete an artist",
+                "operationId": "delete_library_artist_libraries__library_id__artists__artist_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "artist_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Artist Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/artists": {
+            "get": {
+                "summary": "Read a page of albums in a library",
+                "operationId": "read_library_artists_libraries__library_id__artists_get",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "string" }, { "type": "null" }],
+                            "description": "Query string to filter the artists by",
+                            "title": "Query"
+                        },
+                        "description": "Query string to filter the artists by"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LibraryMediaRead_ArtistRead_"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/ingest/songs": {
+            "post": {
+                "summary": "Bulk ingest new songs without uploading files",
+                "operationId": "ingest_songs_libraries__library_id__ingest_songs_post",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/BulkIngestSongs" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/SongRead" },
+                                    "title": "Response Ingest Songs Libraries  Library Id  Ingest Songs Post"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/sync": {
+            "post": {
+                "summary": "Request that a library sync its songs with the file system",
+                "operationId": "request_sync_library_libraries__library_id__sync_post",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/": {
+            "get": {
+                "summary": "Read the libraries the signed in user has access to",
+                "operationId": "read_libraries_libraries__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": { "$ref": "#/components/schemas/LibraryRead" },
+                                    "type": "array",
+                                    "title": "Response Read Libraries Libraries  Get"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }]
+            }
+        },
+        "/libraries/home-subpaths": {
+            "get": {
+                "summary": "Read subpaths a library can be configured to use as a home",
+                "operationId": "read_library_home_subpaths_libraries_home_subpaths_get",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "relative_to",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Relative To" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/LibraryHomePathRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/create": {
+            "post": {
+                "summary": "Create an empty library owned by the signed in user",
+                "operationId": "create_library_libraries_create_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/LibraryCreate" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/LibraryRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }]
+            }
+        },
+        "/libraries/{library_id}": {
+            "patch": {
+                "summary": "Update a library by its ID",
+                "operationId": "update_library_libraries__library_id__patch",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/LibraryUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/LibraryRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "Read a library by its ID",
+                "operationId": "read_library_libraries__library_id__get",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/LibraryRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/permissions": {
+            "get": {
+                "summary": "Read a library's permissions",
+                "operationId": "read_library_permissions_libraries__library_id__permissions_get",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/LibraryPermissionRead"
+                                    },
+                                    "title": "Response Read Library Permissions Libraries  Library Id  Permissions Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/permission/create": {
+            "post": {
+                "summary": "Create library permission for a new user",
+                "operationId": "create_library_permission_libraries__library_id__permission_create_post",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/LibraryPermissionCreate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/LibraryPermissionRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/permission/{user_id}": {
+            "patch": {
+                "summary": "Update library permission for one user",
+                "operationId": "update_library_permission_libraries__library_id__permission__user_id__patch",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "User Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/LibraryPermissionUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/LibraryPermissionRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete library permission for one user",
+                "operationId": "delete_library_permission_libraries__library_id__permission__user_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "User Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/songs/{song_id}": {
+            "get": {
+                "summary": "Read a song",
+                "operationId": "read_library_song_libraries__library_id__songs__song_id__get",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "song_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Song Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/SongRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update a song",
+                "operationId": "update_library_song_libraries__library_id__songs__song_id__patch",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "song_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Song Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/SongUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/SongRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a song",
+                "operationId": "delete_library_song_libraries__library_id__songs__song_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "song_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Song Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/songs": {
+            "get": {
+                "summary": "Read a page of songs in a library",
+                "operationId": "read_library_songs_libraries__library_id__songs_get",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "string" }, { "type": "null" }],
+                            "description": "Query string to filter the songs by",
+                            "title": "Query"
+                        },
+                        "description": "Query string to filter the songs by"
+                    },
+                    {
+                        "name": "album_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                            "description": "ID of the album to filter the songs by",
+                            "title": "Album Id"
+                        },
+                        "description": "ID of the album to filter the songs by"
+                    },
+                    {
+                        "name": "artist_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                            "description": "ID of the artist to filter the songs by",
+                            "title": "Artist Id"
+                        },
+                        "description": "ID of the artist to filter the songs by"
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "enum": [
+                                    "+artist_name",
+                                    "-artist_name",
+                                    "+album_title",
+                                    "-album_title",
+                                    "+title",
+                                    "-title",
+                                    "+album_artist",
+                                    "-album_artist",
+                                    "+composer",
+                                    "-composer",
+                                    "+genre",
+                                    "-genre",
+                                    "+release_date",
+                                    "-release_date",
+                                    "+track_number",
+                                    "-track_number",
+                                    "+track_total",
+                                    "-track_total",
+                                    "+disc_number",
+                                    "-disc_number",
+                                    "+disc_total",
+                                    "-disc_total",
+                                    "+rating",
+                                    "-rating",
+                                    "+bpm",
+                                    "-bpm",
+                                    "+grouping",
+                                    "-grouping"
+                                ],
+                                "type": "string"
+                            },
+                            "description": "How to sort the items",
+                            "title": "Sort By"
+                        },
+                        "description": "How to sort the items"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LibraryMediaRead_SongRead_"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sources/create": {
+            "post": {
+                "summary": "Create a source",
+                "operationId": "create_source_sources_create_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/SourceCreate" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/SourceRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }]
+            }
+        },
+        "/sources/{source_id}": {
+            "patch": {
+                "summary": "Update a source",
+                "operationId": "update_source_sources__source_id__patch",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "source_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Source Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/SourceUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/SourceRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a source",
+                "operationId": "delete_source_sources__source_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "source_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Source Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "Read a source",
+                "operationId": "read_source_sources__source_id__get",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "source_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Source Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/SourceRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sources/{source_id}/file": {
+            "get": {
+                "summary": "Stream the file of a source",
+                "operationId": "stream_source_file_sources__source_id__file_get",
+                "parameters": [
+                    {
+                        "name": "source_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Source Id" }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "The token authenticating this source stream",
+                            "title": "Token"
+                        },
+                        "description": "The token authenticating this source stream"
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Successful Response" },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me": {
+            "get": {
+                "summary": "Read the signed in user's profile",
+                "operationId": "read_me_users_me_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserProfileRead" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }]
+            },
+            "post": {
+                "summary": "Update the signed in user's profile",
+                "operationId": "update_me_users_me_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/UserProfileUpdate" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserProfileRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }]
+            }
+        },
+        "/users/notifications": {
+            "get": {
+                "summary": "Read a page of the signed in user's notifications",
+                "operationId": "read_notifications_users_notifications_get",
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }],
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/NotificationsRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/notifications/{notification_id}": {
+            "get": {
+                "summary": "Read a single notification for the signed in user",
+                "operationId": "read_notification_users_notifications__notification_id__get",
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }],
+                "parameters": [
+                    {
+                        "name": "notification_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Notification Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/NotificationRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update a single notification for the signed in user",
+                "operationId": "update_notification_users_notifications__notification_id__patch",
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }],
+                "parameters": [
+                    {
+                        "name": "notification_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Notification Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/NotificationUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/NotificationRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/notifications/mark-all-read": {
+            "post": {
+                "summary": "Mark all notifications as read for the signed in user",
+                "operationId": "mark_all_notifications_read_users_notifications_mark_all_read_post",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }]
+            }
+        },
+        "/users/events/preflight": {
+            "post": {
+                "summary": "Prepare to stream events for the signed in user",
+                "operationId": "stream_user_events_preflight_users_events_preflight_post",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserEventPreflight" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }]
+            }
+        },
+        "/users/all": {
+            "get": {
+                "summary": "Read details about users on this instance",
+                "operationId": "read_users_users_all_get",
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }],
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "string" }, { "type": "null" }],
+                            "description": "Query string to filter the users by",
+                            "title": "Query"
+                        },
+                        "description": "Query string to filter the users by"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserProfilesRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/all/{id_or_username}": {
+            "get": {
+                "summary": "Read details a users on this instance",
+                "operationId": "read_user_users_all__id_or_username__get",
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }],
+                "parameters": [
+                    {
+                        "name": "id_or_username",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Id Or Username" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserProfileRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AlbumRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "title": { "type": "string", "title": "Title" },
+                    "artist_id": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Artist Id"
+                    },
+                    "artworks": {
+                        "items": { "$ref": "#/components/schemas/ArtworkRead" },
+                        "type": "array",
+                        "title": "Artworks",
+                        "description": "The artworks of this song"
+                    }
+                },
+                "type": "object",
+                "required": ["id", "title", "artist_id"],
+                "title": "AlbumRead"
+            },
+            "AlbumUpdate": {
+                "properties": {
+                    "title": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Title"
+                    },
+                    "artist_id": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Artist Id"
+                    }
+                },
+                "type": "object",
+                "title": "AlbumUpdate"
+            },
+            "ArtistRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "name": { "type": "string", "title": "Name" }
+                },
+                "type": "object",
+                "required": ["id", "name"],
+                "title": "ArtistRead"
+            },
+            "ArtistUpdate": {
+                "properties": {
+                    "name": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Name" }
+                },
+                "type": "object",
+                "title": "ArtistUpdate"
+            },
+            "ArtworkCreate": {
+                "properties": {
+                    "kind": { "$ref": "#/components/schemas/ArtworkKind" },
+                    "image_url": { "type": "string", "title": "Image Url" },
+                    "background_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Background Color"
+                    },
+                    "primary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Primary Color"
+                    },
+                    "secondary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Secondary Color"
+                    },
+                    "tertiary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Tertiary Color"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "kind",
+                    "image_url",
+                    "background_color",
+                    "primary_color",
+                    "secondary_color",
+                    "tertiary_color"
+                ],
+                "title": "ArtworkCreate"
+            },
+            "ArtworkKind": { "type": "string", "enum": ["front_cover"], "title": "ArtworkKind" },
+            "ArtworkRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "kind": { "$ref": "#/components/schemas/ArtworkKind" },
+                    "image_url": { "type": "string", "title": "Image Url" },
+                    "background_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Background Color"
+                    },
+                    "primary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Primary Color"
+                    },
+                    "secondary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Secondary Color"
+                    },
+                    "tertiary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Tertiary Color"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "kind",
+                    "image_url",
+                    "background_color",
+                    "primary_color",
+                    "secondary_color",
+                    "tertiary_color"
+                ],
+                "title": "ArtworkRead"
+            },
+            "ArtworkUpdate": {
+                "properties": {
+                    "kind": {
+                        "anyOf": [
+                            { "$ref": "#/components/schemas/ArtworkKind" },
+                            { "type": "null" }
+                        ]
+                    },
+                    "image_url": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Image Url"
+                    },
+                    "background_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Background Color"
+                    },
+                    "primary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Primary Color"
+                    },
+                    "secondary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Secondary Color"
+                    },
+                    "tertiary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Tertiary Color"
+                    }
+                },
+                "type": "object",
+                "title": "ArtworkUpdate"
+            },
+            "Body_sign_in_sign_in_post": {
+                "properties": {
+                    "grant_type": {
+                        "anyOf": [
+                            { "type": "string", "pattern": "^password$" },
+                            { "type": "null" }
+                        ],
+                        "title": "Grant Type"
+                    },
+                    "username": { "type": "string", "title": "Username" },
+                    "password": { "type": "string", "format": "password", "title": "Password" },
+                    "scope": { "type": "string", "title": "Scope", "default": "" },
+                    "client_id": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Client Id"
+                    },
+                    "client_secret": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "format": "password",
+                        "title": "Client Secret"
+                    }
+                },
+                "type": "object",
+                "required": ["username", "password"],
+                "title": "Body_sign_in_sign_in_post"
+            },
+            "BulkIngestSongs": {
+                "properties": {
+                    "songs": {
+                        "items": { "$ref": "#/components/schemas/IngestSong" },
+                        "type": "array",
+                        "maxItems": 50,
+                        "title": "Songs"
+                    }
+                },
+                "type": "object",
+                "required": ["songs"],
+                "title": "BulkIngestSongs"
+            },
+            "ExtensionCommand": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id",
+                        "description": "Unique identifier for the command"
+                    },
+                    "searchTerms": {
+                        "type": "string",
+                        "title": "Searchterms",
+                        "description": "The static search terms for the command"
+                    },
+                    "requiredInputKinds": {
+                        "items": { "type": "string" },
+                        "type": "array",
+                        "title": "Requiredinputkinds",
+                        "description": "The kinds of the inputs this command requires to execute"
+                    }
+                },
+                "type": "object",
+                "required": ["id", "searchTerms", "requiredInputKinds"],
+                "title": "ExtensionCommand"
+            },
+            "ExtensionImportAdmin": {
+                "properties": {
+                    "manifest_url": {
+                        "type": "string",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "format": "uri",
+                        "title": "Manifest Url"
+                    }
+                },
+                "type": "object",
+                "required": ["manifest_url"],
+                "title": "ExtensionImportAdmin"
+            },
+            "ExtensionManifest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name",
+                        "description": "A friendly name for the extension"
+                    },
+                    "id": {
+                        "type": "string",
+                        "title": "Id",
+                        "description": "A unique identifier for the extension"
+                    },
+                    "version": {
+                        "type": "string",
+                        "title": "Version",
+                        "description": "The version of the extension"
+                    },
+                    "description": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Description",
+                        "description": "An optional description of the extension"
+                    },
+                    "url": {
+                        "type": "string",
+                        "title": "Url",
+                        "description": "The URL of the extension"
+                    },
+                    "preferredWidth": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Preferredwidth",
+                        "description": "The preferred width of the extension as a CSS dimension"
+                    },
+                    "preferredHeight": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Preferredheight",
+                        "description": "The preferred height of the extension as a CSS dimension"
+                    },
+                    "permissions": {
+                        "anyOf": [
+                            {
+                                "items": { "$ref": "#/components/schemas/ExtensionPermissions" },
+                                "type": "array"
+                            },
+                            { "type": "null" }
+                        ],
+                        "title": "Permissions",
+                        "description": "An optional array of permissions required by the extension",
+                        "default": []
+                    },
+                    "sourceSchemes": {
+                        "anyOf": [
+                            { "items": { "type": "string" }, "type": "array" },
+                            { "type": "null" }
+                        ],
+                        "title": "Sourceschemes",
+                        "description": "An optional array of source schemes supported by the extension",
+                        "default": []
+                    },
+                    "commands": {
+                        "anyOf": [
+                            {
+                                "items": { "$ref": "#/components/schemas/ExtensionCommand" },
+                                "type": "array"
+                            },
+                            { "type": "null" }
+                        ],
+                        "title": "Commands",
+                        "description": "An optional array of commands supported by the extension"
+                    }
+                },
+                "type": "object",
+                "required": ["name", "id", "version", "url"],
+                "title": "ExtensionManifest"
+            },
+            "ExtensionPermissions": {
+                "type": "string",
+                "enum": [
+                    "run:background",
+                    "run:eager",
+                    "commands:input:read",
+                    "commands:input:add",
+                    "commands:query",
+                    "commands:run",
+                    "libraries:read",
+                    "libraries:write",
+                    "playback:read",
+                    "playback:control"
+                ],
+                "title": "ExtensionPermissions"
+            },
+            "ExtensionRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "manifest": { "$ref": "#/components/schemas/ExtensionManifest" }
+                },
+                "type": "object",
+                "required": ["id", "manifest"],
+                "title": "ExtensionRead"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": { "$ref": "#/components/schemas/ValidationError" },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "IngestArtwork": {
+                "properties": {
+                    "kind": { "$ref": "#/components/schemas/ArtworkKind" },
+                    "image_url": { "type": "string", "title": "Image Url" },
+                    "background_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Background Color"
+                    },
+                    "primary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Primary Color"
+                    },
+                    "secondary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Secondary Color"
+                    },
+                    "tertiary_color": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Tertiary Color"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "kind",
+                    "image_url",
+                    "background_color",
+                    "primary_color",
+                    "secondary_color",
+                    "tertiary_color"
+                ],
+                "title": "IngestArtwork"
+            },
+            "IngestSong": {
+                "properties": {
+                    "artist_name": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Artist Name"
+                    },
+                    "album_title": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Album Title"
+                    },
+                    "artworks": {
+                        "items": { "$ref": "#/components/schemas/IngestArtwork" },
+                        "type": "array",
+                        "title": "Artworks"
+                    },
+                    "sources": {
+                        "items": { "$ref": "#/components/schemas/IngestSource" },
+                        "type": "array",
+                        "title": "Sources"
+                    },
+                    "start_time": { "type": "number", "title": "Start Time" },
+                    "end_time": { "type": "number", "title": "End Time" },
+                    "title": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Title"
+                    },
+                    "album_artist": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Album Artist"
+                    },
+                    "composer": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Composer"
+                    },
+                    "genre": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Genre"
+                    },
+                    "release_date": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Release Date"
+                    },
+                    "track_number": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Track Number"
+                    },
+                    "track_total": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Track Total"
+                    },
+                    "disc_number": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Disc Number"
+                    },
+                    "disc_total": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Disc Total"
+                    },
+                    "lyrics": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Lyrics"
+                    },
+                    "rating": {
+                        "anyOf": [{ "type": "number" }, { "type": "null" }],
+                        "title": "Rating"
+                    },
+                    "bpm": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "Bpm" },
+                    "comment": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Comment"
+                    },
+                    "grouping": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Grouping"
+                    },
+                    "mcn": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Mcn" },
+                    "isrc": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Isrc"
+                    },
+                    "music_brainz_release_id": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Music Brainz Release Id"
+                    },
+                    "music_brainz_recording_id": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Music Brainz Recording Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "artist_name",
+                    "album_title",
+                    "artworks",
+                    "sources",
+                    "start_time",
+                    "end_time",
+                    "title",
+                    "album_artist",
+                    "composer",
+                    "genre",
+                    "release_date",
+                    "track_number",
+                    "track_total",
+                    "disc_number",
+                    "disc_total",
+                    "lyrics",
+                    "rating",
+                    "bpm",
+                    "comment",
+                    "grouping",
+                    "mcn",
+                    "isrc",
+                    "music_brainz_release_id",
+                    "music_brainz_recording_id"
+                ],
+                "title": "IngestSong"
+            },
+            "IngestSource": {
+                "properties": {
+                    "url": { "type": "string", "title": "Url" },
+                    "mime_type": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Mime Type"
+                    }
+                },
+                "type": "object",
+                "required": ["url", "mime_type"],
+                "title": "IngestSource"
+            },
+            "InstanceStatusRead": {
+                "properties": {
+                    "env": { "type": "string", "enum": ["dev", "ci", "prod"], "title": "Env" },
+                    "first_setup_complete": { "type": "boolean", "title": "First Setup Complete" }
+                },
+                "type": "object",
+                "required": ["env", "first_setup_complete"],
+                "title": "InstanceStatusRead"
+            },
+            "LibraryCreate": {
+                "properties": {
+                    "name": { "type": "string", "title": "Name" },
+                    "home_path": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Home Path"
+                    }
+                },
+                "type": "object",
+                "required": ["name", "home_path"],
+                "title": "LibraryCreate"
+            },
+            "LibraryHomePathRead": {
+                "properties": {
+                    "relative_to": { "type": "string", "title": "Relative To" },
+                    "subpaths": {
+                        "items": { "type": "string" },
+                        "type": "array",
+                        "title": "Subpaths"
+                    }
+                },
+                "type": "object",
+                "required": ["relative_to", "subpaths"],
+                "title": "LibraryHomePathRead"
+            },
+            "LibraryMediaRead_AlbumRead_": {
+                "properties": {
+                    "items": {
+                        "items": { "$ref": "#/components/schemas/AlbumRead" },
+                        "type": "array",
+                        "title": "Items"
+                    },
+                    "offset": { "type": "integer", "title": "Offset" },
+                    "limit": { "type": "integer", "title": "Limit" },
+                    "total": { "type": "integer", "title": "Total" }
+                },
+                "type": "object",
+                "required": ["items", "offset", "limit", "total"],
+                "title": "LibraryMediaRead[AlbumRead]"
+            },
+            "LibraryMediaRead_ArtistRead_": {
+                "properties": {
+                    "items": {
+                        "items": { "$ref": "#/components/schemas/ArtistRead" },
+                        "type": "array",
+                        "title": "Items"
+                    },
+                    "offset": { "type": "integer", "title": "Offset" },
+                    "limit": { "type": "integer", "title": "Limit" },
+                    "total": { "type": "integer", "title": "Total" }
+                },
+                "type": "object",
+                "required": ["items", "offset", "limit", "total"],
+                "title": "LibraryMediaRead[ArtistRead]"
+            },
+            "LibraryMediaRead_ExtensionRead_": {
+                "properties": {
+                    "items": {
+                        "items": { "$ref": "#/components/schemas/ExtensionRead" },
+                        "type": "array",
+                        "title": "Items"
+                    },
+                    "offset": { "type": "integer", "title": "Offset" },
+                    "limit": { "type": "integer", "title": "Limit" },
+                    "total": { "type": "integer", "title": "Total" }
+                },
+                "type": "object",
+                "required": ["items", "offset", "limit", "total"],
+                "title": "LibraryMediaRead[ExtensionRead]"
+            },
+            "LibraryMediaRead_SongRead_": {
+                "properties": {
+                    "items": {
+                        "items": { "$ref": "#/components/schemas/SongRead" },
+                        "type": "array",
+                        "title": "Items"
+                    },
+                    "offset": { "type": "integer", "title": "Offset" },
+                    "limit": { "type": "integer", "title": "Limit" },
+                    "total": { "type": "integer", "title": "Total" }
+                },
+                "type": "object",
+                "required": ["items", "offset", "limit", "total"],
+                "title": "LibraryMediaRead[SongRead]"
+            },
+            "LibraryPermissionCreate": {
+                "properties": {
+                    "user_id": { "type": "integer", "title": "User Id" },
+                    "can_add": { "type": "boolean", "title": "Can Add" },
+                    "can_edit": { "type": "boolean", "title": "Can Edit" },
+                    "can_remove": { "type": "boolean", "title": "Can Remove" }
+                },
+                "type": "object",
+                "required": ["user_id", "can_add", "can_edit", "can_remove"],
+                "title": "LibraryPermissionCreate"
+            },
+            "LibraryPermissionRead": {
+                "properties": {
+                    "user_id": { "type": "integer", "title": "User Id" },
+                    "username": { "type": "string", "title": "Username" },
+                    "can_add": { "type": "boolean", "title": "Can Add" },
+                    "can_edit": { "type": "boolean", "title": "Can Edit" },
+                    "can_remove": { "type": "boolean", "title": "Can Remove" }
+                },
+                "type": "object",
+                "required": ["user_id", "username", "can_add", "can_edit", "can_remove"],
+                "title": "LibraryPermissionRead"
+            },
+            "LibraryPermissionUpdate": {
+                "properties": {
+                    "can_add": {
+                        "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+                        "title": "Can Add"
+                    },
+                    "can_edit": {
+                        "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+                        "title": "Can Edit"
+                    },
+                    "can_remove": {
+                        "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+                        "title": "Can Remove"
+                    }
+                },
+                "type": "object",
+                "title": "LibraryPermissionUpdate"
+            },
+            "LibraryRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "name": { "type": "string", "title": "Name" },
+                    "home_path": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Home Path"
+                    }
+                },
+                "type": "object",
+                "required": ["id", "name", "home_path"],
+                "title": "LibraryRead"
+            },
+            "LibraryUpdate": {
+                "properties": {
+                    "name": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Name" }
+                },
+                "type": "object",
+                "title": "LibraryUpdate"
+            },
+            "NotificationRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "title": { "type": "string", "title": "Title" },
+                    "description": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Description"
+                    },
+                    "progress": {
+                        "anyOf": [{ "type": "number" }, { "type": "null" }],
+                        "title": "Progress"
+                    },
+                    "is_read": { "type": "boolean", "title": "Is Read" }
+                },
+                "type": "object",
+                "required": ["id", "title", "description", "progress", "is_read"],
+                "title": "NotificationRead"
+            },
+            "NotificationUpdate": {
+                "properties": {
+                    "is_read": {
+                        "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+                        "title": "Is Read"
+                    }
+                },
+                "type": "object",
+                "title": "NotificationUpdate"
+            },
+            "NotificationsRead": {
+                "properties": {
+                    "items": {
+                        "items": { "$ref": "#/components/schemas/NotificationRead" },
+                        "type": "array",
+                        "title": "Items"
+                    },
+                    "offset": { "type": "integer", "title": "Offset" },
+                    "limit": { "type": "integer", "title": "Limit" },
+                    "total": { "type": "integer", "title": "Total" }
+                },
+                "type": "object",
+                "required": ["items", "offset", "limit", "total"],
+                "title": "NotificationsRead"
+            },
+            "OAuth2Scope": {
+                "type": "string",
+                "enum": ["profile", "library:read", "library:write", "admin"],
+                "title": "OAuth2Scope"
+            },
+            "OperationResult": {
+                "properties": {
+                    "message": { "type": "string", "title": "Message" },
+                    "row_count": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Row Count"
+                    }
+                },
+                "type": "object",
+                "required": ["message"],
+                "title": "OperationResult"
+            },
+            "SongRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "artist_id": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Artist Id",
+                        "description": "ID of this song's artist, if any"
+                    },
+                    "artist_name": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Artist Name",
+                        "description": "Name of this song's song, if any"
+                    },
+                    "album_id": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Album Id",
+                        "description": "ID of this song's album, if any"
+                    },
+                    "album_title": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Album Title",
+                        "description": "Title of this song's album, if any"
+                    },
+                    "artworks": {
+                        "items": { "$ref": "#/components/schemas/ArtworkRead" },
+                        "type": "array",
+                        "title": "Artworks",
+                        "description": "The artworks of this song"
+                    },
+                    "sources": {
+                        "items": { "$ref": "#/components/schemas/SourceRead" },
+                        "type": "array",
+                        "title": "Sources",
+                        "description": "The sources of this song"
+                    },
+                    "start_time": {
+                        "type": "number",
+                        "title": "Start Time",
+                        "description": "Where in the song to start playback",
+                        "default": 0
+                    },
+                    "end_time": {
+                        "type": "number",
+                        "title": "End Time",
+                        "description": "Where in the song to end playback"
+                    },
+                    "title": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Title",
+                        "description": "The title of the song"
+                    },
+                    "album_artist": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Album Artist",
+                        "description": "The song's album artist"
+                    },
+                    "composer": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Composer",
+                        "description": "The composer of the song"
+                    },
+                    "genre": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Genre",
+                        "description": "The genre of the song"
+                    },
+                    "release_date": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Release Date",
+                        "description": "The release date of the song"
+                    },
+                    "track_number": {
+                        "anyOf": [{ "type": "integer", "minimum": 0.0 }, { "type": "null" }],
+                        "title": "Track Number",
+                        "description": "The track number of the song"
+                    },
+                    "track_total": {
+                        "anyOf": [{ "type": "integer", "minimum": 0.0 }, { "type": "null" }],
+                        "title": "Track Total",
+                        "description": "The total number of tracks on the album"
+                    },
+                    "disc_number": {
+                        "anyOf": [{ "type": "integer", "minimum": 0.0 }, { "type": "null" }],
+                        "title": "Disc Number",
+                        "description": "The disc number in the album"
+                    },
+                    "disc_total": {
+                        "anyOf": [{ "type": "integer", "minimum": 0.0 }, { "type": "null" }],
+                        "title": "Disc Total",
+                        "description": "The total number of discs in the album"
+                    },
+                    "lyrics": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Lyrics",
+                        "description": "The lyrics of the song"
+                    },
+                    "rating": {
+                        "anyOf": [
+                            { "type": "number", "maximum": 1.0, "minimum": 0.0 },
+                            { "type": "null" }
+                        ],
+                        "title": "Rating",
+                        "description": "The rating of the song"
+                    },
+                    "bpm": {
+                        "anyOf": [{ "type": "integer", "minimum": 0.0 }, { "type": "null" }],
+                        "title": "Bpm",
+                        "description": "The beats per minute of the song"
+                    },
+                    "comment": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Comment",
+                        "description": "A user defined comment"
+                    },
+                    "grouping": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Grouping",
+                        "description": "The grouping of the song"
+                    },
+                    "mcn": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Mcn" },
+                    "isrc": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Isrc"
+                    },
+                    "music_brainz_release_id": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Music Brainz Release Id"
+                    },
+                    "music_brainz_recording_id": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Music Brainz Recording Id"
+                    }
+                },
+                "type": "object",
+                "required": ["id", "end_time"],
+                "title": "SongRead"
+            },
+            "SongUpdate": {
+                "properties": {
+                    "artist_id": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Artist Id"
+                    },
+                    "album_id": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Album Id"
+                    },
+                    "artwork_ids": {
+                        "anyOf": [
+                            { "items": { "type": "integer" }, "type": "array" },
+                            { "type": "null" }
+                        ],
+                        "title": "Artwork Ids"
+                    },
+                    "source_ids": {
+                        "anyOf": [
+                            { "items": { "type": "integer" }, "type": "array" },
+                            { "type": "null" }
+                        ],
+                        "title": "Source Ids"
+                    },
+                    "start_time": {
+                        "anyOf": [{ "type": "number" }, { "type": "null" }],
+                        "title": "Start Time"
+                    },
+                    "end_time": {
+                        "anyOf": [{ "type": "number" }, { "type": "null" }],
+                        "title": "End Time"
+                    },
+                    "title": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Title"
+                    },
+                    "album_artist": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Album Artist"
+                    },
+                    "composer": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Composer"
+                    },
+                    "genre": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Genre"
+                    },
+                    "release_date": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Release Date"
+                    },
+                    "track_number": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Track Number"
+                    },
+                    "track_total": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Track Total"
+                    },
+                    "disc_number": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Disc Number"
+                    },
+                    "disc_total": {
+                        "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                        "title": "Disc Total"
+                    },
+                    "lyrics": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Lyrics"
+                    },
+                    "rating": {
+                        "anyOf": [{ "type": "number" }, { "type": "null" }],
+                        "title": "Rating"
+                    },
+                    "bpm": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "Bpm" },
+                    "comment": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Comment"
+                    },
+                    "grouping": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Grouping"
+                    },
+                    "mcn": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Mcn" },
+                    "isrc": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Isrc"
+                    },
+                    "music_brainz_release_id": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Music Brainz Release Id"
+                    },
+                    "music_brainz_recording_id": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Music Brainz Recording Id"
+                    }
+                },
+                "type": "object",
+                "title": "SongUpdate"
+            },
+            "SourceCreate": {
+                "properties": {
+                    "url": { "type": "string", "title": "Url" },
+                    "mime_type": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Mime Type"
+                    }
+                },
+                "type": "object",
+                "required": ["url", "mime_type"],
+                "title": "SourceCreate"
+            },
+            "SourceRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "url": { "type": "string", "title": "Url" },
+                    "mime_type": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Mime Type"
+                    },
+                    "is_invalid": { "type": "boolean", "title": "Is Invalid" }
+                },
+                "type": "object",
+                "required": ["id", "url", "mime_type", "is_invalid"],
+                "title": "SourceRead"
+            },
+            "SourceUpdate": {
+                "properties": {
+                    "url": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Url" },
+                    "mime_type": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Mime Type"
+                    },
+                    "is_invalid": {
+                        "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+                        "title": "Is Invalid"
+                    }
+                },
+                "type": "object",
+                "title": "SourceUpdate"
+            },
+            "Token": {
+                "properties": {
+                    "scopes": {
+                        "items": { "$ref": "#/components/schemas/OAuth2Scope" },
+                        "type": "array",
+                        "title": "Scopes"
+                    },
+                    "access_token": { "type": "string", "title": "Access Token" },
+                    "token_type": { "type": "string", "const": "bearer", "title": "Token Type" }
+                },
+                "type": "object",
+                "required": ["scopes", "access_token", "token_type"],
+                "title": "Token"
+            },
+            "UserEventPreflight": {
+                "properties": { "token": { "type": "string", "title": "Token" } },
+                "type": "object",
+                "required": ["token"],
+                "title": "UserEventPreflight"
+            },
+            "UserProfileRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "username": { "type": "string", "title": "Username" },
+                    "preferred_name": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Preferred Name"
+                    }
+                },
+                "type": "object",
+                "required": ["id", "username", "preferred_name"],
+                "title": "UserProfileRead"
+            },
+            "UserProfileUpdate": {
+                "properties": {
+                    "preferred_name": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Preferred Name"
+                    }
+                },
+                "type": "object",
+                "required": ["preferred_name"],
+                "title": "UserProfileUpdate"
+            },
+            "UserProfilesRead": {
+                "properties": {
+                    "users": {
+                        "items": { "$ref": "#/components/schemas/UserProfileRead" },
+                        "type": "array",
+                        "title": "Users"
+                    },
+                    "offset": { "type": "integer", "title": "Offset" },
+                    "limit": { "type": "integer", "title": "Limit" },
+                    "total": { "type": "integer", "title": "Total" }
+                },
+                "type": "object",
+                "required": ["users", "offset", "limit", "total"],
+                "title": "UserProfilesRead"
+            },
+            "UserSignUp": {
+                "properties": {
+                    "username": { "type": "string", "title": "Username" },
+                    "password": { "type": "string", "title": "Password" }
+                },
+                "type": "object",
+                "required": ["username", "password"],
+                "title": "UserSignUp"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": { "type": "string", "title": "Message" },
+                    "type": { "type": "string", "title": "Error Type" }
+                },
+                "type": "object",
+                "required": ["loc", "msg", "type"],
+                "title": "ValidationError"
+            }
+        },
+        "securitySchemes": {
+            "OAuth2PasswordBearer": {
+                "type": "oauth2",
+                "flows": {
+                    "password": {
+                        "scopes": {
+                            "profile": "Access the user's own profile",
+                            "library:read": "Access libraries on this instance",
+                            "library:write": "Change libraries on this instance",
+                            "admin": "Administer this instance"
+                        },
+                        "tokenUrl": "/sign-in"
+                    }
+                }
+            }
+        }
+    }
+}
