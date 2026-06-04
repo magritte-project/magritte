@@ -45,12 +45,13 @@ export default function PanelsLayout({ children }: PanelsProps) {
         <PanelsContextProvider value={{ panels, revealPanel, hidePanels }}>
             <Group
                 orientation={preferVerticalOrientation ? "vertical" : "horizontal"}
-                className="min-h-screen"
+                className="h-screen!"
             >
                 <Panel
                     className={classNames("relative overflow-auto pb-32", {
                         "h-screen": !preferVerticalOrientation,
                     })}
+                    minSize="16rem"
                 >
                     {children}
                 </Panel>
@@ -65,6 +66,9 @@ export default function PanelsLayout({ children }: PanelsProps) {
                         />
                         <Panel
                             collapsible
+                            className={classNames("relative flex flex-col overflow-auto", {
+                                "h-screen": !preferVerticalOrientation,
+                            })}
                             defaultSize={
                                 preferVerticalOrientation ? preferredHeight : preferredWidth
                             }
@@ -98,12 +102,7 @@ export default function PanelsLayout({ children }: PanelsProps) {
                                         ))}
                                     </div>
                                 </ThemedHeader>
-                                <main
-                                    className={classNames("min-h-0", {
-                                        "h-full": preferVerticalOrientation,
-                                        "h-screen": !preferVerticalOrientation,
-                                    })}
-                                >
+                                <main className="flex-1">
                                     <SelectedComponent />
                                 </main>
                             </DismissContextProvider>

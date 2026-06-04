@@ -32,7 +32,7 @@ export default function ThemedTabItemLabel({
             {...rest}
         >
             <Icon size="2em" weight="light" />
-            {label}
+            <span className="text-nowrap">{label}</span>
         </div>
     )
 }
