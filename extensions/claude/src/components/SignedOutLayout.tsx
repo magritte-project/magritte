@@ -10,9 +10,9 @@ export default function SignedOutLayout({ apiKey, setApiKey }: SignedOutLayoutPr
     const [newApiKey, setNewApiKey] = useState(apiKey ?? "")
 
     return (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 p-3">
             <h1 className="font-bold text-lg">Claude API key</h1>
-            <p className="text-sm">You must provide your Claude API key to use this extension.</p>
+            <p className="text-sm">You must provide a Claude API key to use this extension.</p>
             <input
                 type="text"
                 placeholder="API key"

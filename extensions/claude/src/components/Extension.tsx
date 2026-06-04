@@ -7,7 +7,7 @@ export default function Extension() {
     const [apiKey, setApiKey] = useLocalStorage<string | null>("claude.apiKey", null)
 
     return apiKey ? (
-        <SignedInLayout apiKey={apiKey} />
+        <SignedInLayout apiKey={apiKey} onDeauthorize={() => setApiKey(null)} />
     ) : (
         <SignedOutLayout apiKey={apiKey} setApiKey={setApiKey} />
     )

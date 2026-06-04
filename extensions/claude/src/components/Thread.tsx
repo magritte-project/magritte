@@ -5,7 +5,11 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 import useAnthropic from "@/hooks/anthropicHook"
 
-export default function Thread() {
+export interface ThreadProps {
+    readonly onDeauthorize: () => void
+}
+
+export default function Thread({ onDeauthorize }: ThreadProps) {
     const anthropic = useAnthropic()
     const [messages, setMessages] = useState<MessageParam[]>([])
     const [streamingContent, setStreamingContent] = useState("")
@@ -77,6 +81,20 @@ export default function Thread() {
 
     return (
         <div className="flex h-screen flex-col">
+            <header className="flex items-center gap-3 px-3 text-sm">
+                <div className="flex-1 font-bold">Thread</div>
+                <button
+                    type="button"
+                    onClick={onDeauthorize}
+                    className={classNames(
+                        "px-3 py-2 flex items-center gap-0.5",
+                        "rounded-full bg-gray-50 active:bg-gray-100 data-open:bg-gray-200 disabled:bg-transparent",
+                        "font-bold disabled:text-gray-300",
+                    )}
+                >
+                    Deauthorize
+                </button>
+            </header>
             <div className="flex-1 overflow-y-auto space-y-4 p-4">
                 {messages.map((message, index) => (
                     <MessageBubble
@@ -90,7 +108,6 @@ export default function Thread() {
                 )}
                 <div ref={bottomRef} />
             </div>
-
             <div className="border-t border-gray-200 p-3">
                 <div className="flex items-end gap-2 rounded-xl border border-gray-200 px-3 py-2">
                     <textarea
