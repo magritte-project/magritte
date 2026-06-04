@@ -14,6 +14,7 @@ export default function Thread({ onDeauthorize }: ThreadProps) {
     const [messages, setMessages] = useState<MessageParam[]>([])
     const [streamingContent, setStreamingContent] = useState("")
     const [isStreaming, setIsStreaming] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const [input, setInput] = useState("")
     const bottomRef = useRef<HTMLDivElement>(null)
     const abortRef = useRef<AbortController | null>(null)
@@ -35,6 +36,7 @@ export default function Thread({ onDeauthorize }: ThreadProps) {
         setInput("")
         setIsStreaming(true)
         setStreamingContent("")
+        setError(null)
 
         abortRef.current?.abort()
         const controller = new AbortController()
@@ -56,7 +58,8 @@ export default function Thread({ onDeauthorize }: ThreadProps) {
 
             setMessages((prev) => [...prev, { role: "assistant", content: fullContent }])
         } catch (e) {
-            if (!(e instanceof DOMException && e.name === "AbortError")) throw e
+            if (e instanceof DOMException && e.name === "AbortError") return
+            setError(e instanceof Error ? e.message : "An unexpected error occurred")
         } finally {
             setStreamingContent("")
             setIsStreaming(false)
@@ -108,6 +111,18 @@ export default function Thread({ onDeauthorize }: ThreadProps) {
                 )}
                 <div ref={bottomRef} />
             </div>
+            {error && (
+                <div className="mx-3 mb-3 flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+                    <span className="flex-1 wrap-anywhere">{error}</span>
+                    <button
+                        type="button"
+                        className="shrink-0 text-red-400 hover:text-red-600"
+                        onClick={() => setError(null)}
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
             <div className="border-t border-gray-200 p-3">
                 <div className="flex items-end gap-2 rounded-xl border border-gray-200 px-3 py-2">
                     <textarea
