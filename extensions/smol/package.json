@@ -1,0 +1,44 @@
+{
+    "name": "@magritte/extension-smol",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite --port 7665",
+        "start": "vite --port 7666",
+        "build": "vite build && tsc",
+        "clean": "rm -rf dist",
+        "serve": "vite preview",
+        "test": "vitest run",
+        "format": "oxfmt",
+        "lint": "oxlint",
+        "check": "oxlint && oxfmt --check"
+    },
+    "dependencies": {
+        "@browser-ai/transformers-js": "2.2.2",
+        "@headlessui/react": "catalog:",
+        "@magritte/rpc": "workspace:*",
+        "@magritte/sdk": "workspace:*",
+        "@phosphor-icons/react": "catalog:",
+        "@tailwindcss/vite": "catalog:",
+        "@tanstack/react-query": "catalog:",
+        "@uidotdev/usehooks": "catalog:",
+        "ai": "6.0.197",
+        "classnames": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "tailwindcss": "catalog:",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "@vitejs/plugin-react": "catalog:",
+        "oxfmt": "catalog:",
+        "oxlint": "catalog:",
+        "typescript": "catalog:",
+        "vite": "catalog:",
+        "vitest": "catalog:"
+    }
+}
