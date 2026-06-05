@@ -95,5 +95,19 @@ export function libraryCommands(
                 ])
             },
         },
+        {
+            id: "libraries.requestSync",
+            searchTerms: "library sync files",
+            requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            present: async () => ({
+                displayName: "library: Request Sync",
+            }),
+            execute: async (inputs) => {
+                const libraries = inputs.allOf(LibraryInput)
+                await Promise.all(
+                    libraries.map((library) => apiClient.requestSyncLibrary(library.id)),
+                )
+            },
+        },
     ]
 }
