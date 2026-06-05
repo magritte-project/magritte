@@ -1,0 +1,19 @@
+{
+    "name": "Smol",
+    "id": "magritte.smol",
+    "version": "0.0.0",
+    "url": "http://localhost:7665/",
+    "preferredWidth": "16rem",
+    "preferredHeight": "16rem",
+    "permissions": [
+        "run:background",
+        "commands:input:read",
+        "commands:input:add",
+        "commands:query",
+        "commands:run",
+        "libraries:read",
+        "libraries:write",
+        "playback:read",
+        "playback:control"
+    ]
+}
