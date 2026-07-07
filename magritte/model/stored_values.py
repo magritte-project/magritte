@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Field, col, delete, select
 
 from magritte.model.base import LibraryModel
+from magritte.utilities.db import get_row_count
 
 
 class StoredValue(LibraryModel, table=True):
@@ -64,4 +65,4 @@ class StoredValue(LibraryModel, table=True):
                 col(cls.key) == key,
             )
         )
-        return result.rowcount == 1
+        return get_row_count(result) == 1

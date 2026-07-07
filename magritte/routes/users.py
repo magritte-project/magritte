@@ -38,6 +38,7 @@ from magritte.schemas.user import (
     UserProfilesRead,
     UserProfileUpdate,
 )
+from magritte.utilities.db import get_row_count
 from magritte.utilities.user_events import UserEvents, get_user_events
 
 router = APIRouter(prefix="/users")
@@ -200,7 +201,7 @@ async def mark_all_notifications_read(
     )
     await session.flush()
     return OperationResult(
-        message="Notifications marked as read", row_count=result.rowcount
+        message="Notifications marked as read", row_count=get_row_count(result)
     )
 
 

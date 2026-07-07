@@ -1,6 +1,7 @@
 import mimetypes
 import os
 import sys
+from typing import cast
 
 import tinytag
 from PIL import Image
@@ -40,7 +41,7 @@ def find_dominant_image_colors(
         color_counts = sorted(paletted_image.getcolors() or [], reverse=True)
         dominant_colors = list[tuple[int, ...]]()
         for _, index in color_counts[:color_count]:
-            dominant_colors.append(indexed_colors[index])
+            dominant_colors.append(indexed_colors[cast(int, index)])
 
         return [
             f"rgb({dominant_color[0]}, {dominant_color[1]}, {dominant_color[2]})"

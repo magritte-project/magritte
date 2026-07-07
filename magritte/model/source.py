@@ -5,6 +5,7 @@ from sqlmodel import Field, Relationship, col, delete, select, update
 
 from magritte.model.base import LibraryModel
 from magritte.model.song import Song, SongSourceLink
+from magritte.utilities.db import get_row_count
 from magritte.utilities.files import path_as_file_uri
 
 
@@ -81,7 +82,7 @@ class Source(LibraryModel, table=True):
                 which_urls,
             )
         )
-        return update_result.rowcount
+        return get_row_count(update_result)
 
     @classmethod
     async def move(
@@ -101,7 +102,7 @@ class Source(LibraryModel, table=True):
                 )
                 .where(col(cls.url) == src_url)
             )
-            return update_result.rowcount
+            return get_row_count(update_result)
         else:
             to_update = (
                 await session.scalars(
