@@ -34,6 +34,10 @@ Magritte is intended to be highly flexible in how it can be configured and where
 - [web](/magritte/tree/main/web): The built-in web front end.
 - [rené](https://github.com/decarbonization/rene): A front end that runs on embedded Linux devices like the Raspberry Pi.
 
+## AI Usage Disclosure
+
+Claude Code and Gemini were used for research, to generate config files, to find solutions for bugs, to generate some SQL queries, and to generate some of the code in the AI-related extensions. A majority of the code in this repository was handwritten.
+
 ## Installation
 
 Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling and [`just`](https://just.systems/) to handle tasks. Follow the Getting Started directions to install `asdf` on your machine. Once you've installed `asdf`, you can bootstrap your development environment:
