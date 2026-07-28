@@ -1,14 +1,18 @@
-import type { APIClient } from "@magritte/api"
+import type { APIClient, UserSessionManager } from "@magritte/api"
 import { getCommandInputKind, LibraryInput, LibrarySongInput } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import type { Command } from "@/commands/base"
+import type { LocalCache } from "@/playback/localFileCache"
+import { resolveUrl } from "@/utilities/resources"
 
 export function libraryCommands(
     router: RegisteredRouter,
     apiClient: APIClient,
+    session: UserSessionManager,
+    localCache: LocalCache,
     queryClient: QueryClient,
 ): Command[] {
     return [
@@ -93,6 +97,52 @@ export function libraryCommands(
                         exact: false,
                     }),
                 ])
+            },
+        },
+        {
+            id: `libraries.downloadSongs`,
+            searchTerms: "library download songs",
+            requiredInputKinds: [
+                getCommandInputKind(LibraryInput),
+                getCommandInputKind(LibrarySongInput),
+            ],
+            present: async () => ({
+                displayName: "library: Download Selected Songs…",
+            }),
+            execute: async (inputs) => {
+                const [library] = inputs.allOf(LibraryInput)
+                const songs = inputs.allOf(LibrarySongInput)
+                const librarySongs = await Promise.all(
+                    songs.map((song) => apiClient.readLibrarySong(library.id, song.id)),
+                )
+                const sources = librarySongs.flatMap((song) => {
+                    const source = song.sources?.find((source) =>
+                        source.url.startsWith("magritte://"),
+                    )
+                    return source !== undefined ? [source] : []
+                })
+                const existingFiles = await localCache.filesExist(
+                    sources.map((source) => source.url),
+                )
+                for (const source of sources) {
+                    if (existingFiles.has(source.url)) {
+                        console.debug(`Skipping already downloaded source: ${source.url}`)
+                        continue
+                    }
+                    console.debug(`Downloading source: ${source.url}`)
+                    try {
+                        const url = resolveUrl(source.url, session.current)
+                        if (url === undefined) {
+                            throw new Error("Could not resolve song source URL")
+                        }
+                        const response = await fetch(url)
+                        const contents = await response.blob()
+                        await localCache.putFile(source.url, contents)
+                        console.debug(`Downloaded source: ${source.url}`)
+                    } catch (error) {
+                        console.error(`Could not download source: ${source.url}: ${error}`)
+                    }
+                }
             },
         },
         {

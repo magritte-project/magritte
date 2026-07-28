@@ -10,6 +10,8 @@ import type { PlaybackModes } from "@/playback/modes"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 import { resolveUrl } from "@/utilities/resources"
 
+import type { LocalCache } from "./localFileCache"
+
 function _findBestUrl(item: PlayableItem): string | undefined {
     const sources = item.sources
     if (sources === undefined) {
@@ -30,12 +32,18 @@ function _getPlaybackState(audio: HTMLAudioElement): PlaybackState {
 
 export default class BuiltInPlaybackEngine implements PlaybackEngine {
     private readonly _userSession: UserSessionManager
+    private readonly _localCache: LocalCache
     private readonly _audio: HTMLAudioElement
     private readonly _events: EventSink<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
-    constructor(userSession: UserSessionManager, parent: HTMLElement = document.body) {
+    constructor(
+        userSession: UserSessionManager,
+        localCache: LocalCache,
+        parent: HTMLElement = document.body,
+    ) {
         this._userSession = userSession
+        this._localCache = localCache
         this._audio = new Audio()
         ;[this._events, this.$events] = createEvent()
 
@@ -95,6 +103,15 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         })
     }
 
+    private _swapSrc(newSrc: string) {
+        const oldSrc = this._audio.src
+        this._audio.src = newSrc
+        if (oldSrc.startsWith("blob:")) {
+            console.debug("Revoking local file blob for stopped playback")
+            URL.revokeObjectURL(oldSrc)
+        }
+    }
+
     readonly $events: EventStream<PlaybackEngineEvent>
 
     async syncPlaybackModes(_modes: PlaybackModes): Promise<void> {
@@ -110,11 +127,22 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     async enqueue({ itemToPlay, playNow }: PlaybackEngineEnqueueOptions): Promise<void> {
-        const audioSrc = resolveUrl(_findBestUrl(itemToPlay), this._userSession.current)
-        if (audioSrc === undefined) {
+        const bestUrl = _findBestUrl(itemToPlay)
+        if (bestUrl === undefined) {
             throw new Error("No compatible source in song")
         }
-        this._audio.src = audioSrc
+        const sourceFile = await this._localCache.getFile(bestUrl)
+        if (sourceFile !== undefined) {
+            console.debug("Issuing local file blob for playback")
+            const audioSrc = URL.createObjectURL(sourceFile)
+            this._swapSrc(audioSrc)
+        } else {
+            const audioSrc = resolveUrl(bestUrl, this._userSession.current)
+            if (audioSrc === undefined) {
+                throw new Error("Could not resolve song source URL")
+            }
+            this._swapSrc(audioSrc)
+        }
         this._audio.load()
 
         this._playingItem = itemToPlay
@@ -153,7 +181,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     async stop(): Promise<void> {
-        this._audio.src = ""
+        this._swapSrc("")
         this._playingItem = null
         this._events.dispatch({ type: "playingItemChanged" })
     }

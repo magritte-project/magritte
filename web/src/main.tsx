@@ -18,6 +18,7 @@ import { ExtensionRuntime } from "@/extensions/runtime"
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider"
 import BuiltInPlaybackEngine from "@/playback/builtInEngine"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
+import { LocalCache } from "@/playback/localFileCache"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
 // Import the generated route tree
@@ -43,8 +44,9 @@ const commandRegistry = new CommandRegistry()
 const userEvents = new UserEvents(apiClient, userSession)
 
 // Set up playback
+const localCache = await LocalCache.open()
 const playbackEngineRegistry = new PlaybackEngineRegistry({
-    defaultEngine: new BuiltInPlaybackEngine(userSession),
+    defaultEngine: new BuiltInPlaybackEngine(userSession, localCache),
 })
 const player = new Player(playbackEngineRegistry)
 
@@ -94,7 +96,15 @@ declare module "@tanstack/react-router" {
 }
 
 // Hook up commands
-commandRegistry.add(...libraryCommands(router, apiClient, TanStackQueryProviderContext.queryClient))
+commandRegistry.add(
+    ...libraryCommands(
+        router,
+        apiClient,
+        userSession,
+        localCache,
+        TanStackQueryProviderContext.queryClient,
+    ),
+)
 commandRegistry.add(...playerCommands(player))
 wirePlayerCommandInputs(player, commandInputs)
 wireExtensionCommands(commandRegistry, extensionRuntime)
