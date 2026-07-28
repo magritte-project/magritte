@@ -24,7 +24,7 @@
         "@tanstack/react-query": "catalog:",
         "@uidotdev/usehooks": "catalog:",
         "classnames": "catalog:",
-        "jose": "6.2.3",
+        "jose": "6.2.4",
         "react": "catalog:",
         "react-dom": "catalog:",
         "tailwindcss": "catalog:",

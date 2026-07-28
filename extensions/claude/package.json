@@ -15,7 +15,7 @@
         "check": "oxlint && oxfmt --check"
     },
     "dependencies": {
-        "@anthropic-ai/sdk": "0.100.1",
+        "@anthropic-ai/sdk": "0.115.0",
         "@headlessui/react": "catalog:",
         "@magritte/rpc": "workspace:*",
         "@magritte/sdk": "workspace:*",

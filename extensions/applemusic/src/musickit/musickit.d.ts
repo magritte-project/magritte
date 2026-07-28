@@ -17,12 +17,12 @@
  */
 
 declare namespace MusicKit {
-    declare enum PlaybackBitrate {
+    enum PlaybackBitrate {
         high = "MusicKit.PlaybackBitrate.HIGH",
         standard = "MusicKit.PlaybackBitrate.STANDARD",
     }
 
-    declare enum PlaybackStates {
+    enum PlaybackStates {
         none = "MusicKit.PlaybackStates.none",
         loading = "MusicKit.PlaybackStates.loading",
         playing = "MusicKit.PlaybackStates.playing",
@@ -35,18 +35,18 @@ declare namespace MusicKit {
         completed = "MusicKit.PlaybackStates.completed",
     }
 
-    declare enum PlayerRepeatMode {
+    enum PlayerRepeatMode {
         all = "MusicKit.PlayerRepeatMode.all",
         none = "MusicKit.PlayerRepeatMode.none",
         one = "MusicKit.PlayerRepeatMode.one",
     }
 
-    declare enum PlayerShuffleMode {
+    enum PlayerShuffleMode {
         off = "MusicKit.PlayerShuffleMode.off",
         songs = "MusicKit.PlayerShuffleMode.songs",
     }
 
-    declare interface Configuration {
+    interface Configuration {
         readonly developerToken: string
         readonly app: {
             readonly name: string
@@ -57,7 +57,7 @@ declare namespace MusicKit {
         readonly storefrontId?: string
     }
 
-    declare interface API {
+    interface API {
         music<Data extends object = object>(
             path: string,
             queryParameters?: Record<string, string>,
@@ -65,9 +65,9 @@ declare namespace MusicKit {
         ): Promise<{ data: Data }>
     }
 
-    declare type MediaItem = object
+    type MediaItem = object
 
-    declare interface Queue {
+    interface Queue {
         readonly currentItem: MediaItem | undefined
         readonly isEmpty: boolean
         readonly items: MediaItem[]
@@ -77,7 +77,7 @@ declare namespace MusicKit {
         readonly previousPlayableItem: MediaItem | undefined
     }
 
-    declare type QueueOptions =
+    type QueueOptions =
         | { album: string }
         | { albums: string[] }
         | { musicVideo: string }
@@ -91,12 +91,12 @@ declare namespace MusicKit {
               startTime?: number
           })
 
-    declare interface SeekSeconds {
+    interface SeekSeconds {
         BACK: number
         FORWARD: number
     }
 
-    declare type SimpleEventName =
+    type SimpleEventName =
         | "audioTrackAdded"
         | "audioTrackChanged"
         | "audioTrackRemoved"
@@ -135,17 +135,17 @@ declare namespace MusicKit {
         | "textTrackChanged"
         | "textTrackRemoved"
         | "timedMetadataDidChange"
-    declare type SimpleEventCallback = () => void
-    declare type NowPlayingEventName = "nowPlayingItemWillChange" | "nowPlayingItemDidChange"
-    declare type NowPlayingEventCallback = (event: { item: MediaItem }) => void
-    declare type StateChangeEventName = "playbackStateWillChange" | "playbackStateDidChange"
-    declare type StateChangeEventCallback = (event: {
+    type SimpleEventCallback = () => void
+    type NowPlayingEventName = "nowPlayingItemWillChange" | "nowPlayingItemDidChange"
+    type NowPlayingEventCallback = (event: { item: MediaItem }) => void
+    type StateChangeEventName = "playbackStateWillChange" | "playbackStateDidChange"
+    type StateChangeEventCallback = (event: {
         oldState: PlaybackStates
         state: PlaybackStates
         nowPlayingItem: MediaItem
     }) => void
 
-    declare interface Instance {
+    interface Instance {
         readonly api: API
         readonly bitrate: PlaybackBitrate
         readonly currentPlaybackDuration: number
@@ -200,7 +200,7 @@ declare namespace MusicKit {
         unmute(): Promise<void>
     }
 
-    declare function getInstance(): Instance
-    declare function configure(config: Configuration): Promise<Instance>
-    declare function formatArtworkURL(artwork: object, width: number, height: number): string
+    function getInstance(): Instance
+    function configure(config: Configuration): Promise<Instance>
+    function formatArtworkURL(artwork: object, width: number, height: number): string
 }

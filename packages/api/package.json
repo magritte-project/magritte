@@ -24,7 +24,7 @@
         "zod": "catalog:"
     },
     "devDependencies": {
-        "@hey-api/openapi-ts": "0.97.1",
+        "@hey-api/openapi-ts": "0.0.0-next-20260724070045",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
         "typescript": "catalog:",

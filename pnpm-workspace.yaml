@@ -5,32 +5,41 @@ packages:
   - extensions/*
   - '!**/test/**'
 
+allowBuilds:
+  onnxruntime-node: false
+  protobufjs: false
+  sharp: false
+
 catalog:
   '@headlessui/react': 2.2.10
   '@phosphor-icons/react': 2.1.10
-  '@tailwindcss/vite': 4.3.0
-  '@tanstack/react-form': 1.32.0
-  '@tanstack/react-query': 5.100.10
-  '@tanstack/react-router': 1.169.2
-  '@tanstack/router-plugin': 1.167.35
+  '@tailwindcss/vite': 4.3.3
+  '@tanstack/react-form': 1.33.2
+  '@tanstack/react-query': 5.101.4
+  '@tanstack/react-router': 1.170.18
+  '@tanstack/router-plugin': 1.168.23
   '@testing-library/dom': 10.4.1
   '@testing-library/react': 16.3.2
-  '@types/node': 25.7.0
-  '@types/react': 19.2.14
+  '@types/node': 26.1.2
+  '@types/react': 19.2.17
   '@types/react-dom': 19.2.3
   '@uidotdev/usehooks': 2.4.1
-  '@vitejs/plugin-react': 6.0.1
-  baseline-browser-mapping: 2.10.29
+  '@vitejs/plugin-react': 6.0.4
+  baseline-browser-mapping: 2.11.5
   classnames: 2.5.1
-  jsdom: 29.1.1
-  motion: 12.38.0
-  oxfmt: 0.49.0
-  oxlint: 1.64.0
-  react: 19.2.6
-  react-dom: 19.2.6
-  tailwindcss: 4.3.0
-  typescript: 5.9.3
-  vite: 8.0.12
-  vitest: 4.1.6
-  web-vitals: 5.2.0
+  jsdom: 30.0.0
+  motion: 12.42.2
+  oxfmt: 0.60.0
+  oxlint: 1.75.0
+  react: 19.2.8
+  react-dom: 19.2.8
+  tailwindcss: 4.3.3
+  typescript: 7.0.2
+  vite: 8.1.5
+  vitest: 4.1.10
+  web-vitals: 6.0.1
   zod: 4.4.3
+
+minimumReleaseAgeExclude:
+  - '@types/node@26.1.2'
+  - baseline-browser-mapping@2.11.5

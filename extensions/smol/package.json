@@ -23,7 +23,7 @@
         "@tailwindcss/vite": "catalog:",
         "@tanstack/react-query": "catalog:",
         "@uidotdev/usehooks": "catalog:",
-        "ai": "6.0.197",
+        "ai": "7.0.37",
         "classnames": "catalog:",
         "react": "catalog:",
         "react-dom": "catalog:",

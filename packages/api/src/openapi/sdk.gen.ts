@@ -2,7 +2,9 @@
 
 import {
     type Client,
+    type ClientMeta,
     type Options as Options2,
+    type RequestResult,
     type TDataShape,
     urlSearchParamsBodySerializer,
 } from "./client"
@@ -170,7 +172,7 @@ export type Options<
      * You can pass arbitrary values through the `meta` object. This can be
      * used to access values that aren't defined as part of the SDK function.
      */
-    meta?: Record<string, unknown>
+    meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta
 }
 
 /**
@@ -178,7 +180,12 @@ export type Options<
  */
 export const createArtworkArtworksCreatePost = <ThrowOnError extends boolean = false>(
     options: Options<CreateArtworkArtworksCreatePostData, ThrowOnError>,
-) =>
+): RequestResult<
+    CreateArtworkArtworksCreatePostResponses,
+    CreateArtworkArtworksCreatePostErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).post<
         CreateArtworkArtworksCreatePostResponses,
         CreateArtworkArtworksCreatePostErrors,
@@ -200,7 +207,12 @@ export const createArtworkArtworksCreatePost = <ThrowOnError extends boolean = f
  */
 export const deleteArtworkArtworksArtworkIdDelete = <ThrowOnError extends boolean = false>(
     options: Options<DeleteArtworkArtworksArtworkIdDeleteData, ThrowOnError>,
-) =>
+): RequestResult<
+    DeleteArtworkArtworksArtworkIdDeleteResponses,
+    DeleteArtworkArtworksArtworkIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).delete<
         DeleteArtworkArtworksArtworkIdDeleteResponses,
         DeleteArtworkArtworksArtworkIdDeleteErrors,
@@ -218,7 +230,12 @@ export const deleteArtworkArtworksArtworkIdDelete = <ThrowOnError extends boolea
  */
 export const updateArtworkArtworksArtworkIdPatch = <ThrowOnError extends boolean = false>(
     options: Options<UpdateArtworkArtworksArtworkIdPatchData, ThrowOnError>,
-) =>
+): RequestResult<
+    UpdateArtworkArtworksArtworkIdPatchResponses,
+    UpdateArtworkArtworksArtworkIdPatchErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).patch<
         UpdateArtworkArtworksArtworkIdPatchResponses,
         UpdateArtworkArtworksArtworkIdPatchErrors,
@@ -240,7 +257,12 @@ export const updateArtworkArtworksArtworkIdPatch = <ThrowOnError extends boolean
  */
 export const readArtworkImageArtworksArtworkIdImageGet = <ThrowOnError extends boolean = false>(
     options: Options<ReadArtworkImageArtworksArtworkIdImageGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadArtworkImageArtworksArtworkIdImageGetResponses,
+    ReadArtworkImageArtworksArtworkIdImageGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadArtworkImageArtworksArtworkIdImageGetResponses,
         ReadArtworkImageArtworksArtworkIdImageGetErrors,
@@ -257,7 +279,7 @@ export const readArtworkImageArtworksArtworkIdImageGet = <ThrowOnError extends b
  */
 export const readInstanceStatusStatusGet = <ThrowOnError extends boolean = false>(
     options?: Options<ReadInstanceStatusStatusGetData, ThrowOnError>,
-) =>
+): RequestResult<ReadInstanceStatusStatusGetResponses, unknown, ThrowOnError, "data"> =>
     (options?.client ?? client).get<
         ReadInstanceStatusStatusGetResponses,
         unknown,
@@ -274,7 +296,7 @@ export const readInstanceStatusStatusGet = <ThrowOnError extends boolean = false
  */
 export const signUpSignUpPost = <ThrowOnError extends boolean = false>(
     options: Options<SignUpSignUpPostData, ThrowOnError>,
-) =>
+): RequestResult<SignUpSignUpPostResponses, SignUpSignUpPostErrors, ThrowOnError, "data"> =>
     (options.client ?? client).post<
         SignUpSignUpPostResponses,
         SignUpSignUpPostErrors,
@@ -295,7 +317,7 @@ export const signUpSignUpPost = <ThrowOnError extends boolean = false>(
  */
 export const signInSignInPost = <ThrowOnError extends boolean = false>(
     options: Options<SignInSignInPostData, ThrowOnError>,
-) =>
+): RequestResult<SignInSignInPostResponses, SignInSignInPostErrors, ThrowOnError, "data"> =>
     (options.client ?? client).post<
         SignInSignInPostResponses,
         SignInSignInPostErrors,
@@ -317,7 +339,12 @@ export const signInSignInPost = <ThrowOnError extends boolean = false>(
  */
 export const importExtensionExtensionsAvailableImportPost = <ThrowOnError extends boolean = false>(
     options: Options<ImportExtensionExtensionsAvailableImportPostData, ThrowOnError>,
-) =>
+): RequestResult<
+    ImportExtensionExtensionsAvailableImportPostResponses,
+    ImportExtensionExtensionsAvailableImportPostErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).post<
         ImportExtensionExtensionsAvailableImportPostResponses,
         ImportExtensionExtensionsAvailableImportPostErrors,
@@ -341,7 +368,12 @@ export const deleteExtensionExtensionsAvailableExtensionIdDelete = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<DeleteExtensionExtensionsAvailableExtensionIdDeleteData, ThrowOnError>,
-) =>
+): RequestResult<
+    DeleteExtensionExtensionsAvailableExtensionIdDeleteResponses,
+    DeleteExtensionExtensionsAvailableExtensionIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).delete<
         DeleteExtensionExtensionsAvailableExtensionIdDeleteResponses,
         DeleteExtensionExtensionsAvailableExtensionIdDeleteErrors,
@@ -359,7 +391,12 @@ export const deleteExtensionExtensionsAvailableExtensionIdDelete = <
  */
 export const readAvailableExtensionsExtensionsAvailableGet = <ThrowOnError extends boolean = false>(
     options?: Options<ReadAvailableExtensionsExtensionsAvailableGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadAvailableExtensionsExtensionsAvailableGetResponses,
+    ReadAvailableExtensionsExtensionsAvailableGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options?.client ?? client).get<
         ReadAvailableExtensionsExtensionsAvailableGetResponses,
         ReadAvailableExtensionsExtensionsAvailableGetErrors,
@@ -379,7 +416,12 @@ export const installExtensionExtensionsAvailableExtensionIdInstallPost = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<InstallExtensionExtensionsAvailableExtensionIdInstallPostData, ThrowOnError>,
-) =>
+): RequestResult<
+    InstallExtensionExtensionsAvailableExtensionIdInstallPostResponses,
+    InstallExtensionExtensionsAvailableExtensionIdInstallPostErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).post<
         InstallExtensionExtensionsAvailableExtensionIdInstallPostResponses,
         InstallExtensionExtensionsAvailableExtensionIdInstallPostErrors,
@@ -399,7 +441,12 @@ export const uninstallExtensionExtensionsInstalledExtensionIdDelete = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<UninstallExtensionExtensionsInstalledExtensionIdDeleteData, ThrowOnError>,
-) =>
+): RequestResult<
+    UninstallExtensionExtensionsInstalledExtensionIdDeleteResponses,
+    UninstallExtensionExtensionsInstalledExtensionIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).delete<
         UninstallExtensionExtensionsInstalledExtensionIdDeleteResponses,
         UninstallExtensionExtensionsInstalledExtensionIdDeleteErrors,
@@ -417,7 +464,12 @@ export const uninstallExtensionExtensionsInstalledExtensionIdDelete = <
  */
 export const readInstalledExtensionsExtensionsInstalledGet = <ThrowOnError extends boolean = false>(
     options?: Options<ReadInstalledExtensionsExtensionsInstalledGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadInstalledExtensionsExtensionsInstalledGetResponses,
+    ReadInstalledExtensionsExtensionsInstalledGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options?.client ?? client).get<
         ReadInstalledExtensionsExtensionsInstalledGetResponses,
         ReadInstalledExtensionsExtensionsInstalledGetErrors,
@@ -437,7 +489,12 @@ export const deleteLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdDelete = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<DeleteLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdDeleteData, ThrowOnError>,
-) =>
+): RequestResult<
+    DeleteLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdDeleteResponses,
+    DeleteLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).delete<
         DeleteLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdDeleteResponses,
         DeleteLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdDeleteErrors,
@@ -457,7 +514,12 @@ export const readLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdGet = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<ReadLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdGetResponses,
+    ReadLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdGetResponses,
         ReadLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdGetErrors,
@@ -477,7 +539,12 @@ export const updateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatch = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<UpdateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatchData, ThrowOnError>,
-) =>
+): RequestResult<
+    UpdateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatchResponses,
+    UpdateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatchErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).patch<
         UpdateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatchResponses,
         UpdateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatchErrors,
@@ -499,7 +566,12 @@ export const updateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatch = <
  */
 export const readLibraryAlbumsLibrariesLibraryIdAlbumsGet = <ThrowOnError extends boolean = false>(
     options: Options<ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetResponses,
+    ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetResponses,
         ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetErrors,
@@ -519,7 +591,12 @@ export const deleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDelete = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<DeleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDeleteData, ThrowOnError>,
-) =>
+): RequestResult<
+    DeleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDeleteResponses,
+    DeleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).delete<
         DeleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDeleteResponses,
         DeleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDeleteErrors,
@@ -539,7 +616,12 @@ export const readLibraryArtistLibrariesLibraryIdArtistsArtistIdGet = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<ReadLibraryArtistLibrariesLibraryIdArtistsArtistIdGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadLibraryArtistLibrariesLibraryIdArtistsArtistIdGetResponses,
+    ReadLibraryArtistLibrariesLibraryIdArtistsArtistIdGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadLibraryArtistLibrariesLibraryIdArtistsArtistIdGetResponses,
         ReadLibraryArtistLibrariesLibraryIdArtistsArtistIdGetErrors,
@@ -559,7 +641,12 @@ export const updateLibraryArtistLibrariesLibraryIdArtistsArtistIdPatch = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<UpdateLibraryArtistLibrariesLibraryIdArtistsArtistIdPatchData, ThrowOnError>,
-) =>
+): RequestResult<
+    UpdateLibraryArtistLibrariesLibraryIdArtistsArtistIdPatchResponses,
+    UpdateLibraryArtistLibrariesLibraryIdArtistsArtistIdPatchErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).patch<
         UpdateLibraryArtistLibrariesLibraryIdArtistsArtistIdPatchResponses,
         UpdateLibraryArtistLibrariesLibraryIdArtistsArtistIdPatchErrors,
@@ -583,7 +670,12 @@ export const readLibraryArtistsLibrariesLibraryIdArtistsGet = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<ReadLibraryArtistsLibrariesLibraryIdArtistsGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadLibraryArtistsLibrariesLibraryIdArtistsGetResponses,
+    ReadLibraryArtistsLibrariesLibraryIdArtistsGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadLibraryArtistsLibrariesLibraryIdArtistsGetResponses,
         ReadLibraryArtistsLibrariesLibraryIdArtistsGetErrors,
@@ -601,7 +693,12 @@ export const readLibraryArtistsLibrariesLibraryIdArtistsGet = <
  */
 export const ingestSongsLibrariesLibraryIdIngestSongsPost = <ThrowOnError extends boolean = false>(
     options: Options<IngestSongsLibrariesLibraryIdIngestSongsPostData, ThrowOnError>,
-) =>
+): RequestResult<
+    IngestSongsLibrariesLibraryIdIngestSongsPostResponses,
+    IngestSongsLibrariesLibraryIdIngestSongsPostErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).post<
         IngestSongsLibrariesLibraryIdIngestSongsPostResponses,
         IngestSongsLibrariesLibraryIdIngestSongsPostErrors,
@@ -623,7 +720,12 @@ export const ingestSongsLibrariesLibraryIdIngestSongsPost = <ThrowOnError extend
  */
 export const requestSyncLibraryLibrariesLibraryIdSyncPost = <ThrowOnError extends boolean = false>(
     options: Options<RequestSyncLibraryLibrariesLibraryIdSyncPostData, ThrowOnError>,
-) =>
+): RequestResult<
+    RequestSyncLibraryLibrariesLibraryIdSyncPostResponses,
+    RequestSyncLibraryLibrariesLibraryIdSyncPostErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).post<
         RequestSyncLibraryLibrariesLibraryIdSyncPostResponses,
         RequestSyncLibraryLibrariesLibraryIdSyncPostErrors,
@@ -641,7 +743,7 @@ export const requestSyncLibraryLibrariesLibraryIdSyncPost = <ThrowOnError extend
  */
 export const readLibrariesLibrariesGet = <ThrowOnError extends boolean = false>(
     options?: Options<ReadLibrariesLibrariesGetData, ThrowOnError>,
-) =>
+): RequestResult<ReadLibrariesLibrariesGetResponses, unknown, ThrowOnError, "data"> =>
     (options?.client ?? client).get<
         ReadLibrariesLibrariesGetResponses,
         unknown,
@@ -661,7 +763,12 @@ export const readLibraryHomeSubpathsLibrariesHomeSubpathsGet = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetResponses,
+    ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetResponses,
         ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetErrors,
@@ -679,7 +786,12 @@ export const readLibraryHomeSubpathsLibrariesHomeSubpathsGet = <
  */
 export const createLibraryLibrariesCreatePost = <ThrowOnError extends boolean = false>(
     options: Options<CreateLibraryLibrariesCreatePostData, ThrowOnError>,
-) =>
+): RequestResult<
+    CreateLibraryLibrariesCreatePostResponses,
+    CreateLibraryLibrariesCreatePostErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).post<
         CreateLibraryLibrariesCreatePostResponses,
         CreateLibraryLibrariesCreatePostErrors,
@@ -701,7 +813,12 @@ export const createLibraryLibrariesCreatePost = <ThrowOnError extends boolean = 
  */
 export const readLibraryLibrariesLibraryIdGet = <ThrowOnError extends boolean = false>(
     options: Options<ReadLibraryLibrariesLibraryIdGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadLibraryLibrariesLibraryIdGetResponses,
+    ReadLibraryLibrariesLibraryIdGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadLibraryLibrariesLibraryIdGetResponses,
         ReadLibraryLibrariesLibraryIdGetErrors,
@@ -719,7 +836,12 @@ export const readLibraryLibrariesLibraryIdGet = <ThrowOnError extends boolean = 
  */
 export const updateLibraryLibrariesLibraryIdPatch = <ThrowOnError extends boolean = false>(
     options: Options<UpdateLibraryLibrariesLibraryIdPatchData, ThrowOnError>,
-) =>
+): RequestResult<
+    UpdateLibraryLibrariesLibraryIdPatchResponses,
+    UpdateLibraryLibrariesLibraryIdPatchErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).patch<
         UpdateLibraryLibrariesLibraryIdPatchResponses,
         UpdateLibraryLibrariesLibraryIdPatchErrors,
@@ -743,7 +865,12 @@ export const readLibraryPermissionsLibrariesLibraryIdPermissionsGet = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<ReadLibraryPermissionsLibrariesLibraryIdPermissionsGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadLibraryPermissionsLibrariesLibraryIdPermissionsGetResponses,
+    ReadLibraryPermissionsLibrariesLibraryIdPermissionsGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadLibraryPermissionsLibrariesLibraryIdPermissionsGetResponses,
         ReadLibraryPermissionsLibrariesLibraryIdPermissionsGetErrors,
@@ -766,7 +893,12 @@ export const createLibraryPermissionLibrariesLibraryIdPermissionCreatePost = <
         CreateLibraryPermissionLibrariesLibraryIdPermissionCreatePostData,
         ThrowOnError
     >,
-) =>
+): RequestResult<
+    CreateLibraryPermissionLibrariesLibraryIdPermissionCreatePostResponses,
+    CreateLibraryPermissionLibrariesLibraryIdPermissionCreatePostErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).post<
         CreateLibraryPermissionLibrariesLibraryIdPermissionCreatePostResponses,
         CreateLibraryPermissionLibrariesLibraryIdPermissionCreatePostErrors,
@@ -793,7 +925,12 @@ export const deleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDelete = <
         DeleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDeleteData,
         ThrowOnError
     >,
-) =>
+): RequestResult<
+    DeleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDeleteResponses,
+    DeleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).delete<
         DeleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDeleteResponses,
         DeleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDeleteErrors,
@@ -816,7 +953,12 @@ export const updateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatch = <
         UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchData,
         ThrowOnError
     >,
-) =>
+): RequestResult<
+    UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchResponses,
+    UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).patch<
         UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchResponses,
         UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchErrors,
@@ -840,7 +982,12 @@ export const deleteLibrarySongLibrariesLibraryIdSongsSongIdDelete = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData, ThrowOnError>,
-) =>
+): RequestResult<
+    DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteResponses,
+    DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).delete<
         DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteResponses,
         DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteErrors,
@@ -860,7 +1007,12 @@ export const readLibrarySongLibrariesLibraryIdSongsSongIdGet = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<ReadLibrarySongLibrariesLibraryIdSongsSongIdGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadLibrarySongLibrariesLibraryIdSongsSongIdGetResponses,
+    ReadLibrarySongLibrariesLibraryIdSongsSongIdGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadLibrarySongLibrariesLibraryIdSongsSongIdGetResponses,
         ReadLibrarySongLibrariesLibraryIdSongsSongIdGetErrors,
@@ -880,7 +1032,12 @@ export const updateLibrarySongLibrariesLibraryIdSongsSongIdPatch = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<UpdateLibrarySongLibrariesLibraryIdSongsSongIdPatchData, ThrowOnError>,
-) =>
+): RequestResult<
+    UpdateLibrarySongLibrariesLibraryIdSongsSongIdPatchResponses,
+    UpdateLibrarySongLibrariesLibraryIdSongsSongIdPatchErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).patch<
         UpdateLibrarySongLibrariesLibraryIdSongsSongIdPatchResponses,
         UpdateLibrarySongLibrariesLibraryIdSongsSongIdPatchErrors,
@@ -902,7 +1059,12 @@ export const updateLibrarySongLibrariesLibraryIdSongsSongIdPatch = <
  */
 export const readLibrarySongsLibrariesLibraryIdSongsGet = <ThrowOnError extends boolean = false>(
     options: Options<ReadLibrarySongsLibrariesLibraryIdSongsGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadLibrarySongsLibrariesLibraryIdSongsGetResponses,
+    ReadLibrarySongsLibrariesLibraryIdSongsGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadLibrarySongsLibrariesLibraryIdSongsGetResponses,
         ReadLibrarySongsLibrariesLibraryIdSongsGetErrors,
@@ -920,7 +1082,12 @@ export const readLibrarySongsLibrariesLibraryIdSongsGet = <ThrowOnError extends 
  */
 export const createSourceSourcesCreatePost = <ThrowOnError extends boolean = false>(
     options: Options<CreateSourceSourcesCreatePostData, ThrowOnError>,
-) =>
+): RequestResult<
+    CreateSourceSourcesCreatePostResponses,
+    CreateSourceSourcesCreatePostErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).post<
         CreateSourceSourcesCreatePostResponses,
         CreateSourceSourcesCreatePostErrors,
@@ -942,7 +1109,12 @@ export const createSourceSourcesCreatePost = <ThrowOnError extends boolean = fal
  */
 export const deleteSourceSourcesSourceIdDelete = <ThrowOnError extends boolean = false>(
     options: Options<DeleteSourceSourcesSourceIdDeleteData, ThrowOnError>,
-) =>
+): RequestResult<
+    DeleteSourceSourcesSourceIdDeleteResponses,
+    DeleteSourceSourcesSourceIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).delete<
         DeleteSourceSourcesSourceIdDeleteResponses,
         DeleteSourceSourcesSourceIdDeleteErrors,
@@ -960,7 +1132,12 @@ export const deleteSourceSourcesSourceIdDelete = <ThrowOnError extends boolean =
  */
 export const readSourceSourcesSourceIdGet = <ThrowOnError extends boolean = false>(
     options: Options<ReadSourceSourcesSourceIdGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadSourceSourcesSourceIdGetResponses,
+    ReadSourceSourcesSourceIdGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadSourceSourcesSourceIdGetResponses,
         ReadSourceSourcesSourceIdGetErrors,
@@ -978,7 +1155,12 @@ export const readSourceSourcesSourceIdGet = <ThrowOnError extends boolean = fals
  */
 export const updateSourceSourcesSourceIdPatch = <ThrowOnError extends boolean = false>(
     options: Options<UpdateSourceSourcesSourceIdPatchData, ThrowOnError>,
-) =>
+): RequestResult<
+    UpdateSourceSourcesSourceIdPatchResponses,
+    UpdateSourceSourcesSourceIdPatchErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).patch<
         UpdateSourceSourcesSourceIdPatchResponses,
         UpdateSourceSourcesSourceIdPatchErrors,
@@ -1000,7 +1182,12 @@ export const updateSourceSourcesSourceIdPatch = <ThrowOnError extends boolean = 
  */
 export const streamSourceFileSourcesSourceIdFileGet = <ThrowOnError extends boolean = false>(
     options: Options<StreamSourceFileSourcesSourceIdFileGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    StreamSourceFileSourcesSourceIdFileGetResponses,
+    StreamSourceFileSourcesSourceIdFileGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         StreamSourceFileSourcesSourceIdFileGetResponses,
         StreamSourceFileSourcesSourceIdFileGetErrors,
@@ -1017,7 +1204,7 @@ export const streamSourceFileSourcesSourceIdFileGet = <ThrowOnError extends bool
  */
 export const readMeUsersMeGet = <ThrowOnError extends boolean = false>(
     options?: Options<ReadMeUsersMeGetData, ThrowOnError>,
-) =>
+): RequestResult<ReadMeUsersMeGetResponses, unknown, ThrowOnError, "data"> =>
     (options?.client ?? client).get<ReadMeUsersMeGetResponses, unknown, ThrowOnError, "data">({
         responseStyle: "data",
         security: [{ scheme: "bearer", type: "http" }],
@@ -1030,7 +1217,7 @@ export const readMeUsersMeGet = <ThrowOnError extends boolean = false>(
  */
 export const updateMeUsersMePost = <ThrowOnError extends boolean = false>(
     options: Options<UpdateMeUsersMePostData, ThrowOnError>,
-) =>
+): RequestResult<UpdateMeUsersMePostResponses, UpdateMeUsersMePostErrors, ThrowOnError, "data"> =>
     (options.client ?? client).post<
         UpdateMeUsersMePostResponses,
         UpdateMeUsersMePostErrors,
@@ -1052,7 +1239,12 @@ export const updateMeUsersMePost = <ThrowOnError extends boolean = false>(
  */
 export const readNotificationsUsersNotificationsGet = <ThrowOnError extends boolean = false>(
     options?: Options<ReadNotificationsUsersNotificationsGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadNotificationsUsersNotificationsGetResponses,
+    ReadNotificationsUsersNotificationsGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options?.client ?? client).get<
         ReadNotificationsUsersNotificationsGetResponses,
         ReadNotificationsUsersNotificationsGetErrors,
@@ -1072,7 +1264,12 @@ export const readNotificationUsersNotificationsNotificationIdGet = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<ReadNotificationUsersNotificationsNotificationIdGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadNotificationUsersNotificationsNotificationIdGetResponses,
+    ReadNotificationUsersNotificationsNotificationIdGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadNotificationUsersNotificationsNotificationIdGetResponses,
         ReadNotificationUsersNotificationsNotificationIdGetErrors,
@@ -1092,7 +1289,12 @@ export const updateNotificationUsersNotificationsNotificationIdPatch = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<UpdateNotificationUsersNotificationsNotificationIdPatchData, ThrowOnError>,
-) =>
+): RequestResult<
+    UpdateNotificationUsersNotificationsNotificationIdPatchResponses,
+    UpdateNotificationUsersNotificationsNotificationIdPatchErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).patch<
         UpdateNotificationUsersNotificationsNotificationIdPatchResponses,
         UpdateNotificationUsersNotificationsNotificationIdPatchErrors,
@@ -1116,7 +1318,12 @@ export const markAllNotificationsReadUsersNotificationsMarkAllReadPost = <
     ThrowOnError extends boolean = false,
 >(
     options?: Options<MarkAllNotificationsReadUsersNotificationsMarkAllReadPostData, ThrowOnError>,
-) =>
+): RequestResult<
+    MarkAllNotificationsReadUsersNotificationsMarkAllReadPostResponses,
+    unknown,
+    ThrowOnError,
+    "data"
+> =>
     (options?.client ?? client).post<
         MarkAllNotificationsReadUsersNotificationsMarkAllReadPostResponses,
         unknown,
@@ -1136,7 +1343,12 @@ export const streamUserEventsPreflightUsersEventsPreflightPost = <
     ThrowOnError extends boolean = false,
 >(
     options?: Options<StreamUserEventsPreflightUsersEventsPreflightPostData, ThrowOnError>,
-) =>
+): RequestResult<
+    StreamUserEventsPreflightUsersEventsPreflightPostResponses,
+    unknown,
+    ThrowOnError,
+    "data"
+> =>
     (options?.client ?? client).post<
         StreamUserEventsPreflightUsersEventsPreflightPostResponses,
         unknown,
@@ -1154,7 +1366,7 @@ export const streamUserEventsPreflightUsersEventsPreflightPost = <
  */
 export const readUsersUsersAllGet = <ThrowOnError extends boolean = false>(
     options?: Options<ReadUsersUsersAllGetData, ThrowOnError>,
-) =>
+): RequestResult<ReadUsersUsersAllGetResponses, ReadUsersUsersAllGetErrors, ThrowOnError, "data"> =>
     (options?.client ?? client).get<
         ReadUsersUsersAllGetResponses,
         ReadUsersUsersAllGetErrors,
@@ -1172,7 +1384,12 @@ export const readUsersUsersAllGet = <ThrowOnError extends boolean = false>(
  */
 export const readUserUsersAllIdOrUsernameGet = <ThrowOnError extends boolean = false>(
     options: Options<ReadUserUsersAllIdOrUsernameGetData, ThrowOnError>,
-) =>
+): RequestResult<
+    ReadUserUsersAllIdOrUsernameGetResponses,
+    ReadUserUsersAllIdOrUsernameGetErrors,
+    ThrowOnError,
+    "data"
+> =>
     (options.client ?? client).get<
         ReadUserUsersAllIdOrUsernameGetResponses,
         ReadUserUsersAllIdOrUsernameGetErrors,
