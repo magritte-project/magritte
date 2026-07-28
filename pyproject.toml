@@ -8,8 +8,8 @@ dependencies = [
     "aiosqlite>=0.21.0",
     "alembic>=1.18.4",
     "cryptography>=46.0.3",
-    "fastapi[standard]>=0.117.1",
-    "greenlet>=3.2.4",
+    "fastapi[standard]>=0.140.9",
+    "greenlet>=3.5.4",
     "httpx>=0.28.1",
     "pillow>=12.0.0",
     "pwdlib[argon2]>=0.2.1",
@@ -19,18 +19,18 @@ dependencies = [
     "sqlmodel>=0.0.25",
     "tinytag>=2.1.2",
     "watchdog>=6.0.0",
-    "websockets>=15.0.1",
+    "websockets>=16.1.1",
 ]
 
 [dependency-groups]
 dev = [
-    "datamodel-code-generator>=0.54.1",
-    "faker>=38.0.0",
+    "datamodel-code-generator>=0.71.0",
+    "faker>=40.36.0",
     "httpx>=0.28.1",
     "pytest>=8.4.2",
     "pytest-asyncio>=1.2.0",
-    "ruff>=0.14.0",
-    "ty>=0.0.1a22",
+    "ruff>=0.16.0",
+    "ty>=0.0.64",
 ]
 
 [build-system]
