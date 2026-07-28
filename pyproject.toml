@@ -3,6 +3,7 @@ name = "magritte"
 version = "0.1.0"
 description = "The API server of Magritte"
 readme = "README.md"
+license = "GPL-3.0-only"
 requires-python = ">=3.13"
 dependencies = [
     "aiosqlite>=0.21.0",
