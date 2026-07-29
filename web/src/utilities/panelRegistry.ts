@@ -1,4 +1,4 @@
-import type { Icon } from "@phosphor-icons/react"
+import type { ReactNode } from "react"
 
 import { createEvent, EventStream, type EventSink } from "@/utilities/events"
 
@@ -10,7 +10,7 @@ export interface PanelDefinition {
     readonly name: string
 
     /** The icon of the panel */
-    readonly icon: Icon
+    readonly icon: ReactNode
 
     /** The preferred width of the panel */
     readonly preferredWidth: React.CSSProperties["width"]

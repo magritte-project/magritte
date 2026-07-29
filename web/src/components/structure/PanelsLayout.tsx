@@ -6,7 +6,6 @@ import { Group, Panel, Separator } from "react-resizable-panels"
 
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 import type { RevealPanelOptions } from "@/contexts/panelsContext"
 import DismissContextProvider from "@/contexts/providers/DismissContextProvider"
 import PanelsContextProvider from "@/contexts/providers/PanelsProvider"
@@ -85,19 +84,19 @@ export default function PanelsLayout({ children }: PanelsProps) {
                                         </ThemedSubtleButton>
                                     }
                                 >
-                                    <div className="flex items-center gap-0 overflow-x-auto">
+                                    <div className="flex items-center gap-2 overflow-x-auto">
                                         {panels.map((panel, index) => (
                                             <button
                                                 key={`panels[${panel.id}@${index}]`}
                                                 type="button"
                                                 className="group"
                                                 onClick={() => setSelectedId(panel.id)}
+                                                title={panel.name}
+                                                data-active={
+                                                    selectedId === panel.id ? "" : undefined
+                                                }
                                             >
-                                                <ThemedTabItemLabel
-                                                    icon={panel.icon}
-                                                    label={panel.name}
-                                                    isActive={selectedId === panel.id}
-                                                />
+                                                {panel.icon}
                                             </button>
                                         ))}
                                     </div>

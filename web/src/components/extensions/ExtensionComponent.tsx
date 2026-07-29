@@ -11,6 +11,8 @@ import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import { getErrorMessage } from "@/utilities/errors"
 import type { PanelDefinition, PanelRegistry } from "@/utilities/panelRegistry"
 
+import ExtensionIcon from "./ExtensionIcon"
+
 export function buildExtensionComponent(id: string) {
     function ExtensionComponent() {
         const extensionRuntime = useExtensionRuntime()
@@ -73,7 +75,7 @@ export function getExtensionPanelDefinition(manifest: ExtensionManifest): PanelD
     return {
         id: getExtensionPanelID(manifest),
         name: manifest.name,
-        icon: GearIcon,
+        icon: <ExtensionIcon iconUrl={manifest.icon_url} name={manifest.name} />,
         preferredWidth: manifest.preferredWidth ?? undefined,
         preferredHeight: manifest.preferredHeight ?? undefined,
         component: buildExtensionComponent(manifest.id),
