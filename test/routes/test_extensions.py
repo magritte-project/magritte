@@ -24,12 +24,7 @@ async def throwaway_extension(
             name=manifest_name,
             id=manifest_id,
             version="0",
-            description=None,
             url=manifest_url,
-            preferredWidth=None,
-            preferredHeight=None,
-            permissions=None,
-            sourceSchemes=None,
         ).model_dump(),
     )
     db_session.add(throwaway_extension)

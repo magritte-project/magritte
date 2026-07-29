@@ -265,6 +265,12 @@ export type ExtensionManifest = {
      */
     url: string
     /**
+     * Icon Url
+     *
+     * The URL of the extension's icon, if any
+     */
+    icon_url?: string | null
+    /**
      * Preferredwidth
      *
      * The preferred width of the extension as a CSS dimension

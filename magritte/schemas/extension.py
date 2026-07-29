@@ -42,6 +42,9 @@ class ExtensionManifest(BaseModel):
         str | None, Field(description="An optional description of the extension")
     ] = None
     url: Annotated[str, Field(description="The URL of the extension")]
+    icon_url: Annotated[
+        str | None, Field(description="The URL of the extension's icon, if any")
+    ] = None
     preferred_width: Annotated[
         str | None,
         Field(
@@ -59,21 +62,20 @@ class ExtensionManifest(BaseModel):
     permissions: Annotated[
         list[ExtensionPermissions] | None,
         Field(description="An optional array of permissions required by the extension"),
-    ] = []
+    ] = None
     source_schemes: Annotated[
         list[str] | None,
         Field(
             alias="sourceSchemes",
             description="An optional array of source schemes supported by the extension",
         ),
-    ] = []
+    ] = None
     commands: Annotated[
         list[ExtensionCommand] | None,
         Field(
-            default_factory=list,
             description="An optional array of commands supported by the extension",
         ),
-    ]
+    ] = None
 
 
 class ExtensionImportAdmin(BaseModel):

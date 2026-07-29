@@ -133,6 +133,7 @@ export const ExtensionManifestSchema = z.object({
     version: z.string(),
     description: z.string().nullish(),
     url: z.string(),
+    icon_url: z.string().nullish(),
     preferredWidth: z.string().nullish(),
     preferredHeight: z.string().nullish(),
     permissions: z.array(ExtensionPermissionsSchema).nullish(),

@@ -2222,6 +2222,11 @@
                         "title": "Url",
                         "description": "The URL of the extension"
                     },
+                    "icon_url": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Icon Url",
+                        "description": "The URL of the extension's icon, if any"
+                    },
                     "preferredWidth": {
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Preferredwidth",
@@ -2241,8 +2246,7 @@
                             { "type": "null" }
                         ],
                         "title": "Permissions",
-                        "description": "An optional array of permissions required by the extension",
-                        "default": []
+                        "description": "An optional array of permissions required by the extension"
                     },
                     "sourceSchemes": {
                         "anyOf": [
@@ -2250,8 +2254,7 @@
                             { "type": "null" }
                         ],
                         "title": "Sourceschemes",
-                        "description": "An optional array of source schemes supported by the extension",
-                        "default": []
+                        "description": "An optional array of source schemes supported by the extension"
                     },
                     "commands": {
                         "anyOf": [
