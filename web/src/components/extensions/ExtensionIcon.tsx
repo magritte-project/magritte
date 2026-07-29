@@ -34,7 +34,15 @@ export interface ExtensionIconProps {
 
 export default function ExtensionIcon({ iconUrl, name, size = "2rem" }: ExtensionIconProps) {
     if (iconUrl) {
-        return <img src={iconUrl} alt={name} className="aspect-square" style={{ width: size }} />
+        return (
+            <img
+                src={iconUrl}
+                referrerPolicy="no-referrer"
+                alt={name}
+                className="aspect-square"
+                style={{ width: size }}
+            />
+        )
     } else {
         return (
             <div
