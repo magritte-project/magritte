@@ -1,5 +1,5 @@
 dev:
-    uv run fastapi dev magritte --port 6477
+    uv run uvicorn magritte:app --reload --port 6477
 
 test:
     uv run pytest
