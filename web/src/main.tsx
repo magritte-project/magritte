@@ -1,6 +1,6 @@
-import { APIClient } from "@magritte/api"
-import { StorageUserSessionManager } from "@magritte/api"
-import { createRouter, RouterProvider } from "@tanstack/react-router"
+import { APIClient, StorageUserSessionManager } from "@magritte/api"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
@@ -15,14 +15,12 @@ import {
 } from "@/components/extensions/ExtensionComponent"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider"
 import { ExtensionRuntime } from "@/extensions/runtime"
-import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider"
+import { createMagritteRouter } from "@/integrations/tanstack-router/context"
 import BuiltInPlaybackEngine from "@/playback/builtInEngine"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { LocalCache } from "@/playback/localFileCache"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
-// Import the generated route tree
-import { routeTree } from "@/routeTree.gen"
 import { PanelRegistry } from "@/utilities/panelRegistry"
 
 import "@/styles.css"
@@ -67,44 +65,21 @@ const panelRegistry = new PanelRegistry()
 wireExtensionPanels(panelRegistry, extensionRuntime)
 
 // Create a new router instance
-
-const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
-const router = createRouter({
-    routeTree,
-    context: {
-        userSession,
-        apiClient,
-        commandInputs,
-        commandRegistry,
-        userEvents,
-        player,
-        extensionRuntime,
-        panelRegistry,
-        ...TanStackQueryProviderContext,
-    },
-    defaultPreload: "intent",
-    scrollRestoration: true,
-    defaultStructuralSharing: true,
-    defaultPreloadStaleTime: 0,
+const queryClient = new QueryClient()
+const router = createMagritteRouter({
+    apiClient,
+    commandInputs,
+    commandRegistry,
+    extensionRuntime,
+    panelRegistry,
+    player,
+    queryClient,
+    userEvents,
+    userSession,
 })
 
-// Register the router instance for type safety
-declare module "@tanstack/react-router" {
-    interface Register {
-        router: typeof router
-    }
-}
-
 // Hook up commands
-commandRegistry.add(
-    ...libraryCommands(
-        router,
-        apiClient,
-        userSession,
-        localCache,
-        TanStackQueryProviderContext.queryClient,
-    ),
-)
+commandRegistry.add(...libraryCommands(router, apiClient, userSession, localCache, queryClient))
 commandRegistry.add(...playerCommands(player))
 wirePlayerCommandInputs(player, commandInputs)
 wireExtensionCommands(commandRegistry, extensionRuntime)
@@ -115,11 +90,11 @@ if (rootElement && !rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement)
     root.render(
         <StrictMode>
-            <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
+            <QueryClientProvider client={queryClient}>
                 <AppCommandPaletteContextProvider>
                     <RouterProvider router={router} />
                 </AppCommandPaletteContextProvider>
-            </TanStackQueryProvider.Provider>
+            </QueryClientProvider>
         </StrictMode>,
     )
 }
