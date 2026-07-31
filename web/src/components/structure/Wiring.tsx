@@ -2,10 +2,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, type ReactNode } from "react"
 
 import { library } from "@/api/keys/libraries"
-import { userMeNotification, userMeNotifications } from "@/api/keys/users"
-import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import usePlayer from "@/hooks/playerHook"
-import useToast from "@/hooks/toastHook"
 import useUserEvents from "@/hooks/userEventsHook"
 
 export interface WiringProps {
@@ -18,17 +15,6 @@ export default function Wiring({ children }: WiringProps) {
         onEvent: async (event) => {
             // TODO: This is nastier than it probably needs to be
             switch (event.event_type) {
-                case "notifications_changed":
-                    await queryClient.invalidateQueries({
-                        queryKey: userMeNotifications(),
-                        exact: false,
-                    })
-                    for (const notificationId of event.ids) {
-                        await queryClient.invalidateQueries({
-                            queryKey: userMeNotification(notificationId),
-                        })
-                    }
-                    break
                 case "libraries_changed":
                     if (event.event_type === "libraries_changed") {
                         for (const libraryId of event.ids) {
@@ -100,23 +86,6 @@ export default function Wiring({ children }: WiringProps) {
             subscription.unsubscribe()
         }
     }, [player])
-
-    const extensionRuntime = useExtensionRuntime()
-    const { showToast } = useToast()
-    useEffect(() => {
-        const toastSubscription = extensionRuntime.$events.subscribe((event) => {
-            switch (event.type) {
-                case "extensionRequestedToast":
-                    showToast({ message: event.message, type: event.toastType })
-                    break
-                default:
-                    break
-            }
-        })
-        return () => {
-            toastSubscription.unsubscribe()
-        }
-    }, [extensionRuntime, showToast])
 
     return <>{children}</>
 }

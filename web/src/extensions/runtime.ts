@@ -1,15 +1,14 @@
-import type { APIClient, ExtensionManifest } from "@magritte/api"
-import type { UserSessionManager } from "@magritte/api"
+import type { APIClient, ExtensionManifest, UserSessionManager } from "@magritte/api"
 import { Extension, getExtensionAllow, getExtensionSrc } from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
+import { exportCommandCoordinator } from "@/extensions/exports/exportCommandCoordinator"
 import { exportLibrary } from "@/extensions/exports/exportLibrary"
 import { exportPlayer } from "@/extensions/exports/exportPlayer"
+import type { NotificationCenter } from "@/notifications/center"
 import type { Player } from "@/playback/player"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
-
-import { exportCommandCoordinator } from "./exports/exportCommandCoordinator"
 
 export interface ExtensionRuntimeOptions {
     readonly container: HTMLElement
@@ -17,6 +16,7 @@ export interface ExtensionRuntimeOptions {
     readonly commandRegistry: CommandRegistry
     readonly userSession: UserSessionManager
     readonly apiClient: APIClient
+    readonly notificationCenter: NotificationCenter
     readonly player: Player
 }
 
@@ -51,19 +51,6 @@ export type ExtensionRuntimeEvent =
           extension: Extension
       }
     | {
-          /* An extension requested a toast be shown */
-          type: "extensionRequestedToast"
-
-          /** The manifest of the extension */
-          manifest: ExtensionManifest
-
-          /** The message of the toast */
-          message: string
-
-          /** The type of the toast */
-          toastType: "error" | "success" | "info"
-      }
-    | {
           /* An extension was removed from the runtime */
           type: "extensionRemoved"
 
@@ -92,6 +79,9 @@ export class ExtensionRuntime {
     /** The API client */
     private readonly _apiClient: APIClient
 
+    /** The notification center */
+    private readonly _notificationCenter: NotificationCenter
+
     /** The player */
     private readonly _player: Player
 
@@ -112,6 +102,7 @@ export class ExtensionRuntime {
         this._commandRegistry = options.commandRegistry
         this._userSession = options.userSession
         this._apiClient = options.apiClient
+        this._notificationCenter = options.notificationCenter
         this._player = options.player
         this._available = new Map()
         this._attachments = new Map()
@@ -257,13 +248,7 @@ export class ExtensionRuntime {
                     ),
                     chrome: {
                         showToast: async (options) => {
-                            // NOTE: This is currently handled by <Wiring>
-                            this._events.dispatch({
-                                type: "extensionRequestedToast",
-                                manifest,
-                                message: options.message,
-                                toastType: options.type,
-                            })
+                            this._notificationCenter.showToast(options)
                         },
                     },
                     library: exportLibrary(manifest, this._userSession, this._apiClient),

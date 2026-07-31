@@ -5,7 +5,9 @@ import type { RegisteredRouter } from "@tanstack/react-router"
 
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import type { Command } from "@/commands/base"
+import type { NotificationCenter } from "@/notifications/center"
 import type { LocalCache } from "@/playback/localFileCache"
+import { getErrorMessage } from "@/utilities/errors"
 import { resolveUrl } from "@/utilities/resources"
 
 export function libraryCommands(
@@ -13,6 +15,7 @@ export function libraryCommands(
     apiClient: APIClient,
     session: UserSessionManager,
     localCache: LocalCache,
+    notificationCenter: NotificationCenter,
     queryClient: QueryClient,
 ): Command[] {
     return [
@@ -80,8 +83,15 @@ export function libraryCommands(
                 if (!confirmed) {
                     return
                 }
-                for (const song of songs) {
-                    await apiClient.deleteLibrarySong(library.id, song.id)
+                try {
+                    for (const song of songs) {
+                        await apiClient.deleteLibrarySong(library.id, song.id)
+                    }
+                } catch (error) {
+                    notificationCenter.showToast({
+                        message: `Could not delete library songs: ${getErrorMessage(error)}`,
+                        type: "error",
+                    })
                 }
                 await Promise.all([
                     queryClient.invalidateQueries({
@@ -124,6 +134,7 @@ export function libraryCommands(
                 const existingFiles = await localCache.filesExist(
                     sources.map((source) => source.url),
                 )
+                let downloadCount = 0
                 for (const source of sources) {
                     if (existingFiles.has(source.url)) {
                         console.debug(`Skipping already downloaded source: ${source.url}`)
@@ -139,9 +150,19 @@ export function libraryCommands(
                         const contents = await response.blob()
                         await localCache.putFile(source.url, contents)
                         console.debug(`Downloaded source: ${source.url}`)
+                        downloadCount++
                     } catch (error) {
-                        console.error(`Could not download source: ${source.url}: ${error}`)
+                        notificationCenter.showToast({
+                            message: `Could not download library song: ${getErrorMessage(error)}`,
+                            type: "error",
+                        })
                     }
+                }
+                if (downloadCount > 0) {
+                    notificationCenter.showToast({
+                        message: `Downloaded ${downloadCount} song(s)`,
+                        type: "info",
+                    })
                 }
             },
         },

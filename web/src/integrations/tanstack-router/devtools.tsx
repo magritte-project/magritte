@@ -1,4 +1,4 @@
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 
 export default {
     name: "Tanstack Router",

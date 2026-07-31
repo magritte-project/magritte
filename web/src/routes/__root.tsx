@@ -18,10 +18,7 @@ export const Route = createRootRouteWithContext<MagritteRouterContext>()({
                         config={{
                             position: "bottom-left",
                         }}
-                        plugins={[
-                            TanStackRouterDevtools,
-                            TanStackQueryDevtools,
-                        ]}
+                        plugins={[TanStackRouterDevtools, TanStackQueryDevtools]}
                     />
                 )}
             </>

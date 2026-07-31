@@ -1,32 +1,39 @@
 import type { ToastOptions } from "@magritte/sdk"
 import { AnimatePresence } from "motion/react"
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
+import { useCallback, useSyncExternalStore, type ReactNode } from "react"
 import { createPortal } from "react-dom"
 
 import ToastNotification from "@/components/chrome/ToastNotification"
 import ToastContextProvider from "@/contexts/providers/ToastContextProvider"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
 
 export interface ToastLayoutProps {
     readonly children?: ReactNode
 }
 
 export default function ToastLayout({ children }: ToastLayoutProps) {
-    const [toasts, setToasts] = useState<readonly ToastOptions[]>([])
-    useEffect(() => {
-        if (toasts.length === 0) {
-            return
-        }
-        const timeout = setTimeout(() => {
-            setToasts((toasts) => toasts.slice(1))
-        }, 3000)
-        return () => clearTimeout(timeout)
-    }, [toasts])
-    const showToast = useCallback((toast: ToastOptions) => {
-        setToasts((toasts) => [...toasts, toast])
-    }, [])
-    const presentedToast = useMemo(() => {
-        return toasts.length > 0 ? toasts[0] : null
-    }, [toasts])
+    const notificationCenter = useNotificationCenter()
+
+    const presentedToast = useSyncExternalStore(
+        (onStoreChange) => {
+            const subscription = notificationCenter.$events.subscribe((event) => {
+                switch (event.type) {
+                    case "toastDidChange":
+                        onStoreChange()
+                        break
+                    default:
+                        break
+                }
+            })
+            return () => subscription.unsubscribe()
+        },
+        () => notificationCenter.toast,
+    )
+
+    const showToast = useCallback(
+        (toast: ToastOptions) => notificationCenter.showToast(toast),
+        [notificationCenter],
+    )
     return (
         <>
             <ToastContextProvider value={{ showToast }}>{children}</ToastContextProvider>

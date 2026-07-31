@@ -16,6 +16,7 @@ import {
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider"
 import { ExtensionRuntime } from "@/extensions/runtime"
 import { createMagritteRouter } from "@/integrations/tanstack-router/context"
+import { NotificationCenter } from "@/notifications/center"
 import BuiltInPlaybackEngine from "@/playback/builtInEngine"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { LocalCache } from "@/playback/localFileCache"
@@ -33,6 +34,7 @@ const apiClient = new APIClient({
     baseUrl: import.meta.env.VITE_API_URL,
     userSessionManager: userSession,
 })
+const queryClient = new QueryClient()
 
 // Set up commands
 const commandInputs = new CommandInputs()
@@ -40,6 +42,7 @@ const commandRegistry = new CommandRegistry()
 
 // Set up user events
 const userEvents = new UserEvents(apiClient, userSession)
+const notificationCenter = new NotificationCenter(queryClient, apiClient, userEvents)
 
 // Set up playback
 const localCache = await LocalCache.open()
@@ -55,6 +58,7 @@ const extensionRuntime = new ExtensionRuntime({
     commandRegistry,
     userSession,
     apiClient,
+    notificationCenter,
     player,
 })
 await extensionRuntime.sync()
@@ -65,12 +69,12 @@ const panelRegistry = new PanelRegistry()
 wireExtensionPanels(panelRegistry, extensionRuntime)
 
 // Create a new router instance
-const queryClient = new QueryClient()
 const router = createMagritteRouter({
     apiClient,
     commandInputs,
     commandRegistry,
     extensionRuntime,
+    notificationCenter,
     panelRegistry,
     player,
     queryClient,
@@ -79,7 +83,9 @@ const router = createMagritteRouter({
 })
 
 // Hook up commands
-commandRegistry.add(...libraryCommands(router, apiClient, userSession, localCache, queryClient))
+commandRegistry.add(
+    ...libraryCommands(router, apiClient, userSession, localCache, notificationCenter, queryClient),
+)
 commandRegistry.add(...playerCommands(player))
 wirePlayerCommandInputs(player, commandInputs)
 wireExtensionCommands(commandRegistry, extensionRuntime)

@@ -6,6 +6,7 @@ import type { UserEvents } from "@/api/userEvents"
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
 import type { ExtensionRuntime } from "@/extensions/runtime"
+import type { NotificationCenter } from "@/notifications/center"
 import type { Player } from "@/playback/player"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
@@ -16,6 +17,7 @@ export interface MagritteRouterContext {
     readonly commandInputs: CommandInputs
     readonly commandRegistry: CommandRegistry
     readonly extensionRuntime: ExtensionRuntime
+    readonly notificationCenter: NotificationCenter
     readonly panelRegistry: PanelRegistry
     readonly player: Player
     readonly queryClient: QueryClient
