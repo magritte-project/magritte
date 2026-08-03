@@ -180,7 +180,7 @@ def create_feature_token(
     to_encode["sub"] = subject
     to_encode["scope"] = scope.value
     to_encode["exp"] = expires_at
-    token = jwt.encode(to_encode, config.file_token_secret, config.token_algorithm)
+    token = jwt.encode(to_encode, config.feature_token_secret, config.token_algorithm)
     return token, expires_at
 
 
@@ -195,7 +195,7 @@ def _read_feature_token(token: str) -> tuple[str, FeatureScope]:
     """
 
     to_decode = jwt.decode(
-        token, config.file_token_secret, algorithms=[config.token_algorithm]
+        token, config.feature_token_secret, algorithms=[config.token_algorithm]
     )
     subject = to_decode.get("sub")
     if not isinstance(subject, str):

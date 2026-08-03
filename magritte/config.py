@@ -15,7 +15,7 @@ load_dotenv(_dotenv_path)
 # and salt if they don't already exist in .env:
 if os.environ.get("ENV", "dev") != "prod":
     _must_reload = False
-    for token_secret_key in ["SESSION_TOKEN_SECRET", "FILE_TOKEN_SECRET"]:
+    for token_secret_key in ["SESSION_TOKEN_SECRET", "FEATURE_TOKEN_SECRET"]:
         if not os.environ.get(token_secret_key):
             logging.debug(f"Generating new {token_secret_key}")
             set_key(_dotenv_path, token_secret_key, secrets.token_hex(64))
@@ -50,10 +50,10 @@ class Config(BaseModel):
         description="The secret used when signing user session access tokens",
     )
 
-    file_token_secret: str = Field(
-        alias="FILE_TOKEN_SECRET",
+    feature_token_secret: str = Field(
+        alias="FEATURE_TOKEN_SECRET",
         min_length=128,
-        description="The secret used when signing file access tokens",
+        description="The secret used when signing feature access tokens",
     )
 
     salt: bytes = Field(
