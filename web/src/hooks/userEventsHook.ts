@@ -1,9 +1,8 @@
+import type { UserEvent } from "@magritte/api"
 import { useEffect, useState } from "react"
 
-import type { UserEvent } from "@/api/userEvents"
+import useAPI from "@/hooks/apiHook"
 import type { EventCallback } from "@/utilities/events"
-
-import useAPI from "./apiHook"
 
 export interface UseUserEventsOptions {
     readonly onEvent?: EventCallback<UserEvent>
