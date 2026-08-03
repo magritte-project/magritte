@@ -17,7 +17,6 @@ import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { LocalCache } from "@/playback/localFileCache"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
-import { PanelRegistry } from "@/utilities/panelRegistry"
 
 import "@/styles.css"
 
@@ -53,10 +52,6 @@ const extensionRuntime = new ExtensionRuntime({
 await extensionRuntime.sync()
 playbackEngineRegistry.wireUpExtensions(extensionRuntime)
 
-// Set up panels
-const panelRegistry = new PanelRegistry()
-panelRegistry.wireUpExtensions(extensionRuntime)
-
 // Create a new router instance
 const router = createMagritteRouter({
     api,
@@ -64,7 +59,6 @@ const router = createMagritteRouter({
     commandRegistry,
     extensionRuntime,
     notificationCenter,
-    panelRegistry,
     player,
     queryClient,
 })

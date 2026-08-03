@@ -1,6 +1,6 @@
 import { Outlet, useRouterState } from "@tanstack/react-router"
 
-import PanelsLayout from "@/components/structure/PanelsLayout"
+import ExtensionPanelLayout from "@/components/extensions/ExtensionPanelLayout"
 import ToastLayout from "@/components/structure/ToastLayout"
 import Wiring from "@/components/structure/Wiring"
 
@@ -15,9 +15,9 @@ export default function RootLayout() {
                 {wantsFullPageLayout ? (
                     <Outlet />
                 ) : (
-                    <PanelsLayout>
+                    <ExtensionPanelLayout>
                         <Outlet />
-                    </PanelsLayout>
+                    </ExtensionPanelLayout>
                 )}
             </Wiring>
         </ToastLayout>

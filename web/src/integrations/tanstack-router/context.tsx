@@ -9,7 +9,6 @@ import type { NotificationCenter } from "@/notifications/center"
 import type { Player } from "@/playback/player"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
-import type { PanelRegistry } from "@/utilities/panelRegistry"
 
 export interface MagritteRouterContext {
     readonly api: API
@@ -17,7 +16,6 @@ export interface MagritteRouterContext {
     readonly commandRegistry: CommandRegistry
     readonly extensionRuntime: ExtensionRuntime
     readonly notificationCenter: NotificationCenter
-    readonly panelRegistry: PanelRegistry
     readonly player: Player
     readonly queryClient: QueryClient
 }
