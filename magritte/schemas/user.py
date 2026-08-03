@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel
@@ -35,3 +36,8 @@ class UserProfileUpdate(BaseModel):
 
 class UserEventPreflight(BaseModel):
     token: str
+
+
+class UserFileAccessPreflight(BaseModel):
+    token: str
+    expires_at: datetime

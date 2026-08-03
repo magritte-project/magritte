@@ -1,4 +1,4 @@
-import type { APIClient, ExtensionManifest, UserSessionManager } from "@magritte/api"
+import type { APIClient, ExtensionManifest, FileAccess, UserSessionManager } from "@magritte/api"
 import { Extension, getExtensionAllow, getExtensionSrc } from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
@@ -16,6 +16,7 @@ export interface ExtensionRuntimeOptions {
     readonly commandRegistry: CommandRegistry
     readonly userSession: UserSessionManager
     readonly apiClient: APIClient
+    readonly fileAccess: FileAccess
     readonly notificationCenter: NotificationCenter
     readonly player: Player
 }
@@ -79,6 +80,9 @@ export class ExtensionRuntime {
     /** The API client */
     private readonly _apiClient: APIClient
 
+    /** The file access helper */
+    private readonly _fileAccess: FileAccess
+
     /** The notification center */
     private readonly _notificationCenter: NotificationCenter
 
@@ -102,6 +106,7 @@ export class ExtensionRuntime {
         this._commandRegistry = options.commandRegistry
         this._userSession = options.userSession
         this._apiClient = options.apiClient
+        this._fileAccess = options.fileAccess
         this._notificationCenter = options.notificationCenter
         this._player = options.player
         this._available = new Map()
@@ -251,7 +256,7 @@ export class ExtensionRuntime {
                             this._notificationCenter.showToast(options)
                         },
                     },
-                    library: exportLibrary(manifest, this._userSession, this._apiClient),
+                    library: exportLibrary(manifest, this._apiClient, this._fileAccess),
                     player: exportPlayer(manifest, broadcaster, this._player),
                 }),
             })

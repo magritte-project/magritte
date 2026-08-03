@@ -217,8 +217,16 @@ class TestStreamSourceFile:
     ):
         session = sign_in("test", "password")
 
+        response = client.post(
+            "/users/files/preflight",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+        token = response.json().get("token")
+        assert token is not None
+
         response = client.get(
-            f"/sources/99999999/file?token={session.access_token}",
+            f"/sources/99999999/file?token={token}",
         )
         assert response.status_code == 404
         assert response.json().get("detail") == "Source not found"

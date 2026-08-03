@@ -1125,6 +1125,20 @@ export type UserEventPreflight = {
 }
 
 /**
+ * UserFileAccessPreflight
+ */
+export type UserFileAccessPreflight = {
+    /**
+     * Token
+     */
+    token: string
+    /**
+     * Expires At
+     */
+    expires_at: string
+}
+
+/**
  * UserProfileRead
  */
 export type UserProfileRead = {
@@ -1316,7 +1330,7 @@ export type ReadArtworkImageArtworksArtworkIdImageGetData = {
         /**
          * Token
          *
-         * The token authenticating this artwork image read
+         * A feature token
          */
         token: string
     }
@@ -2609,7 +2623,7 @@ export type StreamSourceFileSourcesSourceIdFileGetData = {
         /**
          * Token
          *
-         * The token authenticating this source stream
+         * A feature token
          */
         token: string
     }
@@ -2889,3 +2903,20 @@ export type ReadUserUsersAllIdOrUsernameGetResponses = {
 
 export type ReadUserUsersAllIdOrUsernameGetResponse =
     ReadUserUsersAllIdOrUsernameGetResponses[keyof ReadUserUsersAllIdOrUsernameGetResponses]
+
+export type ReadFilesPreflightUsersFilesPreflightPostData = {
+    body?: never
+    path?: never
+    query?: never
+    url: "/users/files/preflight"
+}
+
+export type ReadFilesPreflightUsersFilesPreflightPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserFileAccessPreflight
+}
+
+export type ReadFilesPreflightUsersFilesPreflightPostResponse =
+    ReadFilesPreflightUsersFilesPreflightPostResponses[keyof ReadFilesPreflightUsersFilesPreflightPostResponses]

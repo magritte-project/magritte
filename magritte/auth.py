@@ -1,12 +1,15 @@
 from datetime import UTC, datetime, timedelta
+from enum import Enum
+from functools import lru_cache
 from typing import Annotated, Any
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Query, WebSocketException, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from pwdlib import PasswordHash
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.requests import HTTPConnection
 
 from magritte.config import config
 from magritte.db import get_db_session
@@ -142,3 +145,123 @@ async def get_current_user(
         )
 
     return user
+
+
+class FeatureScope(str, Enum):
+    FILES_READ = "files:read"
+    """
+    Scope which allows reading file resources.
+    """
+
+    USER_EVENTS_STREAM = "user:events:stream"
+    """
+    Scope which allows streaming user events.
+    """
+
+
+def create_feature_token(
+    *,
+    subject: str,
+    scope: FeatureScope,
+    expire_after: timedelta,
+) -> tuple[str, datetime]:
+    """
+    Create a feature access token with the given parameters.
+
+    :param subject: The subject the token grants access to, a username.
+    :param scope: The scope of the feature access token. Unlike a session token,
+    a feature token may only grant a single scope.
+    :param expires_after: How long the feature access token will be valid for.
+    :returns: Tuple of token, expires at.
+    """
+
+    expires_at = datetime.now(UTC) + expire_after
+    to_encode = dict[str, Any]()
+    to_encode["sub"] = subject
+    to_encode["scope"] = scope.value
+    to_encode["exp"] = expires_at
+    token = jwt.encode(to_encode, config.file_token_secret, config.token_algorithm)
+    return token, expires_at
+
+
+def _read_feature_token(token: str) -> tuple[str, FeatureScope]:
+    """
+    Read the contents of a feature access token,
+    validating that it's well-formed.
+
+    :param token: A feature access token.
+    :returns: Tuple of subject, scope for the caller to further verify.
+    :raises: A `jwt.InvalidTokenError` error if the token is malformed.
+    """
+
+    to_decode = jwt.decode(
+        token, config.file_token_secret, algorithms=[config.token_algorithm]
+    )
+    subject = to_decode.get("sub")
+    if not isinstance(subject, str):
+        raise jwt.InvalidTokenError("Bad subject")
+
+    raw_scope = to_decode.get("scope")
+    if not isinstance(raw_scope, str):
+        raise jwt.InvalidTokenError("Bad scope")
+
+    try:
+        scope = FeatureScope(raw_scope)
+    except ValueError as e:
+        raise jwt.InvalidTokenError("Invalid scope") from e
+
+    return subject, scope
+
+
+@lru_cache()
+def get_feature_user(required_scope: FeatureScope):
+    """
+    Returns an injectable to get the current user by
+    decoding the feature token attached to the request.
+
+    :param required_scope: The scope which the feature token must specify.
+    :returns: An injectable.
+    """
+
+    async def get_feature_user(
+        conn: HTTPConnection,
+        token: Annotated[
+            str,
+            Query(
+                description="A feature token",
+            ),
+        ],
+        session: Annotated[AsyncSession, Depends(get_db_session)],
+    ) -> User:
+        try:
+            username, scope = _read_feature_token(token)
+            user = await User.read_by_username(username, session)
+            if not user:
+                raise jwt.InvalidTokenError("Invalid user")
+        except (jwt.InvalidTokenError, ValidationError) as e:
+            if conn.scope["type"] == "websocket":
+                raise WebSocketException(
+                    code=status.WS_1008_POLICY_VIOLATION,
+                    reason="Could not validate credentials",
+                ) from e
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Could not validate credentials",
+                ) from e
+
+        if scope != required_scope:
+            if conn.scope["type"] == "websocket":
+                raise WebSocketException(
+                    code=status.WS_1008_POLICY_VIOLATION,
+                    reason="Not enough permissions",
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Not enough permissions",
+                )
+
+        return user
+
+    return get_feature_user

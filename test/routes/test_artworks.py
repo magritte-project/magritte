@@ -303,3 +303,34 @@ class TestDeleteSource:
         )
         assert response.status_code == 401
         assert response.json().get("detail") == "Not authenticated"
+
+
+class TestReadArtworkImage:
+    def test_requires_valid_token(
+        self,
+        client: TestClient,
+    ):
+        response = client.get("/artworks/1/image?token=123")
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Could not validate credentials"
+
+    def test_requires_source_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.post(
+            "/users/files/preflight",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+        token = response.json().get("token")
+        assert token is not None
+
+        response = client.get(
+            f"/artworks/99999999/image?token={token}",
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Artwork not found"

@@ -1,4 +1,4 @@
-import type { APIClient, ExtensionManifest, UserSessionManager } from "@magritte/api"
+import type { APIClient, ExtensionManifest, FileAccess } from "@magritte/api"
 import type { Library } from "@magritte/sdk"
 
 import { enforcePermissions } from "@/extensions/exports/permissions"
@@ -6,8 +6,8 @@ import { resolveUrl } from "@/utilities/resources"
 
 export function exportLibrary(
     manifest: ExtensionManifest,
-    userSession: UserSessionManager,
     apiClient: APIClient,
+    fileAccess: FileAccess,
 ): Library {
     return {
         readLibraries: enforcePermissions(manifest, ["libraries:read"], async () => {
@@ -25,7 +25,8 @@ export function exportLibrary(
             },
         ),
         resolveArtworkImageUrl: enforcePermissions(manifest, ["libraries:read"], async (url) => {
-            return resolveUrl(url, userSession.current)
+            const token = await fileAccess.token()
+            return resolveUrl(url, token)
         }),
     }
 }

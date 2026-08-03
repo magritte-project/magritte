@@ -1,4 +1,4 @@
-import type { APIClient, UserSessionManager } from "@magritte/api"
+import type { APIClient, FileAccess } from "@magritte/api"
 import { getCommandInputKind, LibraryInput, LibrarySongInput } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 import type { RegisteredRouter } from "@tanstack/react-router"
@@ -13,7 +13,7 @@ import { resolveUrl } from "@/utilities/resources"
 export function libraryCommands(
     router: RegisteredRouter,
     apiClient: APIClient,
-    session: UserSessionManager,
+    fileAccess: FileAccess,
     localCache: LocalCache,
     notificationCenter: NotificationCenter,
     queryClient: QueryClient,
@@ -142,7 +142,8 @@ export function libraryCommands(
                     }
                     console.debug(`Downloading source: ${source.url}`)
                     try {
-                        const url = resolveUrl(source.url, session.current)
+                        const token = await fileAccess.token()
+                        const url = resolveUrl(source.url, token)
                         if (url === undefined) {
                             throw new Error("Could not resolve song source URL")
                         }

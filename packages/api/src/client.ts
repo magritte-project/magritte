@@ -15,6 +15,7 @@ import {
     installExtensionExtensionsAvailableExtensionIdInstallPost,
     markAllNotificationsReadUsersNotificationsMarkAllReadPost,
     readAvailableExtensionsExtensionsAvailableGet,
+    readFilesPreflightUsersFilesPreflightPost,
     readInstalledExtensionsExtensionsInstalledGet,
     readInstanceStatusStatusGet,
     readLibrariesLibrariesGet,
@@ -79,6 +80,7 @@ import {
     type SourceRead,
     type SourceUpdate,
     type UserEventPreflight,
+    type UserFileAccessPreflight,
     type UserProfileRead,
     type UserProfilesRead,
     type UserProfileUpdate,
@@ -209,6 +211,10 @@ export class APIClient {
 
     async readAllUsers(query?: string, offset?: number, limit?: number): Promise<UserProfilesRead> {
         return await readUsersUsersAllGet({ ...this.options, query: { query, offset, limit } })
+    }
+
+    async readFilesPreflight(): Promise<UserFileAccessPreflight> {
+        return await readFilesPreflightUsersFilesPreflightPost(this.options)
     }
 
     // -- Library Routes -- //

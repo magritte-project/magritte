@@ -464,6 +464,14 @@ export const UserEventPreflightSchema = z.object({
 })
 
 /**
+ * UserFileAccessPreflight
+ */
+export const UserFileAccessPreflightSchema = z.object({
+    token: z.string(),
+    expires_at: z.iso.datetime(),
+})
+
+/**
  * UserProfileRead
  */
 export const UserProfileReadSchema = z.object({

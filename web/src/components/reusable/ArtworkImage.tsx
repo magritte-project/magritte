@@ -1,8 +1,9 @@
 import type { PlayableItemArtwork } from "@magritte/sdk"
 import classNames from "classnames"
 import type React from "react"
+import { use } from "react"
 
-import useUserSession from "@/hooks/userSessionHook"
+import useFileAccess from "@/hooks/fileAccessHook"
 import { resolveUrl } from "@/utilities/resources"
 
 export interface ArtworkImageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
@@ -19,7 +20,8 @@ export default function ArtworkImage({
     ...rest
 }: ArtworkImageProps) {
     // TODO: Fix up session token and URL building...
-    const userSession = useUserSession()
+    const fileAccess = useFileAccess()
+    const token = use(fileAccess.token())
     return (
         <div
             className={classNames(
@@ -31,7 +33,7 @@ export default function ArtworkImage({
             {!!artworks?.length && (
                 <img
                     className="object-fit w-full h-full"
-                    src={resolveUrl(artworks[0].image_url, userSession.current)}
+                    src={resolveUrl(artworks[0].image_url, token)}
                     alt={`Cover for ${itemTitle}`}
                 />
             )}

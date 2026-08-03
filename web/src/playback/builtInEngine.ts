@@ -1,4 +1,4 @@
-import type { UserSessionManager } from "@magritte/api"
+import type { FileAccess } from "@magritte/api"
 import { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk"
 
 import type {
@@ -31,18 +31,18 @@ function _getPlaybackState(audio: HTMLAudioElement): PlaybackState {
 }
 
 export default class BuiltInPlaybackEngine implements PlaybackEngine {
-    private readonly _userSession: UserSessionManager
+    private readonly _fileAccess: FileAccess
     private readonly _localCache: LocalCache
     private readonly _audio: HTMLAudioElement
     private readonly _events: EventSink<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
     constructor(
-        userSession: UserSessionManager,
+        fileAccess: FileAccess,
         localCache: LocalCache,
         parent: HTMLElement = document.body,
     ) {
-        this._userSession = userSession
+        this._fileAccess = fileAccess
         this._localCache = localCache
         this._audio = new Audio()
         ;[this._events, this.$events] = createEvent()
@@ -137,7 +137,8 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
             const audioSrc = URL.createObjectURL(sourceFile)
             this._swapSrc(audioSrc)
         } else {
-            const audioSrc = resolveUrl(bestUrl, this._userSession.current)
+            const token = await this._fileAccess.token()
+            const audioSrc = resolveUrl(bestUrl, token)
             if (audioSrc === undefined) {
                 throw new Error("Could not resolve song source URL")
             }

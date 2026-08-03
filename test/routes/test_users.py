@@ -1,5 +1,8 @@
+from contextlib import nullcontext as no_raise
+
 import pytest
 from faker import Faker
+from fastapi import WebSocketDisconnect, status
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -388,3 +391,45 @@ class TestReadUser:
         )
         assert response.status_code == 401
         assert response.json().get("detail") == "Not authenticated"
+
+
+class TestStreamUserEvents:
+    @pytest.mark.asyncio
+    async def test_with_valid_token(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.post(
+            "/users/events/preflight",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+        token = response.json().get("token")
+        assert token is not None
+
+        with no_raise():
+            with client.websocket_connect(f"/users/events?token={token}"):
+                pass
+
+    @pytest.mark.asyncio
+    async def test_with_invalid_token(
+        self,
+        client: TestClient,
+    ):
+        with pytest.raises(WebSocketDisconnect) as exc_info:
+            with client.websocket_connect("/users/events?token=bad"):
+                pass
+        assert exc_info.value.code == status.WS_1008_POLICY_VIOLATION
+
+    @pytest.mark.asyncio
+    async def test_requires_token(
+        self,
+        client: TestClient,
+    ):
+        with pytest.raises(WebSocketDisconnect) as exc_info:
+            with client.websocket_connect("/users/events"):
+                pass
+        assert exc_info.value.code == status.WS_1008_POLICY_VIOLATION

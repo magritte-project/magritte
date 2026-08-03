@@ -60,6 +60,8 @@ import type {
     ReadAvailableExtensionsExtensionsAvailableGetData,
     ReadAvailableExtensionsExtensionsAvailableGetErrors,
     ReadAvailableExtensionsExtensionsAvailableGetResponses,
+    ReadFilesPreflightUsersFilesPreflightPostData,
+    ReadFilesPreflightUsersFilesPreflightPostResponses,
     ReadInstalledExtensionsExtensionsInstalledGetData,
     ReadInstalledExtensionsExtensionsInstalledGetErrors,
     ReadInstalledExtensionsExtensionsInstalledGetResponses,
@@ -1399,5 +1401,28 @@ export const readUserUsersAllIdOrUsernameGet = <ThrowOnError extends boolean = f
         responseStyle: "data",
         security: [{ scheme: "bearer", type: "http" }],
         url: "/users/all/{id_or_username}",
+        ...options,
+    })
+
+/**
+ * Prepare to read files as the current user
+ */
+export const readFilesPreflightUsersFilesPreflightPost = <ThrowOnError extends boolean = false>(
+    options?: Options<ReadFilesPreflightUsersFilesPreflightPostData, ThrowOnError>,
+): RequestResult<
+    ReadFilesPreflightUsersFilesPreflightPostResponses,
+    unknown,
+    ThrowOnError,
+    "data"
+> =>
+    (options?.client ?? client).post<
+        ReadFilesPreflightUsersFilesPreflightPostResponses,
+        unknown,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/users/files/preflight",
         ...options,
     })

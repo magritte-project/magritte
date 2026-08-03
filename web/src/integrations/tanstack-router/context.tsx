@@ -1,4 +1,4 @@
-import type { APIClient, UserSessionManager } from "@magritte/api"
+import type { APIClient, FileAccess, UserSessionManager } from "@magritte/api"
 import type { QueryClient } from "@tanstack/react-query"
 import { createRouter } from "@tanstack/react-router"
 
@@ -17,6 +17,7 @@ export interface MagritteRouterContext {
     readonly commandInputs: CommandInputs
     readonly commandRegistry: CommandRegistry
     readonly extensionRuntime: ExtensionRuntime
+    readonly fileAccess: FileAccess
     readonly notificationCenter: NotificationCenter
     readonly panelRegistry: PanelRegistry
     readonly player: Player

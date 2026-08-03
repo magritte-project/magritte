@@ -124,10 +124,10 @@
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "description": "The token authenticating this artwork image read",
+                            "description": "A feature token",
                             "title": "Token"
                         },
-                        "description": "The token authenticating this artwork image read"
+                        "description": "A feature token"
                     }
                 ],
                 "responses": {
@@ -1649,10 +1649,10 @@
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "description": "The token authenticating this source stream",
+                            "description": "A feature token",
                             "title": "Token"
                         },
-                        "description": "The token authenticating this source stream"
+                        "description": "A feature token"
                     }
                 ],
                 "responses": {
@@ -1966,6 +1966,23 @@
                         }
                     }
                 }
+            }
+        },
+        "/users/files/preflight": {
+            "post": {
+                "summary": "Prepare to read files as the current user",
+                "operationId": "read_files_preflight_users_files_preflight_post",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserFileAccessPreflight" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }]
             }
         }
     },
@@ -2984,6 +3001,15 @@
                 "type": "object",
                 "required": ["token"],
                 "title": "UserEventPreflight"
+            },
+            "UserFileAccessPreflight": {
+                "properties": {
+                    "token": { "type": "string", "title": "Token" },
+                    "expires_at": { "type": "string", "format": "date-time", "title": "Expires At" }
+                },
+                "type": "object",
+                "required": ["token", "expires_at"],
+                "title": "UserFileAccessPreflight"
             },
             "UserProfileRead": {
                 "properties": {

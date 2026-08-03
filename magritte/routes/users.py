@@ -1,7 +1,6 @@
-from datetime import UTC, datetime, timedelta
-from typing import Annotated, Any
+from datetime import timedelta
+from typing import Annotated
 
-import jwt
 from fastapi import (
     APIRouter,
     Depends,
@@ -10,18 +9,18 @@ from fastapi import (
     Security,
     WebSocket,
     WebSocketDisconnect,
-    WebSocketException,
     status,
 )
-from pydantic import ValidationError
 from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, select, update
 
 from magritte.auth import (
+    FeatureScope,
+    create_feature_token,
     get_current_user,
+    get_feature_user,
 )
-from magritte.config import config
 from magritte.db import get_db_session
 from magritte.model.notification import Notification
 from magritte.model.user import User, UserNotificationLink
@@ -34,6 +33,7 @@ from magritte.schemas.notification import (
 )
 from magritte.schemas.user import (
     UserEventPreflight,
+    UserFileAccessPreflight,
     UserProfileRead,
     UserProfilesRead,
     UserProfileUpdate,
@@ -215,10 +215,11 @@ async def stream_user_events_preflight(
         User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
     ],
 ):
-    to_encode = dict[str, Any]()
-    to_encode["sub"] = current_user.username
-    to_encode["exp"] = datetime.now(UTC) + timedelta(seconds=30)
-    token = jwt.encode(to_encode, config.file_token_secret, config.token_algorithm)
+    token, _ = create_feature_token(
+        subject=current_user.username,
+        scope=FeatureScope.USER_EVENTS_STREAM,
+        expire_after=timedelta(seconds=30),
+    )
     return UserEventPreflight(token=token)
 
 
@@ -227,27 +228,12 @@ async def stream_user_events_preflight(
 )
 async def stream_user_events(
     websocket: WebSocket,
-    token: Annotated[str, Query()],
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    current_user: Annotated[
+        User, Depends(get_feature_user(FeatureScope.USER_EVENTS_STREAM))
+    ],
     user_events: Annotated[UserEvents, Depends(get_user_events)],
 ):
-    try:
-        to_decode = jwt.decode(
-            token, config.file_token_secret, algorithms=[config.token_algorithm]
-        )
-        subject = to_decode.get("sub")
-        if not isinstance(subject, str):
-            raise jwt.InvalidTokenError("Bad subject")
-        user = await User.read_by_username(subject, session)
-        if not user:
-            raise jwt.InvalidTokenError("Invalid user")
-    except (jwt.InvalidTokenError, ValidationError) as e:
-        raise WebSocketException(
-            code=status.WS_1008_POLICY_VIOLATION,
-            reason="Could not validate credentials",
-        ) from e
-
-    user_id = user.id
+    user_id = current_user.id
     await user_events.connect(user_id, websocket)
     try:
         while True:
@@ -323,3 +309,21 @@ async def read_user(
         raise HTTPException(status_code=404, detail="User not found")
 
     return UserProfileRead(**user.model_dump())
+
+
+@router.post(
+    "/files/preflight",
+    response_model=UserFileAccessPreflight,
+    summary="Prepare to read files as the current user",
+)
+async def read_files_preflight(
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
+    ],
+):
+    token, expires_at = create_feature_token(
+        subject=current_user.username,
+        scope=FeatureScope.FILES_READ,
+        expire_after=timedelta(hours=1),
+    )
+    return UserFileAccessPreflight(token=token, expires_at=expires_at)

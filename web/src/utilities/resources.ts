@@ -1,14 +1,6 @@
-import type { UserSession } from "@magritte/api"
-
-export function resolveUrl(
-    url: string | undefined,
-    currentSession: UserSession | null,
-): string | undefined {
+export function resolveUrl(url: string | undefined, token: string): string | undefined {
     if (url !== undefined && url.startsWith("magritte://")) {
-        if (currentSession === null) {
-            return undefined
-        }
-        return `${url.replace("magritte://", "/api")}?token=${currentSession.accessToken}`
+        return `${url.replace("magritte://", "/api")}?token=${token}`
     } else {
         return url
     }

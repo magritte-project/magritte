@@ -1,4 +1,4 @@
-import { APIClient, StorageUserSessionManager } from "@magritte/api"
+import { APIClient, FileAccess, StorageUserSessionManager } from "@magritte/api"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
@@ -34,6 +34,7 @@ const apiClient = new APIClient({
     baseUrl: import.meta.env.VITE_API_URL,
     userSessionManager: userSession,
 })
+const fileAccess = new FileAccess(apiClient)
 const queryClient = new QueryClient()
 
 // Set up commands
@@ -47,7 +48,7 @@ const notificationCenter = new NotificationCenter(queryClient, apiClient, userEv
 // Set up playback
 const localCache = await LocalCache.open()
 const playbackEngineRegistry = new PlaybackEngineRegistry({
-    defaultEngine: new BuiltInPlaybackEngine(userSession, localCache),
+    defaultEngine: new BuiltInPlaybackEngine(fileAccess, localCache),
 })
 const player = new Player(playbackEngineRegistry)
 
@@ -58,6 +59,7 @@ const extensionRuntime = new ExtensionRuntime({
     commandRegistry,
     userSession,
     apiClient,
+    fileAccess,
     notificationCenter,
     player,
 })
@@ -74,6 +76,7 @@ const router = createMagritteRouter({
     commandInputs,
     commandRegistry,
     extensionRuntime,
+    fileAccess,
     notificationCenter,
     panelRegistry,
     player,
@@ -84,7 +87,7 @@ const router = createMagritteRouter({
 
 // Hook up commands
 commandRegistry.add(
-    ...libraryCommands(router, apiClient, userSession, localCache, notificationCenter, queryClient),
+    ...libraryCommands(router, apiClient, fileAccess, localCache, notificationCenter, queryClient),
 )
 commandRegistry.add(...playerCommands(player))
 wirePlayerCommandInputs(player, commandInputs)
