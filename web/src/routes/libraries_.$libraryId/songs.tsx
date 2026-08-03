@@ -76,9 +76,9 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             offset,
         } = Route.useSearch()
         const navigate = Route.useNavigate()
-        const { client } = useAPI()
+        const api = useAPI()
         const pageQuery = useQuery(
-            readLibrarySongs(client, {
+            readLibrarySongs(api, {
                 libraryId: Number(libraryId),
                 query,
                 albumId,

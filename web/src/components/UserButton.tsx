@@ -13,8 +13,8 @@ import useUserSession from "@/hooks/userSessionHook"
 export default function UserButton() {
     const { isSignedIn, signOut } = useUserSession()
     const navigate = useNavigate()
-    const { client } = useAPI()
-    const meQuery = useQuery(userProfile(client, isSignedIn))
+    const api = useAPI()
+    const meQuery = useQuery(userProfile(api, isSignedIn))
     return !isSignedIn ? (
         <Link
             to="/sign-in"

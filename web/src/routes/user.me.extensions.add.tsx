@@ -15,22 +15,19 @@ export const Route = createFileRoute("/user/me/extensions/add")({
     validateSearch: z.object({ offset: z.number().optional(), limit: z.number().optional() }),
     loaderDeps: ({ search }) => ({ search }),
     loader: async ({
-        context: {
-            queryClient,
-            api: { client },
-        },
+        context: { queryClient, api },
         deps: {
             search: { offset, limit },
         },
     }) => {
-        await queryClient.ensureQueryData(readAvailableExtensions(client, offset, limit))
+        await queryClient.ensureQueryData(readAvailableExtensions(api, offset, limit))
     },
     component: function AdminExtensionsImport() {
         const { offset, limit } = Route.useSearch()
         const navigate = Route.useNavigate()
-        const { client } = useAPI()
+        const api = useAPI()
         const { data: availableExtensions } = useSuspenseQuery(
-            readAvailableExtensions(client, offset, limit),
+            readAvailableExtensions(api, offset, limit),
         )
         const installMutation = useInstallExtension()
 

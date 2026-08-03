@@ -23,9 +23,9 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
         const { libraryId } = Route.useParams()
         const { query, artist_id: artistId, offset } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
-        const { client } = useAPI()
+        const api = useAPI()
         const { data: page } = useSuspenseQuery(
-            readLibraryAlbums(client, {
+            readLibraryAlbums(api, {
                 libraryId: Number(libraryId),
                 query,
                 artistId,

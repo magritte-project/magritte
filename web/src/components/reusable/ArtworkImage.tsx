@@ -20,8 +20,8 @@ export default function ArtworkImage({
     accessory,
     ...rest
 }: ArtworkImageProps) {
-    const { fileAccess } = useAPI()
-    const tokenQuery = useQuery(fileAccessToken(fileAccess))
+    const api = useAPI()
+    const tokenQuery = useQuery(fileAccessToken(api))
     return (
         <div
             className={classNames(

@@ -14,8 +14,8 @@ export interface LibraryHomeBrowserProps {
 }
 
 export default function LibraryHomeBrowser({ relativeTo, onNavigateTo }: LibraryHomeBrowserProps) {
-    const { client } = useAPI()
-    const homeQuery = useQuery(readLibraryHomeSubpaths(client, relativeTo ?? "."))
+    const api = useAPI()
+    const homeQuery = useQuery(readLibraryHomeSubpaths(api, relativeTo ?? "."))
     if (homeQuery.isPending) {
         return <ThemedContentUnavailable variant="inline" className="h-64" />
     } else if (homeQuery.isError) {

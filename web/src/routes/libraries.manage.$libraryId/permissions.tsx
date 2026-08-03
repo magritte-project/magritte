@@ -24,14 +24,14 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/permissions")
     component: function ManageLibraryPermissions() {
         const { libraryId } = Route.useParams()
         const { showToast } = useToast()
-        const { client } = useAPI()
+        const api = useAPI()
         const { data: permissions } = useSuspenseQuery(
-            readLibraryPermissions(client, Number(libraryId)),
+            readLibraryPermissions(api, Number(libraryId)),
         )
 
         const [query, setQuery] = useState("")
         const currentQuery = useDebounce(query, 100)
-        const { data: allUsers } = useSuspenseQuery(readAllUsers(client, currentQuery, 0, 5))
+        const { data: allUsers } = useSuspenseQuery(readAllUsers(api, currentQuery, 0, 5))
 
         const createMutation = useCreateLibraryPermission(Number(libraryId))
         const handleAddUser = useCallback(

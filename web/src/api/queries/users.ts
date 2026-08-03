@@ -1,4 +1,4 @@
-import type { APIClient, FileAccess } from "@magritte/api"
+import type { API } from "@magritte/api"
 import { queryOptions } from "@tanstack/react-query"
 
 import {
@@ -9,37 +9,32 @@ import {
     usersAll,
 } from "@/api/keys/users"
 
-export function userProfile(client: APIClient, enabled = true) {
+export function userProfile(api: API, enabled = true) {
     return queryOptions({
         queryKey: userMeProfile(),
-        queryFn: () => client.readMe(),
+        queryFn: () => api.client.readMe(),
         enabled,
     })
 }
 
-export function readNotifications(
-    client: APIClient,
-    offset?: number,
-    limit?: number,
-    enabled = true,
-) {
+export function readNotifications(api: API, offset?: number, limit?: number, enabled = true) {
     return queryOptions({
         queryKey: userMeNotifications(offset, limit),
-        queryFn: () => client.readNotifications(offset, limit),
+        queryFn: () => api.client.readNotifications(offset, limit),
         enabled,
     })
 }
 
-export function readNotification(client: APIClient, notification_id: number, enabled = true) {
+export function readNotification(api: API, notification_id: number, enabled = true) {
     return queryOptions({
         queryKey: userMeNotification(notification_id),
-        queryFn: () => client.readNotification(notification_id),
+        queryFn: () => api.client.readNotification(notification_id),
         enabled,
     })
 }
 
 export function readAllUsers(
-    client: APIClient,
+    api: API,
     query?: string,
     offset?: number,
     limit?: number,
@@ -47,14 +42,14 @@ export function readAllUsers(
 ) {
     return queryOptions({
         queryKey: usersAll(query, offset, limit),
-        queryFn: () => client.readAllUsers(query, offset, limit),
+        queryFn: () => api.client.readAllUsers(query, offset, limit),
         enabled,
     })
 }
 
-export function fileAccessToken(fileAccess: FileAccess) {
+export function fileAccessToken(api: API) {
     return queryOptions({
         queryKey: userMeFileAccessToken(),
-        queryFn: () => fileAccess.token(),
+        queryFn: () => api.fileAccess.token(),
     })
 }

@@ -16,8 +16,8 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/")({
     component: function ManageLibraryGeneral() {
         const { libraryId } = Route.useParams()
         const { showToast } = useToast()
-        const { client } = useAPI()
-        const { data: library } = useSuspenseQuery(readLibrary(client, Number(libraryId)))
+        const api = useAPI()
+        const { data: library } = useSuspenseQuery(readLibrary(api, Number(libraryId)))
 
         const updateMutation = useUpdateLibrary(Number(libraryId))
         const form = useAppForm({

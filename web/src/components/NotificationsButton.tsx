@@ -13,8 +13,8 @@ import useUserSession from "@/hooks/userSessionHook"
 
 export default function NotificationsButton() {
     const { isSignedIn } = useUserSession()
-    const { client } = useAPI()
-    const notifications = useQuery(readNotifications(client))
+    const api = useAPI()
+    const notifications = useQuery(readNotifications(api))
 
     const unreadCount = useMemo(() => {
         const items = notifications?.data?.items ?? []

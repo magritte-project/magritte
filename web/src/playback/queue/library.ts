@@ -1,5 +1,4 @@
-import type { APIClient } from "@magritte/api"
-import type { LibraryMediaReadSongRead } from "@magritte/api"
+import type { API, LibraryMediaReadSongRead } from "@magritte/api"
 import type { PlayableItem } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 
@@ -8,7 +7,7 @@ import type { Queue, QueueContext, QueueEvent, RandomItemContext } from "@/playb
 import { createEvent, type EventStream } from "@/utilities/events"
 
 export default class LibraryQueue implements Queue<PlayableItem> {
-    private readonly _apiClient: APIClient
+    private readonly _api: API
     private readonly _queryClient: QueryClient
     private readonly _criteria: Omit<ReadLibrarySongsCriteria, "offset" | "limit">
     private readonly _pages: Map<number, LibraryMediaReadSongRead>
@@ -24,7 +23,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
 
         // TODO: Wire up events
 
-        this._apiClient = context.api.client
+        this._api = context.api
         this._queryClient = context.queryClient
         this._criteria = { ...criteria }
         this._pages = new Map().set(initialPage.offset, initialPage)
@@ -45,7 +44,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
             return existingPage
         } else {
             const newPage = await this._queryClient.ensureQueryData(
-                readLibrarySongs(this._apiClient, {
+                readLibrarySongs(this._api, {
                     ...this._criteria,
                     offset,
                 }),

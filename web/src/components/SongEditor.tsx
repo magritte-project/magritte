@@ -16,7 +16,7 @@ import useToast from "@/hooks/toastHook"
 import { getErrorMessage } from "@/utilities/errors"
 
 export default function SongEditor() {
-    const { client } = useAPI()
+    const api = useAPI()
     const commandInputs = useCommandInputs()
     const [libraryId, songId] = useMemo(() => {
         const libraryInputs = commandInputs.allOf(LibraryInput)
@@ -31,7 +31,7 @@ export default function SongEditor() {
     }, [commandInputs])
 
     const songQuery = useQuery({
-        ...readLibrarySong(client, libraryId ?? 0, songId ?? 0),
+        ...readLibrarySong(api, libraryId ?? 0, songId ?? 0),
         enabled: libraryId !== null && songId !== null,
     })
 

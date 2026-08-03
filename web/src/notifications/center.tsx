@@ -26,9 +26,9 @@ export class NotificationCenter {
 
         api.userEventsManager.subscribe((event) => this._handleUserEvent(event))
 
-        const observer = new QueryObserver(queryClient, readNotifications(api.client))
+        const observer = new QueryObserver(queryClient, readNotifications(api))
         observer.subscribe((result) => this._handleReadNotificationsQueryResult(result))
-        queryClient.ensureQueryData(readNotifications(api.client))
+        queryClient.ensureQueryData(readNotifications(api))
     }
 
     private async _handleUserEvent(event: UserEvent) {

@@ -16,8 +16,8 @@ import useAPI from "@/hooks/apiHook"
 export const Route = createFileRoute("/libraries")({
     component: function LibrariesComponent() {
         const navigate = useNavigate()
-        const { client } = useAPI()
-        const { data: libraries } = useSuspenseQuery(readLibraries(client))
+        const api = useAPI()
+        const { data: libraries } = useSuspenseQuery(readLibraries(api))
 
         const libraryCommands = useMemo(() => {
             return libraries.map(
