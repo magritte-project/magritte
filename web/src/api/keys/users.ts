@@ -21,3 +21,7 @@ export function userMeNotification(notification_id: number) {
 export function usersAll<Rest extends any[]>(...rest: Rest) {
     return [...users(), "all", ...rest] as const
 }
+
+export function userMeFileAccessToken() {
+    return [...me(), "fileAccessToken"] as const
+}

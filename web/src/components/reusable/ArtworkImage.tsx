@@ -1,8 +1,9 @@
 import type { PlayableItemArtwork } from "@magritte/sdk"
+import { useQuery } from "@tanstack/react-query"
 import classNames from "classnames"
 import type React from "react"
-import { use } from "react"
 
+import { fileAccessToken } from "@/api/queries/users"
 import useAPI from "@/hooks/apiHook"
 import { resolveUrl } from "@/utilities/resources"
 
@@ -19,9 +20,8 @@ export default function ArtworkImage({
     accessory,
     ...rest
 }: ArtworkImageProps) {
-    // TODO: Fix up session token and URL building...
     const { fileAccess } = useAPI()
-    const token = use(fileAccess.token())
+    const tokenQuery = useQuery(fileAccessToken(fileAccess))
     return (
         <div
             className={classNames(
@@ -30,10 +30,10 @@ export default function ArtworkImage({
             )}
             {...rest}
         >
-            {!!artworks?.length && (
+            {!!artworks?.length && tokenQuery.isSuccess && (
                 <img
                     className="object-fit w-full h-full"
-                    src={resolveUrl(artworks[0].image_url, token)}
+                    src={resolveUrl(artworks[0].image_url, tokenQuery.data)}
                     alt={`Cover for ${itemTitle}`}
                 />
             )}

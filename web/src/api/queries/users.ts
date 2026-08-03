@@ -1,7 +1,13 @@
-import type { APIClient } from "@magritte/api"
+import type { APIClient, FileAccess } from "@magritte/api"
 import { queryOptions } from "@tanstack/react-query"
 
-import { userMeNotification, userMeNotifications, userMeProfile, usersAll } from "@/api/keys/users"
+import {
+    userMeFileAccessToken,
+    userMeNotification,
+    userMeNotifications,
+    userMeProfile,
+    usersAll,
+} from "@/api/keys/users"
 
 export function userProfile(client: APIClient, enabled = true) {
     return queryOptions({
@@ -43,5 +49,12 @@ export function readAllUsers(
         queryKey: usersAll(query, offset, limit),
         queryFn: () => client.readAllUsers(query, offset, limit),
         enabled,
+    })
+}
+
+export function fileAccessToken(fileAccess: FileAccess) {
+    return queryOptions({
+        queryKey: userMeFileAccessToken(),
+        queryFn: () => fileAccess.token(),
     })
 }
