@@ -1,5 +1,10 @@
 import type { ReactNode } from "react"
 
+import {
+    getExtensionPanelDefinition,
+    getExtensionPanelID,
+} from "@/components/extensions/ExtensionComponent"
+import type { ExtensionRuntime } from "@/extensions/runtime"
 import { createEvent, EventStream, type EventSink } from "@/utilities/events"
 
 export interface PanelDefinition {
@@ -57,5 +62,26 @@ export class PanelRegistry {
             this._definitions = definitions
             this._events.dispatch({ type: "panelUnregistered", id })
         }
+    }
+
+    wireUpExtensions(extensionRuntime: ExtensionRuntime): void {
+        for (const manifest of extensionRuntime.available) {
+            this.register(getExtensionPanelDefinition(manifest))
+        }
+        extensionRuntime.$events.subscribe((event) => {
+            switch (event.type) {
+                case "extensionAdded": {
+                    this.register(getExtensionPanelDefinition(event.manifest))
+                    break
+                }
+                case "extensionRemoved": {
+                    this.unregister(getExtensionPanelID(event.manifest))
+                    break
+                }
+                default: {
+                    break
+                }
+            }
+        })
     }
 }

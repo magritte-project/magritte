@@ -8,10 +8,6 @@ import { CommandInputs } from "@/commands/inputs/base"
 import { CommandRegistry } from "@/commands/registry"
 import { libraryCommands } from "@/commands/suites/library"
 import { playerCommands, wirePlayerCommandInputs } from "@/commands/suites/player"
-import {
-    wireExtensionCommands,
-    wireExtensionPanels,
-} from "@/components/extensions/ExtensionComponent"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider"
 import { ExtensionRuntime } from "@/extensions/runtime"
 import { createMagritteRouter } from "@/integrations/tanstack-router/context"
@@ -55,11 +51,11 @@ const extensionRuntime = new ExtensionRuntime({
     player,
 })
 await extensionRuntime.sync()
-playbackEngineRegistry.subscribeTo(extensionRuntime)
+playbackEngineRegistry.wireUpExtensions(extensionRuntime)
 
 // Set up panels
 const panelRegistry = new PanelRegistry()
-wireExtensionPanels(panelRegistry, extensionRuntime)
+panelRegistry.wireUpExtensions(extensionRuntime)
 
 // Create a new router instance
 const router = createMagritteRouter({
@@ -77,7 +73,7 @@ const router = createMagritteRouter({
 commandRegistry.add(...libraryCommands(router, api, localCache, notificationCenter, queryClient))
 commandRegistry.add(...playerCommands(player))
 wirePlayerCommandInputs(player, commandInputs)
-wireExtensionCommands(commandRegistry, extensionRuntime)
+commandRegistry.wireUpExtensions(extensionRuntime)
 
 // Render the app
 const rootElement = document.getElementById("app")

@@ -87,7 +87,7 @@ export default class PlaybackEngineRegistry {
         }
     }
 
-    async subscribeTo(extensionRuntime: ExtensionRuntime) {
+    async wireUpExtensions(extensionRuntime: ExtensionRuntime) {
         for (const extension of extensionRuntime.running) {
             this._registerExtension(extension)
         }

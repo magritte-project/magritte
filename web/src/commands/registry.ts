@@ -1,7 +1,69 @@
+import type { ExtensionCommand, ExtensionManifest } from "@magritte/api"
+import type { Extension } from "@magritte/sdk"
 import Fuse from "fuse.js"
 
 import type { Command } from "@/commands/base"
+import type { CommandInputs } from "@/commands/inputs/base"
+import type { ExtensionRuntime } from "@/extensions/runtime"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+
+function getExtensionCommandID(manifest: ExtensionManifest, definition: ExtensionCommand) {
+    return `${manifest.id}:${definition.id}`
+}
+
+async function getExtensionCommands(extension: Extension): Promise<readonly Command[]> {
+    const definitions = extension.manifest.commands ?? []
+    if (definitions.length === 0) {
+        return []
+    }
+
+    try {
+        const responder = await extension.commandResponder()
+        return definitions.map(
+            (definition): Command => ({
+                id: getExtensionCommandID(extension.manifest, definition),
+                searchTerms: `${extension.manifest.name} ${definition.searchTerms}`,
+                requiredInputKinds: definition.requiredInputKinds,
+                present: async (inputs: CommandInputs) => {
+                    try {
+                        const presentation = await responder.presentCommand({
+                            id: definition.id,
+                            inputs: inputs.allMatching(definition.requiredInputKinds),
+                        })
+                        return {
+                            ...presentation,
+                            displayName: `${extension.manifest.name}: ${presentation.displayName}`,
+                        }
+                    } catch (error) {
+                        console.error(
+                            "*** Could not get presentation for command",
+                            error,
+                            extension.manifest.id,
+                            definition.id,
+                        )
+                        return {
+                            displayName: `${extension.manifest.name}: ???`,
+                            disabled: true,
+                        }
+                    }
+                },
+                execute: async (inputs: CommandInputs) => {
+                    return await responder.executeCommand({
+                        id: definition.id,
+                        inputs: inputs.allMatching(definition.requiredInputKinds),
+                    })
+                },
+            }),
+        )
+    } catch (error) {
+        console.error(
+            "*** Extension declares commands in manifest but does not export a responder",
+            extension.manifest.id,
+            error,
+        )
+        return []
+    }
+}
 
 export type CommandRegistryEvent = { type: "registeredCommandsDidChange" }
 
@@ -62,5 +124,39 @@ export class CommandRegistry {
 
     search(query: string): Command[] {
         return this._commands.search(query).map((match) => match.item)
+    }
+
+    wireUpExtensions(extensionRuntime: ExtensionRuntime): void {
+        Promise.allSettled(
+            extensionRuntime.running.map(async (extension) => {
+                const commands = await getExtensionCommands(extension)
+                this.add(...commands)
+            }),
+        )
+        extensionRuntime.$events.subscribe(async (event) => {
+            switch (event.type) {
+                case "extensionLoaded": {
+                    const commands = await getExtensionCommands(event.extension)
+                    this.add(...commands)
+                    console.debug("Registered commands for extension", event.extension.manifest.id)
+                    break
+                }
+                case "extensionUnloaded": {
+                    const definitions = event.extension.manifest.commands ?? []
+                    const commandIDs = definitions.map((definition) =>
+                        getExtensionCommandID(event.extension.manifest, definition),
+                    )
+                    this.removeByID(...commandIDs)
+                    console.debug(
+                        "Unregistered commands for extension",
+                        event.extension.manifest.id,
+                    )
+                    break
+                }
+                default: {
+                    break
+                }
+            }
+        })
     }
 }
