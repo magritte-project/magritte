@@ -10,9 +10,12 @@ export type NotificationCenterEvent =
     | { type: "serverNotificationsDidChange" }
     | { type: "toastDidChange" }
 
+type SeenNotifications = { status: "unloaded" } | { status: "loaded"; ids: Set<number> }
+
 export class NotificationCenter {
     private readonly _events: EventSink<NotificationCenterEvent>
     private readonly _queryClient: QueryClient
+    private _seenNotifications: SeenNotifications
     private _serverNotifications: readonly NotificationRead[]
     private _toasts: readonly ToastOptions[]
     private _toastTimeoutId: ReturnType<typeof setTimeout> | null
@@ -20,6 +23,7 @@ export class NotificationCenter {
     constructor(queryClient: QueryClient, api: API) {
         ;[this._events, this.$events] = createEvent()
         this._queryClient = queryClient
+        this._seenNotifications = { status: "unloaded" }
         this._serverNotifications = []
         this._toasts = []
         this._toastTimeoutId = null
@@ -53,6 +57,26 @@ export class NotificationCenter {
         if (result.isSuccess) {
             this._serverNotifications = result.data.items
             this._events.dispatch({ type: "serverNotificationsDidChange" })
+
+            switch (this._seenNotifications.status) {
+                case "unloaded":
+                    this._seenNotifications = {
+                        status: "loaded",
+                        ids: new Set(result.data.items.map((notification) => notification.id)),
+                    }
+                    break
+                case "loaded":
+                    const seenNotificationIds = this._seenNotifications.ids
+                    const unseen = result.data.items.filter(
+                        (notification) =>
+                            !seenNotificationIds.has(notification.id) && !notification.is_read,
+                    )
+                    for (const notification of unseen) {
+                        this.showToast({ message: notification.title, type: "info" })
+                        seenNotificationIds.add(notification.id)
+                    }
+                    break
+            }
         } else if (result.isError) {
             this.showToast({
                 message: `Could not read notifications: ${result.error.message}`,
