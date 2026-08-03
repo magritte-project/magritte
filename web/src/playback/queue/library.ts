@@ -24,7 +24,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
 
         // TODO: Wire up events
 
-        this._apiClient = context.apiClient
+        this._apiClient = context.api.client
         this._queryClient = context.queryClient
         this._criteria = { ...criteria }
         this._pages = new Map().set(initialPage.offset, initialPage)

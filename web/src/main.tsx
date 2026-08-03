@@ -1,10 +1,9 @@
-import { APIClient, FileAccess, StorageUserSessionManager } from "@magritte/api"
+import { createAPI } from "@magritte/api"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
-import { UserEvents } from "@/api/userEvents"
 import { CommandInputs } from "@/commands/inputs/base"
 import { CommandRegistry } from "@/commands/registry"
 import { libraryCommands } from "@/commands/suites/library"
@@ -26,15 +25,10 @@ import { PanelRegistry } from "@/utilities/panelRegistry"
 
 import "@/styles.css"
 
-// Set up user session
-const userSession = StorageUserSessionManager.local
-
 // Set up API client
-const apiClient = new APIClient({
+const api = createAPI({
     baseUrl: import.meta.env.VITE_API_URL,
-    userSessionManager: userSession,
 })
-const fileAccess = new FileAccess(apiClient)
 const queryClient = new QueryClient()
 
 // Set up commands
@@ -42,13 +36,12 @@ const commandInputs = new CommandInputs()
 const commandRegistry = new CommandRegistry()
 
 // Set up user events
-const userEvents = new UserEvents(apiClient, userSession)
-const notificationCenter = new NotificationCenter(queryClient, apiClient, userEvents)
+const notificationCenter = new NotificationCenter(queryClient, api)
 
 // Set up playback
 const localCache = await LocalCache.open()
 const playbackEngineRegistry = new PlaybackEngineRegistry({
-    defaultEngine: new BuiltInPlaybackEngine(fileAccess, localCache),
+    defaultEngine: new BuiltInPlaybackEngine(api, localCache),
 })
 const player = new Player(playbackEngineRegistry)
 
@@ -57,9 +50,7 @@ const extensionRuntime = new ExtensionRuntime({
     container: document.body,
     commandInputs,
     commandRegistry,
-    userSession,
-    apiClient,
-    fileAccess,
+    api,
     notificationCenter,
     player,
 })
@@ -72,23 +63,18 @@ wireExtensionPanels(panelRegistry, extensionRuntime)
 
 // Create a new router instance
 const router = createMagritteRouter({
-    apiClient,
+    api,
     commandInputs,
     commandRegistry,
     extensionRuntime,
-    fileAccess,
     notificationCenter,
     panelRegistry,
     player,
     queryClient,
-    userEvents,
-    userSession,
 })
 
 // Hook up commands
-commandRegistry.add(
-    ...libraryCommands(router, apiClient, fileAccess, localCache, notificationCenter, queryClient),
-)
+commandRegistry.add(...libraryCommands(router, api, localCache, notificationCenter, queryClient))
 commandRegistry.add(...playerCommands(player))
 wirePlayerCommandInputs(player, commandInputs)
 wireExtensionCommands(commandRegistry, extensionRuntime)

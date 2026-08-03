@@ -1,17 +1,13 @@
-import type { APIClient, ExtensionManifest, FileAccess } from "@magritte/api"
+import type { API, ExtensionManifest } from "@magritte/api"
 import type { Library } from "@magritte/sdk"
 
 import { enforcePermissions } from "@/extensions/exports/permissions"
 import { resolveUrl } from "@/utilities/resources"
 
-export function exportLibrary(
-    manifest: ExtensionManifest,
-    apiClient: APIClient,
-    fileAccess: FileAccess,
-): Library {
+export function exportLibrary(manifest: ExtensionManifest, api: API): Library {
     return {
         readLibraries: enforcePermissions(manifest, ["libraries:read"], async () => {
-            return (await apiClient.readLibraries()).map((library) => ({
+            return (await api.client.readLibraries()).map((library) => ({
                 id: library.id,
                 name: library.name,
                 home_path: null,
@@ -21,11 +17,11 @@ export function exportLibrary(
             manifest,
             ["libraries:write"],
             async ({ libraryId, songs }) => {
-                await apiClient.ingestSongs(libraryId, { songs })
+                await api.client.ingestSongs(libraryId, { songs })
             },
         ),
         resolveArtworkImageUrl: enforcePermissions(manifest, ["libraries:read"], async (url) => {
-            const token = await fileAccess.token()
+            const token = await api.fileAccess.token()
             return resolveUrl(url, token)
         }),
     }

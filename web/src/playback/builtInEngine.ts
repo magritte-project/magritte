@@ -1,4 +1,4 @@
-import type { FileAccess } from "@magritte/api"
+import type { API, FileAccess } from "@magritte/api"
 import { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk"
 
 import type {
@@ -37,12 +37,8 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     private readonly _events: EventSink<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
-    constructor(
-        fileAccess: FileAccess,
-        localCache: LocalCache,
-        parent: HTMLElement = document.body,
-    ) {
-        this._fileAccess = fileAccess
+    constructor(api: API, localCache: LocalCache, parent: HTMLElement = document.body) {
+        this._fileAccess = api.fileAccess
         this._localCache = localCache
         this._audio = new Audio()
         ;[this._events, this.$events] = createEvent()

@@ -1,4 +1,4 @@
-import type { APIClient, ExtensionManifest, FileAccess, UserSessionManager } from "@magritte/api"
+import type { API, ExtensionManifest } from "@magritte/api"
 import { Extension, getExtensionAllow, getExtensionSrc } from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
@@ -14,9 +14,7 @@ export interface ExtensionRuntimeOptions {
     readonly container: HTMLElement
     readonly commandInputs: CommandInputs
     readonly commandRegistry: CommandRegistry
-    readonly userSession: UserSessionManager
-    readonly apiClient: APIClient
-    readonly fileAccess: FileAccess
+    readonly api: API
     readonly notificationCenter: NotificationCenter
     readonly player: Player
 }
@@ -74,14 +72,8 @@ export class ExtensionRuntime {
     /** The command registry */
     private readonly _commandRegistry: CommandRegistry
 
-    /** The user session */
-    private readonly _userSession: UserSessionManager
-
-    /** The API client */
-    private readonly _apiClient: APIClient
-
-    /** The file access helper */
-    private readonly _fileAccess: FileAccess
+    /** The API */
+    private readonly _api: API
 
     /** The notification center */
     private readonly _notificationCenter: NotificationCenter
@@ -104,9 +96,7 @@ export class ExtensionRuntime {
         this._container = options.container
         this._commandInputs = options.commandInputs
         this._commandRegistry = options.commandRegistry
-        this._userSession = options.userSession
-        this._apiClient = options.apiClient
-        this._fileAccess = options.fileAccess
+        this._api = options.api
         this._notificationCenter = options.notificationCenter
         this._player = options.player
         this._available = new Map()
@@ -114,7 +104,7 @@ export class ExtensionRuntime {
         this._extensions = new Map()
         ;[this._events, this.$events] = createEvent()
 
-        this._userSession.addEventListener("usersessionchanged", () => this.sync())
+        this._api.userSessionManager.addEventListener("usersessionchanged", () => this.sync())
     }
 
     readonly $events: EventStream<ExtensionRuntimeEvent>
@@ -167,7 +157,7 @@ export class ExtensionRuntime {
     }
 
     async sync() {
-        if (this._userSession.current === null) {
+        if (this._api.userSessionManager.current === null) {
             for (const id of Array.from(this._available.keys())) {
                 this.remove(id)
             }
@@ -175,7 +165,7 @@ export class ExtensionRuntime {
         }
 
         // TODO: Pagination
-        const installedExtensions = await this._apiClient.readInstalledExtensions()
+        const installedExtensions = await this._api.client.readInstalledExtensions()
         const visitedIds = new Set<string>()
         for (const extension of installedExtensions.items) {
             // TODO: Fix mismatched types
@@ -256,7 +246,7 @@ export class ExtensionRuntime {
                             this._notificationCenter.showToast(options)
                         },
                     },
-                    library: exportLibrary(manifest, this._apiClient, this._fileAccess),
+                    library: exportLibrary(manifest, this._api),
                     player: exportPlayer(manifest, broadcaster, this._player),
                 }),
             })

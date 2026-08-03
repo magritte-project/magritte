@@ -16,13 +16,13 @@ import {
     librarySong,
     librarySongs,
 } from "@/api/keys/libraries"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 
 export function useCreateLibrary() {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (body: LibraryCreate) => apiClient.createLibrary(body),
+        mutationFn: (body: LibraryCreate) => client.createLibrary(body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: libraries() })
         },
@@ -31,9 +31,9 @@ export function useCreateLibrary() {
 
 export function useUpdateLibrary(libraryId: number) {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (body: LibraryUpdate) => apiClient.updateLibrary(libraryId, body),
+        mutationFn: (body: LibraryUpdate) => client.updateLibrary(libraryId, body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: libraries() })
             await queryClient.invalidateQueries({ queryKey: library(libraryId) })
@@ -43,10 +43,10 @@ export function useUpdateLibrary(libraryId: number) {
 
 export function useCreateLibraryPermission(libraryId: number) {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
         mutationFn: (body: LibraryPermissionCreate) =>
-            apiClient.createLibraryPermission(libraryId, body),
+            client.createLibraryPermission(libraryId, body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: libraryPermissions(libraryId),
@@ -57,10 +57,10 @@ export function useCreateLibraryPermission(libraryId: number) {
 
 export function useUpdateLibraryPermission(libraryId: number, userId: number) {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
         mutationFn: (body: LibraryPermissionUpdate) =>
-            apiClient.updateLibraryPermission(libraryId, userId, body),
+            client.updateLibraryPermission(libraryId, userId, body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: libraryPermissions(libraryId),
@@ -71,9 +71,9 @@ export function useUpdateLibraryPermission(libraryId: number, userId: number) {
 
 export function useDeleteLibraryPermission(libraryId: number, userId: number) {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: () => apiClient.deleteLibraryPermission(libraryId, userId),
+        mutationFn: () => client.deleteLibraryPermission(libraryId, userId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: libraryPermissions(libraryId),
@@ -84,9 +84,9 @@ export function useDeleteLibraryPermission(libraryId: number, userId: number) {
 
 export function useUpdateLibrarySong(libraryId: number, songId: number) {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (body: SongUpdate) => apiClient.updateLibrarySong(libraryId, songId, body),
+        mutationFn: (body: SongUpdate) => client.updateLibrarySong(libraryId, songId, body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: librarySong(libraryId, songId),
@@ -101,9 +101,9 @@ export function useUpdateLibrarySong(libraryId: number, songId: number) {
 
 export function useDeleteLibrarySong(libraryId: number) {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (songId: number) => apiClient.deleteLibrarySong(libraryId, songId),
+        mutationFn: (songId: number) => client.deleteLibrarySong(libraryId, songId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: libraryAlbums(libraryId),

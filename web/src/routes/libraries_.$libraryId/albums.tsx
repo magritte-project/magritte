@@ -9,7 +9,7 @@ import AppForm from "@/components/reusable/AppForm"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import TableFooter from "@/components/reusable/TableFooter"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useSelection from "@/hooks/selectionHook"
 
@@ -23,9 +23,9 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
         const { libraryId } = Route.useParams()
         const { query, artist_id: artistId, offset } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
-        const apiClient = useAPIClient()
+        const { client } = useAPI()
         const { data: page } = useSuspenseQuery(
-            readLibraryAlbums(apiClient, {
+            readLibraryAlbums(client, {
                 libraryId: Number(libraryId),
                 query,
                 artistId,

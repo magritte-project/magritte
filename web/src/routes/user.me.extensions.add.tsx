@@ -9,25 +9,28 @@ import ModalHeader from "@/components/chrome/ModalHeader"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import Modal from "@/components/reusable/Modal"
 import TableFooter from "@/components/reusable/TableFooter"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 
 export const Route = createFileRoute("/user/me/extensions/add")({
     validateSearch: z.object({ offset: z.number().optional(), limit: z.number().optional() }),
     loaderDeps: ({ search }) => ({ search }),
     loader: async ({
-        context: { queryClient, apiClient },
+        context: {
+            queryClient,
+            api: { client },
+        },
         deps: {
             search: { offset, limit },
         },
     }) => {
-        await queryClient.ensureQueryData(readAvailableExtensions(apiClient, offset, limit))
+        await queryClient.ensureQueryData(readAvailableExtensions(client, offset, limit))
     },
     component: function AdminExtensionsImport() {
         const { offset, limit } = Route.useSearch()
         const navigate = Route.useNavigate()
-        const apiClient = useAPIClient()
+        const { client } = useAPI()
         const { data: availableExtensions } = useSuspenseQuery(
-            readAvailableExtensions(apiClient, offset, limit),
+            readAvailableExtensions(client, offset, limit),
         )
         const installMutation = useInstallExtension()
 

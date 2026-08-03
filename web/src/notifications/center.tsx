@@ -1,10 +1,9 @@
-import type { APIClient, NotificationRead, NotificationsRead } from "@magritte/api"
+import type { API, NotificationRead, NotificationsRead, UserEvent } from "@magritte/api"
 import type { ToastOptions } from "@magritte/sdk"
 import { QueryObserver, type QueryClient, type QueryObserverResult } from "@tanstack/react-query"
 
 import { userMeNotification, userMeNotifications } from "@/api/keys/users"
 import { readNotifications } from "@/api/queries/users"
-import type { UserEvent, UserEvents } from "@/api/userEvents"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export type NotificationCenterEvent =
@@ -18,18 +17,18 @@ export class NotificationCenter {
     private _toasts: readonly ToastOptions[]
     private _toastTimeoutId: ReturnType<typeof setTimeout> | null
 
-    constructor(queryClient: QueryClient, apiClient: APIClient, userEvents: UserEvents) {
+    constructor(queryClient: QueryClient, api: API) {
         ;[this._events, this.$events] = createEvent()
         this._queryClient = queryClient
         this._serverNotifications = []
         this._toasts = []
         this._toastTimeoutId = null
 
-        userEvents.$events.subscribe((event) => this._handleUserEvent(event))
+        api.userEventsManager.subscribe((event) => this._handleUserEvent(event))
 
-        const observer = new QueryObserver(queryClient, readNotifications(apiClient))
+        const observer = new QueryObserver(queryClient, readNotifications(api.client))
         observer.subscribe((result) => this._handleReadNotificationsQueryResult(result))
-        queryClient.ensureQueryData(readNotifications(apiClient))
+        queryClient.ensureQueryData(readNotifications(api.client))
     }
 
     private async _handleUserEvent(event: UserEvent) {

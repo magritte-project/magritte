@@ -15,7 +15,7 @@ import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import usePresentation from "@/hooks/presentationHook"
 import useToast from "@/hooks/toastHook"
 import { getErrorMessage } from "@/utilities/errors"
@@ -24,19 +24,22 @@ export const Route = createFileRoute("/user/me/extensions")({
     validateSearch: z.object({ offset: z.number().optional(), limit: z.number().optional() }),
     loaderDeps: ({ search }) => ({ search }),
     loader: async ({
-        context: { queryClient, apiClient },
+        context: {
+            queryClient,
+            api: { client },
+        },
         deps: {
             search: { offset, limit },
         },
     }) => {
-        await queryClient.ensureQueryData(readInstalledExtensions(apiClient, offset, limit))
+        await queryClient.ensureQueryData(readInstalledExtensions(client, offset, limit))
     },
     component: function AdminExtensions() {
         const { offset, limit } = Route.useSearch()
         const navigate = Route.useNavigate()
-        const apiClient = useAPIClient()
+        const { client } = useAPI()
         const { data: installedExtensions } = useSuspenseQuery(
-            readInstalledExtensions(apiClient, offset, limit),
+            readInstalledExtensions(client, offset, limit),
         )
 
         const [expandedExtension, setExpandedExtension] = useState<number | null>(null)

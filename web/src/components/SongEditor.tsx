@@ -9,14 +9,14 @@ import { readLibrarySong } from "@/api/queries/libraries"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import { useAppForm } from "@/hooks/formHook"
 import useToast from "@/hooks/toastHook"
 import { getErrorMessage } from "@/utilities/errors"
 
 export default function SongEditor() {
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     const commandInputs = useCommandInputs()
     const [libraryId, songId] = useMemo(() => {
         const libraryInputs = commandInputs.allOf(LibraryInput)
@@ -31,7 +31,7 @@ export default function SongEditor() {
     }, [commandInputs])
 
     const songQuery = useQuery({
-        ...readLibrarySong(apiClient, libraryId ?? 0, songId ?? 0),
+        ...readLibrarySong(client, libraryId ?? 0, songId ?? 0),
         enabled: libraryId !== null && songId !== null,
     })
 

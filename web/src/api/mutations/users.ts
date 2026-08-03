@@ -2,13 +2,13 @@ import type { NotificationUpdate, UserProfileUpdate } from "@magritte/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { userMeNotification, userMeNotifications, userMeProfile } from "@/api/keys/users"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 
 export function useUpdateUserProfile() {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (data: UserProfileUpdate) => apiClient.updateMe(data),
+        mutationFn: (data: UserProfileUpdate) => client.updateMe(data),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: userMeProfile() })
         },
@@ -17,10 +17,9 @@ export function useUpdateUserProfile() {
 
 export function useUpdateNotification(notification_id: number) {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (body: NotificationUpdate) =>
-            apiClient.updateNotification(notification_id, body),
+        mutationFn: (body: NotificationUpdate) => client.updateNotification(notification_id, body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: userMeNotifications(),
@@ -33,9 +32,9 @@ export function useUpdateNotification(notification_id: number) {
 
 export function useMarkAllNotificationsRead() {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: () => apiClient.markAllNotificationsRead(),
+        mutationFn: () => client.markAllNotificationsRead(),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: userMeNotifications(),

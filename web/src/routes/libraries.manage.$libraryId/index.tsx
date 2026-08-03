@@ -7,7 +7,7 @@ import { readLibrary } from "@/api/queries/libraries"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useToast from "@/hooks/toastHook"
 import { getErrorMessage } from "@/utilities/errors"
@@ -16,8 +16,8 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/")({
     component: function ManageLibraryGeneral() {
         const { libraryId } = Route.useParams()
         const { showToast } = useToast()
-        const apiClient = useAPIClient()
-        const { data: library } = useSuspenseQuery(readLibrary(apiClient, Number(libraryId)))
+        const { client } = useAPI()
+        const { data: library } = useSuspenseQuery(readLibrary(client, Number(libraryId)))
 
         const updateMutation = useUpdateLibrary(Number(libraryId))
         const form = useAppForm({

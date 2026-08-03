@@ -4,18 +4,17 @@ import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 
 import { readNotifications } from "@/api/queries/users"
+import NotificationListItem from "@/components/NotificationListItem"
 import ThemedButton from "@/components/theme/ThemedButton"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import useUserSession from "@/hooks/userSessionHook"
-
-import NotificationListItem from "./NotificationListItem"
 
 export default function NotificationsButton() {
     const { isSignedIn } = useUserSession()
-    const apiClient = useAPIClient()
-    const notifications = useQuery(readNotifications(apiClient))
+    const { client } = useAPI()
+    const notifications = useQuery(readNotifications(client))
 
     const unreadCount = useMemo(() => {
         const items = notifications?.data?.items ?? []

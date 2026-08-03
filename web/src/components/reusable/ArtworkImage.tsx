@@ -3,7 +3,7 @@ import classNames from "classnames"
 import type React from "react"
 import { use } from "react"
 
-import useFileAccess from "@/hooks/fileAccessHook"
+import useAPI from "@/hooks/apiHook"
 import { resolveUrl } from "@/utilities/resources"
 
 export interface ArtworkImageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
@@ -20,7 +20,7 @@ export default function ArtworkImage({
     ...rest
 }: ArtworkImageProps) {
     // TODO: Fix up session token and URL building...
-    const fileAccess = useFileAccess()
+    const { fileAccess } = useAPI()
     const token = use(fileAccess.token())
     return (
         <div

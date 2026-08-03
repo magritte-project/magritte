@@ -1,8 +1,9 @@
-import type { Token } from "@magritte/api"
-import type { UserSession } from "@magritte/api"
+import type { Token, UserSession } from "@magritte/api"
 import { useQueryClient } from "@tanstack/react-query"
-import { useNavigate, useRouteContext, useRouter } from "@tanstack/react-router"
+import { useNavigate, useRouter } from "@tanstack/react-router"
 import { useCallback, useMemo, useSyncExternalStore } from "react"
+
+import useAPI from "@/hooks/apiHook"
 
 export interface UseUserSessionResult {
     readonly current: UserSession | null
@@ -15,15 +16,12 @@ export default function useUserSession(): UseUserSessionResult {
     const router = useRouter()
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const userSession = useRouteContext({
-        from: "__root__",
-        select: (context) => context.userSession,
-    })
+    const { userSessionManager } = useAPI()
     const current = useSyncExternalStore(
         (onStoreChange) => {
             const listener = () => {
                 if (
-                    !userSession.isSignedIn &&
+                    !userSessionManager.isSignedIn &&
                     !router.state.matches.some((match) => match.staticData.noAuth === true)
                 ) {
                     // NOTE: We must redirect before invalidating the queries
@@ -36,35 +34,35 @@ export default function useUserSession(): UseUserSessionResult {
                     queryClient.clear()
                 }
             }
-            userSession.addEventListener("usersessionchanged", listener)
-            return () => userSession.removeEventListener("usersessionchanged", listener)
+            userSessionManager.addEventListener("usersessionchanged", listener)
+            return () => userSessionManager.removeEventListener("usersessionchanged", listener)
         },
         () => {
-            return userSession.current
+            return userSessionManager.current
         },
     )
     const isSignedIn = useSyncExternalStore(
         (onStoreChange) => {
-            userSession.addEventListener("usersessionchanged", onStoreChange)
-            return () => userSession.removeEventListener("usersessionchanged", onStoreChange)
+            userSessionManager.addEventListener("usersessionchanged", onStoreChange)
+            return () => userSessionManager.removeEventListener("usersessionchanged", onStoreChange)
         },
         () => {
-            return userSession.isSignedIn
+            return userSessionManager.isSignedIn
         },
     )
 
     const signIn = useCallback(
         async (token: Token) => {
-            userSession.current = {
+            userSessionManager.current = {
                 accessToken: token.access_token,
                 scopes: token.scopes,
             }
         },
-        [userSession],
+        [userSessionManager],
     )
     const signOut = useCallback(async () => {
-        userSession.current = null
-    }, [userSession])
+        userSessionManager.current = null
+    }, [userSessionManager])
 
     const result = useMemo(
         (): UseUserSessionResult => ({ current: current, isSignedIn, signIn, signOut }),

@@ -10,8 +10,12 @@ import useToast from "@/hooks/toastHook"
 import useUserSession from "@/hooks/userSessionHook"
 
 export const Route = createFileRoute("/sign-up")({
-    beforeLoad: async ({ context: { userSession } }) => {
-        if (userSession.isSignedIn) {
+    beforeLoad: async ({
+        context: {
+            api: { userSessionManager },
+        },
+    }) => {
+        if (userSessionManager.isSignedIn) {
             throw redirect({ to: "/" })
         }
     },

@@ -1,5 +1,4 @@
-import { BooksIcon, FilesIcon, PlusIcon, WavesIcon } from "@phosphor-icons/react"
-import { PencilIcon } from "@phosphor-icons/react"
+import { BooksIcon, FilesIcon, PencilIcon, PlusIcon, WavesIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link, Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
@@ -12,13 +11,13 @@ import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailabl
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 import CommandsProvider from "@/contexts/providers/CommandsProvider"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 
 export const Route = createFileRoute("/libraries")({
     component: function LibrariesComponent() {
         const navigate = useNavigate()
-        const apiClient = useAPIClient()
-        const { data: libraries } = useSuspenseQuery(readLibraries(apiClient))
+        const { client } = useAPI()
+        const { data: libraries } = useSuspenseQuery(readLibraries(client))
 
         const libraryCommands = useMemo(() => {
             return libraries.map(

@@ -2,13 +2,13 @@ import type { BulkIngestSongs } from "@magritte/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 
 export function useIngestSongs(libraryId: number) {
     const queryClient = useQueryClient()
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (body: BulkIngestSongs) => apiClient.ingestSongs(libraryId, body),
+        mutationFn: (body: BulkIngestSongs) => client.ingestSongs(libraryId, body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: libraryArtists(libraryId),
@@ -27,8 +27,8 @@ export function useIngestSongs(libraryId: number) {
 }
 
 export function useRequestSyncLibrary(libraryId: number) {
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: () => apiClient.requestSyncLibrary(libraryId),
+        mutationFn: () => client.requestSyncLibrary(libraryId),
     })
 }

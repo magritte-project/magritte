@@ -1,18 +1,18 @@
 import type { BodySignInSignInPost, UserSignUp } from "@magritte/api"
 import { useMutation } from "@tanstack/react-query"
 
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 
 export function useSignUp() {
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (body: UserSignUp) => apiClient.signUp(body),
+        mutationFn: (body: UserSignUp) => client.signUp(body),
     })
 }
 
 export function useSignIn() {
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (body: BodySignInSignInPost) => apiClient.signIn(body),
+        mutationFn: (body: BodySignInSignInPost) => client.signIn(body),
     })
 }

@@ -1,8 +1,9 @@
-import { useRouteContext } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
 
 import type { UserEvent } from "@/api/userEvents"
 import type { EventCallback } from "@/utilities/events"
+
+import useAPI from "./apiHook"
 
 export interface UseUserEventsOptions {
     readonly onEvent?: EventCallback<UserEvent>
@@ -13,19 +14,13 @@ export interface UseUserEventsResult {
 }
 
 export default function useUserEvents({ onEvent }: UseUserEventsOptions = {}): UseUserEventsResult {
-    const userEvents = useRouteContext({
-        from: "__root__",
-        select: (context) => context.userEvents,
-    })
+    const { userEventsManager } = useAPI()
     const [lastEvent, setLastEvent] = useState<UserEvent | null>(null)
     useEffect(() => {
-        const subcription = userEvents.$events.subscribe(async (event) => {
+        return userEventsManager.subscribe(async (event) => {
             await onEvent?.(event)
             setLastEvent(event)
         })
-        return () => {
-            subcription.unsubscribe()
-        }
-    }, [userEvents.$events, onEvent])
+    }, [userEventsManager, onEvent])
     return { lastEvent }
 }

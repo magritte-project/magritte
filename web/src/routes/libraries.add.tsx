@@ -11,8 +11,12 @@ import Modal from "@/components/reusable/Modal"
 import { useAppForm } from "@/hooks/formHook"
 
 export const Route = createFileRoute("/libraries/add")({
-    beforeLoad({ context: { userSession } }) {
-        if (!userSession.hasScope("library:write")) {
+    beforeLoad({
+        context: {
+            api: { userSessionManager },
+        },
+    }) {
+        if (!userSessionManager.hasScope("library:write")) {
             throw redirect({ to: ".." })
         }
     },

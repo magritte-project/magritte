@@ -1,13 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query"
 
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import type { QueueContext } from "@/playback/queue/base"
 
 export default function useQueueContext(): QueueContext {
-    const apiClient = useAPIClient()
+    const api = useAPI()
     const queryClient = useQueryClient()
     return {
-        apiClient,
+        api,
         queryClient,
     }
 }

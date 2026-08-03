@@ -2,14 +2,14 @@ import type { ExtensionImportAdmin } from "@magritte/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { availableExtensions, installedExtensions } from "@/api/keys/extensions"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 
 export function useImportExtension() {
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: (body: ExtensionImportAdmin) => apiClient.importExtension(body),
+        mutationFn: (body: ExtensionImportAdmin) => client.importExtension(body),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: availableExtensions(),
@@ -20,11 +20,11 @@ export function useImportExtension() {
 }
 
 export function useDeleteExtension() {
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     const queryClient = useQueryClient()
     const extensionRuntime = useExtensionRuntime()
     return useMutation({
-        mutationFn: (extensionID: number) => apiClient.deleteExtension(extensionID),
+        mutationFn: (extensionID: number) => client.deleteExtension(extensionID),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: availableExtensions(),
@@ -40,11 +40,11 @@ export function useDeleteExtension() {
 }
 
 export function useInstallExtension() {
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     const queryClient = useQueryClient()
     const extensionRuntime = useExtensionRuntime()
     return useMutation({
-        mutationFn: (extensionID: number) => apiClient.installExtension(extensionID),
+        mutationFn: (extensionID: number) => client.installExtension(extensionID),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: installedExtensions(),
@@ -56,11 +56,11 @@ export function useInstallExtension() {
 }
 
 export function useUninstallExtension() {
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     const queryClient = useQueryClient()
     const extensionRuntime = useExtensionRuntime()
     return useMutation({
-        mutationFn: (extensionID: number) => apiClient.uninstallExtension(extensionID),
+        mutationFn: (extensionID: number) => client.uninstallExtension(extensionID),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: installedExtensions(),

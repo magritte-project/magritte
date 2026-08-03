@@ -7,14 +7,14 @@ import { Link, useNavigate } from "@tanstack/react-router"
 import { userProfile } from "@/api/queries/users"
 import ThemedPopUpMenu from "@/components/theme/ThemedPopUpMenu"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import useUserSession from "@/hooks/userSessionHook"
 
 export default function UserButton() {
     const { isSignedIn, signOut } = useUserSession()
     const navigate = useNavigate()
-    const apiClient = useAPIClient()
-    const meQuery = useQuery(userProfile(apiClient, isSignedIn))
+    const { client } = useAPI()
+    const meQuery = useQuery(userProfile(client, isSignedIn))
     return !isSignedIn ? (
         <Link
             to="/sign-in"

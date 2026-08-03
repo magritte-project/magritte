@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 
 import { readLibraryHomeSubpaths } from "@/api/queries/libraries"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import { appendPathComponent, lastPathComponent, removeLastPathComponent } from "@/utilities/paths"
 
 import ThemedSubtleButton from "../theme/ThemedSubtleButton"
@@ -14,8 +14,8 @@ export interface LibraryHomeBrowserProps {
 }
 
 export default function LibraryHomeBrowser({ relativeTo, onNavigateTo }: LibraryHomeBrowserProps) {
-    const apiClient = useAPIClient()
-    const homeQuery = useQuery(readLibraryHomeSubpaths(apiClient, relativeTo ?? "."))
+    const { client } = useAPI()
+    const homeQuery = useQuery(readLibraryHomeSubpaths(client, relativeTo ?? "."))
     if (homeQuery.isPending) {
         return <ThemedContentUnavailable variant="inline" className="h-64" />
     } else if (homeQuery.isError) {

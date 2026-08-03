@@ -11,7 +11,7 @@ import TableFooter from "@/components/reusable/TableFooter"
 import SongSortButton from "@/components/SongSortButton"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import usePlayer from "@/hooks/playerHook"
 import useQueueContext from "@/hooks/queueContextHook"
@@ -76,9 +76,9 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             offset,
         } = Route.useSearch()
         const navigate = Route.useNavigate()
-        const apiClient = useAPIClient()
+        const { client } = useAPI()
         const pageQuery = useQuery(
-            readLibrarySongs(apiClient, {
+            readLibrarySongs(client, {
                 libraryId: Number(libraryId),
                 query,
                 albumId,

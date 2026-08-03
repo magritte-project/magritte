@@ -5,8 +5,12 @@ import PrimaryHeader from "@/components/chrome/PrimaryHeader"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 
 export const Route = createFileRoute("/admin")({
-    beforeLoad({ context: { userSession } }) {
-        if (!userSession.hasScope("admin")) {
+    beforeLoad({
+        context: {
+            api: { userSessionManager },
+        },
+    }) {
+        if (!userSessionManager.hasScope("admin")) {
             throw redirect({ to: "/", replace: true })
         }
     },

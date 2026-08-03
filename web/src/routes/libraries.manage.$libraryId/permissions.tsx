@@ -16,7 +16,7 @@ import AsyncButton from "@/components/reusable/AsyncButton"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedInput from "@/components/theme/ThemedInput"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import useToast from "@/hooks/toastHook"
 import { getErrorMessage } from "@/utilities/errors"
 
@@ -24,14 +24,14 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/permissions")
     component: function ManageLibraryPermissions() {
         const { libraryId } = Route.useParams()
         const { showToast } = useToast()
-        const apiClient = useAPIClient()
+        const { client } = useAPI()
         const { data: permissions } = useSuspenseQuery(
-            readLibraryPermissions(apiClient, Number(libraryId)),
+            readLibraryPermissions(client, Number(libraryId)),
         )
 
         const [query, setQuery] = useState("")
         const currentQuery = useDebounce(query, 100)
-        const { data: allUsers } = useSuspenseQuery(readAllUsers(apiClient, currentQuery, 0, 5))
+        const { data: allUsers } = useSuspenseQuery(readAllUsers(client, currentQuery, 0, 5))
 
         const createMutation = useCreateLibraryPermission(Number(libraryId))
         const handleAddUser = useCallback(

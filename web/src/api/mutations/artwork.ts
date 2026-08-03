@@ -1,11 +1,11 @@
 import type { ArtworkCreate } from "@magritte/api"
 import { useMutation } from "@tanstack/react-query"
 
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 
 export function useCreateArtwork() {
-    const apiClient = useAPIClient()
+    const { client } = useAPI()
     return useMutation({
-        mutationFn: (body: ArtworkCreate) => apiClient.createArtwork(body),
+        mutationFn: (body: ArtworkCreate) => client.createArtwork(body),
     })
 }

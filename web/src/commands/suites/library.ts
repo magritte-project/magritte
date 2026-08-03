@@ -1,4 +1,4 @@
-import type { APIClient, FileAccess } from "@magritte/api"
+import type { API } from "@magritte/api"
 import { getCommandInputKind, LibraryInput, LibrarySongInput } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 import type { RegisteredRouter } from "@tanstack/react-router"
@@ -12,8 +12,7 @@ import { resolveUrl } from "@/utilities/resources"
 
 export function libraryCommands(
     router: RegisteredRouter,
-    apiClient: APIClient,
-    fileAccess: FileAccess,
+    api: API,
     localCache: LocalCache,
     notificationCenter: NotificationCenter,
     queryClient: QueryClient,
@@ -85,7 +84,7 @@ export function libraryCommands(
                 }
                 try {
                     for (const song of songs) {
-                        await apiClient.deleteLibrarySong(library.id, song.id)
+                        await api.client.deleteLibrarySong(library.id, song.id)
                     }
                 } catch (error) {
                     notificationCenter.showToast({
@@ -123,7 +122,7 @@ export function libraryCommands(
                 const [library] = inputs.allOf(LibraryInput)
                 const songs = inputs.allOf(LibrarySongInput)
                 const librarySongs = await Promise.all(
-                    songs.map((song) => apiClient.readLibrarySong(library.id, song.id)),
+                    songs.map((song) => api.client.readLibrarySong(library.id, song.id)),
                 )
                 const sources = librarySongs.flatMap((song) => {
                     const source = song.sources?.find((source) =>
@@ -142,7 +141,7 @@ export function libraryCommands(
                     }
                     console.debug(`Downloading source: ${source.url}`)
                     try {
-                        const token = await fileAccess.token()
+                        const token = await api.fileAccess.token()
                         const url = resolveUrl(source.url, token)
                         if (url === undefined) {
                             throw new Error("Could not resolve song source URL")
@@ -177,7 +176,7 @@ export function libraryCommands(
             execute: async (inputs) => {
                 const libraries = inputs.allOf(LibraryInput)
                 await Promise.all(
-                    libraries.map((library) => apiClient.requestSyncLibrary(library.id)),
+                    libraries.map((library) => api.client.requestSyncLibrary(library.id)),
                 )
             },
         },

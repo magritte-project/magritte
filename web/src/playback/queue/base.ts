@@ -1,4 +1,4 @@
-import type { APIClient } from "@magritte/api"
+import type { API } from "@magritte/api"
 import type { QueryClient } from "@tanstack/react-query"
 
 import type { EventStream } from "@/utilities/events"
@@ -27,6 +27,6 @@ export interface Queue<Item extends { id: unknown }> {
 }
 
 export interface QueueContext {
-    readonly apiClient: APIClient
+    readonly api: API
     readonly queryClient: QueryClient
 }

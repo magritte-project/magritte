@@ -8,7 +8,7 @@ import { readLibraryArtists } from "@/api/queries/libraries"
 import AppForm from "@/components/reusable/AppForm"
 import TableFooter from "@/components/reusable/TableFooter"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
-import useAPIClient from "@/hooks/apiClientHook"
+import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useSelection from "@/hooks/selectionHook"
 
@@ -21,9 +21,9 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
         const { libraryId } = Route.useParams()
         const { query, offset } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
-        const apiClient = useAPIClient()
+        const { client } = useAPI()
         const { data: page } = useSuspenseQuery(
-            readLibraryArtists(apiClient, {
+            readLibraryArtists(client, {
                 libraryId: Number(libraryId),
                 query,
                 offset,

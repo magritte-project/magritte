@@ -13,38 +13,38 @@ import {
     librarySongs,
 } from "@/api/keys/libraries"
 
-export function readLibraries(apiClient: APIClient) {
+export function readLibraries(client: APIClient) {
     return queryOptions({
         queryKey: libraries(),
-        queryFn: () => apiClient.readLibraries(),
+        queryFn: () => client.readLibraries(),
     })
 }
 
-export function readLibrary(apiClient: APIClient, library_id: number) {
+export function readLibrary(client: APIClient, library_id: number) {
     return queryOptions({
         queryKey: library(library_id),
-        queryFn: () => apiClient.readLibrary(library_id),
+        queryFn: () => client.readLibrary(library_id),
     })
 }
 
-export function readLibraryHomeSubpaths(apiClient: APIClient, relative_to: string) {
+export function readLibraryHomeSubpaths(client: APIClient, relative_to: string) {
     return queryOptions({
         queryKey: [...libraries(), "subpaths", relative_to],
-        queryFn: () => apiClient.readLibraryHomeSubpaths(relative_to),
+        queryFn: () => client.readLibraryHomeSubpaths(relative_to),
     })
 }
 
-export function readLibraryPermissions(apiClient: APIClient, libraryId: number) {
+export function readLibraryPermissions(client: APIClient, libraryId: number) {
     return queryOptions({
         queryKey: libraryPermissions(libraryId),
-        queryFn: () => apiClient.readLibraryPermissions(libraryId),
+        queryFn: () => client.readLibraryPermissions(libraryId),
     })
 }
 
-export function readLibraryAlbum(apiClient: APIClient, libraryId: number, albumId: number) {
+export function readLibraryAlbum(client: APIClient, libraryId: number, albumId: number) {
     return queryOptions({
         queryKey: libraryAlbum(libraryId, albumId),
-        queryFn: () => apiClient.readLibraryAlbum(libraryId, albumId),
+        queryFn: () => client.readLibraryAlbum(libraryId, albumId),
     })
 }
 
@@ -56,7 +56,7 @@ export interface ReadLibraryAlbumsCriteria {
     readonly limit?: number
 }
 
-export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlbumsCriteria) {
+export function readLibraryAlbums(client: APIClient, criteria: ReadLibraryAlbumsCriteria) {
     return queryOptions({
         queryKey: libraryAlbums(
             criteria.libraryId,
@@ -66,7 +66,7 @@ export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlb
             criteria.limit,
         ),
         queryFn: () =>
-            apiClient.readLibraryAlbums(
+            client.readLibraryAlbums(
                 criteria.libraryId,
                 criteria.query,
                 criteria.artistId,
@@ -76,10 +76,10 @@ export function readLibraryAlbums(apiClient: APIClient, criteria: ReadLibraryAlb
     })
 }
 
-export function readLibraryArtist(apiClient: APIClient, libraryId: number, artistId: number) {
+export function readLibraryArtist(client: APIClient, libraryId: number, artistId: number) {
     return queryOptions({
         queryKey: libraryArtist(libraryId, artistId),
-        queryFn: () => apiClient.readLibraryArtist(libraryId, artistId),
+        queryFn: () => client.readLibraryArtist(libraryId, artistId),
     })
 }
 
@@ -90,7 +90,7 @@ export interface ReadLibraryArtistsCriteria {
     readonly limit?: number
 }
 
-export function readLibraryArtists(apiClient: APIClient, criteria: ReadLibraryArtistsCriteria) {
+export function readLibraryArtists(client: APIClient, criteria: ReadLibraryArtistsCriteria) {
     return queryOptions({
         queryKey: libraryArtists(
             criteria.libraryId,
@@ -99,7 +99,7 @@ export function readLibraryArtists(apiClient: APIClient, criteria: ReadLibraryAr
             criteria.limit,
         ),
         queryFn: () =>
-            apiClient.readLibraryArtists(
+            client.readLibraryArtists(
                 criteria.libraryId,
                 criteria.query,
                 criteria.offset,
@@ -108,10 +108,10 @@ export function readLibraryArtists(apiClient: APIClient, criteria: ReadLibraryAr
     })
 }
 
-export function readLibrarySong(apiClient: APIClient, libraryId: number, songId: number) {
+export function readLibrarySong(client: APIClient, libraryId: number, songId: number) {
     return queryOptions({
         queryKey: librarySong(libraryId, songId),
-        queryFn: () => apiClient.readLibrarySong(libraryId, songId),
+        queryFn: () => client.readLibrarySong(libraryId, songId),
     })
 }
 
@@ -125,7 +125,7 @@ export interface ReadLibrarySongsCriteria {
     readonly limit?: number
 }
 
-export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySongsCriteria) {
+export function readLibrarySongs(client: APIClient, criteria: ReadLibrarySongsCriteria) {
     return queryOptions({
         queryKey: librarySongs(
             criteria.libraryId,
@@ -137,7 +137,7 @@ export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySong
             criteria.limit,
         ),
         queryFn: () =>
-            apiClient.readLibrarySongs(
+            client.readLibrarySongs(
                 criteria.libraryId,
                 criteria.query,
                 criteria.albumId,
@@ -150,7 +150,7 @@ export function readLibrarySongs(apiClient: APIClient, criteria: ReadLibrarySong
 }
 
 export function infiniteReadLibrarySongs(
-    apiClient: APIClient,
+    client: APIClient,
     criteria: Omit<ReadLibrarySongsCriteria, "offset">,
 ) {
     return infiniteQueryOptions({
@@ -164,7 +164,7 @@ export function infiniteReadLibrarySongs(
         ),
         initialPageParam: { offset: 0 },
         queryFn: ({ pageParam: { offset } }) =>
-            apiClient.readLibrarySongs(
+            client.readLibrarySongs(
                 criteria.libraryId,
                 criteria.query,
                 criteria.albumId,

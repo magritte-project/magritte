@@ -3,37 +3,37 @@ import { queryOptions } from "@tanstack/react-query"
 
 import { userMeNotification, userMeNotifications, userMeProfile, usersAll } from "@/api/keys/users"
 
-export function userProfile(apiClient: APIClient, enabled = true) {
+export function userProfile(client: APIClient, enabled = true) {
     return queryOptions({
         queryKey: userMeProfile(),
-        queryFn: () => apiClient.readMe(),
+        queryFn: () => client.readMe(),
         enabled,
     })
 }
 
 export function readNotifications(
-    apiClient: APIClient,
+    client: APIClient,
     offset?: number,
     limit?: number,
     enabled = true,
 ) {
     return queryOptions({
         queryKey: userMeNotifications(offset, limit),
-        queryFn: () => apiClient.readNotifications(offset, limit),
+        queryFn: () => client.readNotifications(offset, limit),
         enabled,
     })
 }
 
-export function readNotification(apiClient: APIClient, notification_id: number, enabled = true) {
+export function readNotification(client: APIClient, notification_id: number, enabled = true) {
     return queryOptions({
         queryKey: userMeNotification(notification_id),
-        queryFn: () => apiClient.readNotification(notification_id),
+        queryFn: () => client.readNotification(notification_id),
         enabled,
     })
 }
 
 export function readAllUsers(
-    apiClient: APIClient,
+    client: APIClient,
     query?: string,
     offset?: number,
     limit?: number,
@@ -41,7 +41,7 @@ export function readAllUsers(
 ) {
     return queryOptions({
         queryKey: usersAll(query, offset, limit),
-        queryFn: () => apiClient.readAllUsers(query, offset, limit),
+        queryFn: () => client.readAllUsers(query, offset, limit),
         enabled,
     })
 }

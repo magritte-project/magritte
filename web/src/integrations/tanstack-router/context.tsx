@@ -1,8 +1,7 @@
-import type { APIClient, FileAccess, UserSessionManager } from "@magritte/api"
+import type { API } from "@magritte/api"
 import type { QueryClient } from "@tanstack/react-query"
 import { createRouter } from "@tanstack/react-router"
 
-import type { UserEvents } from "@/api/userEvents"
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
 import type { ExtensionRuntime } from "@/extensions/runtime"
@@ -13,17 +12,14 @@ import { routeTree } from "@/routeTree.gen"
 import type { PanelRegistry } from "@/utilities/panelRegistry"
 
 export interface MagritteRouterContext {
-    readonly apiClient: APIClient
+    readonly api: API
     readonly commandInputs: CommandInputs
     readonly commandRegistry: CommandRegistry
     readonly extensionRuntime: ExtensionRuntime
-    readonly fileAccess: FileAccess
     readonly notificationCenter: NotificationCenter
     readonly panelRegistry: PanelRegistry
     readonly player: Player
     readonly queryClient: QueryClient
-    readonly userEvents: UserEvents
-    readonly userSession: UserSessionManager
 }
 
 export function createMagritteRouter(context: MagritteRouterContext) {
