@@ -74,6 +74,12 @@ class Config(BaseModel):
         description="Where the instance can find music files for libraries. Defaults to $HOME/Music",
     )
 
+    enable_uploads: bool = Field(
+        default=False,
+        alias="ENABLE_UPLOADS",
+        description="Whether music files can be uploaded to this instance",
+    )
+
     custom_db: str | None = Field(
         default=None,
         alias="DB",

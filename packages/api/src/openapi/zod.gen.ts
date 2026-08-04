@@ -78,6 +78,13 @@ export const ArtworkUpdateSchema = z.object({
 })
 
 /**
+ * Body_ingest_files_libraries__library_id__ingest_files_post
+ */
+export const BodyIngestFilesLibrariesLibraryIdIngestFilesPostSchema = z.object({
+    files: z.array(z.string()),
+})
+
+/**
  * Body_sign_in_sign_in_post
  */
 export const BodySignInSignInPostSchema = z.object({

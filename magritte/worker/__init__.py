@@ -2,8 +2,10 @@ import asyncio
 import logging
 import multiprocessing
 from contextlib import contextmanager
+from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING, override
 
+from fastapi import UploadFile
 from watchdog.events import (
     DirDeletedEvent,
     DirMovedEvent,
@@ -17,6 +19,8 @@ from watchdog.observers import Observer
 from magritte.config import config
 from magritte.utilities.user_events import get_user_events
 from magritte.worker.events import (
+    IngestFile,
+    IngestFilesLibraryWorkerEvent,
     NotifyUsersParentRequest,
     ParentRequest,
     SyncLibraryWorkerEvent,
@@ -25,6 +29,8 @@ from magritte.worker.main import worker_main
 
 if TYPE_CHECKING:
     from multiprocessing.connection import Connection
+
+_UPLOAD_CHUNK_SIZE = 1024 * 1024  # 1 MiB
 
 
 class _FileSystemEventForwarder(FileSystemEventHandler):
@@ -58,6 +64,27 @@ async def sync_library(library_id: int):
     """
     if _worker_connection is not None:
         _worker_connection.send(SyncLibraryWorkerEvent(library_id))
+
+
+async def ingest_uploaded_files(library_id: int, uploaded_files: list[UploadFile]):
+    if _worker_connection is None:
+        return
+
+    files = list[IngestFile]()
+    for uploaded_file in uploaded_files:
+        with NamedTemporaryFile(delete=False) as file:
+            while chunk := await uploaded_file.read(_UPLOAD_CHUNK_SIZE):
+                file.write(chunk)
+
+            files.append(
+                IngestFile(
+                    temp_path=file.name,
+                    reported_filename=uploaded_file.filename,
+                    reported_mime_type=uploaded_file.content_type,
+                )
+            )
+
+    _worker_connection.send(IngestFilesLibraryWorkerEvent(library_id, files))
 
 
 @contextmanager

@@ -846,6 +846,49 @@
                 }
             }
         },
+        "/libraries/{library_id}/ingest/files": {
+            "post": {
+                "summary": "Bulk ingest uploaded files",
+                "operationId": "ingest_files_libraries__library_id__ingest_files_post",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_ingest_files_libraries__library_id__ingest_files_post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/libraries/{library_id}/ingest/songs": {
             "post": {
                 "summary": "Bulk ingest new songs without uploading files",
@@ -2166,6 +2209,21 @@
                 },
                 "type": "object",
                 "title": "ArtworkUpdate"
+            },
+            "Body_ingest_files_libraries__library_id__ingest_files_post": {
+                "properties": {
+                    "files": {
+                        "items": {
+                            "type": "string",
+                            "contentMediaType": "application/octet-stream"
+                        },
+                        "type": "array",
+                        "title": "Files"
+                    }
+                },
+                "type": "object",
+                "required": ["files"],
+                "title": "Body_ingest_files_libraries__library_id__ingest_files_post"
             },
             "Body_sign_in_sign_in_post": {
                 "properties": {

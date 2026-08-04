@@ -3,6 +3,7 @@
 import {
     type Client,
     type ClientMeta,
+    formDataBodySerializer,
     type Options as Options2,
     type RequestResult,
     type TDataShape,
@@ -49,6 +50,9 @@ import type {
     ImportExtensionExtensionsAvailableImportPostData,
     ImportExtensionExtensionsAvailableImportPostErrors,
     ImportExtensionExtensionsAvailableImportPostResponses,
+    IngestFilesLibrariesLibraryIdIngestFilesPostData,
+    IngestFilesLibrariesLibraryIdIngestFilesPostErrors,
+    IngestFilesLibrariesLibraryIdIngestFilesPostResponses,
     IngestSongsLibrariesLibraryIdIngestSongsPostData,
     IngestSongsLibrariesLibraryIdIngestSongsPostErrors,
     IngestSongsLibrariesLibraryIdIngestSongsPostResponses,
@@ -691,6 +695,34 @@ export const readLibraryArtistsLibrariesLibraryIdArtistsGet = <
         security: [{ scheme: "bearer", type: "http" }],
         url: "/libraries/{library_id}/artists",
         ...options,
+    })
+
+/**
+ * Bulk ingest uploaded files
+ */
+export const ingestFilesLibrariesLibraryIdIngestFilesPost = <ThrowOnError extends boolean = false>(
+    options: Options<IngestFilesLibrariesLibraryIdIngestFilesPostData, ThrowOnError>,
+): RequestResult<
+    IngestFilesLibrariesLibraryIdIngestFilesPostResponses,
+    IngestFilesLibrariesLibraryIdIngestFilesPostErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).post<
+        IngestFilesLibrariesLibraryIdIngestFilesPostResponses,
+        IngestFilesLibrariesLibraryIdIngestFilesPostErrors,
+        ThrowOnError,
+        "data"
+    >({
+        ...formDataBodySerializer,
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/libraries/{library_id}/ingest/files",
+        ...options,
+        headers: {
+            "Content-Type": null,
+            ...options.headers,
+        },
     })
 
 /**

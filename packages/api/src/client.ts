@@ -12,6 +12,7 @@ import {
     deleteNotificationUsersNotificationsNotificationIdDelete,
     deleteSourceSourcesSourceIdDelete,
     importExtensionExtensionsAvailableImportPost,
+    ingestFilesLibrariesLibraryIdIngestFilesPost,
     ingestSongsLibrariesLibraryIdIngestSongsPost,
     installExtensionExtensionsAvailableExtensionIdInstallPost,
     markAllNotificationsReadUsersNotificationsMarkAllReadPost,
@@ -449,6 +450,14 @@ export class APIClient {
     }
 
     // -- Ingestion Routes -- //
+
+    async ingestFiles(library_id: number, files: Array<Blob | File>): Promise<OperationResult> {
+        return await ingestFilesLibrariesLibraryIdIngestFilesPost({
+            ...this.options,
+            path: { library_id },
+            body: { files },
+        })
+    }
 
     async ingestSongs(library_id: number, body: BulkIngestSongs): Promise<readonly SongRead[]> {
         return await ingestSongsLibrariesLibraryIdIngestSongsPost({

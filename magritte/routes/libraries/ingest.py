@@ -1,10 +1,19 @@
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Security, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Security,
+    UploadFile,
+    status,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import and_, col
 
 from magritte.auth import get_current_user
+from magritte.config import config
 from magritte.db import get_db_session
 from magritte.model.album import Album
 from magritte.model.artist import Artist
@@ -19,9 +28,43 @@ from magritte.schemas.base import OperationResult
 from magritte.schemas.ingest import BulkIngestSongs
 from magritte.schemas.song import SongRead
 from magritte.schemas.source import SourceRead
-from magritte.worker import sync_library
+from magritte.worker import ingest_uploaded_files, sync_library
 
 router = APIRouter()
+
+
+@router.post(
+    "/{library_id}/ingest/files",
+    response_model=OperationResult,
+    summary="Bulk ingest uploaded files",
+)
+async def ingest_files(
+    library_id: int,
+    files: list[UploadFile],
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not config.enable_uploads:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploads are disabled",
+        )
+
+    if not await Library.can_user_access_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_add=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    await ingest_uploaded_files(library_id, files)
+
+    return OperationResult(message="Ingesting files")
 
 
 @router.post(

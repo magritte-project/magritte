@@ -157,6 +157,16 @@ export type ArtworkUpdate = {
 }
 
 /**
+ * Body_ingest_files_libraries__library_id__ingest_files_post
+ */
+export type BodyIngestFilesLibrariesLibraryIdIngestFilesPost = {
+    /**
+     * Files
+     */
+    files: Array<Blob | File>
+}
+
+/**
  * Body_sign_in_sign_in_post
  */
 export type BodySignInSignInPost = {
@@ -1941,6 +1951,38 @@ export type ReadLibraryArtistsLibrariesLibraryIdArtistsGetResponses = {
 
 export type ReadLibraryArtistsLibrariesLibraryIdArtistsGetResponse =
     ReadLibraryArtistsLibrariesLibraryIdArtistsGetResponses[keyof ReadLibraryArtistsLibrariesLibraryIdArtistsGetResponses]
+
+export type IngestFilesLibrariesLibraryIdIngestFilesPostData = {
+    body: BodyIngestFilesLibrariesLibraryIdIngestFilesPost
+    path: {
+        /**
+         * Library Id
+         */
+        library_id: number
+    }
+    query?: never
+    url: "/libraries/{library_id}/ingest/files"
+}
+
+export type IngestFilesLibrariesLibraryIdIngestFilesPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type IngestFilesLibrariesLibraryIdIngestFilesPostError =
+    IngestFilesLibrariesLibraryIdIngestFilesPostErrors[keyof IngestFilesLibrariesLibraryIdIngestFilesPostErrors]
+
+export type IngestFilesLibrariesLibraryIdIngestFilesPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: OperationResult
+}
+
+export type IngestFilesLibrariesLibraryIdIngestFilesPostResponse =
+    IngestFilesLibrariesLibraryIdIngestFilesPostResponses[keyof IngestFilesLibrariesLibraryIdIngestFilesPostResponses]
 
 export type IngestSongsLibrariesLibraryIdIngestSongsPostData = {
     body: BulkIngestSongs

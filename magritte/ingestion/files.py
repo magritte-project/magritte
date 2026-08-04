@@ -2,6 +2,7 @@ import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+from pathvalidate import sanitize_filename
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from tinytag import TinyTag, UnsupportedFormatError
@@ -196,3 +197,45 @@ async def try_ingest_path(
                         )
                     except Exception as e:
                         print(f"*** Skipping {file_path}: {e}", file=sys.stderr)
+
+
+def _resolve_ingest_file_mime_type(
+    reported_filename: str | None,
+    reported_mime_type: str | None,
+):
+    if reported_mime_type is not None:
+        return reported_mime_type
+
+    if reported_filename is not None:
+        mime_type, _encoding = get_mime_types().guess_file_type(reported_filename)
+        return mime_type
+
+    return None
+
+
+def pre_ingest_file(
+    path: Path,
+    reported_filename: str | None,
+    reported_mime_type: str | None,
+    canonizer: Canonizer,
+) -> tuple[Path, str]:
+    mime_type = _resolve_ingest_file_mime_type(reported_filename, reported_mime_type)
+    if mime_type is None or not mime_type.startswith("audio"):
+        raise UnsupportedFormatError("Unsupported mime type")
+
+    extension = get_mime_types().guess_extension(mime_type)
+    if extension is None:
+        raise ValueError("Could not resolve extension")
+
+    tags = TinyTag.get(path, image=False)
+    track_number = tags.track or 0
+    title = sanitize_filename(tags.title or "Unknown Title")
+    artist_name = sanitize_filename(
+        canonizer.fix_artist(tags.artist) or "Unknown Artist"
+    )
+    album_title = sanitize_filename(canonizer.fix_album(tags.album) or "Unknown Album")
+
+    directory = Path().joinpath(artist_name, album_title)
+    name = f"{track_number} {title}.{extension}"
+
+    return directory, name
