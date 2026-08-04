@@ -3,7 +3,6 @@ import { DiscIcon, MicrophoneIcon, MusicNotesIcon } from "@phosphor-icons/react"
 import { Outlet, createFileRoute } from "@tanstack/react-router"
 
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
-import TransportControls from "@/components/chrome/TransportControls"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 
@@ -47,7 +46,6 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                         <Outlet />
                     </main>
                 </div>
-                <TransportControls />
             </CommandInputProvider>
         )
     },

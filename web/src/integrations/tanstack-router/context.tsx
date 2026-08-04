@@ -54,5 +54,8 @@ declare module "@tanstack/react-router" {
 
         /** Whether a route does not require authentication */
         noAuth?: boolean
+
+        /** Controls whether the transport controls should be hidden */
+        hideTransportControls?: boolean
     }
 }
