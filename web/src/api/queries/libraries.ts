@@ -86,25 +86,18 @@ export function readLibraryArtist(api: API, libraryId: number, artistId: number)
 export interface ReadLibraryArtistsCriteria {
     readonly libraryId: number
     readonly query?: string
-    readonly offset?: number
-    readonly limit?: number
 }
 
 export function readLibraryArtists(api: API, criteria: ReadLibraryArtistsCriteria) {
-    return queryOptions({
-        queryKey: libraryArtists(
-            criteria.libraryId,
-            criteria.query,
-            criteria.offset,
-            criteria.limit,
-        ),
-        queryFn: () =>
-            api.client.readLibraryArtists(
-                criteria.libraryId,
-                criteria.query,
-                criteria.offset,
-                criteria.limit,
-            ),
+    return infiniteQueryOptions({
+        queryKey: libraryArtists(criteria.libraryId, criteria.query),
+        queryFn: ({ pageParam: offset }) =>
+            api.client.readLibraryArtists(criteria.libraryId, criteria.query, offset),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => {
+            const nextOffset = lastPage.offset + lastPage.limit
+            return nextOffset < lastPage.total ? nextOffset : undefined
+        },
     })
 }
 
