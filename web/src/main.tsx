@@ -15,6 +15,7 @@ import { NotificationCenter } from "@/notifications/center"
 import BuiltInPlaybackEngine from "@/playback/builtInEngine"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { LocalCache } from "@/playback/localFileCache"
+import { connectMediaSession } from "@/playback/mediaSession"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
 
@@ -69,6 +70,7 @@ commandRegistry.add(...libraryCommands(router))
 commandRegistry.add(...playerCommands(router))
 wirePlayerCommandInputs(player, commandInputs)
 commandRegistry.wireUpExtensions(extensionRuntime)
+connectMediaSession(api, player)
 
 // Render the app
 const rootElement = document.getElementById("app")
