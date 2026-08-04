@@ -3,6 +3,7 @@ import { useCallback, useState } from "react"
 export type UsePresentationResult<TResult, TInput> =
     | {
           readonly isPresented: false
+          readonly input: undefined
           readonly dismiss: (result: TResult) => void
           readonly present: (input: TInput) => Promise<TResult>
       }
@@ -45,6 +46,6 @@ export default function usePresentation<TResult, TInput = void>(): UsePresentati
     if (presentation !== null) {
         return { isPresented: true, input: presentation.input, dismiss, present }
     } else {
-        return { isPresented: false, dismiss, present }
+        return { isPresented: false, input: undefined, dismiss, present }
     }
 }

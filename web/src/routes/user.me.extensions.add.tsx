@@ -6,6 +6,7 @@ import { z } from "zod"
 import { useInstallExtension } from "@/api/mutations/extensions"
 import { readAvailableExtensions } from "@/api/queries/extensions"
 import ModalHeader from "@/components/chrome/ModalHeader"
+import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import Modal from "@/components/reusable/Modal"
 import TableFooter from "@/components/reusable/TableFooter"
@@ -32,9 +33,9 @@ export const Route = createFileRoute("/user/me/extensions/add")({
         const installMutation = useInstallExtension()
 
         return (
-            <Modal className="w-72">
+            <Modal className="w-120">
                 <ModalHeader>Available Extensions</ModalHeader>
-                <div className="flex flex-col gap-3 p-4">
+                <div className="flex flex-col gap-3">
                     <ol>
                         {availableExtensions.items.map((extension) => (
                             <li
@@ -42,7 +43,7 @@ export const Route = createFileRoute("/user/me/extensions/add")({
                                 className="bg-gray-50 odd:bg-inherit"
                             >
                                 <AsyncButton
-                                    className="py-1 w-full text-left flex items-center gap-2"
+                                    className="p-4 w-full text-left flex items-center gap-3"
                                     onClick={async () => {
                                         await installMutation.mutateAsync(extension.id)
                                         navigate({
@@ -50,13 +51,17 @@ export const Route = createFileRoute("/user/me/extensions/add")({
                                         })
                                     }}
                                 >
-                                    <div className="flex-1 flex flex-col gap-0.5">
-                                        <span className="font-bold">{extension.manifest.name}</span>
+                                    <ExtensionIcon
+                                        iconUrl={extension.manifest.icon_url}
+                                        name={extension.manifest.name}
+                                        size="3rem"
+                                    />
+                                    <div className="flex-1 flex flex-col">
+                                        <span className="font-medium">
+                                            {extension.manifest.name}
+                                        </span>
                                         <span className="text-sm text-gray-500">
                                             {extension.manifest.description}
-                                        </span>
-                                        <span className="text-xs text-gray-300">
-                                            {extension.manifest.url}
                                         </span>
                                     </div>
                                     <PlusIcon aria-label="Install" />
@@ -65,7 +70,7 @@ export const Route = createFileRoute("/user/me/extensions/add")({
                         ))}
                     </ol>
                     <TableFooter
-                        className="self-center"
+                        className="self-center p-4 pt-0"
                         singularLabel="Extension"
                         pluralLabel="Extensions"
                         offset={availableExtensions.offset}

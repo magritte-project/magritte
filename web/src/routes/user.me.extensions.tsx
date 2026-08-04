@@ -1,17 +1,18 @@
 import { PlusIcon } from "@phosphor-icons/react"
-import { CaretDownIcon, CaretRightIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import { TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
-import classNames from "classnames"
-import { useCallback, useState } from "react"
+import { useCallback, useMemo } from "react"
 import z from "zod"
 
 import { useUninstallExtension } from "@/api/mutations/extensions"
 import { readInstalledExtensions } from "@/api/queries/extensions"
+import ModalHeader from "@/components/chrome/ModalHeader"
 import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import PermissionInfo from "@/components/extensions/PermissionInfo"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import ConfirmDialog from "@/components/reusable/ConfirmDialog"
+import Modal from "@/components/reusable/Modal"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
@@ -40,28 +41,44 @@ export const Route = createFileRoute("/user/me/extensions")({
             readInstalledExtensions(api, offset, limit),
         )
 
-        const [expandedExtension, setExpandedExtension] = useState<number | null>(null)
+        const {
+            isPresented: isExtensionPresented,
+            input: presentedExtensionId,
+            dismiss: dismissPresentedExtension,
+            present: presentExtension,
+        } = usePresentation<void, number>()
+        const presentedExtension = useMemo(
+            () =>
+                installedExtensions.items.find(
+                    (extension) => extension.id === presentedExtensionId,
+                ),
+            [installedExtensions, presentedExtensionId],
+        )
 
-        const { isPresented, dismiss, present } = usePresentation<boolean>()
+        const {
+            isPresented: isConfirmUninstallPresented,
+            dismiss: dismissConfirmUninstall,
+            present: presentConfirmUninstall,
+        } = usePresentation<boolean>()
         const { showToast } = useToast()
         const uninstallMutation = useUninstallExtension()
-        const handleUninstallClick = useCallback(
-            async (extensionId: number) => {
-                const confirmed = await present()
-                if (!confirmed) {
-                    return
-                }
-                try {
-                    await uninstallMutation.mutateAsync(extensionId)
-                } catch (error) {
-                    showToast({
-                        message: `Could not uninstall extension: ${getErrorMessage(error)}`,
-                        type: "error",
-                    })
-                }
-            },
-            [present, uninstallMutation, showToast],
-        )
+        const handleUninstallClick = useCallback(async () => {
+            if (presentedExtensionId === undefined) {
+                return
+            }
+            const confirmed = await presentConfirmUninstall()
+            if (!confirmed) {
+                return
+            }
+            try {
+                await uninstallMutation.mutateAsync(presentedExtensionId)
+            } catch (error) {
+                showToast({
+                    message: `Could not uninstall extension: ${getErrorMessage(error)}`,
+                    type: "error",
+                })
+            }
+        }, [presentedExtensionId, presentConfirmUninstall, uninstallMutation, showToast])
 
         return (
             <div className="flex flex-col gap-3">
@@ -71,66 +88,26 @@ export const Route = createFileRoute("/user/me/extensions")({
                         <PlusIcon aria-label="Add" />
                     </ThemedLink>
                 </header>
-                <ol>
+                <ol className="flex items-start content-start flex-wrap gap-2">
                     {installedExtensions.items.map((extension) => (
-                        <li
-                            key={`extension-${extension.id}`}
-                            className="py-1 bg-gray-50 odd:bg-inherit flex items-center gap-2"
-                        >
-                            <div className="flex-1 flex items-start gap-2">
+                        <li key={`extensions[${extension.id}]`}>
+                            <button
+                                type="button"
+                                className="flex flex-col items-center justify-center gap-2 p-2 w-24 h-24 rounded-md hover:bg-gray-50 active:bg-gray-100"
+                                onClick={() => presentExtension(extension.id)}
+                            >
                                 <ExtensionIcon
                                     iconUrl={extension.manifest.icon_url}
                                     name={extension.manifest.name}
+                                    size="3rem"
                                 />
-                                <div className="flex flex-col">
-                                    <span className="font-bold pb-0.5">
-                                        {extension.manifest.name}
-                                    </span>
-                                    <span className="text-sm text-gray-500 pb-2">
-                                        {extension.manifest.description}
-                                    </span>
-                                    <div className="text-left flex items-start gap-1">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setExpandedExtension((prev) =>
-                                                    prev === extension.id ? null : extension.id,
-                                                )
-                                            }
-                                        >
-                                            <span className="py-1">
-                                                {expandedExtension === extension.id ? (
-                                                    <CaretDownIcon />
-                                                ) : (
-                                                    <CaretRightIcon />
-                                                )}
-                                            </span>
-                                        </button>
-                                        <span
-                                            className={classNames("flex", {
-                                                "flex-col items-start gap-2":
-                                                    expandedExtension === extension.id,
-                                                "flex-row items-center flex-wrap gap-1":
-                                                    expandedExtension !== extension.id,
-                                            })}
-                                        >
-                                            {extension.manifest.permissions?.map((permission) => (
-                                                <PermissionInfo
-                                                    key={permission}
-                                                    permission={permission}
-                                                    compact={expandedExtension !== extension.id}
-                                                />
-                                            ))}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <ThemedSubtleButton
-                                buttonComponent={AsyncButton}
-                                onClick={() => handleUninstallClick(extension.id)}
-                            >
-                                <TrashIcon aria-label="Uninstall" />
-                            </ThemedSubtleButton>
+                                <span
+                                    className="line-clamp-1 text-sm font-medium"
+                                    title={extension.manifest.name}
+                                >
+                                    {extension.manifest.name}
+                                </span>
+                            </button>
                         </li>
                     ))}
                 </ol>
@@ -151,9 +128,50 @@ export const Route = createFileRoute("/user/me/extensions")({
                     }
                 />
                 <Outlet />
+                <Modal
+                    isPresented={isExtensionPresented}
+                    onDismiss={dismissPresentedExtension}
+                    className="w-72"
+                >
+                    <ModalHeader
+                        supplementaryEnd={
+                            <ThemedSubtleButton
+                                buttonComponent={AsyncButton}
+                                onClick={handleUninstallClick}
+                                title="Uninstall"
+                            >
+                                <TrashIcon />
+                            </ThemedSubtleButton>
+                        }
+                    >
+                        About Extension
+                    </ModalHeader>
+                    <div className="flex flex-col items-center gap-3 p-3">
+                        <ExtensionIcon
+                            iconUrl={presentedExtension?.manifest.icon_url}
+                            name={presentedExtension?.manifest.name ?? ""}
+                            size="3rem"
+                        />
+                        <div className="font-medium text-center">
+                            {presentedExtension?.manifest.name}
+                        </div>
+                        <span className="text-sm text-center text-gray-500">
+                            {presentedExtension?.manifest.description}
+                        </span>
+                        <span className="flex flex-col items-start gap-2 text-xs">
+                            {presentedExtension?.manifest.permissions?.map((permission) => (
+                                <PermissionInfo
+                                    key={permission}
+                                    permission={permission}
+                                    compact={false}
+                                />
+                            ))}
+                        </span>
+                    </div>
+                </Modal>
                 <ConfirmDialog
-                    isPresented={isPresented}
-                    dismiss={dismiss}
+                    isPresented={isConfirmUninstallPresented}
+                    dismiss={dismissConfirmUninstall}
                     title="Are you sure you want to uninstall this extension?"
                     message="You may reinstall this extension later as long as it remains available on this instance."
                     cancel="Cancel"
