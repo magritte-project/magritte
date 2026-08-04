@@ -58,14 +58,15 @@ const router = createMagritteRouter({
     commandInputs,
     commandRegistry,
     extensionRuntime,
+    localCache,
     notificationCenter,
     player,
     queryClient,
 })
 
 // Hook up commands
-commandRegistry.add(...libraryCommands(router, api, localCache, notificationCenter, queryClient))
-commandRegistry.add(...playerCommands(player))
+commandRegistry.add(...libraryCommands(router))
+commandRegistry.add(...playerCommands(router))
 wirePlayerCommandInputs(player, commandInputs)
 commandRegistry.wireUpExtensions(extensionRuntime)
 

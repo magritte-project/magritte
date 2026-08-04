@@ -1,22 +1,13 @@
-import type { API } from "@magritte/api"
 import { getCommandInputKind, LibraryInput, LibrarySongInput } from "@magritte/sdk"
-import type { QueryClient } from "@tanstack/react-query"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import type { Command } from "@/commands/base"
-import type { NotificationCenter } from "@/notifications/center"
-import type { LocalCache } from "@/playback/localFileCache"
+import { getMagritteRouterContext } from "@/integrations/tanstack-router/context"
 import { getErrorMessage } from "@/utilities/errors"
 import { resolveUrl } from "@/utilities/resources"
 
-export function libraryCommands(
-    router: RegisteredRouter,
-    api: API,
-    localCache: LocalCache,
-    notificationCenter: NotificationCenter,
-    queryClient: QueryClient,
-): Command[] {
+export function libraryCommands(router: RegisteredRouter): Command[] {
     return [
         {
             id: `libraries.artists`,
@@ -82,6 +73,7 @@ export function libraryCommands(
                 if (!confirmed) {
                     return
                 }
+                const { api, notificationCenter, queryClient } = getMagritteRouterContext(router)
                 try {
                     for (const song of songs) {
                         await api.client.deleteLibrarySong(library.id, song.id)
@@ -121,6 +113,7 @@ export function libraryCommands(
             execute: async (inputs) => {
                 const [library] = inputs.allOf(LibraryInput)
                 const songs = inputs.allOf(LibrarySongInput)
+                const { api, notificationCenter, localCache } = getMagritteRouterContext(router)
                 const librarySongs = await Promise.all(
                     songs.map((song) => api.client.readLibrarySong(library.id, song.id)),
                 )
@@ -175,6 +168,7 @@ export function libraryCommands(
             }),
             execute: async (inputs) => {
                 const libraries = inputs.allOf(LibraryInput)
+                const { api } = getMagritteRouterContext(router)
                 await Promise.all(
                     libraries.map((library) => api.client.requestSyncLibrary(library.id)),
                 )

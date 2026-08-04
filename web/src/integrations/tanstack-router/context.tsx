@@ -1,11 +1,12 @@
 import type { API } from "@magritte/api"
 import type { QueryClient } from "@tanstack/react-query"
-import { createRouter } from "@tanstack/react-router"
+import { createRouter, type RegisteredRouter } from "@tanstack/react-router"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
 import type { ExtensionRuntime } from "@/extensions/runtime"
 import type { NotificationCenter } from "@/notifications/center"
+import type { LocalCache } from "@/playback/localFileCache"
 import type { Player } from "@/playback/player"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
@@ -15,6 +16,7 @@ export interface MagritteRouterContext {
     readonly commandInputs: CommandInputs
     readonly commandRegistry: CommandRegistry
     readonly extensionRuntime: ExtensionRuntime
+    readonly localCache: LocalCache
     readonly notificationCenter: NotificationCenter
     readonly player: Player
     readonly queryClient: QueryClient
@@ -29,6 +31,14 @@ export function createMagritteRouter(context: MagritteRouterContext) {
         defaultStructuralSharing: true,
         defaultPreloadStaleTime: 0,
     })
+}
+
+export function getMagritteRouterContext(router: RegisteredRouter): MagritteRouterContext {
+    const root = router.state.matches.find((m) => m.routeId === "__root__")
+    if (import.meta.env.DEV && !root) {
+        throw new Error("Could not find __root__ in matched routes")
+    }
+    return root!.context
 }
 
 declare module "@tanstack/react-router" {

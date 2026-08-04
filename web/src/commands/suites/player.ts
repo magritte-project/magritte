@@ -5,19 +5,24 @@ import {
     PlaybackStateInput,
     PlayingItemInput,
 } from "@magritte/sdk"
+import type { RegisteredRouter } from "@tanstack/react-router"
 
 import type { Command } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
+import { getMagritteRouterContext } from "@/integrations/tanstack-router/context"
 import type { Player } from "@/playback/player"
 
-export function playerCommands(player: Player): Command[] {
+export function playerCommands(router: RegisteredRouter): Command[] {
     return [
         {
             id: "playback.skipPrevious",
             searchTerms: "playback skip previous",
             requiredInputKinds: [getCommandInputKind(PlaybackStateInput)],
             present: async () => ({ displayName: "playback: Skip Previous", disabled: false }),
-            execute: () => player.skipPrevious(),
+            execute: async () => {
+                const { player } = getMagritteRouterContext(router)
+                await player.skipPrevious()
+            },
         },
         {
             id: "playback.playPaused",
@@ -31,6 +36,7 @@ export function playerCommands(player: Player): Command[] {
                 }
             },
             execute: async () => {
+                const { player } = getMagritteRouterContext(router)
                 if (player.playbackState === "playing") {
                     await player.pause()
                 } else {
@@ -43,7 +49,10 @@ export function playerCommands(player: Player): Command[] {
             searchTerms: "playback skip next",
             requiredInputKinds: [getCommandInputKind(PlaybackStateInput)],
             present: async () => ({ displayName: "playback: Skip Next", disabled: false }),
-            execute: () => player.skipNext(),
+            execute: async () => {
+                const { player } = getMagritteRouterContext(router)
+                await player.skipNext()
+            },
         },
         {
             id: "playback.repeatOff",
@@ -56,8 +65,10 @@ export function playerCommands(player: Player): Command[] {
                     disabled: current.repeat === "off",
                 }
             },
-            execute: () =>
-                player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("off")),
+            execute: async () => {
+                const { player } = getMagritteRouterContext(router)
+                await player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("off"))
+            },
         },
         {
             id: "playback.repeatAll",
@@ -70,8 +81,10 @@ export function playerCommands(player: Player): Command[] {
                     disabled: current.repeat === "all",
                 }
             },
-            execute: () =>
-                player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("all")),
+            execute: async () => {
+                const { player } = getMagritteRouterContext(router)
+                await player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("all"))
+            },
         },
         {
             id: "playback.repeatOne",
@@ -84,8 +97,10 @@ export function playerCommands(player: Player): Command[] {
                     disabled: current.repeat === "one",
                 }
             },
-            execute: () =>
-                player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("one")),
+            execute: async () => {
+                const { player } = getMagritteRouterContext(router)
+                await player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("one"))
+            },
         },
         {
             id: "playback.shuffleOnOff",
@@ -98,8 +113,10 @@ export function playerCommands(player: Player): Command[] {
                         current.shuffle === "on" ? "playback: Shuffle Off" : "playback: Shuffle On",
                 }
             },
-            execute: () =>
-                player.setPlaybackModes((playbackModes) => playbackModes.withNextShuffle()),
+            execute: async () => {
+                const { player } = getMagritteRouterContext(router)
+                await player.setPlaybackModes((playbackModes) => playbackModes.withNextShuffle())
+            },
         },
     ]
 }
