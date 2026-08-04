@@ -1,5 +1,5 @@
 import type { API, ReadLibrarySongsSortBy } from "@magritte/api"
-import { infiniteQueryOptions, keepPreviousData, queryOptions } from "@tanstack/react-query"
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query"
 
 import {
     libraries,
@@ -114,11 +114,40 @@ export interface ReadLibrarySongsCriteria {
     readonly albumId?: number
     readonly artistId?: number
     readonly sortBy?: ReadLibrarySongsSortBy
+}
+
+export function readLibrarySongs(api: API, criteria: ReadLibrarySongsCriteria) {
+    return infiniteQueryOptions({
+        queryKey: librarySongs(
+            criteria.libraryId,
+            criteria.query,
+            criteria.albumId,
+            criteria.artistId,
+            criteria.sortBy,
+        ),
+        queryFn: ({ pageParam: offset }) =>
+            api.client.readLibrarySongs(
+                criteria.libraryId,
+                criteria.query,
+                criteria.albumId,
+                criteria.artistId,
+                criteria.sortBy,
+                offset,
+            ),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => {
+            const nextOffset = lastPage.offset + lastPage.limit
+            return nextOffset < lastPage.total ? nextOffset : undefined
+        },
+    })
+}
+
+export interface ReadLibrarySongsPageCriteria extends ReadLibrarySongsCriteria {
     readonly offset?: number
     readonly limit?: number
 }
 
-export function readLibrarySongs(api: API, criteria: ReadLibrarySongsCriteria) {
+export function readLibrarySongsPage(api: API, criteria: ReadLibrarySongsPageCriteria) {
     return queryOptions({
         queryKey: librarySongs(
             criteria.libraryId,
@@ -139,41 +168,5 @@ export function readLibrarySongs(api: API, criteria: ReadLibrarySongsCriteria) {
                 criteria.offset,
                 criteria.limit,
             ),
-    })
-}
-
-export function infiniteReadLibrarySongs(
-    api: API,
-    criteria: Omit<ReadLibrarySongsCriteria, "offset">,
-) {
-    return infiniteQueryOptions({
-        queryKey: librarySongs(
-            criteria.libraryId,
-            criteria.query,
-            criteria.albumId,
-            criteria.artistId,
-            criteria.sortBy,
-            criteria.limit,
-        ),
-        initialPageParam: { offset: 0 },
-        queryFn: ({ pageParam: { offset } }) =>
-            api.client.readLibrarySongs(
-                criteria.libraryId,
-                criteria.query,
-                criteria.albumId,
-                criteria.artistId,
-                criteria.sortBy,
-                offset,
-                criteria.limit,
-            ),
-        getNextPageParam: (lastPage, _allPages) => {
-            const offset = lastPage.offset + lastPage.limit
-            return offset < lastPage.total ? { offset } : null
-        },
-        getPreviousPageParam: (lastPage, _allPages) => {
-            const offset = lastPage.offset + lastPage.limit
-            return offset >= 0 ? { offset } : null
-        },
-        placeholderData: keepPreviousData,
     })
 }

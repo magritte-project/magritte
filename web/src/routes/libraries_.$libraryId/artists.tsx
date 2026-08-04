@@ -80,7 +80,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                             <Fragment key={`artists.pages[${index}`}>
                                 {page.items.map((artist) => (
                                     <li
-                                        key={`artist-${artist.id}`}
+                                        key={`artists.pages[${index}].artist[${artist.id}]`}
                                         className=" bg-gray-50 odd:bg-inherit hover:bg-blue-50 flex items-center gap-2 px-2 py-1 h-9"
                                     >
                                         <input
