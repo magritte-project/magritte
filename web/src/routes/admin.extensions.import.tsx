@@ -1,9 +1,11 @@
 import type { ExtensionImportAdmin } from "@magritte/api"
+import { isSameOrigin } from "@magritte/sdk"
 import { createFileRoute } from "@tanstack/react-router"
 import z from "zod"
 
 import { useImportExtension } from "@/api/mutations/extensions"
 import ModalHeader from "@/components/chrome/ModalHeader"
+import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"
 import Modal from "@/components/reusable/Modal"
 import { useAppForm } from "@/hooks/formHook"
@@ -32,19 +34,35 @@ export const Route = createFileRoute("/admin/extensions/import")({
         })
 
         return (
-            <Modal className="w-72">
+            <Modal className="w-100">
                 <ModalHeader>Import Extension</ModalHeader>
                 <AppForm form={form} className="flex flex-col gap-3 p-3">
                     <form.AppField
                         name="manifest_url"
                         validators={{
-                            onChange: z.string().min(1, {
-                                error: "Extension URL is required",
-                            }),
+                            onChange: z
+                                .string()
+                                .min(1, {
+                                    error: "Extension URL is required",
+                                })
+                                .and(
+                                    z
+                                        .string()
+                                        .refine(
+                                            (arg) =>
+                                                !arg || !isSameOrigin(arg, window.location.origin),
+                                            {
+                                                error: "Extension cannot have same origin as host app",
+                                            },
+                                        ),
+                                ),
                         }}
                     >
                         {(field) => (
-                            <field.InputField placeholder="http://localhost:1234/extension.magritte.json" />
+                            <>
+                                <field.InputField placeholder="http://localhost:1234/extension.magritte.json" />
+                                <FieldInfo field={field} />
+                            </>
                         )}
                     </form.AppField>
 

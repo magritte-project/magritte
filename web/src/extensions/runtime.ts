@@ -220,17 +220,17 @@ export class ExtensionRuntime {
         this._extensions.set(id, { status: "loading" })
 
         const iframe = document.createElement("iframe")
-        iframe.style.background = "white"
-        iframe.style.display = "none"
-        iframe.style.position = "absolute"
-        iframe.allow = getExtensionAllow(manifest)
-        iframe.src = getExtensionSrc(manifest, {
-            hostOrigin: window.location.origin,
-        })
-        // TODO: this is a hack
-        this._container.insertBefore(iframe, this._container.querySelector("#app-modals"))
-
         try {
+            iframe.style.background = "white"
+            iframe.style.display = "none"
+            iframe.style.position = "absolute"
+            iframe.allow = getExtensionAllow(manifest)
+            iframe.src = getExtensionSrc(manifest, {
+                hostOrigin: window.location.origin,
+            })
+            // TODO: this is a hack
+            this._container.insertBefore(iframe, this._container.querySelector("#app-modals"))
+
             const extension = await Extension.waitForConnection({
                 iframe,
                 manifest,
