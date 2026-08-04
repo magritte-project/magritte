@@ -36,11 +36,15 @@ export default function NotificationsButton() {
                     className="w-2xs bg-white rounded-md shadow-sm flex flex-col items-center"
                 >
                     {notifications.isPending ? (
-                        <ThemedContentUnavailable variant="inline" />
+                        <ThemedContentUnavailable className="p-4" variant="inline" />
                     ) : notifications.isError ? (
-                        <ThemedContentUnavailable variant="inline" error={notifications.error} />
+                        <ThemedContentUnavailable
+                            className="p-4"
+                            variant="inline"
+                            error={notifications.error}
+                        />
                     ) : notifications.data.total === 0 ? (
-                        <div className="px-4 pt-2 flex flex-col items-center text-gray-500">
+                        <div className="p-4 flex flex-col items-center text-gray-500 text-sm font-medium">
                             No notifications
                         </div>
                     ) : (
