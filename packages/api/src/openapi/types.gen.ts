@@ -2729,6 +2729,38 @@ export type ReadNotificationsUsersNotificationsGetResponses = {
 export type ReadNotificationsUsersNotificationsGetResponse =
     ReadNotificationsUsersNotificationsGetResponses[keyof ReadNotificationsUsersNotificationsGetResponses]
 
+export type DeleteNotificationUsersNotificationsNotificationIdDeleteData = {
+    body?: never
+    path: {
+        /**
+         * Notification Id
+         */
+        notification_id: number
+    }
+    query?: never
+    url: "/users/notifications/{notification_id}"
+}
+
+export type DeleteNotificationUsersNotificationsNotificationIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type DeleteNotificationUsersNotificationsNotificationIdDeleteError =
+    DeleteNotificationUsersNotificationsNotificationIdDeleteErrors[keyof DeleteNotificationUsersNotificationsNotificationIdDeleteErrors]
+
+export type DeleteNotificationUsersNotificationsNotificationIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: OperationResult
+}
+
+export type DeleteNotificationUsersNotificationsNotificationIdDeleteResponse =
+    DeleteNotificationUsersNotificationsNotificationIdDeleteResponses[keyof DeleteNotificationUsersNotificationsNotificationIdDeleteResponses]
+
 export type ReadNotificationUsersNotificationsNotificationIdGetData = {
     body?: never
     path: {

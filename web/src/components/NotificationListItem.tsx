@@ -1,9 +1,10 @@
 import type { NotificationRead } from "@magritte/api"
 import { CircleIcon, CheckIcon } from "@phosphor-icons/react"
+import { TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import classNames from "classnames"
 import { useCallback } from "react"
 
-import { useUpdateNotification } from "@/api/mutations/users"
+import { useDeleteNotification, useUpdateNotification } from "@/api/mutations/users"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 
 export interface NotificationListItemProps extends Omit<
@@ -19,9 +20,13 @@ export default function NotificationListItem({
     ...rest
 }: NotificationListItemProps) {
     const updateMutation = useUpdateNotification(notification.id)
+    const deleteMutation = useDeleteNotification(notification.id)
     const handleMarkAsRead = useCallback(() => {
         updateMutation.mutate({ is_read: true })
     }, [updateMutation])
+    const handleDelete = useCallback(() => {
+        deleteMutation.mutate()
+    }, [deleteMutation])
     return (
         <li
             className={classNames(
@@ -46,10 +51,18 @@ export default function NotificationListItem({
                 )}
             </div>
             <ThemedSubtleButton
-                disabled={updateMutation.isPending || notification.is_read}
+                disabled={
+                    updateMutation.isPending || deleteMutation.isPending || notification.is_read
+                }
                 onClick={handleMarkAsRead}
             >
                 <CheckIcon aria-label="Mark as Read" />
+            </ThemedSubtleButton>
+            <ThemedSubtleButton
+                disabled={updateMutation.isPending || deleteMutation.isPending}
+                onClick={handleDelete}
+            >
+                <TrashIcon aria-label="Delete" />
             </ThemedSubtleButton>
         </li>
     )

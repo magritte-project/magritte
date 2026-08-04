@@ -177,6 +177,40 @@ async def update_notification(
     return NotificationRead(**notification.model_dump())
 
 
+@router.delete(
+    "/notifications/{notification_id}",
+    response_model=OperationResult,
+    summary="Delete a single notification for the signed in user",
+)
+async def delete_notification(
+    notification_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    notification = await Notification.read_one_for_user(
+        notification_id, current_user.id, session
+    )
+    if not notification:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found"
+        )
+    if notification.is_locked:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Notification is locked"
+        )
+
+    notification_users: list[User] = await notification.awaitable_attrs.users
+    if len(notification_users) > 1:
+        to_remove = notification_users.index(current_user)
+        del notification_users[to_remove]
+    else:
+        await session.delete(notification)
+
+    return OperationResult(message="Notification deleted")
+
+
 @router.post(
     "/notifications/mark-all-read",
     response_model=OperationResult,

@@ -1837,6 +1837,37 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "summary": "Delete a single notification for the signed in user",
+                "operationId": "delete_notification_users_notifications__notification_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["profile"] }],
+                "parameters": [
+                    {
+                        "name": "notification_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Notification Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/users/notifications/mark-all-read": {

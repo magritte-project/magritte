@@ -40,6 +40,9 @@ import type {
     DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData,
     DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteErrors,
     DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteResponses,
+    DeleteNotificationUsersNotificationsNotificationIdDeleteData,
+    DeleteNotificationUsersNotificationsNotificationIdDeleteErrors,
+    DeleteNotificationUsersNotificationsNotificationIdDeleteResponses,
     DeleteSourceSourcesSourceIdDeleteData,
     DeleteSourceSourcesSourceIdDeleteErrors,
     DeleteSourceSourcesSourceIdDeleteResponses,
@@ -1256,6 +1259,31 @@ export const readNotificationsUsersNotificationsGet = <ThrowOnError extends bool
         responseStyle: "data",
         security: [{ scheme: "bearer", type: "http" }],
         url: "/users/notifications",
+        ...options,
+    })
+
+/**
+ * Delete a single notification for the signed in user
+ */
+export const deleteNotificationUsersNotificationsNotificationIdDelete = <
+    ThrowOnError extends boolean = false,
+>(
+    options: Options<DeleteNotificationUsersNotificationsNotificationIdDeleteData, ThrowOnError>,
+): RequestResult<
+    DeleteNotificationUsersNotificationsNotificationIdDeleteResponses,
+    DeleteNotificationUsersNotificationsNotificationIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).delete<
+        DeleteNotificationUsersNotificationsNotificationIdDeleteResponses,
+        DeleteNotificationUsersNotificationsNotificationIdDeleteErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/users/notifications/{notification_id}",
         ...options,
     })
 

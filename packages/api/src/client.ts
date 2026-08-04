@@ -9,6 +9,7 @@ import {
     deleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDelete,
     deleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDelete,
     deleteLibrarySongLibrariesLibraryIdSongsSongIdDelete,
+    deleteNotificationUsersNotificationsNotificationIdDelete,
     deleteSourceSourcesSourceIdDelete,
     importExtensionExtensionsAvailableImportPost,
     ingestSongsLibrariesLibraryIdIngestSongsPost,
@@ -191,6 +192,13 @@ export class APIClient {
             ...this.options,
             path: { notification_id },
             body,
+        })
+    }
+
+    async deleteNotification(notification_id: number): Promise<OperationResult> {
+        return await deleteNotificationUsersNotificationsNotificationIdDelete({
+            ...this.options,
+            path: { notification_id },
         })
     }
 

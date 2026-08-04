@@ -260,6 +260,92 @@ class TestUpdateNotification:
         assert response.json().get("detail") == "Not authenticated"
 
 
+class TestDeleteNotification:
+    @pytest.mark.asyncio
+    async def test_read(
+        self,
+        client: TestClient,
+        notifications_fixture: NotificationsFixture,
+        sign_in: SignIn,
+    ):
+        notification_id = await notifications_fixture.throwaway_notification([1])
+
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            f"/users/notifications/{notification_id}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("message") == "Notification deleted"
+
+    @pytest.mark.asyncio
+    async def test_cannot_update_locked_notification(
+        self,
+        client: TestClient,
+        notifications_fixture: NotificationsFixture,
+        sign_in: SignIn,
+    ):
+        notification_id = await notifications_fixture.throwaway_notification(
+            [1], is_locked=True
+        )
+
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            f"/users/notifications/{notification_id}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 400
+        assert response.json().get("detail") == "Notification is locked"
+
+    @pytest.mark.asyncio
+    async def test_requires_access_to_notification(
+        self,
+        client: TestClient,
+        notifications_fixture: NotificationsFixture,
+        faker: Faker,
+        sign_in: SignIn,
+    ):
+        notification_id = await notifications_fixture.throwaway_notification([])
+
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            f"/users/notifications/{notification_id}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Notification not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_notification_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            "/users/notifications/999999",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Notification not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_user(
+        self,
+        client: TestClient,
+    ):
+        response = client.delete(
+            "/users/notifications/1",
+        )
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not authenticated"
+
+
 class TestMarkAllNotificationsRead:
     @pytest.mark.asyncio
     async def test_mark_all_read(

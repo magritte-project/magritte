@@ -30,6 +30,20 @@ export function useUpdateNotification(notification_id: number) {
     })
 }
 
+export function useDeleteNotification(notification_id: number) {
+    const queryClient = useQueryClient()
+    const { client } = useAPI()
+    return useMutation({
+        mutationFn: () => client.deleteNotification(notification_id),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: userMeNotifications(),
+                exact: false,
+            })
+        },
+    })
+}
+
 export function useMarkAllNotificationsRead() {
     const queryClient = useQueryClient()
     const { client } = useAPI()
