@@ -8,6 +8,7 @@ import z from "zod"
 
 import { useUninstallExtension } from "@/api/mutations/extensions"
 import { readInstalledExtensions } from "@/api/queries/extensions"
+import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import PermissionInfo from "@/components/extensions/PermissionInfo"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import ConfirmDialog from "@/components/reusable/ConfirmDialog"
@@ -76,44 +77,52 @@ export const Route = createFileRoute("/user/me/extensions")({
                             key={`extension-${extension.id}`}
                             className="py-1 bg-gray-50 odd:bg-inherit flex items-center gap-2"
                         >
-                            <div className="flex-1 flex flex-col">
-                                <span className="font-bold pb-0.5">{extension.manifest.name}</span>
-                                <span className="text-sm text-gray-500 pb-2">
-                                    {extension.manifest.description}
-                                </span>
-                                <div className="text-left flex items-start gap-1">
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setExpandedExtension((prev) =>
-                                                prev === extension.id ? null : extension.id,
-                                            )
-                                        }
-                                    >
-                                        <span className="py-1">
-                                            {expandedExtension === extension.id ? (
-                                                <CaretDownIcon />
-                                            ) : (
-                                                <CaretRightIcon />
-                                            )}
-                                        </span>
-                                    </button>
-                                    <span
-                                        className={classNames("flex", {
-                                            "flex-col items-start gap-2":
-                                                expandedExtension === extension.id,
-                                            "flex-row items-center flex-wrap gap-1":
-                                                expandedExtension !== extension.id,
-                                        })}
-                                    >
-                                        {extension.manifest.permissions?.map((permission) => (
-                                            <PermissionInfo
-                                                key={permission}
-                                                permission={permission}
-                                                compact={expandedExtension !== extension.id}
-                                            />
-                                        ))}
+                            <div className="flex-1 flex items-start gap-2">
+                                <ExtensionIcon
+                                    iconUrl={extension.manifest.icon_url}
+                                    name={extension.manifest.name}
+                                />
+                                <div className="flex flex-col">
+                                    <span className="font-bold pb-0.5">
+                                        {extension.manifest.name}
                                     </span>
+                                    <span className="text-sm text-gray-500 pb-2">
+                                        {extension.manifest.description}
+                                    </span>
+                                    <div className="text-left flex items-start gap-1">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setExpandedExtension((prev) =>
+                                                    prev === extension.id ? null : extension.id,
+                                                )
+                                            }
+                                        >
+                                            <span className="py-1">
+                                                {expandedExtension === extension.id ? (
+                                                    <CaretDownIcon />
+                                                ) : (
+                                                    <CaretRightIcon />
+                                                )}
+                                            </span>
+                                        </button>
+                                        <span
+                                            className={classNames("flex", {
+                                                "flex-col items-start gap-2":
+                                                    expandedExtension === extension.id,
+                                                "flex-row items-center flex-wrap gap-1":
+                                                    expandedExtension !== extension.id,
+                                            })}
+                                        >
+                                            {extension.manifest.permissions?.map((permission) => (
+                                                <PermissionInfo
+                                                    key={permission}
+                                                    permission={permission}
+                                                    compact={expandedExtension !== extension.id}
+                                                />
+                                            ))}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <ThemedSubtleButton
