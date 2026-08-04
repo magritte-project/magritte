@@ -85,7 +85,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                         </Link>
                     )}
                     <ol
-                        className="flex items-start content-start justify-between flex-wrap gap-2"
+                        className="flex items-start content-start flex-wrap gap-2"
                         style={{ minHeight: `calc(${total} * var(--spacing) * 47)` }}
                     >
                         {pages.map((page, index) => (
