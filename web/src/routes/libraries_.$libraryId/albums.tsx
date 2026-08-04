@@ -1,13 +1,13 @@
 import type { LibraryAlbumInput } from "@magritte/sdk"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useMemo } from "react"
+import { useInView } from "motion/react"
+import { Fragment, useEffect, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibraryAlbums } from "@/api/queries/libraries"
 import AppForm from "@/components/reusable/AppForm"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
-import TableFooter from "@/components/reusable/TableFooter"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
@@ -17,21 +17,30 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
     validateSearch: z.object({
         query: z.string().optional(),
         artist_id: z.number().optional(),
-        offset: z.number().optional(),
     }),
     component: function LibraryAlbumsComponent() {
         const { libraryId } = Route.useParams()
-        const { query, artist_id: artistId, offset } = Route.useSearch()
+        const { query, artist_id: artistId } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
         const api = useAPI()
-        const { data: page } = useSuspenseQuery(
+        const {
+            data: { pages },
+            hasNextPage,
+            fetchNextPage,
+        } = useSuspenseInfiniteQuery(
             readLibraryAlbums(api, {
                 libraryId: Number(libraryId),
                 query,
-                artistId,
-                offset,
             }),
         )
+        const total = pages.length > 0 ? pages[0].total : 0
+        const moreRef = useRef<HTMLLIElement | null>(null)
+        const isMoreInView = useInView(moreRef)
+        useEffect(() => {
+            if (isMoreInView && hasNextPage) {
+                fetchNextPage()
+            }
+        }, [isMoreInView, hasNextPage, fetchNextPage])
 
         const { selection, isSelected, toggle } = useSelection()
         const commandInputs = useMemo(() => {
@@ -59,7 +68,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                                 <field.InputField
                                     className="w-full"
                                     type="search"
-                                    placeholder="Filter Albums..."
+                                    placeholder={`Filter ${Intl.NumberFormat().format(total)} Albums...`}
                                 />
                             )}
                         </facetForm.AppField>
@@ -75,54 +84,54 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                             All Songs
                         </Link>
                     )}
-                    <ol className="flex items-start flex-wrap gap-2">
-                        {page.items.map((album) => (
-                            <li key={`album-${album.id}`} className="w-36 hover:bg-blue-50">
-                                <Link
-                                    to="/libraries/$libraryId/songs"
-                                    params={{ libraryId }}
-                                    search={{
-                                        artist_id: artistId,
-                                        album_id: album.id,
-                                    }}
-                                    title={album.title}
-                                >
-                                    <ArtworkImage
-                                        className="h-36 w-36"
-                                        artworks={album.artworks}
-                                        itemTitle={album.title}
-                                        accessory={
-                                            <input
-                                                className="absolute left-2 bottom-2"
-                                                type="checkbox"
-                                                name={`albums[${album.id}]`}
-                                                checked={isSelected(album.id)}
-                                                onChange={() => toggle(album.id)}
-                                                onClick={(e) => e.stopPropagation()}
+                    <ol
+                        className="flex items-start content-start justify-between flex-wrap gap-2"
+                        style={{ minHeight: `calc(${total} * var(--spacing) * 47)` }}
+                    >
+                        {pages.map((page, index) => (
+                            <Fragment key={`albums.pages[${index}`}>
+                                {page.items.map((album) => (
+                                    <li
+                                        key={`albums.pages[${index}].albums[${album.id}]`}
+                                        className="w-36 h-47 hover:bg-blue-50"
+                                    >
+                                        <Link
+                                            to="/libraries/$libraryId/songs"
+                                            params={{ libraryId }}
+                                            search={{
+                                                artist_id: artistId,
+                                                album_id: album.id,
+                                            }}
+                                            title={album.title}
+                                        >
+                                            <ArtworkImage
+                                                className="h-36 w-36"
+                                                artworks={album.artworks}
+                                                itemTitle={album.title}
+                                                accessory={
+                                                    <input
+                                                        className="absolute left-2 bottom-2"
+                                                        type="checkbox"
+                                                        name={`albums[${album.id}]`}
+                                                        checked={isSelected(album.id)}
+                                                        onChange={() => toggle(album.id)}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    />
+                                                }
                                             />
-                                        }
-                                    />
-                                    <span className="line-clamp-2">{album.title}</span>
-                                </Link>
-                            </li>
+                                            <span
+                                                className="line-clamp-2 text-sm"
+                                                title={album.title}
+                                            >
+                                                {album.title}
+                                            </span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </Fragment>
                         ))}
+                        <li ref={moreRef} />
                     </ol>
-                    <TableFooter
-                        className="self-center"
-                        singularLabel="Album"
-                        pluralLabel="Albums"
-                        offset={page.offset}
-                        limit={page.limit}
-                        total={page.total}
-                        onChange={(offset, _limit) =>
-                            navigate({
-                                search: (oldSearch) => ({
-                                    ...oldSearch,
-                                    offset,
-                                }),
-                            })
-                        }
-                    />
                 </div>
             </CommandInputProvider>
         )

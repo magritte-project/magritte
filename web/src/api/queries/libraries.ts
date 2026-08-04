@@ -52,27 +52,23 @@ export interface ReadLibraryAlbumsCriteria {
     readonly libraryId: number
     readonly query?: string
     readonly artistId?: number
-    readonly offset?: number
-    readonly limit?: number
 }
 
 export function readLibraryAlbums(api: API, criteria: ReadLibraryAlbumsCriteria) {
-    return queryOptions({
-        queryKey: libraryAlbums(
-            criteria.libraryId,
-            criteria.query,
-            criteria.artistId,
-            criteria.offset,
-            criteria.limit,
-        ),
-        queryFn: () =>
+    return infiniteQueryOptions({
+        queryKey: libraryAlbums(criteria.libraryId, criteria.query, criteria.artistId),
+        queryFn: ({ pageParam: offset }) =>
             api.client.readLibraryAlbums(
                 criteria.libraryId,
                 criteria.query,
                 criteria.artistId,
-                criteria.offset,
-                criteria.limit,
+                offset,
             ),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => {
+            const nextOffset = lastPage.offset + lastPage.limit
+            return nextOffset < lastPage.total ? nextOffset : undefined
+        },
     })
 }
 
