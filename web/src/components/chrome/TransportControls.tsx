@@ -1,7 +1,7 @@
 import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 import { AnimatePresence, motion } from "motion/react"
-import { useState } from "react"
+import { useCallback, useRef, useState } from "react"
 
 import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
@@ -18,10 +18,34 @@ export default function TransportControls() {
     const playingItem = usePlayingItem()
     const { setIsOpen: setCommandPaletteIsOpen } = useAppCommandPaletteContext()
 
+    const repressExpansion = useRef(false)
+    const changeIsExpandedTimerId = useRef<ReturnType<typeof setTimeout> | null>(null)
     const [isExpanded, setIsExpanded] = useState(false)
+    const handleMouseEnter = useCallback(() => {
+        if (!repressExpansion.current) {
+            if (changeIsExpandedTimerId.current) {
+                clearTimeout(changeIsExpandedTimerId.current)
+            }
+            changeIsExpandedTimerId.current = setTimeout(() => {
+                setIsExpanded(true)
+            }, 500)
+        }
+    }, [])
+    const handleMouseLeave = useCallback(() => {
+        if (changeIsExpandedTimerId.current) {
+            clearTimeout(changeIsExpandedTimerId.current)
+        }
+        changeIsExpandedTimerId.current = setTimeout(() => {
+            setIsExpanded(false)
+        }, 500)
+    }, [])
 
     return (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2">
+        <div
+            className="fixed bottom-0 left-1/2 -translate-x-1/2"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
             <div className="relative isolate">
                 <div className="absolute inset-0 backdrop-blur-lg mask-[radial-gradient(50%_100%_at_bottom_center,black,black,transparent)] -z-10" />
                 <div className="p-4 flex flex-col items-center gap-2">
