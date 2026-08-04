@@ -1,9 +1,11 @@
 {
-    "project_name": "Magritte",
     "tab_size": 4,
     "languages": {
         "JavaScript": {
             "format_on_save": "on",
+            "prettier": {
+                "allowed": false,
+            },
             "formatter": [
                 {
                     "language_server": {
@@ -17,6 +19,9 @@
         },
         "TypeScript": {
             "format_on_save": "on",
+            "prettier": {
+                "allowed": false,
+            },
             "formatter": [
                 {
                     "language_server": {
@@ -30,6 +35,9 @@
         },
         "TSX": {
             "format_on_save": "on",
+            "prettier": {
+                "allowed": false,
+            },
             "formatter": [
                 {
                     "language_server": {
@@ -43,6 +51,9 @@
         },
         "HTML": {
             "format_on_save": "on",
+            "prettier": {
+                "allowed": false,
+            },
             "formatter": [
                 {
                     "language_server": {
@@ -56,6 +67,9 @@
         },
         "CSS": {
             "format_on_save": "on",
+            "prettier": {
+                "allowed": false,
+            },
             "formatter": [
                 {
                     "language_server": {
@@ -69,6 +83,9 @@
         },
         "JSON": {
             "format_on_save": "on",
+            "prettier": {
+                "allowed": false,
+            },
             "formatter": [
                 {
                     "language_server": {
