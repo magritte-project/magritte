@@ -19,8 +19,8 @@ from watchdog.observers import Observer
 from magritte.config import config
 from magritte.utilities.user_events import get_user_events
 from magritte.worker.events import (
-    IngestFile,
-    IngestFilesLibraryWorkerEvent,
+    IngestUploadedFile,
+    IngestUploadedFilesLibraryWorkerEvent,
     NotifyUsersParentRequest,
     ParentRequest,
     SyncLibraryWorkerEvent,
@@ -70,21 +70,21 @@ async def ingest_uploaded_files(library_id: int, uploaded_files: list[UploadFile
     if _worker_connection is None:
         return
 
-    files = list[IngestFile]()
+    files = list[IngestUploadedFile]()
     for uploaded_file in uploaded_files:
         with NamedTemporaryFile(delete=False) as file:
             while chunk := await uploaded_file.read(_UPLOAD_CHUNK_SIZE):
                 file.write(chunk)
 
             files.append(
-                IngestFile(
+                IngestUploadedFile(
                     temp_path=file.name,
                     reported_filename=uploaded_file.filename,
                     reported_mime_type=uploaded_file.content_type,
                 )
             )
 
-    _worker_connection.send(IngestFilesLibraryWorkerEvent(library_id, files))
+    _worker_connection.send(IngestUploadedFilesLibraryWorkerEvent(library_id, files))
 
 
 @contextmanager

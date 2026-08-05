@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 from magritte.utilities.user_events import UserEvent
 
@@ -6,10 +7,11 @@ from magritte.utilities.user_events import UserEvent
 @dataclass(frozen=True)
 class SyncLibraryWorkerEvent:
     library_id: int
+    only_paths: list[Path] | None = None
 
 
 @dataclass(frozen=True)
-class IngestFile:
+class IngestUploadedFile:
     temp_path: str
     """
     Where the file has been temporarily stashed for ingestion.
@@ -27,12 +29,12 @@ class IngestFile:
 
 
 @dataclass(frozen=True)
-class IngestFilesLibraryWorkerEvent:
+class IngestUploadedFilesLibraryWorkerEvent:
     library_id: int
-    files: list[IngestFile]
+    uploaded_files: list[IngestUploadedFile]
 
 
-LibraryWorkerEvent = SyncLibraryWorkerEvent | IngestFilesLibraryWorkerEvent
+LibraryWorkerEvent = SyncLibraryWorkerEvent | IngestUploadedFilesLibraryWorkerEvent
 """An event passed from the server to the worker"""
 
 

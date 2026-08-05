@@ -1,4 +1,6 @@
-import sys
+import logging
+import os
+import secrets
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -18,6 +20,8 @@ from magritte.model.song import Song
 from magritte.model.source import Source
 from magritte.schemas.artwork import ArtworkKind
 from magritte.utilities.files import path_as_file_uri
+
+logger = logging.getLogger("Ingestions")
 
 
 async def _update_song_metadata(
@@ -109,6 +113,10 @@ async def _try_ingest_file(
 
     try:
         tags = TinyTag.get(path, image=True)
+        # NOTE: If TinyTag is able to infer a mime type, this will be more
+        #       accurate than what we get from the file's extension above.
+        if tags.mime_type is not None:
+            mime_type = tags.mime_type
     except UnsupportedFormatError:
         tags = None
 
@@ -192,17 +200,21 @@ async def try_ingest_path(
                         )
                         if not new_song:
                             continue
-                        print(
+                        logger.info(
                             f"Added '{filename}': '{new_song.title}' from '{new_song.album_title}' by '{new_song.artist_name}'"
                         )
                     except Exception as e:
-                        print(f"*** Skipping {file_path}: {e}", file=sys.stderr)
+                        logger.warning(f"*** Skipping {file_path}: {e}")
 
 
-def _resolve_ingest_file_mime_type(
+def _resolve_uploaded_file_mime_type(
+    tags: TinyTag,
     reported_filename: str | None,
     reported_mime_type: str | None,
 ):
+    if tags.mime_type is not None:
+        return tags.mime_type
+
     if reported_mime_type is not None:
         return reported_mime_type
 
@@ -213,29 +225,52 @@ def _resolve_ingest_file_mime_type(
     return None
 
 
-def pre_ingest_file(
-    path: Path,
+def pre_ingest_uploaded_file(
+    library_home_path: Path,
+    temp_path: str,
     reported_filename: str | None,
     reported_mime_type: str | None,
     canonizer: Canonizer,
-) -> tuple[Path, str]:
-    mime_type = _resolve_ingest_file_mime_type(reported_filename, reported_mime_type)
-    if mime_type is None or not mime_type.startswith("audio"):
-        raise UnsupportedFormatError("Unsupported mime type")
+):
+    try:
+        tags = TinyTag.get(temp_path, image=False)
 
-    extension = get_mime_types().guess_extension(mime_type)
-    if extension is None:
-        raise ValueError("Could not resolve extension")
+        mime_type = _resolve_uploaded_file_mime_type(
+            tags, reported_filename, reported_mime_type
+        )
+        if mime_type is None:
+            raise UnsupportedFormatError("Unsupported mime type")
 
-    tags = TinyTag.get(path, image=False)
-    track_number = tags.track or 0
-    title = sanitize_filename(tags.title or "Unknown Title")
-    artist_name = sanitize_filename(
-        canonizer.fix_artist(tags.artist) or "Unknown Artist"
-    )
-    album_title = sanitize_filename(canonizer.fix_album(tags.album) or "Unknown Album")
+        extension = get_mime_types().guess_extension(mime_type)
+        if extension is None:
+            raise ValueError("Could not resolve extension")
 
-    directory = Path().joinpath(artist_name, album_title)
-    name = f"{track_number} {title}.{extension}"
+        track_number = tags.track or 0
+        title = sanitize_filename(tags.title or "Unknown Title")
+        artist_name = sanitize_filename(
+            canonizer.fix_artist(tags.artist) or "Unknown Artist"
+        )
+        album_title = sanitize_filename(
+            canonizer.fix_album(tags.album) or "Unknown Album"
+        )
 
-    return directory, name
+        target_directory_path = library_home_path.joinpath(artist_name, album_title)
+
+        filename = f"{track_number} {title}{extension}"
+        while target_directory_path.joinpath(filename).exists():
+            filename = f"{track_number} {title} ({secrets.token_hex(4)}){extension}"
+
+        destination_path = target_directory_path.joinpath(filename)
+
+        target_directory_path.mkdir(parents=True, exist_ok=True)
+        os.rename(temp_path, destination_path)
+
+        logger.info(f"Copied uploaded file from {temp_path} to {destination_path}")
+
+        return target_directory_path
+    except:
+        try:
+            os.remove(temp_path)
+        except Exception as e:
+            logger.error(f"*** Could not clean up {temp_path}: {e}")
+        raise

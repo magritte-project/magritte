@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -17,12 +16,12 @@ from watchdog.events import (
 from magritte.config import config
 from magritte.db import get_db_engine, get_db_session
 from magritte.ingestion.canon import Canonizer
-from magritte.ingestion.files import pre_ingest_file, try_ingest_path
+from magritte.ingestion.files import pre_ingest_uploaded_file, try_ingest_path
 from magritte.model import Library
 from magritte.model.source import Source
 from magritte.utilities.user_events import UserEvent, UserEventType
 from magritte.worker.events import (
-    IngestFilesLibraryWorkerEvent,
+    IngestUploadedFilesLibraryWorkerEvent,
     LibraryWorkerEvent,
     NotifyUsersParentRequest,
     SyncLibraryWorkerEvent,
@@ -103,17 +102,30 @@ async def _process_event(
                         library.home_path
                     )
                     canonizer = Canonizer.from_file()
-                    await try_ingest_path(
-                        path=library_home_path,
-                        follow_links=False,
-                        libraries=[library],
-                        canonizer=canonizer,
-                        session=session,
-                    )
+                    if event.only_paths is not None:
+                        for path in event.only_paths:
+                            if not path.is_relative_to(library_home_path):
+                                logger.warning(f"*** Ignoring invalid subpath: {path}")
+
+                            await try_ingest_path(
+                                path=path,
+                                follow_links=False,
+                                libraries=[library],
+                                canonizer=canonizer,
+                                session=session,
+                            )
+                    else:
+                        await try_ingest_path(
+                            path=library_home_path,
+                            follow_links=False,
+                            libraries=[library],
+                            canonizer=canonizer,
+                            session=session,
+                        )
                 finally:
                     _send_notifications_changed(connection, user_ids_to_notify)
                     _send_libraries_changed(connection, user_ids_to_notify, library_ids)
-            case IngestFilesLibraryWorkerEvent():
+            case IngestUploadedFilesLibraryWorkerEvent():
                 if not config.enable_uploads:
                     raise ValueError("Uploads not enabled")
 
@@ -122,39 +134,27 @@ async def _process_event(
                     raise ValueError(f"Library is streaming only '{event.library_id}'")
 
                 canonizer = Canonizer.from_file()
-                new_count = 0
-                for file in event.files:
+                library_home_path = config.music_home_path.joinpath(library.home_path)
+                target_directory_paths = set[Path]()
+                for uploaded_file in event.uploaded_files:
                     try:
-                        target_directory, filename = pre_ingest_file(
-                            Path(file.temp_path),
-                            file.reported_filename,
-                            file.reported_mime_type,
+                        target_directory_path = pre_ingest_uploaded_file(
+                            library_home_path,
+                            uploaded_file.temp_path,
+                            uploaded_file.reported_filename,
+                            uploaded_file.reported_mime_type,
                             canonizer,
                         )
-                        library_home_path = config.music_home_path.joinpath(
-                            library.home_path
-                        )
-                        target_directory_path = library_home_path.joinpath(
-                            target_directory
-                        )
-                        target_directory_path.mkdir(parents=True, exist_ok=True)
-                        os.rename(
-                            file.temp_path, target_directory_path.joinpath(filename)
-                        )
-
-                        new_count += 1
+                        target_directory_paths.add(target_directory_path)
                     except Exception as e:
-                        logger.error(f"*** Could not ingest {file}: {e}")
-                    finally:
-                        if Path(file.temp_path).exists():
-                            try:
-                                os.remove(file.temp_path)
-                            except Exception as e:
-                                logger.warning(f"*** Could not clean up {file}: {e}")
+                        logger.error(f"*** Could not ingest {uploaded_file}: {e}")
 
-                if new_count > 0:
+                if target_directory_paths:
                     await _process_event(
-                        connection, SyncLibraryWorkerEvent(event.library_id)
+                        connection,
+                        SyncLibraryWorkerEvent(
+                            event.library_id, list(target_directory_paths)
+                        ),
                     )
             case DirDeletedEvent():
                 await Source.mark_invalid(

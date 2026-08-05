@@ -19,7 +19,7 @@ dependencies = [
     "pyjwt>=2.10.1",
     "python-dotenv>=1.1.1",
     "sqlmodel>=0.0.25",
-    "tinytag>=2.1.2",
+    "tinytag>=2.3.0",
     "watchdog>=6.0.0",
     "websockets>=16.1.1",
 ]
