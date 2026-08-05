@@ -227,6 +227,7 @@ export const InstanceStatusReadSchema = z.object({
 export const LibraryCreateSchema = z.object({
     name: z.string(),
     home_path: z.string().nullable(),
+    uploads_enabled: z.boolean(),
 })
 
 /**
@@ -304,6 +305,7 @@ export const LibraryReadSchema = z.object({
     id: z.int(),
     name: z.string(),
     home_path: z.string().nullable(),
+    uploads_enabled: z.boolean(),
 })
 
 /**
@@ -311,6 +313,7 @@ export const LibraryReadSchema = z.object({
  */
 export const LibraryUpdateSchema = z.object({
     name: z.string().nullish(),
+    uploads_enabled: z.boolean().nullish(),
 })
 
 /**

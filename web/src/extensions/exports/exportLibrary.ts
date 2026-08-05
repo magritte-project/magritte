@@ -11,6 +11,7 @@ export function exportLibrary(manifest: ExtensionManifest, api: API): Library {
                 id: library.id,
                 name: library.name,
                 home_path: null,
+                uploads_enabled: false,
             }))
         }),
         bulkIngestSongs: enforcePermissions(

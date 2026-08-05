@@ -28,6 +28,7 @@ export const Route = createFileRoute("/libraries/add")({
             defaultValues: {
                 name: "",
                 home_path: null as string | null,
+                uploads_enabled: false,
             } satisfies LibraryCreate,
             onSubmit: async ({ value }) => {
                 try {

@@ -109,6 +109,7 @@ async def create_library(
     new_library = Library(
         name=library_create.name,
         home_path=library_create.home_path,
+        uploads_enabled=library_create.uploads_enabled,
     )
     session.add(new_library)
     await session.flush()  # for id

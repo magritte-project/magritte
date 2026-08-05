@@ -6,6 +6,7 @@ from pydantic import BaseModel, field_validator
 class LibraryCreate(BaseModel):
     name: str
     home_path: str | None
+    uploads_enabled: bool
 
     @field_validator("home_path", mode="before")
     @classmethod
@@ -17,12 +18,14 @@ class LibraryCreate(BaseModel):
 
 class LibraryUpdate(BaseModel):
     name: str | None = None
+    uploads_enabled: bool | None = None
 
 
 class LibraryRead(BaseModel):
     id: int
     name: str
     home_path: str | None
+    uploads_enabled: bool
 
 
 class LibraryPermissionCreate(BaseModel):

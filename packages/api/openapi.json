@@ -2591,10 +2591,11 @@
                     "home_path": {
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Home Path"
-                    }
+                    },
+                    "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" }
                 },
                 "type": "object",
-                "required": ["name", "home_path"],
+                "required": ["name", "home_path", "uploads_enabled"],
                 "title": "LibraryCreate"
             },
             "LibraryHomePathRead": {
@@ -2718,15 +2719,23 @@
                     "home_path": {
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Home Path"
-                    }
+                    },
+                    "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" }
                 },
                 "type": "object",
-                "required": ["id", "name", "home_path"],
+                "required": ["id", "name", "home_path", "uploads_enabled"],
                 "title": "LibraryRead"
             },
             "LibraryUpdate": {
                 "properties": {
-                    "name": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Name" }
+                    "name": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Name"
+                    },
+                    "uploads_enabled": {
+                        "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+                        "title": "Uploads Enabled"
+                    }
                 },
                 "type": "object",
                 "title": "LibraryUpdate"

@@ -11,6 +11,7 @@ def test_create_and_read_library(client: TestClient, sign_in: SignIn):
         json={
             "name": "test_create_and_read_library",
             "home_path": None,
+            "uploads_enabled": False,
         },
         headers={"Authorization": f"Bearer {session.access_token}"},
     )
@@ -39,6 +40,7 @@ def test_create_rejects_absolute_home_paths(client: TestClient, sign_in: SignIn)
         json={
             "name": "test_create_rejects_absolute_home_paths",
             "home_path": "/",
+            "uploads_enabled": False,
         },
         headers={"Authorization": f"Bearer {session.access_token}"},
     )
@@ -64,6 +66,7 @@ def test_read_library_requires_permission(client: TestClient, sign_in: SignIn):
         json={
             "name": "test_read_library_requires_permission",
             "home_path": None,
+            "uploads_enabled": False,
         },
         headers={"Authorization": f"Bearer {creator_session.access_token}"},
     )
@@ -114,6 +117,7 @@ class TestUpdateLibrary:
             json={
                 "name": "TestUpdateLibrary::test_update",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -124,6 +128,7 @@ class TestUpdateLibrary:
             f"/libraries/{library_id}",
             json={
                 "name": "And now for something completely different",
+                "uploads_enabled": True,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -131,16 +136,16 @@ class TestUpdateLibrary:
         assert update_response.status_code == 200
         assert update_json.get("id") == library_id
         assert update_json.get("name") == "And now for something completely different"
+        assert update_json.get("uploads_enabled") is True
 
         read_response = client.get(
             f"/libraries/{library_id}",
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
+        read_json = read_response.json()
         assert read_response.status_code == 200
-        assert (
-            read_response.json().get("name")
-            == "And now for something completely different"
-        )
+        assert read_json.get("name") == "And now for something completely different"
+        assert read_json.get("uploads_enabled") is True
 
     def test_read_library_requires_permission(
         self, client: TestClient, sign_in: SignIn
@@ -152,6 +157,7 @@ class TestUpdateLibrary:
             json={
                 "name": "test_read_library_requires_permission",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -216,6 +222,7 @@ class TestReadLibraryPermissions:
             json={
                 "name": "TestReadLibraryPermissions::test_requires_permission",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -245,6 +252,7 @@ class TestCreateLibraryPermission:
             json={
                 "name": "TestCreateLibraryPermission::test_create",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -284,6 +292,7 @@ class TestCreateLibraryPermission:
             json={
                 "name": "TestCreateLibraryPermission::test_requires_user_to_exist",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -331,6 +340,7 @@ class TestCreateLibraryPermission:
             json={
                 "name": "TestCreateLibraryPermission::test_requires_permission",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -366,6 +376,7 @@ class TestUpdateLibraryPermission:
             json={
                 "name": "TestUpdateLibraryPermissions::test_update",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -413,6 +424,7 @@ class TestUpdateLibraryPermission:
             json={
                 "name": "TestUpdateLibraryPermissions::test_update",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -439,6 +451,7 @@ class TestUpdateLibraryPermission:
             json={
                 "name": "TestUpdateLibraryPermissions::test_requires_user_to_exist",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -476,6 +489,7 @@ class TestUpdateLibraryPermission:
             json={
                 "name": "TestUpdateLibraryPermissions::test_requires_permission",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -506,6 +520,7 @@ class TestDeleteLibraryPermission:
             json={
                 "name": "TestUpdateLibraryPermissions::test_update",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -551,6 +566,7 @@ class TestDeleteLibraryPermission:
             json={
                 "name": "TestUpdateLibraryPermissions::test_update",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -576,6 +592,7 @@ class TestDeleteLibraryPermission:
             json={
                 "name": "TestUpdateLibraryPermissions::test_requires_user_to_exist",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -611,6 +628,7 @@ class TestDeleteLibraryPermission:
             json={
                 "name": "TestDeleteLibraryPermissions::test_requires_permission",
                 "home_path": None,
+                "uploads_enabled": False,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )

@@ -517,6 +517,10 @@ export type LibraryCreate = {
      * Home Path
      */
     home_path: string | null
+    /**
+     * Uploads Enabled
+     */
+    uploads_enabled: boolean
 }
 
 /**
@@ -703,6 +707,10 @@ export type LibraryRead = {
      * Home Path
      */
     home_path: string | null
+    /**
+     * Uploads Enabled
+     */
+    uploads_enabled: boolean
 }
 
 /**
@@ -713,6 +721,10 @@ export type LibraryUpdate = {
      * Name
      */
     name?: string | null
+    /**
+     * Uploads Enabled
+     */
+    uploads_enabled?: boolean | null
 }
 
 /**
