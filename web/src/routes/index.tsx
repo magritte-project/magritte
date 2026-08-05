@@ -1,17 +1,17 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
 
+import { readInstanceStatus } from "@/api/queries/auth"
+
 export const Route = createFileRoute("/")({
-    beforeLoad: async ({
-        context: {
-            api: { userSessionManager, client },
-        },
-    }) => {
-        if (userSessionManager.isSignedIn) {
+    beforeLoad: async ({ context: { api, queryClient } }) => {
+        if (api.userSessionManager.isSignedIn) {
             throw redirect({ to: "/libraries" })
         } else {
             const firstSetupComplete = await (async () => {
                 try {
-                    const instanceStatus = await client.instanceStatus()
+                    const instanceStatus = await queryClient.ensureQueryData(
+                        readInstanceStatus(api),
+                    )
                     return instanceStatus.first_setup_complete
                 } catch (error) {
                     console.error("Error fetching instance status:", error)

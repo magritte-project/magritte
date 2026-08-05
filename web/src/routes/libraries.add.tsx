@@ -1,13 +1,16 @@
 import type { LibraryCreate } from "@magritte/api"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import z from "zod"
 
 import { useCreateLibrary } from "@/api/mutations/libraries"
+import { readInstanceStatus } from "@/api/queries/auth"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"
 import LibraryHomeBrowser from "@/components/reusable/LibraryHomeBrowser"
 import Modal from "@/components/reusable/Modal"
+import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 
 export const Route = createFileRoute("/libraries/add")({
@@ -20,15 +23,20 @@ export const Route = createFileRoute("/libraries/add")({
             throw redirect({ to: ".." })
         }
     },
+    loader: async ({ context: { api, queryClient } }) => {
+        await queryClient.ensureQueryData(readInstanceStatus(api))
+    },
     component: function LibrariesCreateComponent() {
         const navigate = useNavigate()
+        const api = useAPI()
+        const { data: instanceStatus } = useSuspenseQuery(readInstanceStatus(api))
         const createLibraryMutation = useCreateLibrary()
 
         const form = useAppForm({
             defaultValues: {
                 name: "",
                 home_path: null as string | null,
-                uploads_enabled: false,
+                uploads_enabled: false as boolean,
             } satisfies LibraryCreate,
             onSubmit: async ({ value }) => {
                 try {
@@ -64,6 +72,13 @@ export const Route = createFileRoute("/libraries/add")({
                                 .string()
                                 .startsWith(".", { error: "Must be relative path" })
                                 .nullable(),
+                        }}
+                        listeners={{
+                            onChange: ({ value }) => {
+                                if (!value) {
+                                    form.setFieldValue("uploads_enabled", false)
+                                }
+                            },
                         }}
                     >
                         {(field) => (
@@ -111,6 +126,37 @@ export const Route = createFileRoute("/libraries/add")({
                                 )}
                                 <FieldInfo field={field} />
                             </>
+                        )}
+                    </form.Field>
+
+                    <form.Field name="uploads_enabled">
+                        {(field) => (
+                            <form.Subscribe selector={(state) => !!state.values.home_path}>
+                                {(hasHomePath) => (
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            className="peer"
+                                            id={field.name}
+                                            name={field.name}
+                                            disabled={
+                                                !instanceStatus.uploads_enabled || !hasHomePath
+                                            }
+                                            checked={field.state.value}
+                                            onChange={(e) =>
+                                                field.handleChange(e.currentTarget.checked)
+                                            }
+                                            onBlur={field.handleBlur}
+                                        />
+                                        <label
+                                            htmlFor={field.name}
+                                            className="text-sm peer-disabled:opacity-70"
+                                        >
+                                            Allow File Uploads
+                                        </label>
+                                    </div>
+                                )}
+                            </form.Subscribe>
                         )}
                     </form.Field>
 
