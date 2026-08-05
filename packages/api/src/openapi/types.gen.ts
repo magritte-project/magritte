@@ -500,6 +500,10 @@ export type InstanceStatusRead = {
      */
     env: "dev" | "ci" | "prod"
     /**
+     * Uploads Enabled
+     */
+    uploads_enabled: boolean
+    /**
      * First Setup Complete
      */
     first_setup_complete: boolean

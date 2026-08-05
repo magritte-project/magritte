@@ -2579,10 +2579,11 @@
             "InstanceStatusRead": {
                 "properties": {
                     "env": { "type": "string", "enum": ["dev", "ci", "prod"], "title": "Env" },
+                    "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" },
                     "first_setup_complete": { "type": "boolean", "title": "First Setup Complete" }
                 },
                 "type": "object",
-                "required": ["env", "first_setup_complete"],
+                "required": ["env", "uploads_enabled", "first_setup_complete"],
                 "title": "InstanceStatusRead"
             },
             "LibraryCreate": {

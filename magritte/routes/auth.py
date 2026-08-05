@@ -29,6 +29,7 @@ async def read_instance_status(
 ):
     return InstanceStatusRead(
         env=config.env,
+        uploads_enabled=config.enable_uploads,
         first_setup_complete=await User.exists(
             where=[
                 col(User.id) == 1,
