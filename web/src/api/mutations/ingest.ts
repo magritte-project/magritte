@@ -4,6 +4,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import useAPI from "@/hooks/apiHook"
 
+export function useIngestFiles(libraryId: number) {
+    const { client } = useAPI()
+    return useMutation({
+        mutationFn: (body: readonly (File | Blob)[]) => client.ingestFiles(libraryId, [...body]),
+    })
+}
+
 export function useIngestSongs(libraryId: number) {
     const queryClient = useQueryClient()
     const { client } = useAPI()

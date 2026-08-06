@@ -9,7 +9,7 @@ export interface AppFormProps extends Omit<React.FormHTMLAttributes<HTMLFormElem
 
 export default function AppForm({ form, children, ...rest }: AppFormProps) {
     const handleSubmit = useCallback(
-        (event: React.FormEvent<HTMLFormElement>) => {
+        (event: React.SubmitEvent<HTMLFormElement>) => {
             event.stopPropagation()
             event.preventDefault()
             form.handleSubmit()
