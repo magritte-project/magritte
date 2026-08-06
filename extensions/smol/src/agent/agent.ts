@@ -3,6 +3,7 @@ import type { ExtensionHost } from "@magritte/sdk"
 import { ToolLoopAgent, stepCountIs, tool } from "ai"
 import { z } from "zod"
 
+// oxlint-disable-next-line
 import AgentWorker from "@/agent/worker?worker"
 
 export interface AgentOptions {
