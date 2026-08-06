@@ -2,64 +2,28 @@ import logging
 import os
 import pathlib
 import secrets
+import sys
 from pathlib import Path
-from typing import Literal, assert_never
+from typing import Literal, Self, assert_never
 
-from dotenv import load_dotenv, set_key
+from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field
 
 _dotenv_path = Path(".env").resolve()
 load_dotenv(_dotenv_path)
 
-# In dev and CI environments, we can generate secrets
-# and salt if they don't already exist in .env:
-if os.environ.get("ENV", "dev") != "prod":
-    _must_reload = False
-    for token_secret_key in ["SESSION_TOKEN_SECRET", "FEATURE_TOKEN_SECRET"]:
-        if not os.environ.get(token_secret_key):
-            logging.debug(f"Generating new {token_secret_key}")
-            set_key(_dotenv_path, token_secret_key, secrets.token_hex(64))
-            os.environ.pop(token_secret_key)
-            _must_reload = True
-
-    if not os.environ.get("SALT"):
-        logging.debug("Generating new salt")
-        set_key(_dotenv_path, "SALT", secrets.token_hex(32))
-        os.environ.pop("SALT")
-        _must_reload = True
-
-    load_dotenv(_dotenv_path)
-
 
 class Config(BaseModel):
     env: Literal["dev", "ci", "prod"] = Field(
         alias="ENV",
-        default="dev",
-        description="The environment the server is running in. Defeaults to dev",
+        default="prod",
+        description="The environment the server is running in. Defaults to prod",
     )
 
     token_algorithm: str = Field(
         alias="TOKEN_ALGORITHM",
         default="HS256",
         description="The algorithm to use when generating tokens. Defaults to HS256",
-    )
-
-    session_token_secret: str = Field(
-        alias="SESSION_TOKEN_SECRET",
-        min_length=128,
-        description="The secret used when signing user session access tokens",
-    )
-
-    feature_token_secret: str = Field(
-        alias="FEATURE_TOKEN_SECRET",
-        min_length=128,
-        description="The secret used when signing feature access tokens",
-    )
-
-    salt: bytes = Field(
-        alias="SALT",
-        min_length=64,
-        description="The salt added to passwords before storing them in the DB",
     )
 
     data_home: str = Field(
@@ -142,6 +106,131 @@ class Config(BaseModel):
     )
 
 
+class SecretsConfig(BaseModel):
+    """
+    Encapsulates secrets configuration for the current session.
+    """
+
+    session_token_secret: str = Field(
+        min_length=128,
+        description="The secret used when signing user session access tokens",
+    )
+
+    feature_token_secret: str = Field(
+        min_length=128,
+        description="The secret used when signing feature access tokens",
+    )
+
+    salt: bytes = Field(
+        min_length=64,
+        description="The salt added to passwords before storing them in the DB",
+    )
+
+    @classmethod
+    def _from_env(cls) -> Self | None:
+        """
+        Attempt to read secrets configuration from the env.
+
+        :returns: A secrets configuration or `None` if the environment
+        does not contain a full set of secrets.
+        """
+
+        session_token_secret = os.getenv("SESSION_TOKEN_SECRET")
+        if not session_token_secret:
+            return None
+
+        feature_token_secret = os.getenv("FEATURE_TOKEN_SECRET")
+        if not feature_token_secret:
+            return None
+
+        salt = os.getenv("SALT")
+        if not salt:
+            return None
+
+        return cls(
+            session_token_secret=session_token_secret,
+            feature_token_secret=feature_token_secret,
+            salt=salt.encode(),
+        )
+
+    @classmethod
+    def _from_keyring(cls, *, create: bool = True) -> Self | None:
+        """
+        Attempt to read secrets configuration from the user's local
+        keyring if Magritte has been installed with desktop extras.
+
+        :param create: Whether to create random secrets if none are found.
+        Defaults to `True`.
+        :returns: A secrets configuration or `None` if the keyring
+        is not available or secrets could not be read or created.
+        """
+
+        try:
+            import keyring
+
+            session_token_secret = keyring.get_password(
+                "magritte", "session_token_secret"
+            )
+            if session_token_secret is None:
+                if not create:
+                    return None
+
+                session_token_secret = secrets.token_hex(64)
+                keyring.set_password(
+                    "magritte", "session_token_secret", session_token_secret
+                )
+                print("Generated random session token secret", file=sys.stderr)
+
+            feature_token_secret = keyring.get_password(
+                "magritte", "feature_token_secret"
+            )
+            if feature_token_secret is None:
+                if not create:
+                    return None
+
+                feature_token_secret = secrets.token_hex(64)
+                keyring.set_password(
+                    "magritte", "feature_token_secret", feature_token_secret
+                )
+                print("Generated random feature token secret", file=sys.stderr)
+
+            salt = keyring.get_password("magritte", "salt")
+            if salt is None:
+                if not create:
+                    return None
+
+                salt = secrets.token_hex(32)
+                keyring.set_password("magritte", "salt", salt)
+                print("Generated random salt", file=sys.stderr)
+
+            return cls(
+                session_token_secret=session_token_secret,
+                feature_token_secret=feature_token_secret,
+                salt=salt.encode(),
+            )
+        except ImportError:
+            # NOTE: keyring is a 'desktop' extra dependency
+            return None
+
+    @classmethod
+    def from_best_source(cls) -> Self:
+        """
+        Load secrets from the best source available,
+        or raise an error if none could be loaded.
+
+        :returns: Secrets configuration for the current session.
+        :raises: A `ValueError` if no secrets could be loaded.
+        """
+
+        if from_env := cls._from_env():
+            return from_env
+
+        if from_keyring := cls._from_keyring():
+            return from_keyring
+
+        raise ValueError("No secrets configured or available")
+
+
 config = Config.from_dot_env()
 if not config.data_home_path.exists():
     config.data_home_path.mkdir(parents=True)
@@ -150,3 +239,5 @@ if not config.data_home_path.exists():
 if not config.artwork_home_path.exists():
     config.artwork_home_path.mkdir(parents=True)
     logging.debug(f"Created artwork home directory at {config.artwork_home_path}")
+
+secrets_config = SecretsConfig.from_best_source()

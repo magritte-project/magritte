@@ -4,7 +4,7 @@ mod packages
 mod extensions
 
 sync-deps:
-    uv sync
+    uv sync --extra desktop
     pnpm install
 
 [parallel]

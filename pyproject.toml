@@ -24,6 +24,11 @@ dependencies = [
     "websockets>=16.1.1",
 ]
 
+[project.optional-dependencies]
+desktop = [
+    "keyring>=25.7.0",
+]
+
 [dependency-groups]
 dev = [
     "datamodel-code-generator>=0.71.0",

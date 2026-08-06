@@ -50,9 +50,25 @@ Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling and [`just`](http
 
 Bootstrapping the development environment creates a single `.env` file at the root project directory and symlinks it into the `server/` and `web/` subdirectories. Edit the entries the `.env` file to be suitable for your local working environment.
 
-__Note:__ You do not need to populate the session secrets or salt, as they are generated automatically when the server starts for the first time.
+#### Secrets
 
-You may also wish to review the `.env` files in the extension projects included in the monorepo. The `bootstrap` script will create `.env` files in any extensions which have them, but further configuration may be necessary for an extension to function.
+Because Magritte is intended to be installable into a wide range of environments, it offers multiple solutions for managing secrets:
+
+1. Secrets may be loaded from the environment. If the environment contains a full set of secrets, Magritte will use those values when signing and validating sensitive data. **This is the solution to use if you are running Magritte on a server or in the cloud.**
+2. Secrets may be automatically generated, stored, and loaded from the user's keyring (Keychain, KWallet, etc). This requires enabling the `desktop` extras when installing Magritte (done automatically by the `bootstap` script). **This is a good solution if you are running Magritte on your computer.**
+
+Magritte can generate secrets and salts for you:
+
+```sh
+# Run twice: once for SESSION_TOKEN_SECRET and again for FEATURE_TOKEN_SECRET
+uv run magritte new-token-secret
+# Run once for SALT
+uv run magritte new-password-salt
+```
+
+#### Extensions
+
+You may wish to review the `.env` files in the extension projects included in the monorepo. The `bootstrap` script will create `.env` files in any extensions which have them, but further configuration such as API keys may be necessary for an extension to function.
 
 ## Development
 

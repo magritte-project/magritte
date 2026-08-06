@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from magritte.auth import password_hash
-from magritte.config import config
+from magritte.config import secrets_config
 from magritte.model.library import Library
 from magritte.model.user import User, UserLibraryLink
 from magritte.schemas.auth import OAuth2Scope
@@ -11,28 +11,28 @@ async def _seed_users(session: AsyncSession):
     session.add(
         User(
             username="test",
-            hashed_password=password_hash.hash("password", salt=config.salt),
+            hashed_password=password_hash.hash("password", salt=secrets_config.salt),
             scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
     )
     session.add(
         User(
             username="unlucky",
-            hashed_password=password_hash.hash("password", salt=config.salt),
+            hashed_password=password_hash.hash("password", salt=secrets_config.salt),
             scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
     )
     session.add(
         User(
             username="restricted",
-            hashed_password=password_hash.hash("password", salt=config.salt),
+            hashed_password=password_hash.hash("password", salt=secrets_config.salt),
             scope=OAuth2Scope.to_str({OAuth2Scope.PROFILE, OAuth2Scope.LIBRARIES_READ}),
         )
     )
     session.add(
         User(
             username="orphaned",
-            hashed_password=password_hash.hash("password", salt=config.salt),
+            hashed_password=password_hash.hash("password", salt=secrets_config.salt),
             scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
     )
