@@ -52,7 +52,7 @@ export const Route = createFileRoute("/libraries")({
                                         params={{
                                             libraryId: String(library.id),
                                         }}
-                                        className="flex flex-col items-center gap-3 p-2 rounded-sm hover:bg-blue-50 w-32"
+                                        className="flex flex-col items-center gap-3 p-2 rounded-sm hover:bg-key-subtle w-32"
                                     >
                                         {library.home_path !== null ? (
                                             <div className="bg-cyan-400 rounded-full w-16 h-16 flex items-center justify-center">
@@ -78,7 +78,7 @@ export const Route = createFileRoute("/libraries")({
                                             </div>
                                             <button
                                                 type="button"
-                                                className="cursor-pointer text-blue-500"
+                                                className="cursor-pointer text-key active:text-key-active disabled:opacity-disabled"
                                                 onClick={(e) => {
                                                     e.preventDefault()
                                                     e.stopPropagation()

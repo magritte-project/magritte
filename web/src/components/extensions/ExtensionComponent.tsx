@@ -45,10 +45,13 @@ export default function ExtensionComponent({ extensionId }: ExtensionComponentPr
     }, [extensionRuntime, extensionId])
 
     return (
-        <div ref={containerRef} className="h-full flex flex-col gap-3 items-center justify-center">
-            <GearIcon size="4rem" weight="light" className="text-gray-200" />
+        <div
+            ref={containerRef}
+            className="h-full flex flex-col gap-between items-center justify-center"
+        >
+            <GearIcon size="4rem" weight="light" className="text-placeholder" />
             {error !== null && (
-                <div className="px-3 text-center text-sm font-medium text-gray-600">
+                <div className="px-outside text-center text-sm font-medium text-on-secondary">
                     {getErrorMessage(error)}
                 </div>
             )}

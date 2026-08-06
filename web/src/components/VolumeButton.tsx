@@ -16,7 +16,7 @@ export default function VolumeButton() {
     )
     return (
         <Popover className="relative">
-            <ThemedSubtleButton buttonComponent={PopoverButton} className="flex items-center gap-1">
+            <ThemedSubtleButton buttonComponent={PopoverButton} title="Volume">
                 {volume === 0.0 ? (
                     <SpeakerNoneIcon />
                 ) : volume < 0.5 ? (
@@ -27,7 +27,7 @@ export default function VolumeButton() {
             </ThemedSubtleButton>
             <PopoverPanel
                 anchor="bottom"
-                className="bg-white rounded-md shadow-sm p-4 h-48 flex flex-col items-center gap-4"
+                className="bg-primary rounded-md shadow-sm p-outside h-48 flex flex-col items-center gap-betweeen"
             >
                 <SpeakerHighIcon size="1.2rem" weight="bold" />
                 <Slider

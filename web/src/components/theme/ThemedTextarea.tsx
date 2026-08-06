@@ -7,9 +7,9 @@ export default function ThemedTextarea({ className, ...rest }: ThemedTextareaPro
     return (
         <textarea
             className={classNames(
-                "bg-white rounded-sm p-2 min-w-0 w-auto",
-                "text-gray-950 placeholder:text-black/40",
-                "border border-gray-300 focus:border-blue-500 outline-0",
+                "bg-primary rounded-sm p-2 min-w-0 w-auto",
+                "text-on-primary placeholder:text-placeholder",
+                "border border-outline focus:border-outline-focus outline-0",
                 className,
             )}
             {...rest}

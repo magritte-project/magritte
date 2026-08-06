@@ -79,7 +79,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                             to="/libraries/$libraryId/songs"
                             params={{ libraryId }}
                             search={{ artist_id: artistId }}
-                            className="px-2 py-1 hover:bg-blue-50"
+                            className="px-2 py-1 hover:bg-key-subtle"
                         >
                             All Songs
                         </Link>
@@ -93,7 +93,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                                 {page.items.map((album) => (
                                     <li
                                         key={`albums.pages[${index}].albums[${album.id}]`}
-                                        className="w-36 h-47 hover:bg-blue-50"
+                                        className="w-36 h-47 hover:bg-key-subtle"
                                     >
                                         <Link
                                             to="/libraries/$libraryId/songs"

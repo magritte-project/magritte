@@ -17,8 +17,8 @@ export default function ThemedButton({
         <Button
             type={type}
             className={classNames(
-                "bg-blue-500 active:bg-blue-400 disabled:bg-blue-200",
-                "text-slate-50 active:text-white font-bold",
+                "bg-key active:bg-key-active disabled:opacity-disabled",
+                "text-on-key active:text-on-key-active font-bold",
                 "px-4 py-2 rounded-full",
                 className,
             )}

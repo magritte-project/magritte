@@ -38,7 +38,7 @@ export default function ThemedContentUnavailable({
     return (
         <div
             className={classNames(
-                "flex flex-col text-center items-center justify-center gap-2",
+                "flex flex-col text-center items-center justify-center gap-between",
                 containerClassName,
                 className,
             )}

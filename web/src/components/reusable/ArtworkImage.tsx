@@ -25,7 +25,7 @@ export default function ArtworkImage({
     return (
         <div
             className={classNames(
-                "relative flex items-center justify-center rounded-md overflow-clip bg-blue-200",
+                "relative flex items-center justify-center rounded-md overflow-clip bg-key-subtle",
                 className,
             )}
             {...rest}

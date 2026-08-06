@@ -56,13 +56,13 @@ export interface PermissionInfoProps {
 export default function PermissionInfo({ permission, compact = false }: PermissionInfoProps) {
     const { name, description } = info[permission]
     return compact ? (
-        <div className="text-xs px-2 py-1 bg-gray-100 rounded-lg" title={description}>
+        <div className="text-xs px-2 py-1 bg-secondary rounded-lg" title={description}>
             {name}
         </div>
     ) : (
         <div className="flex flex-col items-start gap-0.5">
             <header className="font-medium">{name}</header>
-            <p className="text-sm text-gray-500">{description}</p>
+            <p className="text-sm text-on-secondary">{description}</p>
         </div>
     )
 }

@@ -35,15 +35,15 @@ export const Route = createFileRoute("/user/me/extensions/add")({
         return (
             <Modal className="w-120">
                 <ModalHeader>Available Extensions</ModalHeader>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-between">
                     <ol>
                         {availableExtensions.items.map((extension) => (
                             <li
                                 key={`extension-${extension.id}`}
-                                className="bg-gray-50 odd:bg-inherit"
+                                className="bg-secondary odd:bg-inherit"
                             >
                                 <AsyncButton
-                                    className="p-4 w-full text-left flex items-center gap-3"
+                                    className="p-outside w-full text-left flex items-center gap-between"
                                     onClick={async () => {
                                         await installMutation.mutateAsync(extension.id)
                                         navigate({
@@ -60,7 +60,7 @@ export const Route = createFileRoute("/user/me/extensions/add")({
                                         <span className="font-medium">
                                             {extension.manifest.name}
                                         </span>
-                                        <span className="text-sm text-gray-500">
+                                        <span className="text-sm text-on-secondary">
                                             {extension.manifest.description}
                                         </span>
                                     </div>
@@ -70,7 +70,7 @@ export const Route = createFileRoute("/user/me/extensions/add")({
                         ))}
                     </ol>
                     <TableFooter
-                        className="self-center p-4 pt-0"
+                        className="self-center p-outside pt-0"
                         singularLabel="Extension"
                         pluralLabel="Extensions"
                         offset={availableExtensions.offset}

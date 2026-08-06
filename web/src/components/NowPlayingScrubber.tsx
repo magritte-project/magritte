@@ -25,7 +25,7 @@ export default function NowPlayingScrubber() {
             classNames={{
                 track: "bg-orange-900!",
                 handle: "bg-orange-400! border-1! border-red-500! opacity-100!",
-                rail: "bg-gray-800!",
+                rail: "bg-secondary!",
             }}
         />
     )

@@ -93,7 +93,7 @@ export const Route = createFileRoute("/user/me/extensions")({
                         <li key={`extensions[${extension.id}]`}>
                             <button
                                 type="button"
-                                className="flex flex-col items-center justify-center gap-2 p-2 w-24 h-24 rounded-md hover:bg-gray-50 active:bg-gray-100"
+                                className="flex flex-col items-center justify-center gap-2 p-2 w-24 h-24 rounded-md hover:bg-secondary active:bg-secondary-active"
                                 onClick={() => presentExtension(extension.id)}
                             >
                                 <ExtensionIcon
@@ -146,7 +146,7 @@ export const Route = createFileRoute("/user/me/extensions")({
                     >
                         About Extension
                     </ModalHeader>
-                    <div className="flex flex-col items-center gap-3 p-3">
+                    <div className="flex flex-col items-center gap-between p-outside">
                         <ExtensionIcon
                             iconUrl={presentedExtension?.manifest.icon_url}
                             name={presentedExtension?.manifest.name ?? ""}
@@ -155,7 +155,7 @@ export const Route = createFileRoute("/user/me/extensions")({
                         <div className="font-medium text-center">
                             {presentedExtension?.manifest.name}
                         </div>
-                        <span className="text-sm text-center text-gray-500">
+                        <span className="text-sm text-center text-on-secondary">
                             {presentedExtension?.manifest.description}
                         </span>
                         <span className="flex flex-col items-start gap-2 text-xs">

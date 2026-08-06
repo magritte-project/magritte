@@ -121,7 +121,7 @@ export default function QuickMix() {
             {queueItems.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-3 text-center p-3">
                     <CassetteTapeIcon weight="duotone" size="3rem" />
-                    <span className="text-gray-500">
+                    <span className="text-on-secondary">
                         Drag and drop items here to create a quick mix.
                     </span>
                 </div>
@@ -130,7 +130,7 @@ export default function QuickMix() {
                     {queueItems.map((item, index) => (
                         <li
                             key={`quickMix.items[${item.id}]`}
-                            className="px-2 py-1 text-sm cursor-pointer hover:bg-blue-50 data-drag-over:border-b-2 border-blue-100"
+                            className="px-2 py-1 text-sm cursor-pointer hover:bg-key-subtle data-drag-over:border-b-2 border-blue-100"
                             onClick={() =>
                                 player.replaceQueue({
                                     newQueue: queue,
@@ -153,13 +153,13 @@ export default function QuickMix() {
                                 />
                                 <div
                                     className={classNames("flex flex-col gap-0.5", {
-                                        "text-blue-700": item.id === playingItem?.id,
+                                        "text-key": item.id === playingItem?.id,
                                     })}
                                 >
                                     <div className="font-bold">{item?.title ?? "--"}</div>
                                     <div>
                                         {item?.album_title ?? "--"}{" "}
-                                        <span className="text-gray-500">by</span>{" "}
+                                        <span className="text-on-secondary">by</span>{" "}
                                         {item?.artist_name ?? "--"}
                                     </div>
                                 </div>

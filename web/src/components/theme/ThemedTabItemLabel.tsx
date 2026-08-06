@@ -23,9 +23,9 @@ export default function ThemedTabItemLabel({
             className={classNames(
                 "flex items-center gap-1 px-3 py-1",
                 "group-first:rounded-l-full group-last:rounded-r-full",
-                "not-group-last:border-r border-gray-100",
-                "bg-gray-50 active:bg-gray-100 disabled:bg-transparent",
-                "rounded data-[active=true]:text-blue-500 active:bg-gray-100",
+                "not-group-last:border-r border-separator",
+                "bg-secondary active:bg-secondary-active",
+                "rounded data-[active=true]:text-key disabled:opacity-disabled",
                 className,
             )}
             data-active={isActive}

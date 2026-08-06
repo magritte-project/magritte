@@ -30,7 +30,7 @@ export default function NotificationListItem({
     return (
         <li
             className={classNames(
-                "py-2 my-2 not-last:border-b border-gray-100 flex items-center gap-2",
+                "py-2 my-2 not-last:border-b border-separator flex items-center gap-2",
                 className,
             )}
             {...rest}
@@ -42,12 +42,12 @@ export default function NotificationListItem({
             />
             <div
                 className={classNames("flex-1 flex flex-col gap-0.5", {
-                    "opacity-70": notification.is_read,
+                    "opacity-disabled": notification.is_read,
                 })}
             >
                 <span className="text-sm font-semibold">{notification.title}</span>
                 {notification.description && (
-                    <span className="text-xs text-gray-500">{notification.description}</span>
+                    <span className="text-xs text-on-secondary">{notification.description}</span>
                 )}
             </div>
             <ThemedSubtleButton

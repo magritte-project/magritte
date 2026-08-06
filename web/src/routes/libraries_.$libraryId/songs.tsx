@@ -175,7 +175,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                     {page.items.map((song) => (
                                         <tr
                                             key={`songs.pages[${index}.songs[${song.id}]`}
-                                            className="cursor-pointer bg-gray-50 odd:bg-inherit hover:bg-blue-50 h-9"
+                                            className="cursor-pointer bg-secondary odd:bg-inherit hover:bg-key-subtle h-9"
                                             draggable={true}
                                             onDragStart={(e) => handleSongDrag(e, song)}
                                             onClick={() =>

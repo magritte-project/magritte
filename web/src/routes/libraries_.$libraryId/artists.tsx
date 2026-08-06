@@ -81,7 +81,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                                 {page.items.map((artist) => (
                                     <li
                                         key={`artists.pages[${index}].artist[${artist.id}]`}
-                                        className=" bg-gray-50 odd:bg-inherit hover:bg-blue-50 flex items-center gap-2 px-2 py-1 h-9"
+                                        className=" bg-secondary odd:bg-inherit hover:bg-key-subtle flex items-center gap-2 px-2 py-1 h-9"
                                     >
                                         <input
                                             type="checkbox"

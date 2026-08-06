@@ -206,3 +206,7 @@ await commandCoordinator.runCommand({ id: runnable[0].id })
 ```
 
 Note: You must include "commands:query" and "commands:run" in your `extension.magritte.json` file to use the command coordinator.
+
+## Styling & Theming
+
+Magritte uses tailwindcss v4 for most application styling. Whenever elements and components use the semantic theme variables defined in `web/src/styles.css` for colors, spacing, etc. These variables roughly follow the patterns from material design: there are 4 visual levels defined which follow the pattern of level, on-level for background and fill pairs. Magritte does not currently have a mechanism for loading custom themes, but the variables in the theme may be customized to suit your tastes.

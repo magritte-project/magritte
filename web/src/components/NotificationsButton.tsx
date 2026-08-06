@@ -33,23 +33,23 @@ export default function NotificationsButton() {
                 </ThemedSubtleButton>
                 <PopoverPanel
                     anchor="bottom"
-                    className="w-2xs bg-white rounded-md shadow-sm flex flex-col items-center"
+                    className="w-2xs bg-primary rounded-md shadow-sm flex flex-col items-center"
                 >
                     {notifications.isPending ? (
-                        <ThemedContentUnavailable className="p-4" variant="inline" />
+                        <ThemedContentUnavailable className="p-outside" variant="inline" />
                     ) : notifications.isError ? (
                         <ThemedContentUnavailable
-                            className="p-4"
+                            className="p-outside"
                             variant="inline"
                             error={notifications.error}
                         />
                     ) : notifications.data.total === 0 ? (
-                        <div className="p-4 flex flex-col items-center text-gray-500 text-sm font-medium">
+                        <div className="p-outside flex flex-col items-center text-on-secondary text-sm font-medium">
                             No notifications
                         </div>
                     ) : (
                         <>
-                            <ol className="px-4 flex flex-col w-full">
+                            <ol className="px-outside flex flex-col w-full">
                                 {notifications.data.items.map((notification) => (
                                     <NotificationListItem
                                         key={notification.id}
@@ -58,7 +58,7 @@ export default function NotificationsButton() {
                                 ))}
                             </ol>
                             <ThemedButton
-                                className="text-xs font-semibold mx-4 mt-0 mb-2"
+                                className="text-xs font-semibold mx-outside mt-0 mb-2"
                                 disabled={unreadCount === 0}
                             >
                                 Mark All As Read

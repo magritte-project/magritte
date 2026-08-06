@@ -1,5 +1,6 @@
 import { Menu, MenuItem, MenuItems } from "@headlessui/react"
 import type { OAuth2Scope } from "@magritte/api"
+import classNames from "classnames"
 import type { ReactNode } from "react"
 
 import AsyncButton from "@/components/reusable/AsyncButton"
@@ -25,7 +26,7 @@ export default function ThemedPopUpMenu({ button, items }: ThemedPopUpMenuProps)
             {button}
             <MenuItems
                 anchor="bottom"
-                className="bg-white rounded-md shadow-sm text-sm flex flex-col z-100"
+                className="bg-primary rounded-md shadow-sm text-sm flex flex-col z-100"
                 onClick={(e) => e.stopPropagation()}
             >
                 {items.map((item) => (
@@ -33,7 +34,13 @@ export default function ThemedPopUpMenu({ button, items }: ThemedPopUpMenuProps)
                         <MenuItem>
                             <AsyncButton
                                 type="button"
-                                className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white disabled:hover:bg-inherit disabled:hover:text-inherit disabled:opacity-70"
+                                className={classNames(
+                                    "min-w-32 p-outside text-left",
+                                    "flex items-center gap-between",
+                                    "hover:bg-key disabled:hover:bg-inherit",
+                                    "hover:text-on-key disabled:hover:text-inherit",
+                                    "disabled:opacity-disabled",
+                                )}
                                 onClick={item.onClick}
                                 disabled={item.disabled}
                             >

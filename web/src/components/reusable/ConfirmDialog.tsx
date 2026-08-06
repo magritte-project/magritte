@@ -36,17 +36,19 @@ export default function ConfirmDialog({
                         className="fixed inset-0 bg-black/30 backdrop-blur-xs"
                     />
 
-                    <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+                    <div className="fixed inset-0 flex w-screen items-center justify-center p-outside">
                         <DialogPanel
                             as={motion.div}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="max-w-lg space-y-2 p-4 drop-shadow-2xl shadow-black bg-white/90 rounded-lg"
+                            className="max-w-lg space-y-2 p-outside drop-shadow-2xl shadow-black bg-primary/90 rounded-lg"
                         >
                             <DialogTitle className="font-bold">{title}</DialogTitle>
-                            <Description className="text-sm text-gray-600">{message}</Description>
-                            <div className="flex items-center justify-end gap-3 text-sm">
+                            <Description className="text-sm text-on-secondary">
+                                {message}
+                            </Description>
+                            <div className="flex items-center justify-end gap-between text-sm">
                                 <ThemedSubtleButton type="button" onClick={onCancel}>
                                     {cancel}
                                 </ThemedSubtleButton>

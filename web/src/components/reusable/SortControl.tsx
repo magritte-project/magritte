@@ -109,10 +109,10 @@ export default function SortControl<Key extends string>({
                             <SortableListItem
                                 key={key}
                                 id={key}
-                                className="drop-shadow-sm bg-white rounded-sm flex items-center gap-2 px-2 py-1 cursor-default"
+                                className="drop-shadow-sm bg-primary rounded-sm flex items-center gap-2 px-2 py-1 cursor-default"
                             >
                                 <DotsSixVerticalIcon
-                                    className="text-gray-400"
+                                    className="text-placeholder"
                                     weight="bold"
                                     aria-label="Reorderable"
                                 />
@@ -136,7 +136,7 @@ export default function SortControl<Key extends string>({
                     {availableKeys.map((key) => (
                         <li
                             key={key}
-                            className="drop-shadow-sm bg-white rounded-sm flex items-center gap-2 px-2 py-1 cursor-default"
+                            className="drop-shadow-sm bg-primary rounded-sm flex items-center gap-2 px-2 py-1 cursor-default"
                         >
                             <span className="flex-1 text-sm">{labels[key]}</span>
                             <ThemedSubtleButton onClick={() => handleAdd(key)}>

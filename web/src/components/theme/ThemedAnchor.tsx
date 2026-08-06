@@ -9,7 +9,10 @@ const ThemedAnchorComponent = React.forwardRef<HTMLAnchorElement, ThemedAnchorPr
             <a
                 ref={ref}
                 {...rest}
-                className={classNames("text-blue-500 active:text-blue-400 font-bold", className)}
+                className={classNames(
+                    "text-key active:text-key-active font-bold disabled:opacity-disabled",
+                    className,
+                )}
             />
         )
     },

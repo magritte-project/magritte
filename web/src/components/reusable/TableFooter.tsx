@@ -44,20 +44,20 @@ export default function TableFooter({
             {total > limit && (
                 <button
                     type="button"
-                    className="text-blue-500 active:text-blue-400 disabled:text-blue-300 font-bold"
+                    className="text-key active:text-key-active disabled:opacity-disabled font-bold"
                     disabled={!canGoBack}
                     onClick={handleGoBack}
                 >
                     <CaretLeftIcon weight="bold" aria-label="Previous Page" />
                 </button>
             )}
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-on-secondary">
                 {new Intl.NumberFormat().format(total)} {total === 1 ? singularLabel : pluralLabel}
             </span>
             {total > limit && (
                 <button
                     type="button"
-                    className="text-blue-500 active:text-blue-400 disabled:text-blue-300 font-bold"
+                    className="text-key active:text-key-active disabled:opacity-disabled font-bold"
                     disabled={canGoForward}
                     onClick={handleGoForward}
                 >

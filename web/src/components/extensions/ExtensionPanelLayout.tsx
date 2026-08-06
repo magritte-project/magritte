@@ -101,9 +101,9 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                     <>
                         <Separator
                             className={classNames({
-                                "rounded-t-full bg-linear-to-b from-gray-200 to-transparent h-2":
+                                "rounded-t-full bg-linear-to-b from-separator to-transparent h-2":
                                     preferVerticalOrientation,
-                                "rounded-full bg-gray-200 w-1": !preferVerticalOrientation,
+                                "rounded-full bg-separator w-1": !preferVerticalOrientation,
                             })}
                         />
                         <Panel

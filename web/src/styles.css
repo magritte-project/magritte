@@ -1,18 +1,103 @@
 @import "tailwindcss";
 
 @theme {
+    /* Semantic Colors */
+    --color-primary: var(--color-white);
+    --color-primary-active: var(--color-gray-50);
+    --color-on-primary: var(--color-gray-800);
+
+    --color-secondary: var(--color-gray-50);
+    --color-secondary-active: var(--color-gray-200);
+    --color-on-secondary: var(--color-gray-500);
+
+    --color-tertiary: var(--color-gray-100);
+    --color-tertiary-active: var(--color-gray-300);
+    --color-on-tertiary: var(--color-gray-400);
+
+    --color-quaternary: var(--color-gray-200);
+    --color-quaternary-active: var(--color-gray-400);
+    --color-on-quaternary: var(--color-gray-300);
+
+    --color-placeholder: var(--color-gray-400);
+    --color-outline: var(--color-gray-300);
+    --color-outline-focus: var(--color-blue-500);
+    --color-separator: var(--color-gray-100);
+
+    --color-key: var(--color-blue-500);
+    --color-on-key: var(--color-slate-50);
+    --color-key-active: var(--color-blue-400);
+    --color-on-key-active: var(--color-white);
+    --color-key-subtle: var(--color-blue-50);
+
+    --color-high-contrast: var(--color-white);
+
+    /* Semantic Opacities */
+    --opacity-disabled: 0.6;
+
+    /* Semantic Spacings */
+    --spacing-outside: calc(var(--spacing) * 3);
+    --spacing-between: calc(var(--spacing) * 3);
+
+    /* Global Defaults */
     --default-font-family: "FiraGo", sans-serif;
     --default-mono-font-family: "Fira Mono", monospace;
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Semantic Colors */
+        --color-primary: var(--color-black);
+        --color-primary-active: var(--color-gray-950);
+        --color-on-primary: var(--color-gray-200);
+
+        --color-secondary: var(--color-gray-950);
+        --color-secondary-active: var(--color-gray-800);
+        --color-on-secondary: var(--color-gray-500);
+
+        --color-tertiary: var(--color-gray-900);
+        --color-tertiary-active: var(--color-gray-700);
+        --color-on-tertiary: var(--color-gray-600);
+
+        --color-quaternary: var(--color-gray-800);
+        --color-quaternary-active: var(--color-gray-600);
+        --color-on-quaternary: var(--color-gray-700);
+
+        --color-placeholder: var(--color-gray-600);
+        --color-outline: var(--color-gray-700);
+        --color-outline-focus: var(--color-blue-500);
+        --color-separator: var(--color-gray-900);
+
+        --color-key: var(--color-blue-400);
+        --color-on-key: var(--color-slate-50);
+        --color-key-active: var(--color-blue-300);
+        --color-on-key-active: var(--color-black);
+        --color-key-subtle: var(--color-blue-950);
+
+        --color-high-contrast: var(--color-black);
+    }
+}
+
+@layer components {
+    .overlay-material-hard {
+        @apply bg-black/70 backdrop-blur-sm;
+    }
+
+    .overlay-material-soft {
+        @apply bg-black/30;
+    }
+}
+
 body {
-    font-family: "FiraGo", sans-serif;
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    font-family: var(--default-font-family);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-    font-family: "Fira Mono", monospace;
+code,
+pre {
+    font-family: var(--default-mono-font-family);
 }
 
 #app:empty {

@@ -48,12 +48,12 @@ export default function TransportControls() {
         >
             <div className="relative isolate">
                 <div className="absolute inset-0 backdrop-blur-lg mask-[radial-gradient(50%_100%_at_bottom_center,black,black,transparent)] -z-10" />
-                <div className="p-4 flex flex-col items-center gap-2">
+                <div className="p-outside flex flex-col items-center gap-2">
                     <AnimatePresence initial={false}>
                         <motion.div
                             layout
                             key="playingItem"
-                            className="flex flex-col items-center w-full gap-0.5 text-shadow-lg text-shadow-white"
+                            className="flex flex-col items-center w-full gap-0.5 text-shadow-lg text-shadow-high-contrast"
                         >
                             <motion.div key="title" layout className="font-medium">
                                 {playingItem ? (playingItem.title ?? "--") : "Nothing Playing"}
@@ -62,7 +62,7 @@ export default function TransportControls() {
                                 <>
                                     <div className="text-sm">
                                         {playingItem?.album_title ?? "--"}{" "}
-                                        <span className="text-gray-500">by</span>{" "}
+                                        <span className="text-on-secondary">by</span>{" "}
                                         {playingItem?.artist_name ?? "--"}
                                     </div>
                                     <NowPlayingScrubber />
@@ -76,8 +76,8 @@ export default function TransportControls() {
                         >
                             <AsyncButton
                                 className={classNames(
-                                    "p-2 rounded-full active:bg-black/10",
-                                    "font-bold text-gray-800 disabled:text-gray-300",
+                                    "p-2 rounded-full active:bg-on-primary/10",
+                                    "font-bold text-on-primary disabled:opacity-disabled",
                                 )}
                                 onClick={() => player.skipPrevious()}
                             >
@@ -91,7 +91,7 @@ export default function TransportControls() {
                             >
                                 <AsyncButton
                                     className={classNames(
-                                        "bg-blue-500 text-slate-50 active:text-white font-bold",
+                                        "bg-key text-on-key active:text-on-key-active font-bold",
                                         "relative rounded-md drop-shadow-sm",
                                     )}
                                     onClick={() =>
@@ -119,8 +119,8 @@ export default function TransportControls() {
                             </DPad>
                             <AsyncButton
                                 className={classNames(
-                                    "p-2 rounded-full active:bg-black/10",
-                                    "font-bold text-gray-800 disabled:text-gray-300",
+                                    "p-2 rounded-full active:bg-on-primary/10",
+                                    "font-bold text-on-primary disabled:opacity-disabled",
                                 )}
                                 onClick={() => player.skipNext()}
                             >

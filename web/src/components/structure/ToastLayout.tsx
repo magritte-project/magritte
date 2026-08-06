@@ -41,7 +41,7 @@ export default function ToastLayout({ children }: ToastLayoutProps) {
                 <AnimatePresence mode="wait" key="ToastLayout">
                     {presentedToast && (
                         <ToastNotification
-                            className="fixed bottom-4 left-1/2 -translate-1/2 max-w-lg"
+                            className="fixed bottom-outside left-1/2 -translate-1/2 max-w-lg"
                             {...presentedToast}
                         />
                     )}

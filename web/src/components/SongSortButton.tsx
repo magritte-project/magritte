@@ -69,12 +69,12 @@ export default function SongSortButton({ order = DEFAULT_ORDER, setOrder }: Song
 
     return (
         <Popover className="relative">
-            <ThemedSubtleButton buttonComponent={PopoverButton} className="flex items-center gap-1">
-                <FunnelSimpleIcon aria-label="Sort" />
+            <ThemedSubtleButton buttonComponent={PopoverButton} title="Sort">
+                <FunnelSimpleIcon />
             </ThemedSubtleButton>
             <PopoverPanel
                 anchor="bottom end"
-                className="w-3xs bg-white rounded-md shadow-sm flex flex-col p-4"
+                className="w-3xs bg-primary rounded-md shadow-sm flex flex-col p-outside"
             >
                 <SortControl<SongKey>
                     keys={KEYS}

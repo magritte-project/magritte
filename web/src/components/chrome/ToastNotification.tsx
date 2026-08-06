@@ -21,7 +21,7 @@ export default function ToastNotification({ className, message, type }: ToastNot
             id="toast-notification"
             aria-live="polite"
             className={classNames(
-                "bg-white border border-gray-100 drop-shadow-lg rounded-md p-2 flex items-center gap-1 z-100",
+                "bg-primary border border-separator drop-shadow-lg rounded-md p-2 flex items-center gap-1 z-100",
                 className,
             )}
             initial={{ opacity: 0, scale: 0.9 }}

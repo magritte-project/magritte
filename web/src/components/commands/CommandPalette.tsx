@@ -47,7 +47,7 @@ export default function CommandPalette({
             {isOpen && (
                 <motion.div
                     key="command-palette-backdrop"
-                    className="fixed inset-0 bg-black/30"
+                    className="fixed inset-0 overlay-material-soft"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -58,18 +58,21 @@ export default function CommandPalette({
             {isOpen && (
                 <motion.div
                     key="command-palette"
-                    className="fixed top-1/4 left-1/2 -translate-x-1/2 w-full max-w-xl px-4"
+                    className="fixed top-1/4 left-1/2 -translate-x-1/2 w-full max-w-xl px-outside"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.15 }}
                 >
                     <Combobox immediate onChange={handleChange}>
-                        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl">
-                            <div className="flex items-center gap-2 border-b border-gray-200 px-4">
-                                <MagnifyingGlassIcon className="shrink-0 text-gray-400" size={16} />
+                        <div className="overflow-hidden rounded-xl border border-outline bg-primary shadow-2xl">
+                            <div className="flex items-center gap-2 border-b border-outline px-outside">
+                                <MagnifyingGlassIcon
+                                    className="shrink-0 text-placeholder"
+                                    size={16}
+                                />
                                 <ComboboxInput
-                                    className="w-full bg-transparent py-3 text-sm outline-none"
+                                    className="w-full bg-transparent py-between text-sm outline-none"
                                     autoFocus
                                     placeholder="Search commands..."
                                     value={search}
@@ -79,7 +82,7 @@ export default function CommandPalette({
                             </div>
                             <ComboboxOptions static className="max-h-80 overflow-y-auto">
                                 {commands.length === 0 ? (
-                                    <p className="px-4 py-8 text-center text-sm text-gray-400">
+                                    <p className="px-4 py-8 text-center text-sm text-on-secondary">
                                         No commands found
                                     </p>
                                 ) : (
