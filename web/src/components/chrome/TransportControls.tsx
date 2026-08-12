@@ -1,4 +1,5 @@
 import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon } from "@phosphor-icons/react"
+import { useDocumentTitle } from "@uidotdev/usehooks"
 import classNames from "classnames"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useRef, useState } from "react"
@@ -39,6 +40,12 @@ export default function TransportControls() {
             setIsExpanded(false)
         }, 500)
     }, [])
+
+    useDocumentTitle(
+        playingItem
+            ? `Magritte - ${playingItem.title} by ${playingItem.artist_name ?? "--"}`
+            : "Magritte",
+    )
 
     return (
         <div
