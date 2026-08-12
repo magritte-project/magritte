@@ -28,6 +28,7 @@ export function createMagritteRouter(context: MagritteRouterContext) {
         context,
         defaultPreload: "intent",
         scrollRestoration: true,
+        scrollToTopSelectors: [".router-scroll-to-top"],
         defaultStructuralSharing: true,
         defaultPreloadStaleTime: 0,
     })

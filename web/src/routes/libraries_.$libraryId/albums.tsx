@@ -30,6 +30,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
         } = useSuspenseInfiniteQuery(
             readLibraryAlbums(api, {
                 libraryId: Number(libraryId),
+                artistId,
                 query,
             }),
         )

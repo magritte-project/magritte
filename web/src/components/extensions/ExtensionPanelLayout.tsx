@@ -90,7 +90,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 className="h-screen!"
             >
                 <Panel
-                    className={classNames("relative overflow-auto pb-32", {
+                    className={classNames("router-scroll-to-top relative overflow-auto pb-32", {
                         "h-screen": !preferVerticalOrientation,
                     })}
                     minSize="16rem"
