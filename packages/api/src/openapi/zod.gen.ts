@@ -359,6 +359,29 @@ export const OperationResultSchema = z.object({
 })
 
 /**
+ * PlaybackEventKind
+ */
+export const PlaybackEventKindSchema = z.enum(["play", "pause", "stop", "fast_forward", "rewind"])
+
+/**
+ * IngestPlaybackEvent
+ */
+export const IngestPlaybackEventSchema = z.object({
+    kind: PlaybackEventKindSchema,
+    song_id: z.int(),
+    start_time: z.int(),
+    end_time: z.int(),
+})
+
+/**
+ * PlaybackEventIngestResult
+ */
+export const PlaybackEventIngestResultSchema = z.object({
+    accepted_count: z.int(),
+    rejected_events: z.array(IngestPlaybackEventSchema),
+})
+
+/**
  * SongUpdate
  */
 export const SongUpdateSchema = z.object({

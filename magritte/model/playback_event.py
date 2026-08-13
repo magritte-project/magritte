@@ -1,16 +1,7 @@
-from enum import Enum
-
 from sqlmodel import Field
 
 from magritte.model.base import LibraryModel
-
-
-class PlaybackEventKind(str, Enum):
-    PLAY = "play"
-    PAUSE = "pause"
-    STOP = "stop"
-    FAST_FORWARD = "fast_forward"
-    REWIND = "rewind"
+from magritte.schemas.playback_event import PlaybackEventKind
 
 
 class PlaybackEvent(LibraryModel, table=True):

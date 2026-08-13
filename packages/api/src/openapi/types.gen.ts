@@ -376,6 +376,34 @@ export type IngestArtwork = {
 }
 
 /**
+ * IngestPlaybackEvent
+ */
+export type IngestPlaybackEvent = {
+    /**
+     * The kind of event which happened
+     */
+    kind: PlaybackEventKind
+    /**
+     * Song Id
+     *
+     * ID of the song involved in this playback event
+     */
+    song_id: number
+    /**
+     * Start Time
+     *
+     * The current time in the song when the event started
+     */
+    start_time: number
+    /**
+     * End Time
+     *
+     * The current time in the song when the event ended
+     */
+    end_time: number
+}
+
+/**
  * IngestSong
  */
 export type IngestSong = {
@@ -807,6 +835,25 @@ export type OperationResult = {
      */
     row_count?: number | null
 }
+
+/**
+ * PlaybackEventIngestResult
+ */
+export type PlaybackEventIngestResult = {
+    /**
+     * Accepted Count
+     */
+    accepted_count: number
+    /**
+     * Rejected Events
+     */
+    rejected_events: Array<IngestPlaybackEvent>
+}
+
+/**
+ * PlaybackEventKind
+ */
+export type PlaybackEventKind = "play" | "pause" | "stop" | "fast_forward" | "rewind"
 
 /**
  * SongRead
@@ -2548,6 +2595,36 @@ export type ReadLibrarySongsLibrariesLibraryIdSongsGetResponses = {
 
 export type ReadLibrarySongsLibrariesLibraryIdSongsGetResponse =
     ReadLibrarySongsLibrariesLibraryIdSongsGetResponses[keyof ReadLibrarySongsLibrariesLibraryIdSongsGetResponses]
+
+export type IngestPlaybackEventsPlaybackEventsIngestPostData = {
+    /**
+     * Ingestable Events
+     */
+    body: Array<IngestPlaybackEvent>
+    path?: never
+    query?: never
+    url: "/playback-events/ingest"
+}
+
+export type IngestPlaybackEventsPlaybackEventsIngestPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type IngestPlaybackEventsPlaybackEventsIngestPostError =
+    IngestPlaybackEventsPlaybackEventsIngestPostErrors[keyof IngestPlaybackEventsPlaybackEventsIngestPostErrors]
+
+export type IngestPlaybackEventsPlaybackEventsIngestPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: PlaybackEventIngestResult
+}
+
+export type IngestPlaybackEventsPlaybackEventsIngestPostResponse =
+    IngestPlaybackEventsPlaybackEventsIngestPostResponses[keyof IngestPlaybackEventsPlaybackEventsIngestPostResponses]
 
 export type CreateSourceSourcesCreatePostData = {
     body: SourceCreate

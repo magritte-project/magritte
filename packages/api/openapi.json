@@ -1543,6 +1543,46 @@
                 }
             }
         },
+        "/playback-events/ingest": {
+            "post": {
+                "summary": "Ingest new playback events",
+                "operationId": "ingest_playback_events_playback_events_ingest_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "items": { "$ref": "#/components/schemas/IngestPlaybackEvent" },
+                                "type": "array",
+                                "maxItems": 50,
+                                "title": "Ingestable Events"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlaybackEventIngestResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": [] }]
+            }
+        },
         "/sources/create": {
             "post": {
                 "summary": "Create a source",
@@ -2446,6 +2486,32 @@
                 ],
                 "title": "IngestArtwork"
             },
+            "IngestPlaybackEvent": {
+                "properties": {
+                    "kind": {
+                        "$ref": "#/components/schemas/PlaybackEventKind",
+                        "description": "The kind of event which happened"
+                    },
+                    "song_id": {
+                        "type": "integer",
+                        "title": "Song Id",
+                        "description": "ID of the song involved in this playback event"
+                    },
+                    "start_time": {
+                        "type": "integer",
+                        "title": "Start Time",
+                        "description": "The current time in the song when the event started"
+                    },
+                    "end_time": {
+                        "type": "integer",
+                        "title": "End Time",
+                        "description": "The current time in the song when the event ended"
+                    }
+                },
+                "type": "object",
+                "required": ["kind", "song_id", "start_time", "end_time"],
+                "title": "IngestPlaybackEvent"
+            },
             "IngestSong": {
                 "properties": {
                     "artist_name": {
@@ -2800,6 +2866,24 @@
                 "type": "object",
                 "required": ["message"],
                 "title": "OperationResult"
+            },
+            "PlaybackEventIngestResult": {
+                "properties": {
+                    "accepted_count": { "type": "integer", "title": "Accepted Count" },
+                    "rejected_events": {
+                        "items": { "$ref": "#/components/schemas/IngestPlaybackEvent" },
+                        "type": "array",
+                        "title": "Rejected Events"
+                    }
+                },
+                "type": "object",
+                "required": ["accepted_count", "rejected_events"],
+                "title": "PlaybackEventIngestResult"
+            },
+            "PlaybackEventKind": {
+                "type": "string",
+                "enum": ["play", "pause", "stop", "fast_forward", "rewind"],
+                "title": "PlaybackEventKind"
             },
             "SongRead": {
                 "properties": {

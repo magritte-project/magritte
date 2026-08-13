@@ -13,6 +13,7 @@ import {
     deleteSourceSourcesSourceIdDelete,
     importExtensionExtensionsAvailableImportPost,
     ingestFilesLibrariesLibraryIdIngestFilesPost,
+    ingestPlaybackEventsPlaybackEventsIngestPost,
     ingestSongsLibrariesLibraryIdIngestSongsPost,
     installExtensionExtensionsAvailableExtensionIdInstallPost,
     markAllNotificationsReadUsersNotificationsMarkAllReadPost,
@@ -59,6 +60,7 @@ import {
     type BodySignInSignInPost,
     type BulkIngestSongs,
     type ExtensionImportAdmin,
+    type IngestPlaybackEvent,
     type InstanceStatusRead,
     type LibraryCreate,
     type LibraryHomePathRead,
@@ -75,6 +77,7 @@ import {
     type NotificationsRead,
     type NotificationUpdate,
     type OperationResult,
+    type PlaybackEventIngestResult,
     type ReadLibrarySongsLibrariesLibraryIdSongsGetData,
     type SongRead,
     type SongUpdate,
@@ -447,6 +450,15 @@ export class APIClient {
 
     async deleteSource(source_id: number): Promise<void> {
         await deleteSourceSourcesSourceIdDelete({ ...this.options, path: { source_id } })
+    }
+
+    // -- Playback Event Routes -- //
+
+    async ingestPlaybackEvents(body: IngestPlaybackEvent[]): Promise<PlaybackEventIngestResult> {
+        return await ingestPlaybackEventsPlaybackEventsIngestPost({
+            ...this.options,
+            body,
+        })
     }
 
     // -- Ingestion Routes -- //

@@ -53,6 +53,9 @@ import type {
     IngestFilesLibrariesLibraryIdIngestFilesPostData,
     IngestFilesLibrariesLibraryIdIngestFilesPostErrors,
     IngestFilesLibrariesLibraryIdIngestFilesPostResponses,
+    IngestPlaybackEventsPlaybackEventsIngestPostData,
+    IngestPlaybackEventsPlaybackEventsIngestPostErrors,
+    IngestPlaybackEventsPlaybackEventsIngestPostResponses,
     IngestSongsLibrariesLibraryIdIngestSongsPostData,
     IngestSongsLibrariesLibraryIdIngestSongsPostErrors,
     IngestSongsLibrariesLibraryIdIngestSongsPostResponses,
@@ -1112,6 +1115,33 @@ export const readLibrarySongsLibrariesLibraryIdSongsGet = <ThrowOnError extends 
         security: [{ scheme: "bearer", type: "http" }],
         url: "/libraries/{library_id}/songs",
         ...options,
+    })
+
+/**
+ * Ingest new playback events
+ */
+export const ingestPlaybackEventsPlaybackEventsIngestPost = <ThrowOnError extends boolean = false>(
+    options: Options<IngestPlaybackEventsPlaybackEventsIngestPostData, ThrowOnError>,
+): RequestResult<
+    IngestPlaybackEventsPlaybackEventsIngestPostResponses,
+    IngestPlaybackEventsPlaybackEventsIngestPostErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).post<
+        IngestPlaybackEventsPlaybackEventsIngestPostResponses,
+        IngestPlaybackEventsPlaybackEventsIngestPostErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/playback-events/ingest",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
     })
 
 /**
