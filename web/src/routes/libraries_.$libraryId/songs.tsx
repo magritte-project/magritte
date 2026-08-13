@@ -2,6 +2,7 @@ import type { SongRead } from "@magritte/api"
 import type { LibrarySongInput } from "@magritte/sdk"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import classNames from "classnames"
 import { useInView } from "motion/react"
 import { Fragment, useCallback, useEffect, useMemo, useRef } from "react"
 import { z } from "zod"
@@ -13,6 +14,7 @@ import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import usePlayer from "@/hooks/playerHook"
+import usePlayingItem from "@/hooks/playingItemHook"
 import useQueueContext from "@/hooks/queueContextHook"
 import useSelection from "@/hooks/selectionHook"
 import LibraryQueue from "@/playback/queue/library"
@@ -124,6 +126,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
 
         const queueShardContext = useQueueContext()
         const player = usePlayer()
+        const playingItem = usePlayingItem()
 
         const { selection, isSelected, toggle } = useSelection()
         const commandInputs = useMemo(() => {
@@ -175,7 +178,10 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                     {page.items.map((song) => (
                                         <tr
                                             key={`songs.pages[${index}.songs[${song.id}]`}
-                                            className="cursor-pointer bg-secondary odd:bg-inherit hover:bg-key-subtle h-9"
+                                            className={classNames(
+                                                "cursor-pointer bg-secondary odd:bg-inherit hover:bg-key-subtle h-9",
+                                                { "font-medium": playingItem?.id === song.id },
+                                            )}
                                             draggable={true}
                                             onDragStart={(e) => handleSongDrag(e, song)}
                                             onClick={() =>
@@ -205,6 +211,11 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                                         checked={isSelected(song.id)}
                                                         onChange={() => toggle(song.id)}
                                                         onClick={(e) => e.stopPropagation()}
+                                                        aria-label={
+                                                            isSelected(song.id)
+                                                                ? "Deselect Song"
+                                                                : "Select Song"
+                                                        }
                                                     />
                                                 </div>
                                             </td>
