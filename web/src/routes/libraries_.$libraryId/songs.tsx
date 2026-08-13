@@ -161,14 +161,14 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                     </AppForm>
                     <table className="w-full">
                         <thead>
-                            <tr className="text-left font-semibold text-sm">
+                            <tr className="text-left font-semibold text-sm border-b border-separator">
                                 <th className="w-px">
                                     <SongSortButton order={sortBy} setOrder={handleChangeSortBy} />
                                 </th>
-                                <th className="p-2">Title</th>
-                                <th className="p-2">Time</th>
-                                <th className="p-2">Artist</th>
-                                <th className="p-2">Album</th>
+                                <th className="p-2 border-r border-separator">Title</th>
+                                <th className="p-2 border-r border-separator">Time</th>
+                                <th className="p-2 border-r border-separator">Artist</th>
+                                <th className="p-2 border-r border-separator">Album</th>
                                 <th className="p-2">Genre</th>
                             </tr>
                         </thead>
@@ -219,16 +219,22 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                                     />
                                                 </div>
                                             </td>
-                                            <td className="px-2 py-1">{song.title}</td>
-                                            <td className="w-px px-2 py-1">
+                                            <td className="px-2 py-1 border-r border-separator">
+                                                {song.title}
+                                            </td>
+                                            <td className="w-px px-2 py-1 border-r border-separator">
                                                 <span className="truncate">
                                                     {formatDuration(
                                                         song.end_time - (song.start_time ?? 0),
                                                     )}
                                                 </span>
                                             </td>
-                                            <td className="px-2 py-1">{song.album_title}</td>
-                                            <td className="px-2 py-1">{song.artist_name}</td>
+                                            <td className="px-2 py-1 border-r border-separator">
+                                                {song.album_title}
+                                            </td>
+                                            <td className="px-2 py-1 border-r border-separator">
+                                                {song.artist_name}
+                                            </td>
                                             <td className="px-2 py-1">{song.genre}</td>
                                         </tr>
                                     ))}
