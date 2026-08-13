@@ -14,6 +14,7 @@ async def get_db_engine():
     if _engine is None:
         _engine = create_async_engine(config.db)
         await create_model_tables_if_needed(_engine)
+
     return _engine
 
 

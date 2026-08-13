@@ -108,13 +108,11 @@ just server::db-create-migration "extensions_table"
 
 This will create a new migration file in `server/migrations/` with the given name.
 
-To apply the migration to the database, use the `server::db-migrate` recipe:
+The next time you run Magritte, it should automatically apply your migration during start up. To manually apply the migration to the database, use the `server::db-migrate` recipe:
 
 ```sh
 just server::db-migrate
 ```
-
-__Important:__ Migrations are currently not distributed with the package. This is [an open issue](https://github.com/decarbonization/magritte/issues/5).
 
 If you need to clear the database and start fresh, you can delete it from the file system and restart the server. Assuming you haven't set a custom `DATA_HOME` environment variable, the database file will be located at `~/.magritte/db.sqlite3`. You may also wish to delete the artwork cache directory at `~/.magritte/artwork/`, however this is not generally required.
 
