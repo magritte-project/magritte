@@ -109,7 +109,7 @@ export default function TransportControls() {
                                 >
                                     <ArtworkImage
                                         className={classNames("aspect-square", {
-                                            "w-48": isExpanded,
+                                            "w-20": isExpanded,
                                             "w-16": !isExpanded,
                                         })}
                                         artworks={playingItem?.artworks}
