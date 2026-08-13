@@ -12,6 +12,7 @@ import Modal from "@/components/reusable/Modal"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 import CommandsProvider from "@/contexts/providers/CommandsProvider"
+import useHotKey from "@/hooks/hotKeyHook"
 
 export const Route = createFileRoute("/libraries_/$libraryId")({
     validateSearch: z.object({
@@ -40,6 +41,19 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
             ],
             [params.libraryId, presentUpload],
         )
+
+        useHotKey({ key: "1" }, () => {
+            navigate({ to: "/libraries/$libraryId/artists", params })
+            return true
+        })
+        useHotKey({ key: "2" }, () => {
+            navigate({ to: "/libraries/$libraryId/albums", params })
+            return true
+        })
+        useHotKey({ key: "3" }, () => {
+            navigate({ to: "/libraries/$libraryId/songs", params })
+            return true
+        })
 
         return (
             <CommandInputProvider

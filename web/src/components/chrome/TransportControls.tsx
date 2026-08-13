@@ -9,6 +9,7 @@ import ArtworkImage from "@/components/reusable/ArtworkImage"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import DPad from "@/components/reusable/DPad"
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
+import useHotKey from "@/hooks/hotKeyHook"
 import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
@@ -43,9 +44,26 @@ export default function TransportControls() {
 
     useDocumentTitle(
         playingItem
-            ? `Magritte - ${playingItem.title} by ${playingItem.artist_name ?? "--"}`
+            ? `Magritte: ${playingItem.title} by ${playingItem.artist_name ?? "--"}`
             : "Magritte",
     )
+
+    useHotKey({ key: "ArrowLeft" }, () => {
+        player.skipPrevious()
+        return true
+    })
+    useHotKey({ key: "ArrowRight" }, () => {
+        player.skipNext()
+        return true
+    })
+    useHotKey({ key: "ArrowUp" }, () => {
+        player.volume += 0.05
+        return true
+    })
+    useHotKey({ key: "ArrowDown" }, () => {
+        player.volume -= 0.05
+        return true
+    })
 
     return (
         <div

@@ -8,6 +8,7 @@ import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import UserButton from "@/components/UserButton"
 import VolumeButton from "@/components/VolumeButton"
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
+import useHotKeys from "@/hooks/hotKeysHook"
 
 export interface PrimaryHeaderProps {
     readonly children?: ReactNode
@@ -16,7 +17,8 @@ export interface PrimaryHeaderProps {
 export default function PrimaryHeader({ children }: PrimaryHeaderProps) {
     const { history } = useRouter()
     const canGoBack = useCanGoBack()
-    const { setIsOpen: setCommandPaletteIsOpen, modifierKey } = useAppCommandPaletteContext()
+    const { modifierKey } = useHotKeys()
+    const { setIsOpen: setCommandPaletteIsOpen } = useAppCommandPaletteContext()
     const handleToggleCommandPalette = useCallback(() => {
         setCommandPaletteIsOpen((oldValue) => !oldValue)
     }, [setCommandPaletteIsOpen])

@@ -3,6 +3,7 @@ import { createRootRouteWithContext } from "@tanstack/react-router"
 
 import AppCommandPalette from "@/components/structure/AppCommandPalette"
 import RootLayout from "@/components/structure/RootLayout"
+import HotKeysContextProvider from "@/contexts/providers/HotKeysContextProvider"
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
 import type { MagritteRouterContext } from "@/integrations/tanstack-router/context"
 import TanStackRouterDevtools from "@/integrations/tanstack-router/devtools"
@@ -11,8 +12,10 @@ export const Route = createRootRouteWithContext<MagritteRouterContext>()({
     component: function RootComponent() {
         return (
             <>
-                <RootLayout />
-                <AppCommandPalette />
+                <HotKeysContextProvider>
+                    <RootLayout />
+                    <AppCommandPalette />
+                </HotKeysContextProvider>
                 {import.meta.env.DEV && (
                     <TanStackDevtools
                         config={{
