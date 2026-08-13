@@ -1,4 +1,3 @@
-import type { SongRead } from "@magritte/api"
 import type { LibrarySongInput } from "@magritte/sdk"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -113,17 +112,6 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
             [navigate],
         )
 
-        const handleSongDrag = useCallback(
-            (e: React.DragEvent<HTMLTableRowElement>, song: SongRead) => {
-                e.dataTransfer.setData(
-                    "text/plain",
-                    `${song.title} - ${song.album_title} - ${song.artist_name}`,
-                )
-                e.dataTransfer.setData("x-magritte/song", JSON.stringify(song))
-            },
-            [],
-        )
-
         const queueShardContext = useQueueContext()
         const player = usePlayer()
         const playingItem = usePlayingItem()
@@ -183,7 +171,6 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                                 { "font-medium": playingItem?.id === song.id },
                                             )}
                                             draggable={true}
-                                            onDragStart={(e) => handleSongDrag(e, song)}
                                             onClick={() =>
                                                 player.replaceQueue({
                                                     newQueue: new LibraryQueue(
