@@ -159,7 +159,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                     <table className="w-full">
                         <thead>
                             <tr className="text-left font-semibold text-sm">
-                                <th>
+                                <th className="w-px">
                                     <SongSortButton order={sortBy} setOrder={handleChangeSortBy} />
                                 </th>
                                 <th className="p-2">Title</th>
@@ -197,20 +197,24 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                             }
                                             onKeyDown={() => {}}
                                         >
-                                            <td className="px-2 py-1">
-                                                <input
-                                                    type="checkbox"
-                                                    name={`songs[${song.id}]`}
-                                                    checked={isSelected(song.id)}
-                                                    onChange={() => toggle(song.id)}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                />
+                                            <td className="w-px px-2 py-1">
+                                                <div className="flex items-center justify-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        name={`songs[${song.id}]`}
+                                                        checked={isSelected(song.id)}
+                                                        onChange={() => toggle(song.id)}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    />
+                                                </div>
                                             </td>
                                             <td className="px-2 py-1">{song.title}</td>
-                                            <td className="px-2 py-1">
-                                                {formatDuration(
-                                                    song.end_time - (song.start_time ?? 0),
-                                                )}
+                                            <td className="w-px px-2 py-1">
+                                                <span className="truncate">
+                                                    {formatDuration(
+                                                        song.end_time - (song.start_time ?? 0),
+                                                    )}
+                                                </span>
                                             </td>
                                             <td className="px-2 py-1">{song.album_title}</td>
                                             <td className="px-2 py-1">{song.artist_name}</td>
