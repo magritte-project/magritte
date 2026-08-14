@@ -97,5 +97,34 @@
                 "source.fixAll.oxc": true,
             },
         },
+        "Python": {
+            "language_servers": ["ty", "ruff", "!pyright", "!basedpyright"],
+            "format_on_save": "on",
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "ruff",
+                    },
+                },
+            ],
+            "code_actions_on_format": {
+                "source.organizeImports.ruff": true,
+                "source.fixAll.ruff": true,
+            },
+        },
+    },
+    "lsp": {
+        "ruff": {
+            "binary": {
+                "path": "./.venv/bin/ruff",
+                "arguments": ["server"],
+            },
+        },
+        "ty": {
+            "binary": {
+                "path": "./.venv/bin/ty",
+                "arguments": ["server"],
+            },
+        },
     },
 }
