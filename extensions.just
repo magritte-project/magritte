@@ -1,4 +1,5 @@
 dev subproject:
+    ./admin import-extension -m "./extensions/{{subproject}}/public/extension.magritte.json"
     pnpm --filter "./extensions/{{subproject}}" run dev
 
 test:
