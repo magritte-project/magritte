@@ -1,6 +1,6 @@
 from typing import Annotated
 
-import httpx
+import httpx2
 from fastapi import APIRouter, Depends, HTTPException, Query, Security
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
@@ -54,7 +54,7 @@ async def import_extension(
             detail="Extension already imported",
         )
 
-    async with httpx.AsyncClient() as client:
+    async with httpx2.AsyncClient() as client:
         response = await client.get(
             str(import_extension.manifest_url),
             headers={"Accept": "application/json"},
