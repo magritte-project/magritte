@@ -168,7 +168,12 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                             key={`songs.pages[${index}.songs[${song.id}]`}
                                             className={classNames(
                                                 "cursor-pointer bg-secondary odd:bg-inherit hover:bg-key-subtle h-9",
-                                                { "font-medium": playingItem?.id === song.id },
+                                                {
+                                                    "font-medium": playingItem?.id === song.id,
+                                                    "text-red-500": song.sources?.every(
+                                                        (source) => source.is_invalid,
+                                                    ),
+                                                },
                                             )}
                                             draggable={true}
                                             onClick={() =>
