@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 import pytest
 import pytest_asyncio
 from faker import Faker
@@ -66,6 +68,7 @@ class TestIngestPlaybackEvents:
             "/playback-events/ingest",
             json=[
                 {
+                    "recorded_at": datetime.now(UTC).isoformat(),
                     "kind": "play",
                     "song_id": throwaway_song,
                     "start_time": 0,
@@ -92,6 +95,7 @@ class TestIngestPlaybackEvents:
             "/playback-events/ingest",
             json=[
                 {
+                    "recorded_at": datetime.now(UTC).isoformat(),
                     "kind": "play",
                     "song_id": throwaway_song,
                     "start_time": 0,
@@ -121,6 +125,7 @@ class TestIngestPlaybackEvents:
             "/playback-events/ingest",
             json=[
                 {
+                    "recorded_at": datetime.now(UTC).isoformat(),
                     "kind": "play",
                     "song_id": 9999999,
                     "start_time": 0,
@@ -150,12 +155,13 @@ class TestIngestPlaybackEvents:
             "/playback-events/ingest",
             json=[
                 {
+                    "recorded_at": datetime.now(UTC).isoformat(),
                     "kind": "play",
                     "song_id": i,
                     "start_time": 0,
                     "end_time": 0,
                 }
-                for i in range(51)
+                for i in range(101)
             ],
             headers={"Authorization": f"Bearer {session.access_token}"},
         )

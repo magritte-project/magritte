@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import Annotated
 
@@ -13,6 +14,12 @@ class PlaybackEventKind(str, Enum):
 
 
 class IngestPlaybackEvent(BaseModel):
+    recorded_at: Annotated[
+        datetime,
+        Field(
+            description="When the event was recorded",
+        ),
+    ]
     kind: Annotated[
         PlaybackEventKind, Field(description="The kind of event which happened")
     ]
@@ -34,6 +41,12 @@ class PlaybackEventIngestResult(BaseModel):
 
 class PlaybackEventRead(BaseModel):
     id: Annotated[int, Field()]
+    recorded_at: Annotated[
+        datetime,
+        Field(
+            description="When the event was recorded",
+        ),
+    ]
     kind: Annotated[
         PlaybackEventKind, Field(description="The kind of event which happened")
     ]

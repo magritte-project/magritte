@@ -179,6 +179,10 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
 
     async stop(): Promise<void> {
         this._swapSrc("")
+        this._events.dispatch({
+            type: "playbackStateDidChange",
+            playbackState: "stopped",
+        })
         this._playingItem = null
         this._events.dispatch({ type: "playingItemChanged" })
     }

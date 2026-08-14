@@ -1,4 +1,4 @@
-import { GearIcon } from "@phosphor-icons/react"
+import { GearIcon, UserIcon } from "@phosphor-icons/react"
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
 import PrimaryHeader from "@/components/chrome/PrimaryHeader"
@@ -19,6 +19,12 @@ export const Route = createFileRoute("/user/me")({
             <div>
                 <PrimaryHeader>
                     <div className="flex items-center gap-0">
+                        <ThemedTabItemLink
+                            to="/user/me"
+                            icon={UserIcon}
+                            label="General"
+                            activeOptions={{ exact: true }}
+                        />
                         <ThemedTabItemLink
                             to="/user/me/extensions"
                             icon={GearIcon}

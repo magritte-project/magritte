@@ -1,3 +1,6 @@
+from datetime import datetime
+
+import sqlalchemy as sa
 from sqlmodel import Field
 
 from magritte.model.base import LibraryModel
@@ -7,6 +10,11 @@ from magritte.schemas.playback_event import PlaybackEventKind
 class PlaybackEvent(LibraryModel, table=True):
     __tablename__: str = "playback_events"
 
+    recorded_at: datetime = Field(
+        sa_type=sa.TIMESTAMP,
+        nullable=False,
+        description="When the event was recorded",
+    )
     kind: PlaybackEventKind = Field(
         description="The kind of event which happened",
     )

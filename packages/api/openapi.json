@@ -1553,8 +1553,9 @@
                             "schema": {
                                 "items": { "$ref": "#/components/schemas/IngestPlaybackEvent" },
                                 "type": "array",
-                                "maxItems": 50,
-                                "title": "Ingestable Events"
+                                "maxItems": 100,
+                                "title": "Ingestable Events",
+                                "description": "Playback events to ingest, max 100"
                             }
                         }
                     },
@@ -2488,6 +2489,12 @@
             },
             "IngestPlaybackEvent": {
                 "properties": {
+                    "recorded_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Recorded At",
+                        "description": "When the event was recorded"
+                    },
                     "kind": {
                         "$ref": "#/components/schemas/PlaybackEventKind",
                         "description": "The kind of event which happened"
@@ -2509,7 +2516,7 @@
                     }
                 },
                 "type": "object",
-                "required": ["kind", "song_id", "start_time", "end_time"],
+                "required": ["recorded_at", "kind", "song_id", "start_time", "end_time"],
                 "title": "IngestPlaybackEvent"
             },
             "IngestSong": {
@@ -3201,10 +3208,14 @@
                     "preferred_name": {
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Preferred Name"
+                    },
+                    "enable_playback_events": {
+                        "type": "boolean",
+                        "title": "Enable Playback Events"
                     }
                 },
                 "type": "object",
-                "required": ["id", "username", "preferred_name"],
+                "required": ["id", "username", "preferred_name", "enable_playback_events"],
                 "title": "UserProfileRead"
             },
             "UserProfileUpdate": {
@@ -3212,10 +3223,14 @@
                     "preferred_name": {
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Preferred Name"
+                    },
+                    "enable_playback_events": {
+                        "type": "boolean",
+                        "title": "Enable Playback Events"
                     }
                 },
                 "type": "object",
-                "required": ["preferred_name"],
+                "required": ["preferred_name", "enable_playback_events"],
                 "title": "UserProfileUpdate"
             },
             "UserProfilesRead": {

@@ -380,6 +380,12 @@ export type IngestArtwork = {
  */
 export type IngestPlaybackEvent = {
     /**
+     * Recorded At
+     *
+     * When the event was recorded
+     */
+    recorded_at: string
+    /**
      * The kind of event which happened
      */
     kind: PlaybackEventKind
@@ -1227,6 +1233,10 @@ export type UserProfileRead = {
      * Preferred Name
      */
     preferred_name: string | null
+    /**
+     * Enable Playback Events
+     */
+    enable_playback_events: boolean
 }
 
 /**
@@ -1237,6 +1247,10 @@ export type UserProfileUpdate = {
      * Preferred Name
      */
     preferred_name: string | null
+    /**
+     * Enable Playback Events
+     */
+    enable_playback_events: boolean
 }
 
 /**
@@ -2599,6 +2613,8 @@ export type ReadLibrarySongsLibrariesLibraryIdSongsGetResponse =
 export type IngestPlaybackEventsPlaybackEventsIngestPostData = {
     /**
      * Ingestable Events
+     *
+     * Playback events to ingest, max 100
      */
     body: Array<IngestPlaybackEvent>
     path?: never

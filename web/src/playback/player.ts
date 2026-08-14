@@ -289,8 +289,6 @@ export class Player {
     }
 
     async stop(): Promise<void> {
-        this._playingItem = null
-        this._playbackState = "stopped"
         this._playedItems.clear()
         await this._activeEngine?.stop()
     }

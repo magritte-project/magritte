@@ -21,6 +21,7 @@ class UserProfileRead(BaseModel):
     id: int
     username: str
     preferred_name: str | None
+    enable_playback_events: bool
 
 
 class UserProfilesRead(BaseModel):
@@ -32,6 +33,7 @@ class UserProfilesRead(BaseModel):
 
 class UserProfileUpdate(BaseModel):
     preferred_name: str | None
+    enable_playback_events: bool
 
 
 class UserEventPreflight(BaseModel):

@@ -367,6 +367,7 @@ export const PlaybackEventKindSchema = z.enum(["play", "pause", "stop", "fast_fo
  * IngestPlaybackEvent
  */
 export const IngestPlaybackEventSchema = z.object({
+    recorded_at: z.iso.datetime(),
     kind: PlaybackEventKindSchema,
     song_id: z.int(),
     start_time: z.int(),
@@ -512,6 +513,7 @@ export const UserProfileReadSchema = z.object({
     id: z.int(),
     username: z.string(),
     preferred_name: z.string().nullable(),
+    enable_playback_events: z.boolean(),
 })
 
 /**
@@ -519,6 +521,7 @@ export const UserProfileReadSchema = z.object({
  */
 export const UserProfileUpdateSchema = z.object({
     preferred_name: z.string().nullable(),
+    enable_playback_events: z.boolean(),
 })
 
 /**

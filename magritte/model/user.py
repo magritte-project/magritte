@@ -99,6 +99,10 @@ class User(LibraryModel, table=True):
     scope: str = Field(
         description="The user's enabled scopes",
     )
+    enable_playback_events: bool = Field(
+        default=True,
+        description="Whether the user has enabled playback events",
+    )
     libraries: list["Library"] = Relationship(
         back_populates="users",
         link_model=UserLibraryLink,

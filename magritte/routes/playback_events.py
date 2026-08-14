@@ -23,10 +23,22 @@ router = APIRouter(prefix="/playback-events")
     summary="Ingest new playback events",
 )
 async def ingest_playback_events(
-    ingestable_events: Annotated[list[IngestPlaybackEvent], Body(max_length=50)],
+    ingestable_events: Annotated[
+        list[IngestPlaybackEvent],
+        Body(
+            max_length=100,
+            description="Playback events to ingest, max 100",
+        ),
+    ],
     current_user: Annotated[User, Security(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
+    if not current_user.enable_playback_events:
+        return PlaybackEventIngestResult(
+            accepted_count=0,
+            rejected_events=ingestable_events,
+        )
+
     existant_song_ids = set(
         await session.scalars(
             select(col(Song.id)).where(
@@ -49,6 +61,7 @@ async def ingest_playback_events(
             rejected_events.append(ingestable_event)
         else:
             new_playback_event = PlaybackEvent(
+                recorded_at=ingestable_event.recorded_at,
                 kind=ingestable_event.kind,
                 user_id=current_user.id,
                 song_id=ingestable_event.song_id,

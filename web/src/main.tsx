@@ -16,6 +16,7 @@ import BuiltInPlaybackEngine from "@/playback/builtInEngine"
 import PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { LocalCache } from "@/playback/localFileCache"
 import { connectMediaSession } from "@/playback/mediaSession"
+import { PlaybackEventRecorder } from "@/playback/playbackEventRecorder"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
 
@@ -40,6 +41,8 @@ const playbackEngineRegistry = new PlaybackEngineRegistry({
     defaultEngine: new BuiltInPlaybackEngine(api, localCache),
 })
 const player = new Player(playbackEngineRegistry)
+const playbackEventRecorder = await PlaybackEventRecorder.open({ api })
+playbackEventRecorder.wireUpPlayer(player)
 
 // Set up extensions
 const extensionRuntime = new ExtensionRuntime({
