@@ -150,7 +150,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                                     </div>
                                 </ThemedHeader>
                                 <main className="flex-1">
-                                    <ExtensionComponent extensionId={selectedExtension.id} />
+                                    <ExtensionComponent manifest={selectedExtension} />
                                 </main>
                             </DismissContextProvider>
                         </Panel>

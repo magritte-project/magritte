@@ -1,14 +1,16 @@
-import { GearIcon } from "@phosphor-icons/react"
+import type { ExtensionManifest } from "@magritte/api"
 import { useEffect, useRef, useState } from "react"
 
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import { getErrorMessage } from "@/utilities/errors"
 
+import ExtensionIcon from "./ExtensionIcon"
+
 export interface ExtensionComponentProps {
-    readonly extensionId: string
+    readonly manifest: ExtensionManifest
 }
 
-export default function ExtensionComponent({ extensionId }: ExtensionComponentProps) {
+export default function ExtensionComponent({ manifest }: ExtensionComponentProps) {
     const extensionRuntime = useExtensionRuntime()
     const containerRef = useRef<HTMLDivElement | null>(null)
     const [error, setError] = useState<unknown | null>(null)
@@ -21,12 +23,12 @@ export default function ExtensionComponent({ extensionId }: ExtensionComponentPr
         const subscription = extensionRuntime.$events.subscribe((event) => {
             switch (event.type) {
                 case "extensionLoaded":
-                    if (event.extension.manifest.id === extensionId) {
+                    if (event.extension.manifest.id === manifest.id) {
                         setError(null)
                     }
                     break
                 case "extensionLoadFailed":
-                    if (event.manifest.id === extensionId) {
+                    if (event.manifest.id === manifest.id) {
                         setError(event.error)
                     }
                     break
@@ -36,20 +38,20 @@ export default function ExtensionComponent({ extensionId }: ExtensionComponentPr
         })
 
         const container = containerRef.current
-        extensionRuntime.attach(extensionId, container)
+        extensionRuntime.attach(manifest.id, container)
 
         return () => {
-            extensionRuntime.detach(extensionId, container)
+            extensionRuntime.detach(manifest.id, container)
             subscription.unsubscribe()
         }
-    }, [extensionRuntime, extensionId])
+    }, [extensionRuntime, manifest.id])
 
     return (
         <div
             ref={containerRef}
             className="h-full flex flex-col gap-between items-center justify-center"
         >
-            <GearIcon size="4rem" weight="light" className="text-placeholder" />
+            <ExtensionIcon iconUrl={manifest.icon_url} name={manifest.name} size="4rem" />
             {error !== null && (
                 <div className="px-outside text-center text-sm font-medium text-on-secondary">
                     {getErrorMessage(error)}
