@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,8 +19,8 @@ class Notifier:
         user_events: UserEvents,
         session: AsyncSession,
     ):
-        self._user_events = user_events
-        self._session = session
+        self._user_events: UserEvents = user_events
+        self._session: AsyncSession = session
 
     async def insert(
         self,
@@ -43,7 +45,7 @@ class Notifier:
 
 
 def get_notifier(
-    user_events: UserEvents = Depends(get_user_events),
-    session: AsyncSession = Depends(get_db_session),
+    user_events: Annotated[UserEvents, Depends(get_user_events)],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     return Notifier(user_events, session)

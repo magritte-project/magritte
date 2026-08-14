@@ -8,6 +8,7 @@ from fastapi import WebSocket
 class UserEventType(str, Enum):
     NOTIFICATIONS_CHANGED = "notifications_changed"
     LIBRARIES_CHANGED = "libraries_changed"
+    EXTENSIONS_CHANGED = "extensions_changed"
 
 
 @dataclass(frozen=True)
@@ -18,7 +19,9 @@ class UserEvent:
 
 class UserEvents:
     def __init__(self):
-        self._websockets_by_user = dict[int, list[WebSocket]]()
+        self._websockets_by_user: dict[int, list[WebSocket]] = dict[
+            int, list[WebSocket]
+        ]()
 
     async def connect(self, user_id: int, websocket: WebSocket):
         await websocket.accept()

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Iterable, Self, Sequence
+from typing import Any, Iterable, Self, Sequence
 
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
@@ -73,8 +73,8 @@ class LibraryModel(SQLModel, AsyncAttrs):
     @classmethod
     async def exists(
         cls,
-        where: list[sa.ColumnExpressionArgument],
-        joins: list[tuple[type["SQLModel"], sa.ColumnExpressionArgument]],
+        where: list[sa.ColumnExpressionArgument[bool]],
+        joins: list[tuple[type["SQLModel"], sa.ColumnExpressionArgument[bool]]],
         session: AsyncSession,
     ):
         """
@@ -133,9 +133,9 @@ class LibraryModel(SQLModel, AsyncAttrs):
     @classmethod
     async def read_many_with_total(
         cls,
-        where: list[sa.ColumnExpressionArgument],
-        joins: list[tuple[type[SQLModel], sa.ColumnExpressionArgument]],
-        order_by: list[sa.ColumnExpressionArgument],
+        where: list[sa.ColumnExpressionArgument[bool]],
+        joins: list[tuple[type[SQLModel], sa.ColumnExpressionArgument[bool]]],
+        order_by: list[sa.ColumnExpressionArgument[Any]],
         offset: int,
         limit: int,
         session: AsyncSession,
@@ -173,7 +173,7 @@ class LibraryModel(SQLModel, AsyncAttrs):
 
     async def try_insert_unique(
         self,
-        unique_by: sa.ColumnExpressionArgument,
+        unique_by: sa.ColumnExpressionArgument[bool],
         session: AsyncSession,
     ) -> tuple[Self, bool]:
         """

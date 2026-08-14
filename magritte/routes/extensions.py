@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Security
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
 from starlette import status
+from starlette.background import BackgroundTasks
 
 from magritte.auth import get_current_user
 from magritte.db import get_db_session
@@ -18,6 +19,12 @@ from magritte.schemas.extension import (
     ExtensionRead,
 )
 from magritte.schemas.library import LibraryMediaRead
+from magritte.utilities.user_events import (
+    UserEvent,
+    UserEvents,
+    UserEventType,
+    get_user_events,
+)
 
 router = APIRouter(prefix="/extensions")
 
@@ -55,41 +62,11 @@ async def import_extension(
         )
 
     async with httpx2.AsyncClient() as client:
-        response = await client.get(
-            str(import_extension.manifest_url),
-            headers={"Accept": "application/json"},
-            follow_redirects=True,
+        manifest = await ExtensionManifest.fetch_from(
+            client, import_extension.manifest_url
         )
 
-    if response.status_code != status.HTTP_200_OK:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Manifest could not be fetched",
-        )
-
-    manifest = ExtensionManifest.model_validate_json(response.text)
-
-    if await Extension.exists(
-        where=[col(Extension.manifest_id) == manifest.id],
-        joins=[],
-        session=session,
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Extension already imported",
-        )
-
-    new_extension = Extension(
-        manifest_id=manifest.id,
-        manifest_url=str(import_extension.manifest_url),
-        manifest_name=manifest.name,
-        manifest=manifest.model_dump(
-            mode="json",
-            by_alias=True,
-        ),
-    )
-    session.add(new_extension)
-    await session.flush()
+    await Extension.import_from(import_extension.manifest_url, manifest, session)
 
     return OperationResult(
         message="Extension imported successfully",
@@ -104,15 +81,24 @@ async def import_extension(
 )
 async def delete_extension(
     extension_id: int,
+    background_tasks: BackgroundTasks,
     current_user: Annotated[
         User, Security(get_current_user, scopes=[OAuth2Scope.ADMIN])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    user_events: Annotated[UserEvents, Depends(get_user_events)],
 ):
     extension = await Extension.get_one_or_none(extension_id, session)
     if not extension:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Extension not found"
+        )
+
+    if affected_user_ids := {user.id for user in await extension.awaitable_attrs.users}:
+        background_tasks.add_task(
+            user_events.notify,
+            affected_user_ids,
+            UserEvent(event_type=UserEventType.EXTENSIONS_CHANGED, ids=[extension_id]),
         )
 
     await session.delete(extension)

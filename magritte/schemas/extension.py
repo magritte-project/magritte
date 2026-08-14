@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import Annotated
 
+from fastapi import HTTPException, status
+from httpx2 import AsyncClient
 from pydantic import BaseModel, Field, HttpUrl
 
 
@@ -76,6 +78,22 @@ class ExtensionManifest(BaseModel):
             description="An optional array of commands supported by the extension",
         ),
     ] = None
+
+    @classmethod
+    async def fetch_from(cls, client: AsyncClient, manifest_url: HttpUrl):
+        response = await client.get(
+            str(manifest_url),
+            headers={"Accept": "application/json"},
+            follow_redirects=True,
+        )
+
+        if response.status_code != status.HTTP_200_OK:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Manifest could not be fetched",
+            )
+
+        return cls.model_validate_json(response.text)
 
 
 class ExtensionImportAdmin(BaseModel):

@@ -70,6 +70,7 @@ export const Route = createFileRoute("/admin/extensions")({
             if (!confirmed) {
                 return
             }
+            dismissPresentedExtension()
             try {
                 await deleteMutation.mutateAsync(presentedExtensionId)
             } catch (error) {
@@ -78,7 +79,13 @@ export const Route = createFileRoute("/admin/extensions")({
                     type: "error",
                 })
             }
-        }, [presentedExtensionId, presentConfirmDelete, deleteMutation, showToast])
+        }, [
+            presentedExtensionId,
+            presentConfirmDelete,
+            dismissPresentedExtension,
+            deleteMutation,
+            showToast,
+        ])
 
         return (
             <div className="flex flex-col gap-3">

@@ -7,7 +7,7 @@ type UserEventsState =
     | { type: "connected"; websocket: WebSocket }
 
 export type UserEvent = {
-    event_type: "notifications_changed" | "libraries_changed"
+    event_type: "notifications_changed" | "libraries_changed" | "extensions_changed"
     ids: readonly number[]
 }
 

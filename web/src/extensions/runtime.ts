@@ -104,6 +104,11 @@ export class ExtensionRuntime {
         this._extensions = new Map()
         ;[this._events, this.$events] = createEvent()
 
+        this._api.userEventsManager.subscribe((event) => {
+            if (event.event_type === "extensions_changed") {
+                this.sync()
+            }
+        })
         this._api.userSessionManager.addEventListener("usersessionchanged", () => this.sync())
     }
 
