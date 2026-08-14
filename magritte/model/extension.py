@@ -1,7 +1,7 @@
 from typing import Any
 
 from fastapi import HTTPException, status
-from pydantic import HttpUrl
+from pydantic import AnyUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import JSON, Field, Relationship, col
 
@@ -42,7 +42,7 @@ class Extension(LibraryModel, table=True):
     @classmethod
     async def import_from(
         cls,
-        manifest_url: HttpUrl,
+        manifest_url: AnyUrl,
         manifest: ExtensionManifest,
         session: AsyncSession,
     ):
