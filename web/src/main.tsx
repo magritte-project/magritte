@@ -8,6 +8,7 @@ import { CommandInputs } from "@/commands/inputs/base"
 import { CommandRegistry } from "@/commands/registry"
 import { libraryCommands } from "@/commands/suites/library"
 import { playerCommands, wirePlayerCommandInputs } from "@/commands/suites/player"
+import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider"
 import { ExtensionRuntime } from "@/extensions/runtime"
 import { createMagritteRouter } from "@/integrations/tanstack-router/context"
@@ -22,75 +23,85 @@ import reportWebVitals from "@/reportWebVitals"
 
 import "@/styles.css"
 
-// Set up API client
-const api = createAPI({
-    baseUrl: import.meta.env.VITE_API_URL,
-})
-const queryClient = new QueryClient()
+try {
+    // Set up API client
+    const api = createAPI({
+        baseUrl: import.meta.env.VITE_API_URL,
+    })
+    const queryClient = new QueryClient()
 
-// Set up commands
-const commandInputs = new CommandInputs()
-const commandRegistry = new CommandRegistry()
+    // Set up commands
+    const commandInputs = new CommandInputs()
+    const commandRegistry = new CommandRegistry()
 
-// Set up user events
-const notificationCenter = new NotificationCenter(queryClient, api)
+    // Set up user events
+    const notificationCenter = new NotificationCenter(queryClient, api)
 
-// Set up playback
-const localCache = await LocalCache.open()
-const playbackEngineRegistry = new PlaybackEngineRegistry({
-    defaultEngine: new BuiltInPlaybackEngine(api, localCache),
-})
-const player = new Player(playbackEngineRegistry)
-const playbackEventRecorder = await PlaybackEventRecorder.open({ api })
-playbackEventRecorder.wireUpPlayer(player)
+    // Set up playback
+    const localCache = await LocalCache.open()
+    const playbackEngineRegistry = new PlaybackEngineRegistry({
+        defaultEngine: new BuiltInPlaybackEngine(api, localCache),
+    })
+    const player = new Player(playbackEngineRegistry)
+    const playbackEventRecorder = await PlaybackEventRecorder.open({ api })
+    playbackEventRecorder.wireUpPlayer(player)
 
-// Set up extensions
-const extensionRuntime = new ExtensionRuntime({
-    container: document.body,
-    commandInputs,
-    commandRegistry,
-    api,
-    notificationCenter,
-    player,
-})
-await extensionRuntime.sync()
-playbackEngineRegistry.wireUpExtensions(extensionRuntime)
+    // Set up extensions
+    const extensionRuntime = new ExtensionRuntime({
+        container: document.body,
+        commandInputs,
+        commandRegistry,
+        api,
+        notificationCenter,
+        player,
+    })
+    await extensionRuntime.sync()
+    playbackEngineRegistry.wireUpExtensions(extensionRuntime)
 
-// Create a new router instance
-const router = createMagritteRouter({
-    api,
-    commandInputs,
-    commandRegistry,
-    extensionRuntime,
-    localCache,
-    notificationCenter,
-    player,
-    queryClient,
-})
+    // Create a new router instance
+    const router = createMagritteRouter({
+        api,
+        commandInputs,
+        commandRegistry,
+        extensionRuntime,
+        localCache,
+        notificationCenter,
+        player,
+        queryClient,
+    })
 
-// Hook up commands
-commandRegistry.add(...libraryCommands(router))
-commandRegistry.add(...playerCommands(router))
-wirePlayerCommandInputs(player, commandInputs)
-commandRegistry.wireUpExtensions(extensionRuntime)
-connectMediaSession(api, player)
+    // Hook up commands
+    commandRegistry.add(...libraryCommands(router))
+    commandRegistry.add(...playerCommands(router))
+    wirePlayerCommandInputs(player, commandInputs)
+    commandRegistry.wireUpExtensions(extensionRuntime)
+    connectMediaSession(api, player)
 
-// Render the app
-const rootElement = document.getElementById("app")
-if (rootElement && !rootElement.innerHTML) {
-    const root = ReactDOM.createRoot(rootElement)
-    root.render(
-        <StrictMode>
-            <QueryClientProvider client={queryClient}>
-                <AppCommandPaletteContextProvider>
-                    <RouterProvider router={router} />
-                </AppCommandPaletteContextProvider>
-            </QueryClientProvider>
-        </StrictMode>,
-    )
+    // Render the app
+    const rootElement = document.getElementById("app")
+    if (rootElement && !rootElement.innerHTML) {
+        const root = ReactDOM.createRoot(rootElement)
+        root.render(
+            <StrictMode>
+                <QueryClientProvider client={queryClient}>
+                    <AppCommandPaletteContextProvider>
+                        <RouterProvider router={router} />
+                    </AppCommandPaletteContextProvider>
+                </QueryClientProvider>
+            </StrictMode>,
+        )
+    }
+
+    // If you want to start measuring performance in your app, pass a function
+    // to log results (for example: reportWebVitals(console.log))
+    // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+    reportWebVitals()
+} catch (error) {
+    const rootElement = document.getElementById("app")
+    if (rootElement && !rootElement.innerHTML) {
+        const root = ReactDOM.createRoot(rootElement)
+        root.render(
+            <ThemedContentUnavailable error={error} onRetry={() => window.location.reload()} />,
+        )
+    }
 }
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
