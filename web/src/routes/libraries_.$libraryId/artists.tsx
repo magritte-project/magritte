@@ -63,7 +63,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                                 <field.InputField
                                     className="w-full"
                                     type="search"
-                                    placeholder={`Find ${Intl.NumberFormat().format(firstPage.total)} Artists...`}
+                                    placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} artists...`}
                                 />
                             )}
                         </facetForm.AppField>
@@ -82,10 +82,8 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                         {pageOffsets.map((offset, index) => (
                             <ArtistPageFragment
                                 key={`artists.pages[${index}]`}
-                                libraryId={libraryId}
                                 isSelected={isSelected}
                                 toggle={toggle}
-                                query={query}
                                 offset={offset}
                                 limit={firstPage.limit}
                             />
@@ -98,22 +96,16 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
 })
 
 interface ArtistPageFragmentProps {
-    readonly libraryId: string
     readonly isSelected: (id: number) => boolean
     readonly toggle: (id: number) => void
-    readonly query?: string
     readonly offset: number
     readonly limit: number
 }
 
-function ArtistPageFragment({
-    libraryId,
-    isSelected,
-    toggle,
-    query,
-    offset,
-    limit,
-}: ArtistPageFragmentProps) {
+function ArtistPageFragment({ isSelected, toggle, offset, limit }: ArtistPageFragmentProps) {
+    const { libraryId } = Route.useParams()
+    const { query } = Route.useSearch()
+
     const moreRef = useRef<HTMLLIElement | null>(null)
     const isMoreInView = useInView(moreRef)
     const enabled = useDebounce(isMoreInView, 300)

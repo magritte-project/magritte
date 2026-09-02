@@ -1,4 +1,3 @@
-import type { ReadLibrarySongsSortBy } from "@magritte/api"
 import type { LibrarySongInput } from "@magritte/sdk"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -124,7 +123,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                 <field.InputField
                                     className="w-full"
                                     type="search"
-                                    placeholder={`Filter ${Intl.NumberFormat().format(firstPage.total)} Songs...`}
+                                    placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} songs...`}
                                 />
                             )}
                         </facetForm.AppField>
@@ -150,17 +149,12 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                 onKeyDown={() => {}}
                                 playing={playingItem?.id === song.id}
                                 selected={isSelected(song.id)}
-                                onToggle={() => toggle(song.id)}
+                                onToggleSelected={() => toggle(song.id)}
                             />
                         ))}
                         {pageOffsets.map((offset, index) => (
                             <SongPageFragment
                                 key={`songs.pages[${index}]`}
-                                libraryId={libraryId}
-                                albumId={albumId}
-                                artistId={artistId}
-                                sortBy={sortBy}
-                                query={query}
                                 isSelected={isSelected}
                                 toggle={toggle}
                                 offset={offset}
@@ -175,10 +169,6 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
 })
 
 interface SongPageFragmentProps {
-    readonly libraryId: string
-    readonly albumId?: number
-    readonly artistId?: number
-    readonly sortBy?: ReadLibrarySongsSortBy
     readonly query?: string
     readonly isSelected: (id: number) => boolean
     readonly toggle: (id: number) => void
@@ -186,17 +176,10 @@ interface SongPageFragmentProps {
     readonly limit: number
 }
 
-function SongPageFragment({
-    libraryId,
-    albumId,
-    artistId,
-    sortBy,
-    query,
-    isSelected,
-    toggle,
-    offset,
-    limit,
-}: SongPageFragmentProps) {
+function SongPageFragment({ isSelected, toggle, offset, limit }: SongPageFragmentProps) {
+    const { libraryId } = Route.useParams()
+    const { query, album_id: albumId, artist_id: artistId, sort_by: sortBy } = Route.useSearch()
+
     const moreRef = useRef<HTMLTableRowElement | null>(null)
     const isMoreInView = useInView(moreRef)
     const enabled = useDebounce(isMoreInView, 300)
@@ -240,7 +223,7 @@ function SongPageFragment({
                     onKeyDown={() => {}}
                     playing={playingItem?.id === song.id}
                     selected={isSelected(song.id)}
-                    onToggle={() => toggle(song.id)}
+                    onToggleSelected={() => toggle(song.id)}
                 />
             ))}
         </Fragment>

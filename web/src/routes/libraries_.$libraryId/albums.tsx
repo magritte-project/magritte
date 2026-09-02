@@ -66,7 +66,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                                 <field.InputField
                                     className="w-full"
                                     type="search"
-                                    placeholder={`Filter ${Intl.NumberFormat().format(firstPage.total)} Albums...`}
+                                    placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} albums...`}
                                 />
                             )}
                         </facetForm.AppField>
@@ -89,11 +89,8 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                         {pageOffsets.map((offset, index) => (
                             <AlbumPageFragment
                                 key={`albums.pages[${index}]`}
-                                libraryId={libraryId}
-                                artistId={artistId}
                                 isSelected={isSelected}
                                 toggle={toggle}
-                                query={query}
                                 offset={offset}
                                 limit={firstPage.limit}
                             />
@@ -106,24 +103,16 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
 })
 
 interface AlbumPageFragmentProps {
-    readonly libraryId: string
-    readonly artistId?: number
     readonly isSelected: (id: number) => boolean
     readonly toggle: (id: number) => void
-    readonly query?: string
     readonly offset: number
     readonly limit: number
 }
 
-function AlbumPageFragment({
-    libraryId,
-    artistId,
-    isSelected,
-    toggle,
-    query,
-    offset,
-    limit,
-}: AlbumPageFragmentProps) {
+function AlbumPageFragment({ isSelected, toggle, offset, limit }: AlbumPageFragmentProps) {
+    const { libraryId } = Route.useParams()
+    const { query, artist_id: artistId } = Route.useSearch()
+
     const moreRef = useRef<HTMLLIElement | null>(null)
     const isMoreInView = useInView(moreRef)
     const enabled = useDebounce(isMoreInView, 300)
