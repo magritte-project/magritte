@@ -1,8 +1,9 @@
 import type { LibraryArtistInput } from "@magritte/sdk"
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { useDebounce } from "@uidotdev/usehooks"
 import { useInView } from "motion/react"
-import { Fragment, useEffect, useMemo, useRef } from "react"
+import { Fragment, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibraryArtists } from "@/api/queries/libraries"
@@ -23,24 +24,18 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
         const { query } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
         const api = useAPI()
-        const {
-            data: { pages },
-            hasNextPage,
-            fetchNextPage,
-        } = useSuspenseInfiniteQuery(
+        const { data: firstPage } = useSuspenseQuery(
             readLibraryArtists(api, {
                 libraryId: Number(libraryId),
                 query,
             }),
         )
-        const total = pages.length > 0 ? pages[0].total : 0
-        const moreRef = useRef<HTMLLIElement | null>(null)
-        const isMoreInView = useInView(moreRef)
-        useEffect(() => {
-            if (isMoreInView && hasNextPage) {
-                fetchNextPage()
-            }
-        }, [isMoreInView, hasNextPage, fetchNextPage])
+        const pageOffsets = useMemo(() => {
+            const length = Math.ceil((firstPage.total - firstPage.limit) / firstPage.limit)
+            return Array.from({ length }, (_, i) =>
+                Math.min(firstPage.limit * (i + 1), firstPage.total),
+            )
+        }, [firstPage])
 
         const { selection, isSelected, toggle } = useSelection()
         const commandInputs = useMemo(() => {
@@ -68,30 +63,86 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                                 <field.InputField
                                     className="w-full"
                                     type="search"
-                                    placeholder={`Filter ${Intl.NumberFormat().format(total)} Artists...`}
+                                    placeholder={`Find ${Intl.NumberFormat().format(firstPage.total)} Artists...`}
                                 />
                             )}
                         </facetForm.AppField>
                     </AppForm>
 
-                    <LibraryArtistList style={{ minHeight: `calc(${total} * var(--spacing) * 9)` }}>
-                        {pages.map((page, index) => (
-                            <Fragment key={`artists.pages[${index}`}>
-                                {page.items.map((artist) => (
-                                    <LibraryArtistListItem
-                                        key={`artists.pages[${index}].artist[${artist.id}]`}
-                                        libraryId={libraryId}
-                                        artist={artist}
-                                        selected={isSelected(artist.id)}
-                                        onToggleSelected={() => toggle(artist.id)}
-                                    />
-                                ))}
-                            </Fragment>
+                    <LibraryArtistList>
+                        {firstPage.items.map((artist) => (
+                            <LibraryArtistListItem
+                                key={`artist[${artist.id}]`}
+                                libraryId={libraryId}
+                                artist={artist}
+                                selected={isSelected(artist.id)}
+                                onToggleSelected={() => toggle(artist.id)}
+                            />
                         ))}
-                        <li ref={moreRef} />
+                        {pageOffsets.map((offset, index) => (
+                            <ArtistPageFragment
+                                key={`artists.pages[${index}]`}
+                                libraryId={libraryId}
+                                isSelected={isSelected}
+                                toggle={toggle}
+                                query={query}
+                                offset={offset}
+                                limit={firstPage.limit}
+                            />
+                        ))}
                     </LibraryArtistList>
                 </div>
             </CommandInputProvider>
         )
     },
 })
+
+interface ArtistPageFragmentProps {
+    readonly libraryId: string
+    readonly isSelected: (id: number) => boolean
+    readonly toggle: (id: number) => void
+    readonly query?: string
+    readonly offset: number
+    readonly limit: number
+}
+
+function ArtistPageFragment({
+    libraryId,
+    isSelected,
+    toggle,
+    query,
+    offset,
+    limit,
+}: ArtistPageFragmentProps) {
+    const moreRef = useRef<HTMLLIElement | null>(null)
+    const isMoreInView = useInView(moreRef)
+    const enabled = useDebounce(isMoreInView, 300)
+
+    const api = useAPI()
+    const pageQuery = useQuery({
+        ...readLibraryArtists(api, {
+            libraryId: Number(libraryId),
+            query,
+            offset,
+        }),
+        enabled,
+    })
+
+    return pageQuery.isSuccess ? (
+        <Fragment>
+            {pageQuery.data.items.map((artist) => (
+                <LibraryArtistListItem
+                    key={`artist[${artist.id}]`}
+                    libraryId={libraryId}
+                    artist={artist}
+                    selected={isSelected(artist.id)}
+                    onToggleSelected={() => toggle(artist.id)}
+                />
+            ))}
+        </Fragment>
+    ) : (
+        !pageQuery.isError && (
+            <li ref={moreRef} style={{ minHeight: `calc(${limit} * var(--spacing) * 9)` }} />
+        )
+    )
+}
