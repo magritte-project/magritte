@@ -1,8 +1,9 @@
 import { LibraryAlbumInput } from "@magritte/sdk"
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { useDebounce } from "@uidotdev/usehooks"
 import { useInView } from "motion/react"
-import { Fragment, useEffect, useMemo, useRef } from "react"
+import { Fragment, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibraryAlbums } from "@/api/queries/libraries"
@@ -25,25 +26,19 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
         const { query, artist_id: artistId } = Route.useSearch()
         const navigate = useNavigate({ from: Route.fullPath })
         const api = useAPI()
-        const {
-            data: { pages },
-            hasNextPage,
-            fetchNextPage,
-        } = useSuspenseInfiniteQuery(
+        const { data: firstPage } = useSuspenseQuery(
             readLibraryAlbums(api, {
                 libraryId: Number(libraryId),
                 artistId,
                 query,
             }),
         )
-        const total = pages.length > 0 ? pages[0].total : 0
-        const moreRef = useRef<HTMLLIElement | null>(null)
-        const isMoreInView = useInView(moreRef)
-        useEffect(() => {
-            if (isMoreInView && hasNextPage) {
-                fetchNextPage()
-            }
-        }, [isMoreInView, hasNextPage, fetchNextPage])
+        const pageOffsets = useMemo(() => {
+            const length = Math.ceil((firstPage.total - firstPage.limit) / firstPage.limit)
+            return Array.from({ length }, (_, i) =>
+                Math.min(firstPage.limit * (i + 1), firstPage.total),
+            )
+        }, [firstPage])
 
         const { selection, isSelected, toggle } = useSelection()
         const commandInputs = useMemo(() => {
@@ -71,7 +66,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                                 <field.InputField
                                     className="w-full"
                                     type="search"
-                                    placeholder={`Filter ${Intl.NumberFormat().format(total)} Albums...`}
+                                    placeholder={`Filter ${Intl.NumberFormat().format(firstPage.total)} Albums...`}
                                 />
                             )}
                         </facetForm.AppField>
@@ -80,25 +75,86 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
                     {artistId !== undefined && (
                         <LibraryAlbumListAllSongsItem libraryId={libraryId} artistId={artistId} />
                     )}
-                    <LibraryAlbumList style={{ minHeight: `calc(${total} * var(--spacing) * 47)` }}>
-                        {pages.map((page, index) => (
-                            <Fragment key={`albums.pages[${index}`}>
-                                {page.items.map((album) => (
-                                    <LibraryAlbumListItem
-                                        key={`albums.pages[${index}].albums[${album.id}]`}
-                                        libraryId={libraryId}
-                                        artistId={artistId}
-                                        album={album}
-                                        selected={isSelected(album.id)}
-                                        onToggleSelected={() => toggle(album.id)}
-                                    />
-                                ))}
-                            </Fragment>
+                    <LibraryAlbumList>
+                        {firstPage.items.map((album) => (
+                            <LibraryAlbumListItem
+                                key={`album[${album.id}]`}
+                                libraryId={libraryId}
+                                artistId={artistId}
+                                album={album}
+                                selected={isSelected(album.id)}
+                                onToggleSelected={() => toggle(album.id)}
+                            />
                         ))}
-                        <li ref={moreRef} />
+                        {pageOffsets.map((offset, index) => (
+                            <AlbumPageFragment
+                                key={`albums.pages[${index}]`}
+                                libraryId={libraryId}
+                                artistId={artistId}
+                                isSelected={isSelected}
+                                toggle={toggle}
+                                query={query}
+                                offset={offset}
+                                limit={firstPage.limit}
+                            />
+                        ))}
                     </LibraryAlbumList>
                 </div>
             </CommandInputProvider>
         )
     },
 })
+
+interface AlbumPageFragmentProps {
+    readonly libraryId: string
+    readonly artistId?: number
+    readonly isSelected: (id: number) => boolean
+    readonly toggle: (id: number) => void
+    readonly query?: string
+    readonly offset: number
+    readonly limit: number
+}
+
+function AlbumPageFragment({
+    libraryId,
+    artistId,
+    isSelected,
+    toggle,
+    query,
+    offset,
+    limit,
+}: AlbumPageFragmentProps) {
+    const moreRef = useRef<HTMLLIElement | null>(null)
+    const isMoreInView = useInView(moreRef)
+    const enabled = useDebounce(isMoreInView, 300)
+
+    const api = useAPI()
+    const pageQuery = useQuery({
+        ...readLibraryAlbums(api, {
+            libraryId: Number(libraryId),
+            artistId,
+            query,
+            offset,
+        }),
+        enabled,
+    })
+
+    return pageQuery.isSuccess ? (
+        <Fragment>
+            {pageQuery.data.items.map((album) => (
+                <LibraryAlbumListItem
+                    key={`album[${album.id}]`}
+                    libraryId={libraryId}
+                    artistId={artistId}
+                    album={album}
+                    selected={isSelected(album.id)}
+                    onToggleSelected={() => toggle(album.id)}
+                />
+            ))}
+        </Fragment>
+    ) : (
+        !pageQuery.isError && (
+            <li ref={moreRef} style={{ minHeight: `calc(${limit} * var(--spacing) * 47)` }} />
+        )
+    )
+}
