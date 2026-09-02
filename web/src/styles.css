@@ -39,7 +39,7 @@
     --spacing-between: calc(var(--spacing) * 3);
 
     /* Global Defaults */
-    --default-font-family: "FiraGo", sans-serif;
+    --default-font-family: "Comfortaa", sans-serif;
     --default-mono-font-family: "Fira Mono", monospace;
 }
 
