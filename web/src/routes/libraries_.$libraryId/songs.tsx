@@ -1,8 +1,10 @@
+import type { ReadLibrarySongsSortBy } from "@magritte/api"
 import type { LibrarySongInput } from "@magritte/sdk"
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { useDebounce } from "@uidotdev/usehooks"
 import { useInView } from "motion/react"
-import { Fragment, useCallback, useEffect, useMemo, useRef } from "react"
+import { Fragment, useCallback, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibrarySongs } from "@/api/queries/libraries"
@@ -64,11 +66,7 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
         const { query, album_id: albumId, artist_id: artistId, sort_by: sortBy } = Route.useSearch()
         const navigate = Route.useNavigate()
         const api = useAPI()
-        const {
-            data: { pages },
-            hasNextPage,
-            fetchNextPage,
-        } = useSuspenseInfiniteQuery(
+        const { data: firstPage } = useSuspenseQuery(
             readLibrarySongs(api, {
                 libraryId: Number(libraryId),
                 query,
@@ -77,22 +75,12 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                 sortBy,
             }),
         )
-        const [total, remaining] = useMemo(() => {
-            if (pages.length > 0) {
-                const lastPage = pages[pages.length - 1]
-                const remaining = lastPage.total - lastPage.offset - lastPage.items.length
-                return [lastPage.total, remaining]
-            } else {
-                return [0, 0] as const
-            }
-        }, [pages])
-        const moreRef = useRef<HTMLTableRowElement | null>(null)
-        const isMoreInView = useInView(moreRef)
-        useEffect(() => {
-            if (isMoreInView && hasNextPage) {
-                fetchNextPage()
-            }
-        }, [isMoreInView, hasNextPage, fetchNextPage])
+        const pageOffsets = useMemo(() => {
+            const length = Math.ceil((firstPage.total - firstPage.limit) / firstPage.limit)
+            return Array.from({ length }, (_, i) =>
+                Math.min(firstPage.limit * (i + 1), firstPage.total),
+            )
+        }, [firstPage])
 
         const handleChangeSortBy = useCallback(
             (newValue: React.SetStateAction<typeof sortBy>) => {
@@ -136,55 +124,133 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                                 <field.InputField
                                     className="w-full"
                                     type="search"
-                                    placeholder={`Filter ${Intl.NumberFormat().format(total)} Songs...`}
+                                    placeholder={`Filter ${Intl.NumberFormat().format(firstPage.total)} Songs...`}
                                 />
                             )}
                         </facetForm.AppField>
                     </AppForm>
                     <LibrarySongTable sortBy={sortBy} onChangeSortBy={handleChangeSortBy}>
-                        {pages.map((page, index) => (
-                            <Fragment key={`songs.pages[${index}`}>
-                                {page.items.map((song) => (
-                                    <LibrarySongTableRow
-                                        key={`songs.pages[${index}.songs[${song.id}]`}
-                                        song={song}
-                                        onClick={() =>
-                                            player.replaceQueue({
-                                                newQueue: new LibraryQueue(
-                                                    queueShardContext,
-                                                    page,
-                                                    {
-                                                        libraryId: Number(libraryId),
-                                                        albumId,
-                                                        artistId,
-                                                        sortBy,
-                                                    },
-                                                ),
+                        {firstPage.items.map((song) => (
+                            <LibrarySongTableRow
+                                key={`songs[${song.id}]`}
+                                song={song}
+                                onClick={() =>
+                                    player.replaceQueue({
+                                        newQueue: new LibraryQueue(queueShardContext, firstPage, {
+                                            libraryId: Number(libraryId),
+                                            albumId,
+                                            artistId,
+                                            sortBy,
+                                        }),
 
-                                                startingItem: song,
-                                                playNow: true,
-                                            })
-                                        }
-                                        onKeyDown={() => {}}
-                                        playing={playingItem?.id === song.id}
-                                        selected={isSelected(song.id)}
-                                        onToggle={() => toggle(song.id)}
-                                    />
-                                ))}
-                            </Fragment>
+                                        startingItem: song,
+                                        playNow: true,
+                                    })
+                                }
+                                onKeyDown={() => {}}
+                                playing={playingItem?.id === song.id}
+                                selected={isSelected(song.id)}
+                                onToggle={() => toggle(song.id)}
+                            />
                         ))}
-                        <tr ref={moreRef}>
-                            <td>
-                                <div
-                                    style={{
-                                        minHeight: `calc(${remaining} * var(--spacing) * 9)`,
-                                    }}
-                                />
-                            </td>
-                        </tr>
+                        {pageOffsets.map((offset, index) => (
+                            <SongPageFragment
+                                key={`songs.pages[${index}]`}
+                                libraryId={libraryId}
+                                albumId={albumId}
+                                artistId={artistId}
+                                sortBy={sortBy}
+                                query={query}
+                                isSelected={isSelected}
+                                toggle={toggle}
+                                offset={offset}
+                                limit={firstPage.limit}
+                            />
+                        ))}
                     </LibrarySongTable>
                 </div>
             </CommandInputProvider>
         )
     },
 })
+
+interface SongPageFragmentProps {
+    readonly libraryId: string
+    readonly albumId?: number
+    readonly artistId?: number
+    readonly sortBy?: ReadLibrarySongsSortBy
+    readonly query?: string
+    readonly isSelected: (id: number) => boolean
+    readonly toggle: (id: number) => void
+    readonly offset: number
+    readonly limit: number
+}
+
+function SongPageFragment({
+    libraryId,
+    albumId,
+    artistId,
+    sortBy,
+    query,
+    isSelected,
+    toggle,
+    offset,
+    limit,
+}: SongPageFragmentProps) {
+    const moreRef = useRef<HTMLTableRowElement | null>(null)
+    const isMoreInView = useInView(moreRef)
+    const enabled = useDebounce(isMoreInView, 300)
+
+    const api = useAPI()
+    const pageQuery = useQuery({
+        ...readLibrarySongs(api, {
+            libraryId: Number(libraryId),
+            query,
+            albumId,
+            artistId,
+            sortBy,
+            offset,
+        }),
+        enabled,
+    })
+
+    const queueShardContext = useQueueContext()
+    const player = usePlayer()
+    const playingItem = usePlayingItem()
+
+    return pageQuery.isSuccess ? (
+        <Fragment>
+            {pageQuery.data.items.map((song) => (
+                <LibrarySongTableRow
+                    key={`songs[${song.id}]`}
+                    song={song}
+                    onClick={() =>
+                        player.replaceQueue({
+                            newQueue: new LibraryQueue(queueShardContext, pageQuery.data, {
+                                libraryId: Number(libraryId),
+                                albumId,
+                                artistId,
+                                sortBy,
+                            }),
+
+                            startingItem: song,
+                            playNow: true,
+                        })
+                    }
+                    onKeyDown={() => {}}
+                    playing={playingItem?.id === song.id}
+                    selected={isSelected(song.id)}
+                    onToggle={() => toggle(song.id)}
+                />
+            ))}
+        </Fragment>
+    ) : (
+        !pageQuery.isError && (
+            <tr ref={moreRef}>
+                <td>
+                    <div style={{ minHeight: `calc(${limit} * var(--spacing) * 9)` }} />
+                </td>
+            </tr>
+        )
+    )
+}

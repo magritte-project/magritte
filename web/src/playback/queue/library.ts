@@ -2,7 +2,7 @@ import type { API, LibraryMediaReadSongRead } from "@magritte/api"
 import type { PlayableItem } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 
-import { readLibrarySongsPage, type ReadLibrarySongsCriteria } from "@/api/queries/libraries"
+import { readLibrarySongs, type ReadLibrarySongsCriteria } from "@/api/queries/libraries"
 import type { Queue, QueueContext, QueueEvent, RandomItemContext } from "@/playback/queue/base"
 import { createEvent, type EventStream } from "@/utilities/events"
 
@@ -44,7 +44,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
             return existingPage
         } else {
             const newPage = await this._queryClient.ensureQueryData(
-                readLibrarySongsPage(this._api, {
+                readLibrarySongs(this._api, {
                     ...this._criteria,
                     offset,
                 }),

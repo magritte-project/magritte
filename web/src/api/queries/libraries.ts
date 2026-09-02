@@ -1,5 +1,5 @@
 import type { API, ReadLibrarySongsSortBy } from "@magritte/api"
-import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query"
+import { queryOptions } from "@tanstack/react-query"
 
 import {
     libraries,
@@ -107,40 +107,11 @@ export interface ReadLibrarySongsCriteria {
     readonly albumId?: number
     readonly artistId?: number
     readonly sortBy?: ReadLibrarySongsSortBy
-}
-
-export function readLibrarySongs(api: API, criteria: ReadLibrarySongsCriteria) {
-    return infiniteQueryOptions({
-        queryKey: librarySongs(
-            criteria.libraryId,
-            criteria.query,
-            criteria.albumId,
-            criteria.artistId,
-            criteria.sortBy,
-        ),
-        queryFn: ({ pageParam: offset }) =>
-            api.client.readLibrarySongs(
-                criteria.libraryId,
-                criteria.query,
-                criteria.albumId,
-                criteria.artistId,
-                criteria.sortBy,
-                offset,
-            ),
-        initialPageParam: 0,
-        getNextPageParam: (lastPage) => {
-            const nextOffset = lastPage.offset + lastPage.limit
-            return nextOffset < lastPage.total ? nextOffset : undefined
-        },
-    })
-}
-
-export interface ReadLibrarySongsPageCriteria extends ReadLibrarySongsCriteria {
     readonly offset?: number
     readonly limit?: number
 }
 
-export function readLibrarySongsPage(api: API, criteria: ReadLibrarySongsPageCriteria) {
+export function readLibrarySongs(api: API, criteria: ReadLibrarySongsCriteria) {
     return queryOptions({
         queryKey: librarySongs(
             criteria.libraryId,
