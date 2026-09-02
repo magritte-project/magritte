@@ -42,7 +42,7 @@ export class FileAccess {
         this._expiresAt = null
         this._pending = null
 
-        this.token({ refresh: true })
+        this.token({ refresh: true }).catch(() => undefined)
     }
 
     /**
@@ -66,14 +66,20 @@ export class FileAccess {
         const token = _checkToken(this._token, this._expiresAt)
         if (token === null || options.refresh) {
             this._pending = (async () => {
-                const preflight = await this.client.readFilesPreflight()
-                this._token = preflight.token
-                this._expiresAt = preflight.expires_at
-                return preflight.token
+                try {
+                    const preflight = await this.client.readFilesPreflight()
+                    this._token = preflight.token
+                    this._expiresAt = preflight.expires_at
+                    return preflight.token
+                } catch (error) {
+                    this._token = null
+                    this._expiresAt = null
+                    console.error("Failed to fetch file access token:", error)
+                    throw error
+                } finally {
+                    this._pending = null
+                }
             })()
-            this._pending.finally(() => {
-                this._pending = null
-            })
             return await this._pending
         } else {
             return token
