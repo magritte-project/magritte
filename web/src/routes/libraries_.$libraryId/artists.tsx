@@ -1,11 +1,13 @@
 import type { LibraryArtistInput } from "@magritte/sdk"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useInView } from "motion/react"
 import { Fragment, useEffect, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibraryArtists } from "@/api/queries/libraries"
+import LibraryArtistList from "@/components/library/LibraryArtistList"
+import LibraryArtistListItem from "@/components/library/LibraryArtistListItem"
 import AppForm from "@/components/reusable/AppForm"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 import useAPI from "@/hooks/apiHook"
@@ -72,37 +74,22 @@ export const Route = createFileRoute("/libraries_/$libraryId/artists")({
                         </facetForm.AppField>
                     </AppForm>
 
-                    <ol
-                        className="flex flex-col"
-                        style={{ minHeight: `calc(${total} * var(--spacing) * 9)` }}
-                    >
+                    <LibraryArtistList style={{ minHeight: `calc(${total} * var(--spacing) * 9)` }}>
                         {pages.map((page, index) => (
                             <Fragment key={`artists.pages[${index}`}>
                                 {page.items.map((artist) => (
-                                    <li
+                                    <LibraryArtistListItem
                                         key={`artists.pages[${index}].artist[${artist.id}]`}
-                                        className=" bg-secondary odd:bg-inherit hover:bg-key-subtle flex items-center gap-2 px-2 py-1 h-9"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            name={`artists[${artist.id}]`}
-                                            checked={isSelected(artist.id)}
-                                            onChange={() => toggle(artist.id)}
-                                        />
-                                        <Link
-                                            to="/libraries/$libraryId/albums"
-                                            params={{ libraryId }}
-                                            search={{ artist_id: artist.id }}
-                                            className="flex-1 cursor-pointer"
-                                        >
-                                            {artist.name}
-                                        </Link>
-                                    </li>
+                                        libraryId={libraryId}
+                                        artist={artist}
+                                        selected={isSelected(artist.id)}
+                                        onToggleSelected={() => toggle(artist.id)}
+                                    />
                                 ))}
                             </Fragment>
                         ))}
                         <li ref={moreRef} />
-                    </ol>
+                    </LibraryArtistList>
                 </div>
             </CommandInputProvider>
         )

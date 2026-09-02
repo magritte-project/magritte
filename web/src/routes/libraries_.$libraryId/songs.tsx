@@ -1,14 +1,14 @@
 import type { LibrarySongInput } from "@magritte/sdk"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import classNames from "classnames"
 import { useInView } from "motion/react"
 import { Fragment, useCallback, useEffect, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibrarySongs } from "@/api/queries/libraries"
+import LibrarySongTable from "@/components/library/LibrarySongTable"
+import LibrarySongTableRow from "@/components/library/LibrarySongTableRow"
 import AppForm from "@/components/reusable/AppForm"
-import SongSortButton from "@/components/SongSortButton"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
@@ -18,12 +18,6 @@ import useQueueContext from "@/hooks/queueContextHook"
 import useSelection from "@/hooks/selectionHook"
 import LibraryQueue from "@/playback/queue/library"
 import { resolveNewValue } from "@/utilities/react"
-
-function formatDuration(seconds: number) {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = Math.round(seconds % 60)
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-}
 
 export const Route = createFileRoute("/libraries_/$libraryId/songs")({
     validateSearch: z.object({
@@ -147,102 +141,48 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                             )}
                         </facetForm.AppField>
                     </AppForm>
-                    <table className="w-full">
-                        <thead>
-                            <tr className="text-left font-semibold text-sm border-b border-separator">
-                                <th className="w-px">
-                                    <SongSortButton order={sortBy} setOrder={handleChangeSortBy} />
-                                </th>
-                                <th className="p-2 border-r border-separator">Title</th>
-                                <th className="p-2 border-r border-separator">Time</th>
-                                <th className="p-2 border-r border-separator">Artist</th>
-                                <th className="p-2 border-r border-separator">Album</th>
-                                <th className="p-2">Genre</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {pages.map((page, index) => (
-                                <Fragment key={`songs.pages[${index}`}>
-                                    {page.items.map((song) => (
-                                        <tr
-                                            key={`songs.pages[${index}.songs[${song.id}]`}
-                                            className={classNames(
-                                                "cursor-pointer bg-secondary odd:bg-inherit hover:bg-key-subtle h-9",
-                                                {
-                                                    "font-medium": playingItem?.id === song.id,
-                                                    "text-red-500": song.sources?.every(
-                                                        (source) => source.is_invalid,
-                                                    ),
-                                                },
-                                            )}
-                                            draggable={true}
-                                            onClick={() =>
-                                                player.replaceQueue({
-                                                    newQueue: new LibraryQueue(
-                                                        queueShardContext,
-                                                        page,
-                                                        {
-                                                            libraryId: Number(libraryId),
-                                                            albumId,
-                                                            artistId,
-                                                            sortBy,
-                                                        },
-                                                    ),
+                    <LibrarySongTable sortBy={sortBy} onChangeSortBy={handleChangeSortBy}>
+                        {pages.map((page, index) => (
+                            <Fragment key={`songs.pages[${index}`}>
+                                {page.items.map((song) => (
+                                    <LibrarySongTableRow
+                                        key={`songs.pages[${index}.songs[${song.id}]`}
+                                        song={song}
+                                        onClick={() =>
+                                            player.replaceQueue({
+                                                newQueue: new LibraryQueue(
+                                                    queueShardContext,
+                                                    page,
+                                                    {
+                                                        libraryId: Number(libraryId),
+                                                        albumId,
+                                                        artistId,
+                                                        sortBy,
+                                                    },
+                                                ),
 
-                                                    startingItem: song,
-                                                    playNow: true,
-                                                })
-                                            }
-                                            onKeyDown={() => {}}
-                                        >
-                                            <td className="w-px px-2 py-1">
-                                                <div className="flex items-center justify-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        name={`songs[${song.id}]`}
-                                                        checked={isSelected(song.id)}
-                                                        onChange={() => toggle(song.id)}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        aria-label={
-                                                            isSelected(song.id)
-                                                                ? "Deselect Song"
-                                                                : "Select Song"
-                                                        }
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="px-2 py-1 border-r border-separator">
-                                                {song.title}
-                                            </td>
-                                            <td className="w-px px-2 py-1 border-r border-separator">
-                                                <span className="truncate">
-                                                    {formatDuration(
-                                                        song.end_time - (song.start_time ?? 0),
-                                                    )}
-                                                </span>
-                                            </td>
-                                            <td className="px-2 py-1 border-r border-separator">
-                                                {song.album_title}
-                                            </td>
-                                            <td className="px-2 py-1 border-r border-separator">
-                                                {song.artist_name}
-                                            </td>
-                                            <td className="px-2 py-1">{song.genre}</td>
-                                        </tr>
-                                    ))}
-                                </Fragment>
-                            ))}
-                            <tr ref={moreRef}>
-                                <td>
-                                    <div
-                                        style={{
-                                            minHeight: `calc(${remaining} * var(--spacing) * 9)`,
-                                        }}
+                                                startingItem: song,
+                                                playNow: true,
+                                            })
+                                        }
+                                        onKeyDown={() => {}}
+                                        playing={playingItem?.id === song.id}
+                                        selected={isSelected(song.id)}
+                                        onToggle={() => toggle(song.id)}
                                     />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                ))}
+                            </Fragment>
+                        ))}
+                        <tr ref={moreRef}>
+                            <td>
+                                <div
+                                    style={{
+                                        minHeight: `calc(${remaining} * var(--spacing) * 9)`,
+                                    }}
+                                />
+                            </td>
+                        </tr>
+                    </LibrarySongTable>
                 </div>
             </CommandInputProvider>
         )
