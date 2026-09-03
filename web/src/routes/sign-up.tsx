@@ -6,7 +6,7 @@ import { useSignIn, useSignUp } from "@/api/mutations/root"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import { useAppForm } from "@/hooks/formHook"
-import useToast from "@/hooks/toastHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
 
 export const Route = createFileRoute("/sign-up")({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/sign-up")({
     },
     component: function SignUpComponent() {
         const navigate = useNavigate()
-        const { showToast } = useToast()
+        const notificationCenter = useNotificationCenter()
         const { signIn } = useUserSession()
         const signUpMutation = useSignUp()
         const signInMutation = useSignIn()
@@ -42,7 +42,10 @@ export const Route = createFileRoute("/sign-up")({
                     await signIn(token)
                     navigate({ to: "/" })
                 } catch (e) {
-                    showToast({ message: `Could not sign up: ${e}`, type: "error" })
+                    notificationCenter.showToast({
+                        message: `Could not sign up: ${e}`,
+                        type: "error",
+                    })
                 }
             },
         })

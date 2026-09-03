@@ -9,7 +9,7 @@ import AppForm from "@/components/reusable/AppForm"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
-import useToast from "@/hooks/toastHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
 import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/user/me/")({
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/user/me/")({
         const api = useAPI()
         const { data: me } = useSuspenseQuery(userProfile(api))
 
-        const { showToast } = useToast()
+        const notificationCenter = useNotificationCenter()
         const updateProfile = useUpdateUserProfile()
 
         const form = useAppForm({
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/user/me/")({
                     console.log(value)
                     await updateProfile.mutateAsync(value)
                 } catch (error) {
-                    showToast({
+                    notificationCenter.showToast({
                         message: `Could not update user: ${getErrorMessage(error)}`,
                         type: "error",
                     })

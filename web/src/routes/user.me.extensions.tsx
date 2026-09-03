@@ -11,15 +11,14 @@ import ModalHeader from "@/components/chrome/ModalHeader"
 import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import PermissionInfo from "@/components/extensions/PermissionInfo"
 import AsyncButton from "@/components/reusable/AsyncButton"
-import ConfirmDialog from "@/components/reusable/ConfirmDialog"
 import Modal from "@/components/reusable/Modal"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
 import usePresentation from "@/hooks/presentationHook"
-import useToast from "@/hooks/toastHook"
 import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/user/me/extensions")({
@@ -41,6 +40,8 @@ export const Route = createFileRoute("/user/me/extensions")({
             readInstalledExtensions(api, offset, limit),
         )
 
+        const notificationCenter = useNotificationCenter()
+
         const {
             isPresented: isExtensionPresented,
             input: presentedExtensionId,
@@ -55,30 +56,31 @@ export const Route = createFileRoute("/user/me/extensions")({
             [installedExtensions, presentedExtensionId],
         )
 
-        const {
-            isPresented: isConfirmUninstallPresented,
-            dismiss: dismissConfirmUninstall,
-            present: presentConfirmUninstall,
-        } = usePresentation<boolean>()
-        const { showToast } = useToast()
         const uninstallMutation = useUninstallExtension()
         const handleUninstallClick = useCallback(async () => {
             if (presentedExtensionId === undefined) {
                 return
             }
-            const confirmed = await presentConfirmUninstall()
+            const confirmed = await notificationCenter.confirm({
+                title: "Are you sure you want to uninstall this extension?",
+                message:
+                    "You may reinstall this extension later as long as it remains available on this instance.",
+                destructive: true,
+                confirmButtonLabel: "Uninstall",
+            })
             if (!confirmed) {
                 return
             }
+            dismissPresentedExtension()
             try {
                 await uninstallMutation.mutateAsync(presentedExtensionId)
             } catch (error) {
-                showToast({
+                notificationCenter.showToast({
                     message: `Could not uninstall extension: ${getErrorMessage(error)}`,
                     type: "error",
                 })
             }
-        }, [presentedExtensionId, presentConfirmUninstall, uninstallMutation, showToast])
+        }, [presentedExtensionId, notificationCenter, dismissPresentedExtension, uninstallMutation])
 
         return (
             <div className="flex flex-col gap-3">
@@ -169,14 +171,6 @@ export const Route = createFileRoute("/user/me/extensions")({
                         </span>
                     </div>
                 </Modal>
-                <ConfirmDialog
-                    isPresented={isConfirmUninstallPresented}
-                    dismiss={dismissConfirmUninstall}
-                    title="Are you sure you want to uninstall this extension?"
-                    message="You may reinstall this extension later as long as it remains available on this instance."
-                    cancel="Cancel"
-                    confirm="Uninstall"
-                />
             </div>
         )
     },

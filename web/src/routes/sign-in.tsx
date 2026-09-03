@@ -7,7 +7,7 @@ import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedLink from "@/components/theme/ThemedLink"
 import { useAppForm } from "@/hooks/formHook"
-import useToast from "@/hooks/toastHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
 
 export const Route = createFileRoute("/sign-in")({
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/sign-in")({
     },
     component: function SignInComponent() {
         const navigate = useNavigate()
-        const { showToast } = useToast()
+        const notificationCenter = useNotificationCenter()
         const { signIn } = useUserSession()
         const signInMutation = useSignIn()
         const form = useAppForm({
@@ -38,7 +38,10 @@ export const Route = createFileRoute("/sign-in")({
                     await signIn(token)
                     navigate({ to: "/" })
                 } catch (e) {
-                    showToast({ message: `Could not sign in: ${e}`, type: "error" })
+                    notificationCenter.showToast({
+                        message: `Could not sign in: ${e}`,
+                        type: "error",
+                    })
                 }
             },
         })

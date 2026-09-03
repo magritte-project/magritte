@@ -29,6 +29,12 @@
     --color-on-key-active: var(--color-white);
     --color-key-subtle: var(--color-blue-50);
 
+    --color-destructive: var(--color-red-500);
+    --color-on-destructive: var(--color-slate-50);
+    --color-destructive-active: var(--color-red-400);
+    --color-on-destructive-active: var(--color-white);
+    --color-destructive-subtle: var(--color-red-50);
+
     --color-high-contrast: var(--color-white);
 
     /* Semantic Opacities */

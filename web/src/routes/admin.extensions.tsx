@@ -11,15 +11,14 @@ import ModalHeader from "@/components/chrome/ModalHeader"
 import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import PermissionInfo from "@/components/extensions/PermissionInfo"
 import AsyncButton from "@/components/reusable/AsyncButton"
-import ConfirmDialog from "@/components/reusable/ConfirmDialog"
 import Modal from "@/components/reusable/Modal"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
 import usePresentation from "@/hooks/presentationHook"
-import useToast from "@/hooks/toastHook"
 import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/admin/extensions")({
@@ -41,6 +40,8 @@ export const Route = createFileRoute("/admin/extensions")({
             readAvailableExtensions(api, offset, limit),
         )
 
+        const notificationCenter = useNotificationCenter()
+
         const {
             isPresented: isExtensionPresented,
             input: presentedExtensionId,
@@ -55,18 +56,18 @@ export const Route = createFileRoute("/admin/extensions")({
             [availableExtensions, presentedExtensionId],
         )
 
-        const {
-            isPresented: isConfirmDeletePresented,
-            dismiss: dismissConfirmDelete,
-            present: presentConfirmDelete,
-        } = usePresentation<boolean>()
-        const { showToast } = useToast()
         const deleteMutation = useDeleteExtension()
         const handleDeleteClick = useCallback(async () => {
             if (presentedExtensionId === undefined) {
                 return
             }
-            const confirmed = await presentConfirmDelete()
+            const confirmed = await notificationCenter.confirm({
+                title: "Are you sure you want to delete this extension?",
+                message:
+                    "It will be uninstalled for all users on this instance. This cannot be undone.",
+                confirmButtonLabel: "Delete",
+                destructive: true,
+            })
             if (!confirmed) {
                 return
             }
@@ -74,18 +75,12 @@ export const Route = createFileRoute("/admin/extensions")({
             try {
                 await deleteMutation.mutateAsync(presentedExtensionId)
             } catch (error) {
-                showToast({
+                notificationCenter.showToast({
                     message: `Could not delete extension: ${getErrorMessage(error)}`,
                     type: "error",
                 })
             }
-        }, [
-            presentedExtensionId,
-            presentConfirmDelete,
-            dismissPresentedExtension,
-            deleteMutation,
-            showToast,
-        ])
+        }, [presentedExtensionId, notificationCenter, dismissPresentedExtension, deleteMutation])
 
         return (
             <div className="flex flex-col gap-3">
@@ -179,14 +174,6 @@ export const Route = createFileRoute("/admin/extensions")({
                         </span>
                     </div>
                 </Modal>
-                <ConfirmDialog
-                    isPresented={isConfirmDeletePresented}
-                    dismiss={dismissConfirmDelete}
-                    title="Are you sure you want to delete this extension?"
-                    message="It will be uninstalled for all users on this instance. This cannot be undone."
-                    cancel="Cancel"
-                    confirm="Delete"
-                />
             </div>
         )
     },

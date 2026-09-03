@@ -17,13 +17,13 @@ import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailabl
 import ThemedInput from "@/components/theme/ThemedInput"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
-import useToast from "@/hooks/toastHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
 import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries/manage/$libraryId/permissions")({
     component: function ManageLibraryPermissions() {
         const { libraryId } = Route.useParams()
-        const { showToast } = useToast()
+        const notificationCenter = useNotificationCenter()
         const api = useAPI()
         const { data: permissions } = useSuspenseQuery(
             readLibraryPermissions(api, Number(libraryId)),
@@ -44,13 +44,13 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/permissions")
                         can_remove: false,
                     })
                 } catch (error) {
-                    showToast({
+                    notificationCenter.showToast({
                         message: `Failed to add user: ${getErrorMessage(error)}`,
                         type: "error",
                     })
                 }
             },
-            [createMutation, showToast],
+            [notificationCenter, createMutation],
         )
 
         return (
@@ -96,39 +96,40 @@ interface UserPermissionItemProps {
 }
 
 function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
-    const { showToast } = useToast()
+    const notificationCenter = useNotificationCenter()
     const updateMutation = useUpdateLibraryPermission(libraryId, data.user_id)
     const handleUpdate = useCallback(
         async (data: LibraryPermissionUpdate) => {
             try {
                 await updateMutation.mutateAsync(data)
             } catch (error) {
-                showToast({
+                notificationCenter.showToast({
                     message: `Failed to update permission: ${getErrorMessage(error)}`,
                     type: "error",
                 })
             }
         },
-        [updateMutation, showToast],
+        [notificationCenter, updateMutation],
     )
 
     const deleteMutation = useDeleteLibraryPermission(libraryId, data.user_id)
     const handleDelete = useCallback(async () => {
-        const confirmed = confirm(
-            `Are you sure you want to revoke ${data.username}'s access to this library?`,
-        )
+        const confirmed = await notificationCenter.confirm({
+            title: `Are you sure you want to revoke ${data.username}'s access to this library?`,
+            message: "You can re-add this user later.",
+        })
         if (!confirmed) {
             return
         }
         try {
             await deleteMutation.mutateAsync()
         } catch (error) {
-            showToast({
+            notificationCenter.showToast({
                 message: `Failed to update permission: ${getErrorMessage(error)}`,
                 type: "error",
             })
         }
-    }, [data.username, deleteMutation, showToast])
+    }, [notificationCenter, data.username, deleteMutation])
 
     return (
         <div className="text-sm flex items-center gap-2">

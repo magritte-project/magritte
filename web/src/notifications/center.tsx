@@ -1,5 +1,5 @@
 import type { API, NotificationRead, NotificationsRead, UserEvent } from "@magritte/api"
-import type { ToastOptions } from "@magritte/sdk"
+import { DialogButtonID, type DialogOptions, type ToastOptions } from "@magritte/sdk"
 import { QueryObserver, type QueryClient, type QueryObserverResult } from "@tanstack/react-query"
 
 import { userMeNotification, userMeNotifications } from "@/api/keys/users"
@@ -9,8 +9,14 @@ import { createEvent, type EventSink, type EventStream } from "@/utilities/event
 export type NotificationCenterEvent =
     | { type: "serverNotificationsDidChange" }
     | { type: "toastDidChange" }
+    | { type: "dialogDidChange" }
 
 type SeenNotifications = { status: "unloaded" } | { status: "loaded"; ids: Set<number> }
+
+export type NotificationCenterConfirmOptions = Omit<DialogOptions, "type" | "buttons"> & {
+    destructive?: boolean
+    confirmButtonLabel?: string
+}
 
 export class NotificationCenter {
     private readonly _events: EventSink<NotificationCenterEvent>
@@ -19,6 +25,7 @@ export class NotificationCenter {
     private _serverNotifications: readonly NotificationRead[]
     private _toasts: readonly ToastOptions[]
     private _toastTimeoutId: ReturnType<typeof setTimeout> | null
+    private _dialogs: readonly [DialogOptions, (buttonId: number) => void][]
 
     constructor(queryClient: QueryClient, api: API) {
         ;[this._events, this.$events] = createEvent()
@@ -27,6 +34,7 @@ export class NotificationCenter {
         this._serverNotifications = []
         this._toasts = []
         this._toastTimeoutId = null
+        this._dialogs = []
 
         api.userEventsManager.subscribe((event) => this._handleUserEvent(event))
 
@@ -125,5 +133,59 @@ export class NotificationCenter {
         } else {
             return null
         }
+    }
+
+    showDialog(options: DialogOptions): Promise<number> {
+        if (options.buttons && options.buttons.length === 0) {
+            return Promise.reject(new Error("Dialog must have at least one button"))
+        }
+        let resolve: (value: number) => void
+        const result = new Promise<number>((res) => {
+            resolve = res
+        })
+        this._dialogs = [...this._dialogs, [options, resolve!]]
+        this._events({ type: "dialogDidChange" })
+        return result
+    }
+
+    dismissDialog(buttonId: number): void {
+        if (this._dialogs.length > 0) {
+            const [dialog, resolve] = this._dialogs[0]
+            if (dialog.buttons && !dialog.buttons.some((button) => button.id)) {
+                console.warn("*** Dialog does not have button with this id", buttonId)
+            }
+            resolve(buttonId)
+            this._dialogs = this._dialogs.slice(1)
+            this._events({ type: "dialogDidChange" })
+        }
+    }
+
+    get dialog(): DialogOptions | null {
+        if (this._dialogs.length > 0) {
+            const [dialog] = this._dialogs[0]
+            return dialog
+        } else {
+            return null
+        }
+    }
+
+    async confirm({
+        destructive = false,
+        confirmButtonLabel = "OK",
+        ...options
+    }: NotificationCenterConfirmOptions): Promise<boolean> {
+        const result = await this.showDialog({
+            ...options,
+            type: "info",
+            buttons: [
+                { id: DialogButtonID.cancel, label: "Cancel", role: "secondary" },
+                {
+                    id: DialogButtonID.ok,
+                    label: confirmButtonLabel,
+                    role: destructive ? "destructive" : "primary",
+                },
+            ],
+        })
+        return result === DialogButtonID.ok
     }
 }

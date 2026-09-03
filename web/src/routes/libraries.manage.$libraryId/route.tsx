@@ -1,5 +1,4 @@
-import { GearSixIcon, UsersThreeIcon } from "@phosphor-icons/react"
-import { ArrowsClockwiseIcon } from "@phosphor-icons/react"
+import { ArrowsClockwiseIcon, GearSixIcon, UsersThreeIcon } from "@phosphor-icons/react"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"
 
@@ -8,7 +7,7 @@ import ModalHeader from "@/components/chrome/ModalHeader"
 import Modal from "@/components/reusable/Modal"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
-import useToast from "@/hooks/toastHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
 import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries/manage/$libraryId")({
@@ -22,18 +21,18 @@ export const Route = createFileRoute("/libraries/manage/$libraryId")({
             })
         }, [navigate])
 
-        const { showToast } = useToast()
+        const notificationCenter = useNotificationCenter()
         const syncLibraryMutation = useRequestSyncLibrary(Number(libraryId))
         const handleSyncLibrary = useCallback(async () => {
             try {
                 await syncLibraryMutation.mutateAsync()
             } catch (error) {
-                showToast({
+                notificationCenter.showToast({
                     message: `Failed to start library sync: ${getErrorMessage(error)}`,
                     type: "error",
                 })
             }
-        }, [syncLibraryMutation, showToast])
+        }, [notificationCenter, syncLibraryMutation])
 
         return (
             <Modal className="min-w-full md:min-w-150" onDismiss={handleDismiss}>

@@ -3,6 +3,7 @@ import { Extension, getExtensionAllow, getExtensionSrc } from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
+import { exportChrome } from "@/extensions/exports/exportChrome"
 import { exportCommandCoordinator } from "@/extensions/exports/exportCommandCoordinator"
 import { exportLibrary } from "@/extensions/exports/exportLibrary"
 import { exportPlayer } from "@/extensions/exports/exportPlayer"
@@ -246,11 +247,7 @@ export class ExtensionRuntime {
                         this._commandInputs,
                         this._commandRegistry,
                     ),
-                    chrome: {
-                        showToast: async (options) => {
-                            this._notificationCenter.showToast(options)
-                        },
-                    },
+                    chrome: exportChrome(this._notificationCenter),
                     library: exportLibrary(manifest, this._api),
                     player: exportPlayer(manifest, broadcaster, this._player),
                 }),

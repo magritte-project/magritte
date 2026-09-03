@@ -65,15 +65,19 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                 displayName: "library: Delete Selected Songs…",
             }),
             execute: async (inputs) => {
+                const { api, notificationCenter, queryClient } = getMagritteRouterContext(router)
                 const [library] = inputs.allOf(LibraryInput)
                 const songs = inputs.allOf(LibrarySongInput)
-                const confirmed = confirm(
-                    `Are you sure you want to remove ${songs.length} song${songs.length !== 1 ? "s" : ""}?`,
-                )
+
+                const confirmed = await notificationCenter.confirm({
+                    title: `Are you sure you want to remove ${songs.length} song${songs.length !== 1 ? "s" : ""}?`,
+                    message: "This action cannot be undone.",
+                    destructive: true,
+                    confirmButtonLabel: "Delete",
+                })
                 if (!confirmed) {
                     return
                 }
-                const { api, notificationCenter, queryClient } = getMagritteRouterContext(router)
                 try {
                     for (const song of songs) {
                         await api.client.deleteLibrarySong(library.id, song.id)

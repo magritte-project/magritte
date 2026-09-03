@@ -2,7 +2,7 @@ import { Outlet, useRouterState } from "@tanstack/react-router"
 
 import TransportControls from "@/components/chrome/TransportControls"
 import ExtensionPanelLayout from "@/components/extensions/ExtensionPanelLayout"
-import ToastLayout from "@/components/structure/ToastLayout"
+import NotificationCenterLayout from "@/components/structure/NotificationCenterLayout"
 import Wiring from "@/components/structure/Wiring"
 
 export default function RootLayout() {
@@ -14,7 +14,7 @@ export default function RootLayout() {
             ] as const,
     })
     return (
-        <ToastLayout>
+        <NotificationCenterLayout>
             <Wiring>
                 {wantsFullPageLayout ? (
                     <Outlet />
@@ -25,6 +25,6 @@ export default function RootLayout() {
                     </ExtensionPanelLayout>
                 )}
             </Wiring>
-        </ToastLayout>
+        </NotificationCenterLayout>
     )
 }
