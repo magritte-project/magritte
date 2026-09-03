@@ -24,6 +24,7 @@ export default function UserButton() {
         </Link>
     ) : (
         <ThemedPopUpMenu
+            anchor="bottom end"
             button={
                 <ThemedSubtleButton
                     buttonComponent={MenuButton}

@@ -1,4 +1,4 @@
-import { Menu, MenuItem, MenuItems } from "@headlessui/react"
+import { Menu, MenuItem, MenuItems, type MenuItemsProps } from "@headlessui/react"
 import type { OAuth2Scope } from "@magritte/api"
 import classNames from "classnames"
 import type { ReactNode } from "react"
@@ -18,14 +18,19 @@ export interface ThemedPopUpMenuItem {
 export interface ThemedPopUpMenuProps {
     readonly button: ReactNode
     readonly items: readonly ThemedPopUpMenuItem[]
+    readonly anchor?: MenuItemsProps["anchor"]
 }
 
-export default function ThemedPopUpMenu({ button, items }: ThemedPopUpMenuProps) {
+export default function ThemedPopUpMenu({
+    button,
+    items,
+    anchor = "bottom",
+}: ThemedPopUpMenuProps) {
     return (
         <Menu>
             {button}
             <MenuItems
-                anchor="bottom"
+                anchor={anchor}
                 className="bg-primary rounded-md shadow-sm text-sm flex flex-col z-100"
                 onClick={(e) => e.stopPropagation()}
             >
@@ -35,7 +40,7 @@ export default function ThemedPopUpMenu({ button, items }: ThemedPopUpMenuProps)
                             <AsyncButton
                                 type="button"
                                 className={classNames(
-                                    "min-w-32 p-outside text-left",
+                                    "min-w-32 p-outside text-left whitespace-nowrap",
                                     "flex items-center gap-between",
                                     "hover:bg-key disabled:hover:bg-inherit",
                                     "hover:text-on-key disabled:hover:text-inherit",
