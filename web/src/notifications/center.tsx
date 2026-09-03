@@ -1,10 +1,12 @@
 import type { API, NotificationRead, NotificationsRead, UserEvent } from "@magritte/api"
 import { DialogButtonID, type DialogOptions, type ToastOptions } from "@magritte/sdk"
 import { QueryObserver, type QueryClient, type QueryObserverResult } from "@tanstack/react-query"
+import { secondsToMilliseconds } from "motion/react"
 
 import { userMeNotification, userMeNotifications } from "@/api/keys/users"
 import { readNotifications } from "@/api/queries/users"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+import { promiseResolver, type PromiseResolver } from "@/utilities/promises"
 
 export type NotificationCenterEvent =
     | { type: "serverNotificationsDidChange" }
@@ -25,7 +27,11 @@ export class NotificationCenter {
     private _serverNotifications: readonly NotificationRead[]
     private _toasts: readonly ToastOptions[]
     private _toastTimeoutId: ReturnType<typeof setTimeout> | null
-    private _dialogs: readonly [DialogOptions, (buttonId: number) => void][]
+    private _dialogs: readonly [
+        DialogOptions,
+        PromiseResolver<number>,
+        ReturnType<typeof setTimeout>,
+    ][]
 
     constructor(queryClient: QueryClient, api: API) {
         ;[this._events, this.$events] = createEvent()
@@ -139,22 +145,31 @@ export class NotificationCenter {
         if (options.buttons && options.buttons.length === 0) {
             return Promise.reject(new Error("Dialog must have at least one button"))
         }
-        let resolve: (value: number) => void
-        const result = new Promise<number>((res) => {
-            resolve = res
-        })
-        this._dialogs = [...this._dialogs, [options, resolve!]]
+        const resolver = promiseResolver<number>()
+        const timeoutId = setTimeout(
+            () => this.dismissDialog(DialogButtonID.cancel),
+            options.timeout ?? secondsToMilliseconds(60),
+        )
+        this._dialogs = [...this._dialogs, [options, resolver, timeoutId]]
         this._events({ type: "dialogDidChange" })
-        return result
+        return resolver.promise
     }
 
-    dismissDialog(buttonId: number): void {
+    dismissDialog(buttonId?: number): void {
         if (this._dialogs.length > 0) {
-            const [dialog, resolve] = this._dialogs[0]
-            if (dialog.buttons && !dialog.buttons.some((button) => button.id)) {
-                console.warn("*** Dialog does not have button with this id", buttonId)
+            const [dialog, { resolve, reject }] = this._dialogs[0]
+            if (buttonId === undefined) {
+                if (dialog.buttons?.length === 1) {
+                    buttonId = dialog.buttons[0].id
+                } else {
+                    buttonId = DialogButtonID.cancel
+                }
             }
-            resolve(buttonId)
+            if (dialog.buttons && !dialog.buttons.some((button) => button.id === buttonId)) {
+                reject(new Error(`Dialog does not have button with id: ${buttonId}`))
+            } else {
+                resolve(buttonId)
+            }
             this._dialogs = this._dialogs.slice(1)
             this._events({ type: "dialogDidChange" })
         }

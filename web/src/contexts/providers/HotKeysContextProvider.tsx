@@ -36,11 +36,14 @@ export default function HotKeysContextProvider({ children }: HotKeysContextProvi
     )
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
-            if (!(modifierKey === "meta" ? event.metaKey : event.ctrlKey)) {
-                return
-            }
             for (const [definition, handler] of handlers.current) {
                 if (definition.key !== event.key) {
+                    continue
+                }
+                if (
+                    !(modifierKey === "meta" ? event.metaKey : event.ctrlKey) &&
+                    definition.requiresModifier !== false
+                ) {
                     continue
                 }
                 if (!handler()) {
