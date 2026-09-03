@@ -22,10 +22,18 @@ export default function NowPlayingScrubber() {
             step={1}
             onChange={handleChange}
             disabled={isSeeking || playbackState === "stopped"}
-            classNames={{
-                track: "bg-orange-900!",
-                handle: "bg-orange-400! border-1! border-red-500! opacity-100!",
-                rail: "bg-secondary!",
+            styles={{
+                track: {
+                    backgroundColor: "var(--color-key)",
+                },
+                rail: {
+                    backgroundColor: "var(--color-quaternary)",
+                },
+                handle: {
+                    border: "1px solid var(--color-key)",
+                    backgroundColor: "var(--color-key-subtle)",
+                    opacity: 1,
+                },
             }}
         />
     )
