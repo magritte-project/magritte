@@ -20,7 +20,7 @@ export default function ExtensionComponent({ manifest }: ExtensionComponentProps
             return
         }
 
-        const subscription = extensionRuntime.$events.subscribe((event) => {
+        const unsubscribe = extensionRuntime.$events((event) => {
             switch (event.type) {
                 case "extensionLoaded":
                     if (event.extension.manifest.id === manifest.id) {
@@ -42,7 +42,7 @@ export default function ExtensionComponent({ manifest }: ExtensionComponentProps
 
         return () => {
             extensionRuntime.detach(manifest.id, container)
-            subscription.unsubscribe()
+            unsubscribe()
         }
     }, [extensionRuntime, manifest.id])
 

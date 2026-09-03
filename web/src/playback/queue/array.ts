@@ -1,5 +1,5 @@
 import type { Queue, QueueEvent, RandomItemContext } from "@/playback/queue/base"
-import { createEvent, EventSink, type EventStream } from "@/utilities/events"
+import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export default class ArrayQueue<Item extends { id: unknown }> implements Queue<Item> {
     private readonly _events: EventSink<QueueEvent>
@@ -77,7 +77,7 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
 
     async push(...items: readonly Item[]): Promise<void> {
         this._items.push(...items)
-        await this._events.dispatch({ type: "queueDidChange" })
+        await this._events({ type: "queueDidChange" })
     }
 
     async removeAt(index: number): Promise<Item> {
@@ -85,7 +85,7 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
             throw new Error("Invalid index")
         }
         const removed = this._items.splice(index, 1)
-        await this._events.dispatch({ type: "queueDidChange" })
+        await this._events({ type: "queueDidChange" })
         return removed[0]
     }
 
@@ -100,11 +100,11 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
         }
         const item = this._items.splice(source, 1)[0]
         this._items.splice(destination, 0, item)
-        await this._events.dispatch({ type: "queueDidChange" })
+        await this._events({ type: "queueDidChange" })
     }
 
     async clear(): Promise<void> {
         this._items.length = 0
-        await this._events.dispatch({ type: "queueDidChange" })
+        await this._events({ type: "queueDidChange" })
     }
 }

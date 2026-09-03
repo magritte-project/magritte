@@ -11,9 +11,9 @@ import ArrayQueue from "@/playback/queue/array"
 import { type Queue, type RandomItemContext } from "@/playback/queue/base"
 import { CountingStack, type ReadonlyCountingStack } from "@/utilities/countingStack"
 import {
+    type EventCallbackUnsubscriber,
     type EventSink,
     type EventStream,
-    type EventSubscription,
     createEvent,
 } from "@/utilities/events"
 import { resolveNewValue } from "@/utilities/react"
@@ -35,7 +35,7 @@ export class Player {
     private readonly _playedItems: CountingStack<PlayableItem, "id">
     private readonly _shuffleContext: ShuffleContext
     private _modes: PlaybackModes
-    private _activeEngineEventSubscription: EventSubscription<PlaybackEngineEvent> | null
+    private _activeEngineEventUnsubscribe: EventCallbackUnsubscriber | null
     private _activeEngine: PlaybackEngine | null
     private _queue: Queue<PlayableItem>
     private _playingItem: PlayableItem | null
@@ -48,14 +48,14 @@ export class Player {
         this._playedItems = new CountingStack("id")
         this._shuffleContext = new ShuffleContext(this._playedItems)
         this._modes = PlaybackModes.default
-        this._activeEngineEventSubscription = null
+        this._activeEngineEventUnsubscribe = null
         this._activeEngine = null
         this._queue = ArrayQueue.of()
         this._playingItem = null
         this._playbackState = "stopped"
         this._volume = parseFloat(localStorage.getItem("player.volume") ?? "1.0")
 
-        this._engineRegistry.$events.subscribe(async (event) => {
+        this._engineRegistry.$events(async (event) => {
             switch (event.type) {
                 case "playbackEngineUnregistered":
                     if (this._activeEngine === event.engine) {
@@ -69,16 +69,16 @@ export class Player {
     }
 
     private async _engineLost(): Promise<void> {
-        this._activeEngineEventSubscription?.unsubscribe()
-        this._activeEngineEventSubscription = null
+        this._activeEngineEventUnsubscribe?.()
+        this._activeEngineEventUnsubscribe = null
 
         this._activeEngine = null
 
         this._playbackState = "stopped"
-        await this._events.dispatch({ type: "playbackStateDidChange", playbackState: "stopped" })
+        await this._events({ type: "playbackStateDidChange", playbackState: "stopped" })
 
         this._playingItem = null
-        await this._events.dispatch({ type: "playingItemChanged" })
+        await this._events({ type: "playingItemChanged" })
     }
 
     private async _changeEngine(newEngine: PlaybackEngine | null): Promise<void> {
@@ -87,14 +87,14 @@ export class Player {
         }
         if (this._activeEngine !== null) {
             await this._activeEngine.stop()
-            this._activeEngineEventSubscription?.unsubscribe()
-            this._activeEngineEventSubscription = null
+            this._activeEngineEventUnsubscribe?.()
+            this._activeEngineEventUnsubscribe = null
         }
         this._activeEngine = newEngine
         if (newEngine !== null) {
             await newEngine.syncPlaybackModes(this._modes)
             await newEngine.syncVolume(this._volume)
-            this._activeEngineEventSubscription = newEngine.$events.subscribe((e) =>
+            this._activeEngineEventUnsubscribe = newEngine.$events((e) =>
                 this._handleEngineEvent(e),
             )
         }
@@ -106,7 +106,7 @@ export class Player {
     ): Promise<void> {
         const engine = await this._engineRegistry.findPlaybackEngineFor(item)
         if (engine === null) {
-            this._events.dispatch({
+            this._events({
                 type: "encounteredError",
                 error: new Error(`No engine available to play item ${item}`),
             })
@@ -169,17 +169,17 @@ export class Player {
         switch (event.type) {
             case "playbackStateDidChange":
                 this._playbackState = event.playbackState
-                this._events.dispatch(event)
+                this._events(event)
                 break
             case "playingItemChanged":
             case "encounteredError":
-                this._events.dispatch(event)
+                this._events(event)
                 break
             case "endOfAudio": {
                 const nextItem = await this._dequeueNextItem()
                 if (nextItem === null) {
                     await this.stop()
-                    this._events.dispatch(event)
+                    this._events(event)
                     return
                 }
                 await this._playItem(nextItem, { playNow: true })
@@ -213,7 +213,7 @@ export class Player {
         this._volume = normalizedVolume
         localStorage.setItem("player.volume", String(normalizedVolume))
         this._activeEngine?.syncVolume(normalizedVolume)
-        this._events.dispatch({ type: "volumeDidChange", volume: normalizedVolume })
+        this._events({ type: "volumeDidChange", volume: normalizedVolume })
     }
 
     /** Events relating to the state of playback */
@@ -227,7 +227,7 @@ export class Player {
         if (this._activeEngine !== null) {
             await this._activeEngine.syncPlaybackModes(modes)
         }
-        await this._events.dispatch({ type: "playbackModesDidChange", modes })
+        await this._events({ type: "playbackModesDidChange", modes })
     }
 
     async replaceQueue({ newQueue, startingItem, ...options }: ReplaceQueueOptions): Promise<void> {
@@ -235,7 +235,7 @@ export class Player {
 
         // TODO: Observe queue events
         this._queue = newQueue
-        this._events.dispatch({ type: "queueDidChange" })
+        this._events({ type: "queueDidChange" })
         const item = startingItem ?? (await this._dequeueNextItem())
         if (item === null) {
             return // shrug

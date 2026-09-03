@@ -16,7 +16,7 @@ export function connectMediaSession(api: API, player: Player) {
     mediaSession.setActionHandler("previoustrack", () => player.skipPrevious())
     mediaSession.setActionHandler("nexttrack", () => player.skipNext())
 
-    const subscription = player.$events.subscribe((event) => {
+    const unsubscribe = player.$events((event) => {
         switch (event.type) {
             case "playbackStateDidChange":
                 switch (event.playbackState) {
@@ -75,6 +75,6 @@ export function connectMediaSession(api: API, player: Player) {
         mediaSession.setActionHandler("previoustrack", null)
         mediaSession.setActionHandler("nexttrack", null)
 
-        subscription.unsubscribe()
+        unsubscribe()
     }
 }

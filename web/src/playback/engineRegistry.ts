@@ -51,7 +51,7 @@ export default class PlaybackEngineRegistry {
             this._engines.set(extension.manifest.id, engine)
 
             console.debug("Registered playback engine for extension", extension.manifest.id)
-            this._events.dispatch({ type: "playbackEngineRegistered", engine })
+            this._events({ type: "playbackEngineRegistered", engine })
         } catch (error) {
             console.debug(
                 "Failed to get playback engine for extension",
@@ -67,7 +67,7 @@ export default class PlaybackEngineRegistry {
             this._engines.delete(id)
 
             console.debug("Unregistered playback engine for extension", id)
-            this._events.dispatch({ type: "playbackEngineUnregistered", engine })
+            this._events({ type: "playbackEngineUnregistered", engine })
         }
     }
 
@@ -91,7 +91,7 @@ export default class PlaybackEngineRegistry {
         for (const extension of extensionRuntime.running) {
             this._registerExtension(extension)
         }
-        return extensionRuntime.$events.subscribe((event) => {
+        return extensionRuntime.$events((event) => {
             this.handleExtensionEvent(event)
         })
     }

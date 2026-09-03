@@ -34,21 +34,21 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
         broadcaster.subscribe(PlaybackEnginePlaybackStateDidChange, async () => {
             const { playbackState, playingItem: item } = await this.engine.getNowPlaying()
             this._playingItem = item
-            this._events.dispatch({ type: "playbackStateDidChange", playbackState })
+            this._events({ type: "playbackStateDidChange", playbackState })
         })
         broadcaster.subscribe(PlaybackEnginePlayingItemChanged, async () => {
             const { playingItem } = await this.engine.getNowPlaying()
             this._playingItem = playingItem
-            this._events.dispatch({ type: "playingItemChanged" })
+            this._events({ type: "playingItemChanged" })
         })
         broadcaster.subscribe(PlaybackEngineEncounteredError, async (data) => {
-            this._events.dispatch({
+            this._events({
                 type: "encounteredError",
                 error: new Error(data?.message ?? ""),
             })
         })
         broadcaster.subscribe(PlaybackEngineEndOfAudio, async () => {
-            this._events.dispatch({ type: "endOfAudio", lastItem: this._playingItem })
+            this._events({ type: "endOfAudio", lastItem: this._playingItem })
             this._playingItem = null
         })
     }

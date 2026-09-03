@@ -29,7 +29,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
     ])
     const [selectedId, setSelectedId] = useStorageValue<string | null>("panels.selectedId", null)
     useEffect(() => {
-        extensionRuntime.$events.subscribe((event) => {
+        extensionRuntime.$events((event) => {
             switch (event.type) {
                 case "extensionAdded":
                 case "extensionRemoved": {

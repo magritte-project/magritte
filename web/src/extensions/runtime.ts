@@ -139,7 +139,7 @@ export class ExtensionRuntime {
         this._available.set(manifest.id, manifest)
 
         console.debug("Extension added", manifest)
-        this._events.dispatch({ type: "extensionAdded", manifest })
+        this._events({ type: "extensionAdded", manifest })
 
         if (manifest.permissions?.includes("run:eager")) {
             this._loadIfNeeded(manifest.id)
@@ -154,7 +154,7 @@ export class ExtensionRuntime {
             this._available.delete(id)
 
             console.debug("Extension Removed", manifest)
-            this._events.dispatch({ type: "extensionRemoved", manifest })
+            this._events({ type: "extensionRemoved", manifest })
             return true
         } else {
             return false
@@ -269,12 +269,12 @@ export class ExtensionRuntime {
 
             console.debug("Loaded extension", id)
             this._extensions.set(id, { status: "loaded", iframe, extension })
-            this._events.dispatch({ type: "extensionLoaded", extension })
+            this._events({ type: "extensionLoaded", extension })
         } catch (error) {
             iframe.remove()
             console.error("*** Could not load extension", manifest.id, error)
             this._extensions.set(id, { status: "unloaded" })
-            this._events.dispatch({ type: "extensionLoadFailed", manifest, error })
+            this._events({ type: "extensionLoadFailed", manifest, error })
         }
     }
 
@@ -292,7 +292,7 @@ export class ExtensionRuntime {
                 state.iframe.remove()
                 state.extension.disconnect()
 
-                this._events.dispatch({ type: "extensionUnloaded", extension: state.extension })
+                this._events({ type: "extensionUnloaded", extension: state.extension })
             }
             this._extensions.delete(id)
             return true

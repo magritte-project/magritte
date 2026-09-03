@@ -56,7 +56,7 @@ export class NotificationCenter {
     ) {
         if (result.isSuccess) {
             this._serverNotifications = result.data.items
-            this._events.dispatch({ type: "serverNotificationsDidChange" })
+            this._events({ type: "serverNotificationsDidChange" })
 
             switch (this._seenNotifications.status) {
                 case "unloaded":
@@ -104,14 +104,14 @@ export class NotificationCenter {
         this._toasts = [...this._toasts, options]
         if (this._toasts.length === 1) {
             this._dismissToastLater()
-            this._events.dispatch({ type: "toastDidChange" })
+            this._events({ type: "toastDidChange" })
         }
     }
 
     dismissToast(): void {
         if (this._toasts.length > 0) {
             this._toasts = this._toasts.slice(1)
-            this._events.dispatch({ type: "toastDidChange" })
+            this._events({ type: "toastDidChange" })
         }
         if (this._toastTimeoutId !== null) {
             clearTimeout(this._toastTimeoutId)

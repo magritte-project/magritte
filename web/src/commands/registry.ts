@@ -98,7 +98,7 @@ export class CommandRegistry {
             this._commands.add(command)
             this._registeredCommandIDs.add(command.id)
         }
-        this._events.dispatch({ type: "registeredCommandsDidChange" })
+        this._events({ type: "registeredCommandsDidChange" })
     }
 
     removeByID(...commandIDs: string[]): boolean {
@@ -109,7 +109,7 @@ export class CommandRegistry {
             for (const command of deletedCommands) {
                 this._registeredCommandIDs.delete(command.id)
             }
-            this._events.dispatch({ type: "registeredCommandsDidChange" })
+            this._events({ type: "registeredCommandsDidChange" })
         }
         return deleted
     }
@@ -133,7 +133,7 @@ export class CommandRegistry {
                 this.add(...commands)
             }),
         )
-        extensionRuntime.$events.subscribe(async (event) => {
+        extensionRuntime.$events(async (event) => {
             switch (event.type) {
                 case "extensionLoaded": {
                     const commands = await getExtensionCommands(event.extension)

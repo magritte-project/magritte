@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import type { Command } from "@/commands/base"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommandRegistry from "@/hooks/commandRegistryHook"
+import { filterTo, combineUnsubscribers } from "@/utilities/events"
 
 export interface UseCommandsOptions {
     readonly search: string
@@ -22,21 +23,11 @@ export default function useCommands({ search }: UseCommandsOptions) {
             const results = registry.search(search)
             setResults(results)
         }
-        const registrySubscription = registry.$events.subscribe((event) => {
-            if (event.type === "registeredCommandsDidChange") {
-                refreshResults()
-            }
-        })
-        const inputsSubscription = inputs.$events.subscribe((event) => {
-            if (event.type === "commandInputsDidChange") {
-                refreshResults()
-            }
-        })
         refreshResults()
-        return () => {
-            registrySubscription.unsubscribe()
-            inputsSubscription.unsubscribe()
-        }
+        return combineUnsubscribers(
+            registry.$events(filterTo("type", "registeredCommandsDidChange", refreshResults)),
+            inputs.$events(filterTo("type", "commandInputsDidChange", refreshResults)),
+        )
     }, [search, inputs, registry])
 
     return results

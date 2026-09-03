@@ -6,6 +6,7 @@ import { createPortal } from "react-dom"
 import ToastNotification from "@/components/chrome/ToastNotification"
 import ToastContextProvider from "@/contexts/providers/ToastContextProvider"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
+import { filterTo } from "@/utilities/events"
 
 export interface ToastLayoutProps {
     readonly children?: ReactNode
@@ -15,18 +16,8 @@ export default function ToastLayout({ children }: ToastLayoutProps) {
     const notificationCenter = useNotificationCenter()
 
     const presentedToast = useSyncExternalStore(
-        (onStoreChange) => {
-            const subscription = notificationCenter.$events.subscribe((event) => {
-                switch (event.type) {
-                    case "toastDidChange":
-                        onStoreChange()
-                        break
-                    default:
-                        break
-                }
-            })
-            return () => subscription.unsubscribe()
-        },
+        (onStoreChange) =>
+            notificationCenter.$events(filterTo("type", "toastDidChange", onStoreChange)),
         () => notificationCenter.toast,
     )
 

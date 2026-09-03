@@ -13,7 +13,7 @@ export function exportCommandCoordinator(
     registry: CommandRegistry,
 ): CommandCoordinator {
     if (manifest.permissions?.includes("commands:input:read")) {
-        const subscription = inputs.$events.subscribe(async (event) => {
+        const unsubscribe = inputs.$events(async (event) => {
             switch (event.type) {
                 case "commandInputsDidChange":
                     broadcaster.send(CommandInputsDidChange, undefined)
@@ -23,7 +23,7 @@ export function exportCommandCoordinator(
             }
         })
         broadcaster.subscribe(RPCBroadcaster.invalidated, () => {
-            subscription.unsubscribe()
+            unsubscribe()
         })
     }
     return {

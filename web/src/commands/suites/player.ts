@@ -144,7 +144,7 @@ export function wirePlayerCommandInputs(player: Player, inputs: CommandInputs) {
         }
     }
     updatePlayerInputs()
-    player.$events.subscribe((event) => {
+    player.$events((event) => {
         switch (event.type) {
             case "playbackStateDidChange":
             case "playbackModesDidChange":
