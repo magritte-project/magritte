@@ -18,7 +18,7 @@ export const Route = createFileRoute("/user/me")({
         return (
             <div>
                 <PageHeader>
-                    <div className="flex items-center gap-0">
+                    <div className="flex items-center gap-0 drop-shadow-xs">
                         <ThemedTabItemLink
                             to="/user/me"
                             icon={UserIcon}

@@ -18,7 +18,7 @@ export const Route = createFileRoute("/admin")({
         return (
             <div>
                 <PageHeader>
-                    <div className="flex items-center gap-0">
+                    <div className="flex items-center gap-0 drop-shadow-xs">
                         <ThemedTabItemLink
                             to="/admin/extensions"
                             icon={GearIcon}

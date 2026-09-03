@@ -38,7 +38,9 @@ export const Route = createFileRoute("/libraries")({
             <CommandsProvider commands={libraryCommands}>
                 <div>
                     <PageHeader>
-                        <ThemedTabItemLink to="/libraries" icon={BooksIcon} label="Libraries" />
+                        <div className="drop-shadow-xs">
+                            <ThemedTabItemLink to="/libraries" icon={BooksIcon} label="Libraries" />
+                        </div>
                     </PageHeader>
                     <main className="flex flex-col text-center items-center justify-center gap-2 p-4 min-h-0 h-screen">
                         <ol className="flex items-start gap-2 flex-wrap">
@@ -52,10 +54,10 @@ export const Route = createFileRoute("/libraries")({
                                         params={{
                                             libraryId: String(library.id),
                                         }}
-                                        className="flex flex-col items-center gap-3 p-2 rounded-sm hover:bg-key-subtle w-32"
+                                        className="flex flex-col items-center gap-3 p-2 rounded-lg hover:bg-key-subtle w-32"
                                     >
                                         {library.home_path !== null ? (
-                                            <div className="bg-cyan-400 rounded-full w-16 h-16 flex items-center justify-center">
+                                            <div className="bg-key rounded-full w-16 h-16 flex items-center justify-center drop-shadow-xs">
                                                 <FilesIcon
                                                     className="text-cyan-50"
                                                     size="2.5em"
@@ -63,7 +65,7 @@ export const Route = createFileRoute("/libraries")({
                                                 />
                                             </div>
                                         ) : (
-                                            <div className="bg-teal-400 rounded-full w-16 h-16 flex items-center justify-center">
+                                            <div className="bg-key rounded-full w-16 h-16 flex items-center justify-center drop-shadow-xs">
                                                 <WavesIcon
                                                     className="text-cyan-50"
                                                     size="2.5em"

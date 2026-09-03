@@ -67,7 +67,7 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                 <CommandsProvider commands={commands}>
                     <div>
                         <PageHeader>
-                            <div className="flex items-center gap-0">
+                            <div className="flex items-center gap-0 drop-shadow-xs">
                                 <ThemedTabItemLink
                                     to="/libraries/$libraryId/artists"
                                     params={params}
