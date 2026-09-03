@@ -2,6 +2,7 @@ import type { AlbumRead } from "@magritte/api"
 import { Link } from "@tanstack/react-router"
 import classNames from "classnames"
 
+import LibrarySelectionCheckbox from "@/components/library/LibrarySelectionCheckbox"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 
 export interface LibraryAlbumListItemProps extends Omit<
@@ -40,13 +41,13 @@ export default function LibraryAlbumListItem({
                     artworks={album.artworks}
                     itemTitle={album.title}
                     accessory={
-                        <input
+                        <LibrarySelectionCheckbox
                             className="absolute left-2 bottom-2"
-                            type="checkbox"
                             name={`albums[${album.id}]`}
                             checked={selected}
                             onChange={onToggleSelected}
                             onClick={(e) => e.stopPropagation()}
+                            aria-label={selected ? "Deselect Album" : "Select Album"}
                         />
                     }
                 />

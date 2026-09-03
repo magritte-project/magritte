@@ -2,6 +2,8 @@ import type { ArtistRead } from "@magritte/api"
 import { Link } from "@tanstack/react-router"
 import classNames from "classnames"
 
+import LibrarySelectionCheckbox from "@/components/library/LibrarySelectionCheckbox"
+
 export interface LibraryArtistListItemProps extends Omit<
     React.LiHTMLAttributes<HTMLLIElement>,
     "children"
@@ -28,11 +30,12 @@ export default function LibraryArtistListItem({
             )}
             {...rest}
         >
-            <input
-                type="checkbox"
+            <LibrarySelectionCheckbox
                 name={`artists[${artist.id}]`}
                 checked={selected}
                 onChange={onToggleSelected}
+                onClick={(e) => e.stopPropagation()}
+                aria-label={selected ? "Deselect Artist" : "Select Artist"}
             />
             <Link
                 to="/libraries/$libraryId/albums"
