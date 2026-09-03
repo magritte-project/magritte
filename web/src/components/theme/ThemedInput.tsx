@@ -11,9 +11,6 @@ export default function ThemedInput({ type = "text", className, ...rest }: Theme
                 "bg-primary rounded-lg p-2 min-w-0 w-auto",
                 "text-on-primary placeholder:text-placeholder",
                 "border border-outline focus:border-outline-focus outline-0",
-                {
-                    "rounded-full! px-3!": type === "search",
-                },
                 className,
             )}
             {...rest}

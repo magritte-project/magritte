@@ -120,9 +120,8 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
                     <AppForm form={facetForm}>
                         <facetForm.AppField name="query">
                             {(field) => (
-                                <field.InputField
+                                <field.SearchInputField
                                     className="w-full"
-                                    type="search"
                                     placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} songs...`}
                                 />
                             )}
