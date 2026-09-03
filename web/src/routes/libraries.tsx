@@ -5,7 +5,7 @@ import { useMemo } from "react"
 
 import { readLibraries } from "@/api/queries/libraries"
 import type { Command } from "@/commands/base"
-import PrimaryHeader from "@/components/chrome/PrimaryHeader"
+import PageHeader from "@/components/chrome/PageHeader"
 import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
@@ -37,9 +37,9 @@ export const Route = createFileRoute("/libraries")({
         return (
             <CommandsProvider commands={libraryCommands}>
                 <div>
-                    <PrimaryHeader>
+                    <PageHeader>
                         <ThemedTabItemLink to="/libraries" icon={BooksIcon} label="Libraries" />
-                    </PrimaryHeader>
+                    </PageHeader>
                     <main className="flex flex-col text-center items-center justify-center gap-2 p-4 min-h-0 h-screen">
                         <ol className="flex items-start gap-2 flex-wrap">
                             {libraries.map((library) => (

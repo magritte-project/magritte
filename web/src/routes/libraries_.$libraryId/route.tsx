@@ -6,7 +6,7 @@ import { z } from "zod"
 
 import type { Command } from "@/commands/base"
 import ModalHeader from "@/components/chrome/ModalHeader"
-import PrimaryHeader from "@/components/chrome/PrimaryHeader"
+import PageHeader from "@/components/chrome/PageHeader"
 import LibraryAudioFilesUpload from "@/components/LibraryAudioFilesUpload"
 import Modal from "@/components/reusable/Modal"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
@@ -66,7 +66,7 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
             >
                 <CommandsProvider commands={commands}>
                     <div>
-                        <PrimaryHeader>
+                        <PageHeader>
                             <div className="flex items-center gap-0">
                                 <ThemedTabItemLink
                                     to="/libraries/$libraryId/artists"
@@ -87,7 +87,7 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                     label="Songs"
                                 />
                             </div>
-                        </PrimaryHeader>
+                        </PageHeader>
                         <main>
                             <Outlet />
                         </main>

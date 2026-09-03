@@ -1,7 +1,7 @@
 import { GearIcon, UserIcon } from "@phosphor-icons/react"
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
-import PrimaryHeader from "@/components/chrome/PrimaryHeader"
+import PageHeader from "@/components/chrome/PageHeader"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
 
 export const Route = createFileRoute("/user/me")({
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/user/me")({
     component: function UserMeLayout() {
         return (
             <div>
-                <PrimaryHeader>
+                <PageHeader>
                     <div className="flex items-center gap-0">
                         <ThemedTabItemLink
                             to="/user/me"
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/user/me")({
                             label="Extensions"
                         />
                     </div>
-                </PrimaryHeader>
+                </PageHeader>
                 <main className="p-4 min-h-0 h-screen">
                     <Outlet />
                 </main>

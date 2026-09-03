@@ -31,9 +31,9 @@ export default function Modal({ className, isPresented = true, onDismiss, childr
                                 "relative bg-primary rounded-lg drop-shadow-2xl max-h-full md:max-h-2/3 overflow-auto",
                                 className,
                             )}
-                            initial={{ y: -10, scale: 0.9 }}
-                            animate={{ y: 0, scale: 1 }}
-                            exit={{ y: -10, scale: 0.9 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 16 }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             {children}

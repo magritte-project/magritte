@@ -12,7 +12,8 @@ export default function ThemedHeader({
     children,
 }: ThemedHeaderProps) {
     return (
-        <header className="shrink-0 sticky top-0 bg-primary/95 text-sm font-semibold flex items-center gap-between p-outside z-40 overflow-x-auto">
+        <header className="shrink-0 sticky top-0 isolate bg-linear-to-b from-primary/50 to-transparent text-sm font-semibold flex items-center gap-between p-outside z-40 overflow-x-auto">
+            <div className="absolute inset-0 backdrop-blur-lg mask-[linear-gradient(to_bottom,black,transparent)] -z-10" />
             {supplementaryStart}
             <div className="flex-1 flex items-center gap-between">{children}</div>
             {supplementaryEnd}

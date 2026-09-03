@@ -10,11 +10,11 @@ import VolumeButton from "@/components/VolumeButton"
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import useHotKeys from "@/hooks/hotKeysHook"
 
-export interface PrimaryHeaderProps {
+export interface PageHeaderProps {
     readonly children?: ReactNode
 }
 
-export default function PrimaryHeader({ children }: PrimaryHeaderProps) {
+export default function PageHeader({ children }: PageHeaderProps) {
     const { history } = useRouter()
     const canGoBack = useCanGoBack()
     const { modifierKey } = useHotKeys()
