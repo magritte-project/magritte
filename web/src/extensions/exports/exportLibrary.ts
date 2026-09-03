@@ -2,7 +2,7 @@ import type { API, ExtensionManifest } from "@magritte/api"
 import type { Library } from "@magritte/sdk"
 
 import { enforcePermissions } from "@/extensions/exports/permissions"
-import { resolveUrl } from "@/utilities/resources"
+import { resolveResourceUrl } from "@/utilities/resources"
 
 export function exportLibrary(manifest: ExtensionManifest, api: API): Library {
     return {
@@ -23,7 +23,7 @@ export function exportLibrary(manifest: ExtensionManifest, api: API): Library {
         ),
         resolveArtworkImageUrl: enforcePermissions(manifest, ["libraries:read"], async (url) => {
             const token = await api.fileAccess.token()
-            return resolveUrl(url, token)
+            return resolveResourceUrl(url, token)
         }),
     }
 }

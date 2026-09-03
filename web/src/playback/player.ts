@@ -7,8 +7,8 @@ import type {
 } from "@/playback/engine"
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { PlaybackModes } from "@/playback/modes"
+import ArrayQueue from "@/playback/queue/array"
 import { type Queue, type RandomItemContext } from "@/playback/queue/base"
-import EmptyQueue from "@/playback/queue/empty"
 import { CountingStack, type ReadonlyCountingStack } from "@/utilities/countingStack"
 import {
     type EventSink,
@@ -50,7 +50,7 @@ export class Player {
         this._modes = PlaybackModes.default
         this._activeEngineEventSubscription = null
         this._activeEngine = null
-        this._queue = new EmptyQueue()
+        this._queue = ArrayQueue.of()
         this._playingItem = null
         this._playbackState = "stopped"
         this._volume = parseFloat(localStorage.getItem("player.volume") ?? "1.0")

@@ -1,7 +1,14 @@
 import { describe, expect, it, vi } from "vitest"
 
 import ArrayQueue from "./array"
-import { mockTestItem, type TestItem } from "./testing"
+
+export interface TestItem {
+    readonly id: string
+}
+
+export function mockTestItem(): TestItem {
+    return { id: crypto.randomUUID() }
+}
 
 const mockItems: readonly TestItem[] = [mockTestItem(), mockTestItem(), mockTestItem()]
 

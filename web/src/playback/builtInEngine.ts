@@ -8,7 +8,7 @@ import type {
 } from "@/playback/engine"
 import type { PlaybackModes } from "@/playback/modes"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
-import { resolveUrl } from "@/utilities/resources"
+import { resolveResourceUrl } from "@/utilities/resources"
 
 import type { LocalCache } from "./localFileCache"
 
@@ -134,7 +134,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
             this._swapSrc(audioSrc)
         } else {
             const token = await this._fileAccess.token()
-            const audioSrc = resolveUrl(bestUrl, token)
+            const audioSrc = resolveResourceUrl(bestUrl, token)
             if (audioSrc === undefined) {
                 throw new Error("Could not resolve song source URL")
             }

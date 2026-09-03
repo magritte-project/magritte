@@ -5,7 +5,7 @@ import type React from "react"
 
 import { fileAccessToken } from "@/api/queries/users"
 import useAPI from "@/hooks/apiHook"
-import { resolveUrl } from "@/utilities/resources"
+import { resolveResourceUrl } from "@/utilities/resources"
 
 export interface ArtworkImageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
     readonly artworks?: readonly PlayableItemArtwork[]
@@ -33,7 +33,7 @@ export default function ArtworkImage({
             {!!artworks?.length && tokenQuery.isSuccess && (
                 <img
                     className="object-fit w-full h-full"
-                    src={resolveUrl(artworks[0].image_url, tokenQuery.data)}
+                    src={resolveResourceUrl(artworks[0].image_url, tokenQuery.data)}
                     alt={`Cover for ${itemTitle}`}
                 />
             )}

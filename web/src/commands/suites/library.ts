@@ -5,7 +5,7 @@ import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/librarie
 import type { Command } from "@/commands/base"
 import { getMagritteRouterContext } from "@/integrations/tanstack-router/context"
 import { getErrorMessage } from "@/utilities/errors"
-import { resolveUrl } from "@/utilities/resources"
+import { resolveResourceUrl } from "@/utilities/resources"
 
 export function libraryCommands(router: RegisteredRouter): Command[] {
     return [
@@ -135,7 +135,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                     console.debug(`Downloading source: ${source.url}`)
                     try {
                         const token = await api.fileAccess.token()
-                        const url = resolveUrl(source.url, token)
+                        const url = resolveResourceUrl(source.url, token)
                         if (url === undefined) {
                             throw new Error("Could not resolve song source URL")
                         }

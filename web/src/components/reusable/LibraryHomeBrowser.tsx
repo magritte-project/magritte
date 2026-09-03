@@ -3,10 +3,9 @@ import { useQuery } from "@tanstack/react-query"
 
 import { readLibraryHomeSubpaths } from "@/api/queries/libraries"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
 import { appendPathComponent, lastPathComponent, removeLastPathComponent } from "@/utilities/paths"
-
-import ThemedSubtleButton from "../theme/ThemedSubtleButton"
 
 export interface LibraryHomeBrowserProps {
     readonly relativeTo: string | null

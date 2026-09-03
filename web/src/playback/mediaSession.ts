@@ -1,7 +1,7 @@
 import type { API } from "@magritte/api"
 
 import type { Player } from "@/playback/player"
-import { resolveUrl } from "@/utilities/resources"
+import { resolveResourceUrl } from "@/utilities/resources"
 
 export function connectMediaSession(api: API, player: Player) {
     if (!("mediaSession" in navigator)) {
@@ -52,7 +52,7 @@ export function connectMediaSession(api: API, player: Player) {
                                 artist: playingItem.artist_name ?? "",
                                 album: playingItem.album_title ?? "",
                                 artwork: artworks.flatMap((artwork) => {
-                                    const src = resolveUrl(artwork.image_url, token)
+                                    const src = resolveResourceUrl(artwork.image_url, token)
                                     return src ? [{ src }] : []
                                 }),
                             })
