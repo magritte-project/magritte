@@ -1,3 +1,4 @@
+import { Field, Label } from "@headlessui/react"
 import type { LibraryCreate } from "@magritte/api"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
@@ -10,6 +11,7 @@ import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"
 import LibraryHomeBrowser from "@/components/reusable/LibraryHomeBrowser"
 import Modal from "@/components/reusable/Modal"
+import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 
@@ -133,9 +135,8 @@ export const Route = createFileRoute("/libraries/add")({
                         {(field) => (
                             <form.Subscribe selector={(state) => !!state.values.home_path}>
                                 {(hasHomePath) => (
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
+                                    <Field className="flex items-center gap-2">
+                                        <ThemedCheckbox
                                             className="peer"
                                             id={field.name}
                                             name={field.name}
@@ -143,18 +144,16 @@ export const Route = createFileRoute("/libraries/add")({
                                                 !instanceStatus.uploads_enabled || !hasHomePath
                                             }
                                             checked={field.state.value}
-                                            onChange={(e) =>
-                                                field.handleChange(e.currentTarget.checked)
-                                            }
+                                            onChange={field.handleChange}
                                             onBlur={field.handleBlur}
                                         />
-                                        <label
+                                        <Label
                                             htmlFor={field.name}
-                                            className="text-sm peer-disabled:opacity-70"
+                                            className="text-sm font-semibold peer-aria-disabled:opacity-disabled"
                                         >
                                             Allow File Uploads
-                                        </label>
-                                    </div>
+                                        </Label>
+                                    </Field>
                                 )}
                             </form.Subscribe>
                         )}

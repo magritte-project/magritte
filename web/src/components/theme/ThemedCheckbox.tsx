@@ -2,18 +2,16 @@ import { Checkbox, type CheckboxProps } from "@headlessui/react"
 import { CheckIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 
-export type LibrarySelectionCheckboxProps = Omit<CheckboxProps, "children">
+export type ThemedCheckboxProps = Omit<CheckboxProps, "children">
 
-export default function LibrarySelectionCheckbox({
-    className,
-    ...rest
-}: LibrarySelectionCheckboxProps) {
+export default function ThemedCheckbox({ className, ...rest }: ThemedCheckboxProps) {
     return (
         <Checkbox
             className={classNames(
                 "group flex items-center justify-center p-0.5",
-                "bg-primary data-checked:bg-key data-checked:text-on-key ",
+                "bg-primary data-checked:bg-key data-checked:text-on-key",
                 "border border-outline data-checked:border-key focus:border-outline-focus rounded-md",
+                "aria-disabled:opacity-disabled",
                 className,
             )}
             {...rest}

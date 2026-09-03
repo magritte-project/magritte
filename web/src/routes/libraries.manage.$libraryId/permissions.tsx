@@ -1,3 +1,4 @@
+import { Field, Label } from "@headlessui/react"
 import type { LibraryPermissionRead, LibraryPermissionUpdate } from "@magritte/api"
 import { PlusIcon, TrashIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
@@ -13,6 +14,8 @@ import {
 import { readLibraryPermissions } from "@/api/queries/libraries"
 import { readAllUsers } from "@/api/queries/users"
 import AsyncButton from "@/components/reusable/AsyncButton"
+import ThemedButton from "@/components/theme/ThemedButton"
+import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedInput from "@/components/theme/ThemedInput"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
@@ -117,6 +120,8 @@ function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
         const confirmed = await notificationCenter.confirm({
             title: `Are you sure you want to revoke ${data.username}'s access to this library?`,
             message: "You can re-add this user later.",
+            destructive: true,
+            confirmButtonLabel: "Revoke Access",
         })
         if (!confirmed) {
             return
@@ -134,57 +139,54 @@ function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
     return (
         <div className="text-sm flex items-center gap-2">
             <span className="flex-1">{data.username}</span>
-            <span className="text-xs flex items-center gap-1">
-                <input
+            <Field className="text-xs font-semibold flex items-center gap-1">
+                <ThemedCheckbox
                     id={`permissions[${data.user_id}].canAdd`}
-                    type="checkbox"
                     checked={data.can_add}
-                    onChange={(e) => {
+                    onChange={(checked) => {
                         handleUpdate({
-                            can_add: e.currentTarget.checked,
+                            can_add: checked,
                             can_edit: null,
                             can_remove: null,
                         })
                     }}
                     disabled={updateMutation.isPending || deleteMutation.isPending}
                 />
-                <label htmlFor={`permissions[${data.user_id}].canAdd`}>Can Add</label>
-            </span>
-            <span className="text-xs flex items-center gap-1">
-                <input
+                <Label htmlFor={`permissions[${data.user_id}].canAdd`}>Can Add</Label>
+            </Field>
+            <Field className="text-xs flex items-center gap-1">
+                <ThemedCheckbox
                     id={`permissions[${data.user_id}].canEdit`}
-                    type="checkbox"
                     checked={data.can_edit}
-                    onChange={(e) => {
+                    onChange={(checked) => {
                         handleUpdate({
                             can_add: null,
-                            can_edit: e.currentTarget.checked,
+                            can_edit: checked,
                             can_remove: null,
                         })
                     }}
                     disabled={updateMutation.isPending || deleteMutation.isPending}
                 />
-                <label htmlFor={`permissions[${data.user_id}].canEdit`}>Can Edit</label>
-            </span>
-            <span className="text-xs flex items-center gap-1">
-                <input
+                <Label htmlFor={`permissions[${data.user_id}].canEdit`}>Can Edit</Label>
+            </Field>
+            <Field className="text-xs flex items-center gap-1">
+                <ThemedCheckbox
                     id={`permissions[${data.user_id}].canRemove`}
-                    type="checkbox"
-                    checked={data.can_add}
-                    onChange={(e) => {
+                    checked={data.can_remove}
+                    onChange={(checked) => {
                         handleUpdate({
                             can_add: null,
                             can_edit: null,
-                            can_remove: e.currentTarget.checked,
+                            can_remove: checked,
                         })
                     }}
                     disabled={updateMutation.isPending || deleteMutation.isPending}
                 />
-                <label htmlFor={`permissions[${data.user_id}].canRemove`}>Can Remove</label>
-            </span>
-            <ThemedSubtleButton buttonComponent={AsyncButton} onClick={handleDelete}>
+                <Label htmlFor={`permissions[${data.user_id}].canRemove`}>Can Remove</Label>
+            </Field>
+            <ThemedButton buttonComponent={AsyncButton} destructive onClick={handleDelete}>
                 <TrashIcon aria-label="Revoke Access" />
-            </ThemedSubtleButton>
+            </ThemedButton>
         </div>
     )
 }

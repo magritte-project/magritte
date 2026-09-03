@@ -1,7 +1,7 @@
 import type { SongRead } from "@magritte/api"
 import classNames from "classnames"
 
-import LibrarySelectionCheckbox from "@/components/library/LibrarySelectionCheckbox"
+import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import { formatDuration } from "@/utilities/duration"
 
 export interface LibrarySongTableRowProps extends Omit<
@@ -36,7 +36,7 @@ export default function LibrarySongTableRow({
         >
             <td className="w-px px-2 py-1">
                 <div className="flex items-center justify-center">
-                    <LibrarySelectionCheckbox
+                    <ThemedCheckbox
                         name={`songs[${song.id}]`}
                         checked={selected}
                         onChange={onToggleSelected}

@@ -1,3 +1,4 @@
+import { Field, Label } from "@headlessui/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
@@ -6,6 +7,7 @@ import { useUpdateUserProfile } from "@/api/mutations/users"
 import { userProfile } from "@/api/queries/users"
 import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"
+import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
@@ -69,20 +71,17 @@ export const Route = createFileRoute("/user/me/")({
                     <form.Field name="enable_playback_events">
                         {(field) => (
                             <section className="flex flex-col gap-1">
-                                <div className="flex items-center gap-between">
-                                    <input
-                                        type="checkbox"
+                                <Field className="flex items-center gap-between">
+                                    <ThemedCheckbox
                                         id={field.name}
                                         name={field.name}
                                         checked={field.state.value}
-                                        onChange={(e) =>
-                                            field.handleChange(e.currentTarget.checked)
-                                        }
+                                        onChange={field.handleChange}
                                     />
-                                    <label htmlFor={field.name} className="text-sm font-semibold">
+                                    <Label htmlFor={field.name} className="text-sm font-semibold">
                                         Enable Playback Events
-                                    </label>
-                                </div>
+                                    </Label>
+                                </Field>
                                 <div className="text-xs text-on-secondary">
                                     Recording playback events enables Magritte to generate reports
                                     about your listening habits. Examples of playback events include

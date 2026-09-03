@@ -1,3 +1,4 @@
+import { Field, Label } from "@headlessui/react"
 import type { LibraryUpdate } from "@magritte/api"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -7,6 +8,7 @@ import { readInstanceStatus } from "@/api/queries/auth"
 import { readLibrary } from "@/api/queries/libraries"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
+import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
@@ -53,24 +55,23 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/")({
 
                 <form.Field name="uploads_enabled">
                     {(field) => (
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
+                        <Field className="flex items-center gap-2">
+                            <ThemedCheckbox
                                 className="peer"
                                 id={field.name}
                                 name={field.name}
                                 disabled={!instanceStatus.uploads_enabled || !library.home_path}
                                 checked={field.state.value ?? false}
-                                onChange={(e) => field.handleChange(e.currentTarget.checked)}
+                                onChange={field.handleChange}
                                 onBlur={field.handleBlur}
                             />
-                            <label
+                            <Label
                                 htmlFor={field.name}
-                                className="text-sm peer-disabled:opacity-70"
+                                className="text-sm font-semibold peer-aria-disabled:opacity-disabled"
                             >
                                 Allow File Uploads
-                            </label>
-                        </div>
+                            </Label>
+                        </Field>
                     )}
                 </form.Field>
 

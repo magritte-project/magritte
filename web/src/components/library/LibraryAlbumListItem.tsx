@@ -2,8 +2,8 @@ import type { AlbumRead } from "@magritte/api"
 import { Link } from "@tanstack/react-router"
 import classNames from "classnames"
 
-import LibrarySelectionCheckbox from "@/components/library/LibrarySelectionCheckbox"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
+import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 
 export interface LibraryAlbumListItemProps extends Omit<
     React.LiHTMLAttributes<HTMLLIElement>,
@@ -41,7 +41,7 @@ export default function LibraryAlbumListItem({
                     artworks={album.artworks}
                     itemTitle={album.title}
                     accessory={
-                        <LibrarySelectionCheckbox
+                        <ThemedCheckbox
                             className="absolute left-2 bottom-2"
                             name={`albums[${album.id}]`}
                             checked={selected}
