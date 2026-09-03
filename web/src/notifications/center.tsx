@@ -157,7 +157,7 @@ export class NotificationCenter {
 
     dismissDialog(buttonId?: number): void {
         if (this._dialogs.length > 0) {
-            const [dialog, { resolve, reject }] = this._dialogs[0]
+            const [dialog, { resolve, reject }, timeoutId] = this._dialogs[0]
             if (buttonId === undefined) {
                 if (dialog.buttons?.length === 1) {
                     buttonId = dialog.buttons[0].id
@@ -170,6 +170,7 @@ export class NotificationCenter {
             } else {
                 resolve(buttonId)
             }
+            clearTimeout(timeoutId)
             this._dialogs = this._dialogs.slice(1)
             this._events({ type: "dialogDidChange" })
         }
