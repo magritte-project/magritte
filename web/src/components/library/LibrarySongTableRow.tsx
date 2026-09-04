@@ -34,7 +34,7 @@ export default function LibrarySongTableRow({
             )}
             {...rest}
         >
-            <td className="w-px px-2 py-1">
+            <td className="px-2 py-1">
                 <div className="flex items-center justify-center">
                     <ThemedCheckbox
                         name={`songs[${song.id}]`}
@@ -45,15 +45,13 @@ export default function LibrarySongTableRow({
                     />
                 </div>
             </td>
-            <td className="px-2 py-1 border-r border-separator">{song.title}</td>
-            <td className="w-px px-2 py-1 border-r border-separator">
-                <span className="truncate">
-                    {formatDuration(song.end_time - (song.start_time ?? 0))}
-                </span>
+            <td className="px-2 py-1 border-r border-separator truncate">{song.title}</td>
+            <td className="px-2 py-1 border-r border-separator truncate">
+                {formatDuration(song.end_time - (song.start_time ?? 0))}
             </td>
-            <td className="px-2 py-1 border-r border-separator">{song.album_title}</td>
-            <td className="px-2 py-1 border-r border-separator">{song.artist_name}</td>
-            <td className="px-2 py-1">{song.genre}</td>
+            <td className="px-2 py-1 border-r border-separator truncate">{song.artist_name}</td>
+            <td className="px-2 py-1 border-r border-separator truncate">{song.album_title}</td>
+            <td className="px-2 py-1 truncate">{song.genre}</td>
         </tr>
     )
 }
