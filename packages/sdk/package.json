@@ -1,10 +1,14 @@
 {
     "name": "@magritte/sdk",
-    "version": "1.0.0",
-    "description": "",
+    "version": "0.1.0",
+    "description": "SDK for developing Magritte extensions",
     "keywords": [],
     "license": "MIT",
     "author": "",
+    "files": [
+        "dist",
+        "LICENSE"
+    ],
     "type": "module",
     "exports": {
         ".": {
@@ -12,7 +16,17 @@
             "default": "./src/index.ts"
         }
     },
+    "publishConfig": {
+        "exports": {
+            ".": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            }
+        }
+    },
     "scripts": {
+        "build": "vite build",
+        "clean": "rm -rf dist",
         "test": "vitest run",
         "format": "oxfmt",
         "lint": "oxlint",
@@ -21,15 +35,18 @@
     "devDependencies": {
         "@magritte/api": "workspace:*",
         "@magritte/rpc": "workspace:*",
+        "@typescript/typescript6": "6.0.2",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
         "typescript": "catalog:",
+        "vite": "catalog:",
+        "vite-plugin-dts": "5.1.0",
         "vitest": "catalog:",
         "zod": "catalog:"
     },
     "peerDependencies": {
-        "@magritte/api": "workspace:*",
-        "@magritte/rpc": "workspace:*",
+        "@magritte/api": "workspace:^",
+        "@magritte/rpc": "workspace:^",
         "zod": "catalog:"
     },
     "packageManager": "pnpm@10.24.0"
