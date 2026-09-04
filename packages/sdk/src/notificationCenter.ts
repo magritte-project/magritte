@@ -60,7 +60,7 @@ export const ToastOptions = z4.object({
 })
 export type ToastOptions = z4.infer<typeof ToastOptions>
 
-export const ChromeProtocol = protocol("Magritte.Host.Chrome", {
+export const NotificationCenterProtocol = protocol("Magritte.Host.NotificationCenter", {
     /** Shows a dialog with the given options, returning the ID of the clicked button */
     showDialog: {
         input: DialogOptions,
@@ -74,4 +74,4 @@ export const ChromeProtocol = protocol("Magritte.Host.Chrome", {
     },
 })
 
-export type Chrome = ProtocolObject<typeof ChromeProtocol>
+export type NotificationCenter = ProtocolObject<typeof NotificationCenterProtocol>

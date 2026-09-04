@@ -7,10 +7,10 @@ import {
 } from "@magritte/rpc"
 import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transports"
 
-import { ChromeProtocol, type Chrome } from "../chrome"
 import { CommandCoordinatorProtocol, type CommandCoordinator } from "../commands/coordinator"
 import { CommandResponderProtocol, type CommandResponder } from "../commands/responder"
 import { LibraryProtocol, type Library } from "../library"
+import { NotificationCenterProtocol, type NotificationCenter } from "../notificationCenter"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../playback/playbackEngine"
 import { PlayerProtocol, type Player } from "../playback/player"
 
@@ -117,8 +117,8 @@ export class ExtensionHost {
         return cast(CommandCoordinatorProtocol, this.connection.remoteObject)
     }
 
-    async chrome(): Promise<Chrome> {
-        return cast(ChromeProtocol, this.connection.remoteObject)
+    async notificationCenter(): Promise<NotificationCenter> {
+        return cast(NotificationCenterProtocol, this.connection.remoteObject)
     }
 
     async library(): Promise<Library> {
