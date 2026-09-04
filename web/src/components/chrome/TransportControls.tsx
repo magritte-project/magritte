@@ -7,8 +7,6 @@ import { useCallback, useRef, useState } from "react"
 import NowPlayingScrubber from "@/components/NowPlayingScrubber"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import AsyncButton from "@/components/reusable/AsyncButton"
-import DPad from "@/components/reusable/DPad"
-import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import useHotKey from "@/hooks/hotKeyHook"
 import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
@@ -18,7 +16,6 @@ export default function TransportControls() {
     const player = usePlayer()
     const playbackState = usePlaybackState()
     const playingItem = usePlayingItem()
-    const { setIsOpen: setCommandPaletteIsOpen } = useAppCommandPaletteContext()
 
     const repressExpansion = useRef(false)
     const changeIsExpandedTimerId = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -67,92 +64,86 @@ export default function TransportControls() {
 
     return (
         <div
-            className="fixed bottom-0 left-1/2 -translate-x-1/2"
+            className="fixed bottom-0 inset-x-0"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
             <div className="relative isolate">
-                <div className="absolute inset-0 backdrop-blur-lg mask-[radial-gradient(50%_100%_at_bottom_center,black,black,transparent)] -z-10" />
-                <div className="p-outside flex flex-col items-center gap-2">
-                    <AnimatePresence initial={false}>
-                        <motion.div
-                            layout
-                            key="playingItem"
-                            className="flex flex-col items-center w-full gap-0.5 text-shadow-lg text-shadow-high-contrast"
-                        >
-                            <motion.div key="title" layout className="font-medium">
+                <div className="absolute inset-0 backdrop-blur-lg mask-[linear-gradient(to_top,black,transparent)] -z-10" />
+                <div className="p-outside flex items-center gap-between max-w-2xl mx-auto">
+                    <ArtworkImage
+                        className="aspect-square w-20"
+                        artworks={playingItem?.artworks}
+                        itemTitle={playingItem?.title}
+                    />
+                    <motion.div
+                        layout
+                        className="min-w-0 flex-1 flex flex-col gap-0.5 text-shadow-lg text-shadow-high-contrast"
+                    >
+                        <AnimatePresence initial={false}>
+                            <motion.div
+                                key="nowPlayingTitle"
+                                layout
+                                className="font-medium"
+                                title={playingItem?.title ?? "Nothing Playing"}
+                            >
                                 {playingItem ? (playingItem.title ?? "--") : "Nothing Playing"}
                             </motion.div>
+                            <motion.div
+                                key="nowPlayingDetails"
+                                layout
+                                className="text-sm truncate"
+                                title={`${playingItem?.album_title ?? "--"} by ${playingItem?.artist_name ?? "--"}`}
+                            >
+                                {playingItem?.album_title ?? "--"}{" "}
+                                <span className="text-on-secondary">by</span>{" "}
+                                {playingItem?.artist_name ?? "--"}
+                            </motion.div>
                             {isExpanded && (
-                                <>
-                                    <div className="text-sm">
-                                        {playingItem?.album_title ?? "--"}{" "}
-                                        <span className="text-on-secondary">by</span>{" "}
-                                        {playingItem?.artist_name ?? "--"}
-                                    </div>
-                                    <NowPlayingScrubber />
-                                </>
-                            )}
-                        </motion.div>
-                        <motion.div
-                            key="controls"
-                            layout
-                            className="text-2xl flex items-center gap-2"
-                        >
-                            <AsyncButton
-                                className={classNames(
-                                    "p-2 rounded-full active:bg-on-primary/10",
-                                    "font-bold text-on-primary disabled:opacity-disabled",
-                                )}
-                                onClick={() => player.skipPrevious()}
-                            >
-                                <SkipBackIcon weight="fill" aria-label="Play" />
-                            </AsyncButton>
-                            <DPad
-                                onDraggedPastTop={() => setIsExpanded((oldValue) => !oldValue)}
-                                onDraggedPastStart={() => player.skipPrevious()}
-                                onDraggedPastEnd={() => player.skipNext()}
-                                onDraggedPastBottom={() => setCommandPaletteIsOpen(true)}
-                            >
-                                <AsyncButton
-                                    className={classNames(
-                                        "bg-key text-on-key active:text-on-key-active font-bold",
-                                        "relative rounded-md drop-shadow-sm",
-                                    )}
-                                    onClick={() =>
-                                        player.playbackState === "playing"
-                                            ? player.pause()
-                                            : player.resume()
-                                    }
+                                <motion.div
+                                    key="nowPlayingScrubber"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 20 }}
                                 >
-                                    <ArtworkImage
-                                        className={classNames("aspect-square", {
-                                            "w-20": isExpanded,
-                                            "w-16": !isExpanded,
-                                        })}
-                                        artworks={playingItem?.artworks}
-                                        itemTitle={playingItem?.title}
-                                    />
-                                    <div className="absolute top-1/2 left-1/2 -translate-1/2 p-4 text-white/90 mix-blend-plus-lighter">
-                                        {playbackState === "playing" ? (
-                                            <PauseIcon weight="fill" aria-label="Pause" />
-                                        ) : (
-                                            <PlayIcon weight="fill" aria-label="Next" />
-                                        )}
-                                    </div>
-                                </AsyncButton>
-                            </DPad>
-                            <AsyncButton
-                                className={classNames(
-                                    "p-2 rounded-full active:bg-on-primary/10",
-                                    "font-bold text-on-primary disabled:opacity-disabled",
-                                )}
-                                onClick={() => player.skipNext()}
-                            >
-                                <SkipForwardIcon weight="fill" aria-label="Play" />
-                            </AsyncButton>
-                        </motion.div>
-                    </AnimatePresence>
+                                    <NowPlayingScrubber />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
+                    <AsyncButton
+                        className={classNames(
+                            "p-2 rounded-full active:bg-on-primary/10",
+                            "font-bold text-on-primary disabled:opacity-disabled",
+                        )}
+                        onClick={() => player.skipPrevious()}
+                    >
+                        <SkipBackIcon size="1.4rem" weight="fill" aria-label="Play" />
+                    </AsyncButton>
+                    <AsyncButton
+                        className={classNames(
+                            "p-2 rounded-full active:bg-on-primary/10",
+                            "font-bold text-on-primary disabled:opacity-disabled",
+                        )}
+                        onClick={() =>
+                            player.playbackState === "playing" ? player.pause() : player.resume()
+                        }
+                    >
+                        {playbackState === "playing" ? (
+                            <PauseIcon size="1.4rem" weight="fill" aria-label="Pause" />
+                        ) : (
+                            <PlayIcon size="1.4rem" weight="fill" aria-label="Next" />
+                        )}
+                    </AsyncButton>
+                    <AsyncButton
+                        className={classNames(
+                            "p-2 rounded-full active:bg-on-primary/10",
+                            "font-bold text-on-primary disabled:opacity-disabled",
+                        )}
+                        onClick={() => player.skipNext()}
+                    >
+                        <SkipForwardIcon size="1.4rem" weight="fill" aria-label="Play" />
+                    </AsyncButton>
                 </div>
             </div>
         </div>

@@ -19,6 +19,7 @@ export const Route = createRootRouteWithContext<MagritteRouterContext>()({
                 {import.meta.env.DEV && (
                     <TanStackDevtools
                         config={{
+                            hideUntilHover: true,
                             position: "bottom-left",
                         }}
                         plugins={[TanStackRouterDevtools, TanStackQueryDevtools]}
