@@ -1,41 +1,78 @@
 @import "tailwindcss";
 
 @theme {
-    /* Semantic Colors */
-    --color-primary: var(--color-white);
-    --color-primary-active: var(--color-gray-50);
-    --color-on-primary: var(--color-gray-800);
+    /* Brand Colors */
+    --color-mg-midnight-50: oklch(98.4% 0.0656 238.47);
+    --color-mg-midnight-100: oklch(96.8% 0.0656 238.47);
+    --color-mg-midnight-200: oklch(92.9% 0.0656 238.47);
+    --color-mg-midnight-300: oklch(86.9% 0.0656 238.47);
+    --color-mg-midnight-400: oklch(70.4% 0.0656 238.47);
+    --color-mg-midnight-500: oklch(55.4% 0.0656 238.47);
+    --color-mg-midnight-600: oklch(44.6% 0.0656 238.47);
+    --color-mg-midnight-700: oklch(37.2% 0.0656 238.47);
+    --color-mg-midnight-800: oklch(27.9% 0.0656 238.47);
+    --color-mg-midnight-900: oklch(20.8% 0.0656 238.47);
+    --color-mg-midnight-950: oklch(12.9% 0.0656 238.47);
 
-    --color-secondary: var(--color-gray-50);
-    --color-secondary-active: var(--color-gray-200);
+    --color-mg-orange-50: oklch(98.4% 0.1475 80.45);
+    --color-mg-orange-100: oklch(96.8% 0.1475 80.45);
+    --color-mg-orange-200: oklch(92.9% 0.1475 80.45);
+    --color-mg-orange-300: oklch(86.9% 0.1475 80.45);
+    --color-mg-orange-400: oklch(70.4% 0.1475 80.45);
+    --color-mg-orange-500: oklch(55.4% 0.1475 80.45);
+    --color-mg-orange-600: oklch(44.6% 0.1475 80.45);
+    --color-mg-orange-700: oklch(37.2% 0.1475 80.45);
+    --color-mg-orange-800: oklch(27.9% 0.1475 80.45);
+    --color-mg-orange-900: oklch(20.8% 0.1475 80.45);
+    --color-mg-orange-950: oklch(12.9% 0.1475 80.45);
+
+    --color-mg-red-50: oklch(98.4% 0.2084 27.06);
+    --color-mg-red-100: oklch(96.8% 0.2084 27.06);
+    --color-mg-red-200: oklch(92.9% 0.2084 27.06);
+    --color-mg-red-300: oklch(86.9% 0.2084 27.06);
+    --color-mg-red-400: oklch(70.4% 0.2084 27.06);
+    --color-mg-red-500: oklch(55.4% 0.2084 27.06);
+    --color-mg-red-600: oklch(44.6% 0.2084 27.06);
+    --color-mg-red-700: oklch(37.2% 0.2084 27.06);
+    --color-mg-red-800: oklch(27.9% 0.2084 27.06);
+    --color-mg-red-900: oklch(20.8% 0.2084 27.06);
+    --color-mg-red-950: oklch(12.9% 0.2084 27.06);
+
+    /* Semantic Colors */
+    --color-primary: var(--color-mg-midnight-950);
+    --color-primary-active: var(--color-gray-950);
+    --color-on-primary: var(--color-gray-200);
+
+    --color-secondary: var(--color-mg-midnight-900);
+    --color-secondary-active: var(--color-mg-midnight-700);
     --color-on-secondary: var(--color-gray-500);
 
-    --color-tertiary: var(--color-gray-100);
-    --color-tertiary-active: var(--color-gray-300);
-    --color-on-tertiary: var(--color-gray-400);
+    --color-tertiary: var(--color-mg-midnight-800);
+    --color-tertiary-active: var(--color-mg-midnight-600);
+    --color-on-tertiary: var(--color-gray-600);
 
-    --color-quaternary: var(--color-gray-200);
-    --color-quaternary-active: var(--color-gray-400);
-    --color-on-quaternary: var(--color-gray-300);
+    --color-quaternary: var(--color-mg-midnight-700);
+    --color-quaternary-active: var(--color-mg-midnight-500);
+    --color-on-quaternary: var(--color-gray-700);
 
-    --color-placeholder: var(--color-gray-400);
-    --color-outline: var(--color-gray-300);
+    --color-placeholder: var(--color-gray-500);
+    --color-outline: var(--color-gray-700);
     --color-outline-focus: var(--color-key);
-    --color-separator: var(--color-gray-100);
+    --color-separator: var(--color-gray-800);
 
-    --color-key: oklch(55.2% 0.126 169.32);
-    --color-on-key: var(--color-slate-50);
-    --color-key-active: oklch(70.5% 0.126 169.32);
-    --color-on-key-active: var(--color-white);
-    --color-key-subtle: oklch(98.5% 0.018 169.32);
+    --color-key: var(--color-mg-orange-300);
+    --color-on-key: var(--color-gray-950);
+    --color-key-active: var(--color-mg-orange-200);
+    --color-on-key-active: var(--color-black);
+    --color-key-subtle: var(--color-mg-orange-800);
 
-    --color-destructive: var(--color-red-500);
+    --color-destructive: var(--color-mg-red-500);
     --color-on-destructive: var(--color-slate-50);
-    --color-destructive-active: var(--color-red-400);
+    --color-destructive-active: var(--color-mg-red-400);
     --color-on-destructive-active: var(--color-white);
-    --color-destructive-subtle: var(--color-red-50);
+    --color-destructive-subtle: var(--color-mg-red-50);
 
-    --color-high-contrast: var(--color-white);
+    --color-high-contrast: var(--color-black);
 
     /* Semantic Opacities */
     --opacity-disabled: 0.6;
@@ -47,40 +84,6 @@
     /* Global Defaults */
     --default-font-family: "Comfortaa", sans-serif;
     --default-mono-font-family: "Fira Mono", monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        /* Semantic Colors */
-        --color-primary: var(--color-black);
-        --color-primary-active: var(--color-gray-950);
-        --color-on-primary: var(--color-gray-200);
-
-        --color-secondary: var(--color-gray-950);
-        --color-secondary-active: var(--color-gray-800);
-        --color-on-secondary: var(--color-gray-500);
-
-        --color-tertiary: var(--color-gray-900);
-        --color-tertiary-active: var(--color-gray-700);
-        --color-on-tertiary: var(--color-gray-600);
-
-        --color-quaternary: var(--color-gray-800);
-        --color-quaternary-active: var(--color-gray-600);
-        --color-on-quaternary: var(--color-gray-700);
-
-        --color-placeholder: var(--color-gray-600);
-        --color-outline: var(--color-gray-700);
-        --color-outline-focus: var(--color-key);
-        --color-separator: var(--color-gray-900);
-
-        --color-key: oklch(70.5% 0.126 169.32);
-        --color-on-key: var(--color-slate-50);
-        --color-key-active: oklch(87.1% 0.126 169.32);
-        --color-on-key-active: var(--color-black);
-        --color-key-subtle: oklch(14.1% 0.126 169.32);
-
-        --color-high-contrast: var(--color-black);
-    }
 }
 
 @layer components {
