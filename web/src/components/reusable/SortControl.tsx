@@ -13,8 +13,8 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
-import { ArrowDownIcon, MinusIcon } from "@phosphor-icons/react"
-import { ArrowUpIcon, DotsSixVerticalIcon, PlusIcon } from "@phosphor-icons/react"
+import { DotsSixVerticalIcon, PlusIcon } from "@phosphor-icons/react"
+import { SortAscendingIcon, SortDescendingIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useCallback, useMemo } from "react"
 
 import SortableListItem from "@/components/reusable/SortableListItem"
@@ -96,7 +96,7 @@ export default function SortControl<Key extends string>({
     }, [keys, order])
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-between">
             <header className="text-xs font-bold">Sorting By</header>
             <DndContext
                 sensors={sensors}
@@ -109,37 +109,48 @@ export default function SortControl<Key extends string>({
                             <SortableListItem
                                 key={key}
                                 id={key}
-                                className="drop-shadow-sm bg-primary rounded-sm flex items-center gap-2 px-2 py-1 cursor-default"
+                                className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-md flex items-center gap-2 px-2 py-1 cursor-default"
                             >
                                 <DotsSixVerticalIcon
                                     className="text-placeholder"
                                     weight="bold"
                                     aria-label="Reorderable"
                                 />
-                                <span className="flex-1 text-sm">{labels[getKey(key)]}</span>
-                                <ThemedSubtleButton onClick={() => handleReverse(key)}>
+                                <span className="flex-1 text-sm truncate">
+                                    {labels[getKey(key)]}
+                                </span>
+                                <ThemedSubtleButton
+                                    className="bg-tertiary active:bg-tertiary-active-active"
+                                    onClick={() => handleReverse(key)}
+                                >
                                     {isAscending(key) ? (
-                                        <ArrowDownIcon aria-label="Ascending" />
+                                        <SortAscendingIcon aria-label="Ascending" />
                                     ) : (
-                                        <ArrowUpIcon aria-label="Descending" />
+                                        <SortDescendingIcon aria-label="Descending" />
                                     )}
                                 </ThemedSubtleButton>
-                                <ThemedSubtleButton onClick={() => handleRemove(key)}>
-                                    <MinusIcon aria-label="Remove" />
+                                <ThemedSubtleButton
+                                    className="bg-tertiary active:bg-tertiary-active-active"
+                                    onClick={() => handleRemove(key)}
+                                >
+                                    <TrashIcon aria-label="Remove" />
                                 </ThemedSubtleButton>
                             </SortableListItem>
                         ))}
                     </ol>
                 </SortableContext>
-                <header className="text-xs font-bold">Add</header>
+                <header className="text-xs font-bold mt-between">Available</header>
                 <ol className="flex flex-col gap-3">
                     {availableKeys.map((key) => (
                         <li
                             key={key}
-                            className="drop-shadow-sm bg-primary rounded-sm flex items-center gap-2 px-2 py-1 cursor-default"
+                            className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-md flex items-center gap-2 px-2 py-1 cursor-default"
                         >
-                            <span className="flex-1 text-sm">{labels[key]}</span>
-                            <ThemedSubtleButton onClick={() => handleAdd(key)}>
+                            <span className="flex-1 text-sm truncate">{labels[key]}</span>
+                            <ThemedSubtleButton
+                                className="bg-tertiary active:bg-tertiary-active-active"
+                                onClick={() => handleAdd(key)}
+                            >
                                 <PlusIcon aria-label="Add" />
                             </ThemedSubtleButton>
                         </li>

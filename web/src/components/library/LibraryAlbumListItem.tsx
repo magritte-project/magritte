@@ -26,7 +26,7 @@ export default function LibraryAlbumListItem({
     ...rest
 }: LibraryAlbumListItemProps) {
     return (
-        <li className={classNames("w-36 h-47 hover:bg-key-subtle", className)} {...rest}>
+        <li className={classNames("w-36 h-47 hover:bg-key-subtle rounded-md", className)} {...rest}>
             <Link
                 to="/libraries/$libraryId/songs"
                 params={{ libraryId }}
@@ -37,7 +37,7 @@ export default function LibraryAlbumListItem({
                 title={album.title}
             >
                 <ArtworkImage
-                    className="h-36 w-36"
+                    className="h-36 w-36 shadow-md"
                     artworks={album.artworks}
                     itemTitle={album.title}
                     accessory={

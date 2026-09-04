@@ -25,7 +25,9 @@ export default function LibraryArtistListItem({
     return (
         <li
             className={classNames(
-                " bg-secondary odd:bg-inherit hover:bg-key-subtle flex items-center gap-2 px-2 py-1 h-9",
+                "bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-md",
+                "flex items-center gap-2",
+                "px-2 py-1 h-9",
                 className,
             )}
             {...rest}
@@ -42,6 +44,7 @@ export default function LibraryArtistListItem({
                 params={{ libraryId }}
                 search={{ artist_id: artist.id }}
                 className="flex-1 cursor-pointer"
+                title={artist.name ?? undefined}
             >
                 {artist.name}
             </Link>
