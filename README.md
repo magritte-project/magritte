@@ -134,6 +134,13 @@ To publish the front end packages, run the following command:
 just packages::publish
 ```
 
+To publish the server package with the web app bundled in, run the following commands:
+
+```sh
+just web::build
+just server::publish
+```
+
 ## Data Architecture
 
 Magritte is intended to manage multiple libraries. Each library is owned by a single user, a member of a household. Each library contains zero or more songs, artists, and albums. Unless set to private, all users on a Magritte server may access the contents of any library, but they may only edit items in their own library. Songs from one library can be linked to another. Linked songs are read only.

@@ -20,6 +20,6 @@ check-types: server::check-types web::check-types packages::check-types extensio
 
 generate-openapi: server::generate-openapi packages::generate-openapi
 
-clean: server::clean web::clean
+clean: server::clean web::clean packages::clean
 
 build: web::build server::build
