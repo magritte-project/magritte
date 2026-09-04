@@ -2,9 +2,21 @@
     "name": "@magritte/sdk",
     "version": "0.1.0",
     "description": "SDK for developing Magritte extensions",
-    "keywords": [],
+    "keywords": [
+        "extensions",
+        "magritte",
+        "sdk"
+    ],
     "license": "MIT",
-    "author": "",
+    "author": {
+        "name": "P. Kevin Contreras",
+        "email": "magritte@swampmonkeyco.com",
+        "url": "https://magritte.swampmonkeyco.com/"
+    },
+    "funding": {
+        "type": "individual",
+        "url": "https://github.com/sponsors/decarbonization"
+    },
     "files": [
         "dist",
         "LICENSE"

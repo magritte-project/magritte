@@ -1,7 +1,18 @@
 {
     "name": "magritte",
+    "version": "0.1.0",
     "private": true,
+    "description": "Built-in front end for Magritte instances",
     "license": "GPL-3.0-only",
+    "author": {
+        "name": "P. Kevin Contreras",
+        "email": "magritte@swampmonkeyco.com",
+        "url": "https://magritte.swampmonkeyco.com/"
+    },
+    "funding": {
+        "type": "individual",
+        "url": "https://github.com/sponsors/decarbonization"
+    },
     "type": "module",
     "scripts": {
         "dev": "vite --port 6479",
