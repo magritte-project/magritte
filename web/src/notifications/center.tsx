@@ -1,5 +1,10 @@
 import type { API, NotificationRead, NotificationsRead, UserEvent } from "@magritte/api"
-import { DialogButtonID, type DialogOptions, type ToastOptions } from "@magritte/sdk"
+import {
+    defaultDialogButtons,
+    DialogButtonID,
+    type DialogOptions,
+    type ToastOptions,
+} from "@magritte/sdk"
 import { QueryObserver, type QueryClient, type QueryObserverResult } from "@tanstack/react-query"
 import { secondsToMilliseconds } from "motion/react"
 
@@ -46,7 +51,7 @@ export class NotificationCenter {
 
         const observer = new QueryObserver(queryClient, readNotifications(api))
         observer.subscribe((result) => this._handleReadNotificationsQueryResult(result))
-        queryClient.ensureQueryData(readNotifications(api))
+        queryClient.ensureQueryData(readNotifications(api)).catch(() => undefined)
     }
 
     private async _handleUserEvent(event: UserEvent) {
@@ -147,7 +152,7 @@ export class NotificationCenter {
         }
         const resolver = promiseResolver<number>()
         const timeoutId = setTimeout(
-            () => this.dismissDialog(DialogButtonID.cancel),
+            () => this.dismissDialog(),
             options.timeout ?? secondsToMilliseconds(60),
         )
         this._dialogs = [...this._dialogs, [options, resolver, timeoutId]]
@@ -159,11 +164,7 @@ export class NotificationCenter {
         if (this._dialogs.length > 0) {
             const [dialog, { resolve, reject }, timeoutId] = this._dialogs[0]
             if (buttonId === undefined) {
-                if (dialog.buttons?.length === 1) {
-                    buttonId = dialog.buttons[0].id
-                } else {
-                    buttonId = DialogButtonID.cancel
-                }
+                buttonId = (dialog.buttons ?? defaultDialogButtons)[0].id
             }
             if (dialog.buttons && !dialog.buttons.some((button) => button.id === buttonId)) {
                 reject(new Error(`Dialog does not have button with id: ${buttonId}`))
