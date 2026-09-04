@@ -1,5 +1,5 @@
-import type { APIClient } from "@magritte/api"
-import type { UserSessionManager } from "@magritte/api"
+import type { APIClient } from "./client"
+import type { UserSessionManager } from "./userSession"
 
 type UserEventsState =
     | { type: "notConnected" }
