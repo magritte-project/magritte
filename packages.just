@@ -12,3 +12,9 @@ check-types:
 
 generate-openapi:
     pnpm --filter "./packages/*" run generate-openapi
+
+clean:
+    pnpm --filter "./packages/*" run clean
+
+build:
+    pnpm --filter "./packages/*" run build
