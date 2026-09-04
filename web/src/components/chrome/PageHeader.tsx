@@ -6,7 +6,6 @@ import NotificationsButton from "@/components/NotificationsButton"
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import UserButton from "@/components/UserButton"
-import VolumeButton from "@/components/VolumeButton"
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import useHotKeys from "@/hooks/hotKeysHook"
 
@@ -31,7 +30,6 @@ export default function PageHeader({ children }: PageHeaderProps) {
             }
             supplementaryEnd={
                 <>
-                    <VolumeButton />
                     <ThemedSubtleButton onClick={handleToggleCommandPalette}>
                         {modifierKey === "meta" ? <CommandIcon /> : <ControlIcon />} K
                     </ThemedSubtleButton>

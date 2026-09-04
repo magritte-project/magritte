@@ -1,5 +1,5 @@
 import { PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon } from "@phosphor-icons/react"
-import { useDocumentTitle } from "@uidotdev/usehooks"
+import { useDocumentTitle, useMediaQuery } from "@uidotdev/usehooks"
 import classNames from "classnames"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useRef, useState } from "react"
@@ -12,11 +12,14 @@ import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
 
+import VolumeControl from "../VolumeControl"
+
 export default function TransportControls() {
     const player = usePlayer()
     const playbackState = usePlaybackState()
     const playingItem = usePlayingItem()
 
+    const isPrimarilyTouch = useMediaQuery("(pointer: coarse)")
     const repressExpansion = useRef(false)
     const changeIsExpandedTimerId = useRef<ReturnType<typeof setTimeout> | null>(null)
     const [isExpanded, setIsExpanded] = useState(false)
@@ -70,7 +73,7 @@ export default function TransportControls() {
         >
             <div className="relative isolate">
                 <div className="absolute inset-0 backdrop-blur-lg mask-[linear-gradient(to_top,black,transparent)] -z-10" />
-                <div className="p-outside flex items-center gap-between max-w-2xl mx-auto">
+                <div className="p-outside flex items-center gap-6 max-w-2xl mx-auto">
                     <ArtworkImage
                         className="aspect-square w-20"
                         artworks={playingItem?.artworks}
@@ -99,7 +102,7 @@ export default function TransportControls() {
                                 <span className="text-on-secondary">by</span>{" "}
                                 {playingItem?.artist_name ?? "--"}
                             </motion.div>
-                            {isExpanded && (
+                            {(isExpanded || isPrimarilyTouch) && (
                                 <motion.div
                                     key="nowPlayingScrubber"
                                     initial={{ opacity: 0, y: 20 }}
@@ -111,39 +114,58 @@ export default function TransportControls() {
                             )}
                         </AnimatePresence>
                     </motion.div>
-                    <AsyncButton
-                        className={classNames(
-                            "p-2 rounded-full active:bg-on-primary/10",
-                            "font-bold text-on-primary disabled:opacity-disabled",
-                        )}
-                        onClick={() => player.skipPrevious()}
-                    >
-                        <SkipBackIcon size="1.4rem" weight="fill" aria-label="Play" />
-                    </AsyncButton>
-                    <AsyncButton
-                        className={classNames(
-                            "p-2 rounded-full active:bg-on-primary/10",
-                            "font-bold text-on-primary disabled:opacity-disabled",
-                        )}
-                        onClick={() =>
-                            player.playbackState === "playing" ? player.pause() : player.resume()
-                        }
-                    >
-                        {playbackState === "playing" ? (
-                            <PauseIcon size="1.4rem" weight="fill" aria-label="Pause" />
-                        ) : (
-                            <PlayIcon size="1.4rem" weight="fill" aria-label="Next" />
-                        )}
-                    </AsyncButton>
-                    <AsyncButton
-                        className={classNames(
-                            "p-2 rounded-full active:bg-on-primary/10",
-                            "font-bold text-on-primary disabled:opacity-disabled",
-                        )}
-                        onClick={() => player.skipNext()}
-                    >
-                        <SkipForwardIcon size="1.4rem" weight="fill" aria-label="Play" />
-                    </AsyncButton>
+                    <motion.div layout className="flex flex-col">
+                        <motion.div layout className="flex items-center gap-between">
+                            <AsyncButton
+                                className={classNames(
+                                    "p-2 rounded-full active:bg-on-primary/10",
+                                    "font-bold text-on-primary disabled:opacity-disabled",
+                                )}
+                                onClick={() => player.skipPrevious()}
+                            >
+                                <SkipBackIcon size="1.4rem" weight="fill" aria-label="Play" />
+                            </AsyncButton>
+                            <AsyncButton
+                                className={classNames(
+                                    "p-2 rounded-full active:bg-on-primary/10",
+                                    "font-bold text-on-primary disabled:opacity-disabled",
+                                )}
+                                onClick={() =>
+                                    player.playbackState === "playing"
+                                        ? player.pause()
+                                        : player.resume()
+                                }
+                            >
+                                {playbackState === "playing" ? (
+                                    <PauseIcon size="1.4rem" weight="fill" aria-label="Pause" />
+                                ) : (
+                                    <PlayIcon size="1.4rem" weight="fill" aria-label="Next" />
+                                )}
+                            </AsyncButton>
+                            <AsyncButton
+                                className={classNames(
+                                    "p-2 rounded-full active:bg-on-primary/10",
+                                    "font-bold text-on-primary disabled:opacity-disabled",
+                                )}
+                                onClick={() => player.skipNext()}
+                            >
+                                <SkipForwardIcon size="1.4rem" weight="fill" aria-label="Play" />
+                            </AsyncButton>
+                        </motion.div>
+                        <AnimatePresence initial={false}>
+                            {(isExpanded || isPrimarilyTouch) && (
+                                <motion.div
+                                    key="nowPlayingVolume"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 20 }}
+                                    className="pt-2.25"
+                                >
+                                    <VolumeControl />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
                 </div>
             </div>
         </div>
