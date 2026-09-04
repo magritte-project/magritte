@@ -45,9 +45,6 @@
         "lint": "oxlint",
         "check": "oxlint && oxfmt --check"
     },
-    "peerDependencies": {
-        "zod": "catalog:"
-    },
     "devDependencies": {
         "@typescript/typescript6": "6.0.2",
         "oxfmt": "catalog:",
@@ -56,6 +53,9 @@
         "vite": "catalog:",
         "vite-plugin-dts": "5.1.0",
         "vitest": "catalog:",
+        "zod": "catalog:"
+    },
+    "peerDependencies": {
         "zod": "catalog:"
     },
     "packageManager": "pnpm@10.24.0"

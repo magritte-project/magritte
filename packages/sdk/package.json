@@ -18,16 +18,19 @@
         "lint": "oxlint",
         "check": "oxlint && oxfmt --check"
     },
-    "dependencies": {
+    "devDependencies": {
         "@magritte/api": "workspace:*",
         "@magritte/rpc": "workspace:*",
-        "zod": "catalog:"
-    },
-    "devDependencies": {
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
         "typescript": "catalog:",
-        "vitest": "catalog:"
+        "vitest": "catalog:",
+        "zod": "catalog:"
+    },
+    "peerDependencies": {
+        "@magritte/api": "workspace:*",
+        "@magritte/rpc": "workspace:*",
+        "zod": "catalog:"
     },
     "packageManager": "pnpm@10.24.0"
 }
