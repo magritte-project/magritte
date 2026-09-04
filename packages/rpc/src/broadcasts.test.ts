@@ -1,8 +1,7 @@
-import { defineBroadcast } from "@magritte/rpc"
 import { describe, expect, it, vi } from "vitest"
 import z4 from "zod/v4"
 
-import { RPCBroadcaster } from "./broadcasts"
+import { RPCBroadcaster, defineBroadcast } from "./broadcasts"
 
 const ArithmeticAdded = defineBroadcast("Arithmetic", "added", z4.number())
 const ArithmeticSubtracted = defineBroadcast("Arithmetic", "subtracted", z4.number())

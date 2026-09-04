@@ -1,10 +1,19 @@
 {
     "name": "@magritte/rpc",
-    "version": "1.0.0",
-    "description": "",
-    "keywords": [],
+    "version": "0.1.0",
+    "description": "RPC infrastructure for cross-origin communication in Magritte clients",
+    "keywords": [
+        "communication",
+        "cross-origin",
+        "magritte",
+        "rpc"
+    ],
     "license": "MIT",
     "author": "",
+    "files": [
+        "dist",
+        "LICENSE"
+    ],
     "type": "module",
     "exports": {
         ".": {
@@ -16,7 +25,21 @@
             "default": "./src/transports/index.ts"
         }
     },
+    "publishConfig": {
+        "exports": {
+            ".": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            },
+            "./transports": {
+                "types": "./dist/transports/index.d.ts",
+                "default": "./dist/transports.js"
+            }
+        }
+    },
     "scripts": {
+        "build": "vite build",
+        "clean": "rm -rf dist",
         "test": "vitest run",
         "format": "oxfmt",
         "lint": "oxlint",
@@ -26,9 +49,12 @@
         "zod": "catalog:"
     },
     "devDependencies": {
+        "@typescript/typescript6": "6.0.2",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
         "typescript": "catalog:",
+        "vite": "catalog:",
+        "vite-plugin-dts": "5.1.0",
         "vitest": "catalog:"
     },
     "packageManager": "pnpm@10.24.0"
