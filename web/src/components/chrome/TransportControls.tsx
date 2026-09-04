@@ -75,7 +75,7 @@ export default function TransportControls() {
                 <div className="absolute inset-0 backdrop-blur-lg mask-[linear-gradient(to_top,black,transparent)] -z-10" />
                 <div className="p-outside flex items-center gap-6 max-w-2xl mx-auto">
                     <ArtworkImage
-                        className="aspect-square w-20"
+                        className="aspect-square w-20 shadow-lg shadow-high-contrast"
                         artworks={playingItem?.artworks}
                         itemTitle={playingItem?.title}
                     />
@@ -115,7 +115,10 @@ export default function TransportControls() {
                         </AnimatePresence>
                     </motion.div>
                     <motion.div layout className="flex flex-col">
-                        <motion.div layout className="flex items-center gap-between">
+                        <motion.div
+                            layout
+                            className="flex items-center gap-between drop-shadow-lg drop-shadow-high-contrast"
+                        >
                             <AsyncButton
                                 className={classNames(
                                     "p-2 rounded-full active:bg-on-primary/10",
