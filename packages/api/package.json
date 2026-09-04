@@ -38,7 +38,7 @@
         "check": "oxlint && oxfmt --check",
         "generate-openapi": "openapi-ts"
     },
-    "dependencies": {
+    "peerDependencies": {
         "zod": "catalog:"
     },
     "devDependencies": {
@@ -49,7 +49,8 @@
         "typescript": "catalog:",
         "vite": "catalog:",
         "vite-plugin-dts": "5.1.0",
-        "vitest": "catalog:"
+        "vitest": "catalog:",
+        "zod": "catalog:"
     },
     "packageManager": "pnpm@10.24.0"
 }

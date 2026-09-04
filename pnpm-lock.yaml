@@ -374,10 +374,6 @@ importers:
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.2)(jsdom@30.0.0)(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0))
 
   packages/api:
-    dependencies:
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
     devDependencies:
       '@hey-api/openapi-ts':
         specifier: 0.0.0-next-20260724070045
@@ -403,12 +399,11 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.2)(jsdom@30.0.0)(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0))
-
-  packages/rpc:
-    dependencies:
       zod:
         specifier: 'catalog:'
         version: 4.4.3
+
+  packages/rpc:
     devDependencies:
       '@typescript/typescript6':
         specifier: 6.0.2
@@ -431,6 +426,9 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.2)(jsdom@30.0.0)(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0))
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
 
   packages/sdk:
     dependencies:
