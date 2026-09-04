@@ -1,28 +1,35 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react"
 import { BellIcon, BellRingingIcon } from "@phosphor-icons/react"
-import { useQuery } from "@tanstack/react-query"
 import classNames from "classnames"
-import { useMemo } from "react"
+import { useMemo, useSyncExternalStore } from "react"
 
-import { readNotifications } from "@/api/queries/users"
 import NotificationListItem from "@/components/NotificationListItem"
 import ThemedButton from "@/components/theme/ThemedButton"
-import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import useAPI from "@/hooks/apiHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
+import { filterTo } from "@/utilities/events"
 
 export default function NotificationsButton() {
+    const notificationCenter = useNotificationCenter()
+    const notifications = useSyncExternalStore(
+        (onStoreChange) =>
+            notificationCenter.$events(
+                filterTo("type", "serverNotificationsDidChange", onStoreChange),
+            ),
+        () => notificationCenter.serverNotifications,
+    )
+
     const { isSignedIn } = useUserSession()
-    const api = useAPI()
-    const notifications = useQuery(readNotifications(api))
 
     const [unreadCount, formattedUnreadCount] = useMemo(() => {
-        const items = notifications?.data?.items ?? []
-        const unreadCount = items.reduce((acc, { is_read: isRead }) => (isRead ? acc : acc + 1), 0)
+        const unreadCount = notifications.reduce(
+            (acc, { is_read: isRead }) => (isRead ? acc : acc + 1),
+            0,
+        )
         const formattedUnreadCount = Intl.NumberFormat().format(unreadCount)
         return [unreadCount, formattedUnreadCount] as const
-    }, [notifications?.data])
+    }, [notifications])
 
     return (
         isSignedIn && (
@@ -59,22 +66,14 @@ export default function NotificationsButton() {
                     anchor="bottom"
                     className="w-2xs bg-primary rounded-md shadow-sm flex flex-col items-center"
                 >
-                    {notifications.isPending ? (
-                        <ThemedContentUnavailable className="p-outside" variant="inline" />
-                    ) : notifications.isError ? (
-                        <ThemedContentUnavailable
-                            className="p-outside"
-                            variant="inline"
-                            error={notifications.error}
-                        />
-                    ) : notifications.data.total === 0 ? (
+                    {notifications.length === 0 ? (
                         <div className="p-outside flex flex-col items-center text-on-secondary text-sm font-medium">
                             No notifications
                         </div>
                     ) : (
                         <>
                             <ol className="px-outside flex flex-col w-full">
-                                {notifications.data.items.map((notification) => (
+                                {notifications.map((notification) => (
                                     <NotificationListItem
                                         key={notification.id}
                                         notification={notification}
