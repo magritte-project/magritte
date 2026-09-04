@@ -375,9 +375,6 @@ importers:
 
   packages/api:
     dependencies:
-      '@magritte/rpc':
-        specifier: workspace:*
-        version: link:../rpc
       zod:
         specifier: 'catalog:'
         version: 4.4.3
