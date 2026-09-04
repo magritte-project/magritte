@@ -126,6 +126,14 @@ just build
 
 The package recipe will first build the web app, then bundle the server into a python package which includes both the server and web app code. This package can then be installed and run outside of a development environment.
 
+## Publishing
+
+To publish the front end packages, run the following command:
+
+```sh
+just packages::publish
+```
+
 ## Data Architecture
 
 Magritte is intended to manage multiple libraries. Each library is owned by a single user, a member of a household. Each library contains zero or more songs, artists, and albums. Unless set to private, all users on a Magritte server may access the contents of any library, but they may only edit items in their own library. Songs from one library can be linked to another. Linked songs are read only.
