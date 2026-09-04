@@ -63,7 +63,7 @@ export default function NotificationsButton() {
                     )}
                 </ThemedSubtleButton>
                 <PopoverPanel
-                    anchor="bottom"
+                    anchor="bottom end"
                     className="w-2xs bg-primary rounded-md shadow-sm flex flex-col items-center"
                 >
                     {notifications.length === 0 ? (
