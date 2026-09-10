@@ -51,6 +51,7 @@ try {
         container: document.body,
         commandInputs,
         commandRegistry,
+        queryClient,
         api,
         notificationCenter,
         player,

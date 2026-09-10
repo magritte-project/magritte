@@ -1,5 +1,6 @@
 import type { API, ExtensionManifest } from "@magritte/api"
 import { Extension, getExtensionAllow, getExtensionSrc } from "@magritte/sdk"
+import type { QueryClient } from "@tanstack/react-query"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
@@ -15,6 +16,7 @@ export interface ExtensionRuntimeOptions {
     readonly container: HTMLElement
     readonly commandInputs: CommandInputs
     readonly commandRegistry: CommandRegistry
+    readonly queryClient: QueryClient
     readonly api: API
     readonly notificationCenter: NotificationCenter
     readonly player: Player
@@ -73,6 +75,9 @@ export class ExtensionRuntime {
     /** The command registry */
     private readonly _commandRegistry: CommandRegistry
 
+    /** The query client */
+    private readonly _queryClient: QueryClient
+
     /** The API */
     private readonly _api: API
 
@@ -97,6 +102,7 @@ export class ExtensionRuntime {
         this._container = options.container
         this._commandInputs = options.commandInputs
         this._commandRegistry = options.commandRegistry
+        this._queryClient = options.queryClient
         this._api = options.api
         this._notificationCenter = options.notificationCenter
         this._player = options.player
@@ -248,7 +254,7 @@ export class ExtensionRuntime {
                         this._commandRegistry,
                     ),
                     notificationCenter: exportNotificationCenter(this._notificationCenter),
-                    library: exportLibrary(manifest, this._api),
+                    library: exportLibrary(manifest, this._queryClient, this._api),
                     player: exportPlayer(manifest, broadcaster, this._player),
                 }),
             })
