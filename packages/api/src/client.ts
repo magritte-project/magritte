@@ -98,6 +98,16 @@ export type ReadLibrarySongsSortBy = NonNullable<
     ReadLibrarySongsLibrariesLibraryIdSongsGetData["query"]
 >["sort_by"]
 
+export class APIClientUnauthorizedEvent extends Event {
+    constructor(eventInit?: EventInit) {
+        super("unauthorized", eventInit)
+    }
+}
+
+interface APIClientEvents {
+    unauthorized: APIClientUnauthorizedEvent
+}
+
 export interface APIClientOptions {
     readonly baseUrl: string
     readonly userSessionManager: UserSessionManager
@@ -105,16 +115,19 @@ export interface APIClientOptions {
 
 export class APIClient {
     private readonly options: { throwOnError: true; client: Client }
+    private readonly events: EventTarget
 
     constructor({ baseUrl, userSessionManager }: APIClientOptions) {
         const client = createClient({
             baseUrl,
             auth: () => userSessionManager.current?.accessToken,
         })
+        const events = new EventTarget()
         client.interceptors.response.use(async (response) => {
             if (!response.ok) {
                 if (response.status === 401) {
                     userSessionManager.current = null
+                    events.dispatchEvent(new APIClientUnauthorizedEvent())
                 }
 
                 let message = `${response.status}: ${response.statusText}`
@@ -145,6 +158,23 @@ export class APIClient {
             return response
         })
         this.options = { throwOnError: true, client }
+        this.events = events
+    }
+
+    // -- Event Handling -- //
+
+    addEventListener<K extends keyof APIClientEvents>(
+        event: K,
+        listener: (event: APIClientEvents[K]) => void,
+    ): void {
+        this.events.addEventListener(event, listener)
+    }
+
+    removeEventListener<K extends keyof APIClientEvents>(
+        event: K,
+        listener: (event: APIClientEvents[K]) => void,
+    ): void {
+        this.events.removeEventListener(event, listener)
     }
 
     // -- Instance Status -- //

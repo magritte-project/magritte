@@ -23,7 +23,7 @@ export interface MagritteRouterContext {
 }
 
 export function createMagritteRouter(context: MagritteRouterContext) {
-    return createRouter({
+    const router = createRouter({
         routeTree,
         context,
         defaultPreload: "intent",
@@ -32,6 +32,18 @@ export function createMagritteRouter(context: MagritteRouterContext) {
         defaultStructuralSharing: true,
         defaultPreloadStaleTime: 0,
     })
+
+    context.api.client.addEventListener("unauthorized", () => {
+        if (!router.state.matches.some((match) => match.staticData.noAuth === true)) {
+            const currentLocation = router.getParsedLocationHref(router.state.location)
+            router.navigate({
+                to: "/sign-in",
+                search: { redirect_to: currentLocation },
+            })
+        }
+    })
+
+    return router
 }
 
 export function getMagritteRouterContext(router: RegisteredRouter): MagritteRouterContext {

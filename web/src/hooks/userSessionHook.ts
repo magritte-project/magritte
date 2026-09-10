@@ -1,6 +1,5 @@
 import type { Token, UserSession } from "@magritte/api"
 import { useQueryClient } from "@tanstack/react-query"
-import { useNavigate, useRouter } from "@tanstack/react-router"
 import { useCallback, useMemo, useSyncExternalStore } from "react"
 
 import useAPI from "@/hooks/apiHook"
@@ -13,26 +12,13 @@ export interface UseUserSessionResult {
 }
 
 export default function useUserSession(): UseUserSessionResult {
-    const router = useRouter()
-    const navigate = useNavigate()
     const queryClient = useQueryClient()
     const { userSessionManager } = useAPI()
     const current = useSyncExternalStore(
         (onStoreChange) => {
             const listener = () => {
-                if (
-                    !userSessionManager.isSignedIn &&
-                    !router.state.matches.some((match) => match.staticData.noAuth === true)
-                ) {
-                    // NOTE: We must redirect before invalidating the queries
-                    //       or we can end up in an infinite loop.
-                    setTimeout(() => {
-                        navigate({ to: "/sign-in" })
-                    }, 16)
-                } else {
-                    onStoreChange()
-                    queryClient.clear()
-                }
+                queryClient.clear()
+                onStoreChange()
             }
             userSessionManager.addEventListener("usersessionchanged", listener)
             return () => userSessionManager.removeEventListener("usersessionchanged", listener)

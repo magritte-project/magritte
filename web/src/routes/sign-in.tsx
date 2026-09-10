@@ -1,5 +1,5 @@
 import type { BodySignInSignInPost } from "@magritte/api"
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 import z from "zod"
 
 import { useSignIn } from "@/api/mutations/root"
@@ -11,17 +11,21 @@ import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
 
 export const Route = createFileRoute("/sign-in")({
+    validateSearch: z.object({ redirect_to: z.string().optional() }),
+
     beforeLoad: async ({
         context: {
             api: { userSessionManager },
         },
+        search: { redirect_to: redirectTo = "/" },
     }) => {
         if (userSessionManager.isSignedIn) {
-            throw redirect({ to: "/" })
+            throw redirect({ href: redirectTo })
         }
     },
     component: function SignInComponent() {
-        const navigate = useNavigate()
+        const navigate = Route.useNavigate()
+        const { redirect_to: redirectTo = "/" } = Route.useSearch()
         const notificationCenter = useNotificationCenter()
         const { signIn } = useUserSession()
         const signInMutation = useSignIn()
@@ -36,7 +40,7 @@ export const Route = createFileRoute("/sign-in")({
                 try {
                     const token = await signInMutation.mutateAsync(value)
                     await signIn(token)
-                    navigate({ to: "/" })
+                    navigate({ href: redirectTo })
                 } catch (e) {
                     notificationCenter.showToast({
                         message: `Could not sign in: ${e}`,
