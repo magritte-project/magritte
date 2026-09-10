@@ -6,11 +6,10 @@ import type {
     PlaybackEngineEnqueueOptions,
     PlaybackEngineEvent,
 } from "@/playback/engine"
+import type { LocalCache } from "@/playback/localFileCache"
 import type { PlaybackModes } from "@/playback/modes"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 import { resolveResourceUrl } from "@/utilities/resources"
-
-import type { LocalCache } from "./localFileCache"
 
 function _findBestUrl(item: PlayableItem): string | undefined {
     const sources = item.sources

@@ -6,15 +6,14 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 import { Group, Panel, Separator } from "react-resizable-panels"
 
 import type { Command } from "@/commands/base"
+import ExtensionComponent from "@/components/extensions/ExtensionComponent"
+import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import CommandsProvider from "@/contexts/providers/CommandsProvider"
 import DismissContextProvider from "@/contexts/providers/DismissContextProvider"
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import useStorageValue from "@/hooks/storageValueHook"
-
-import ExtensionComponent from "./ExtensionComponent"
-import ExtensionIcon from "./ExtensionIcon"
 
 export interface ExtensionPanelLayoutProps {
     readonly children?: ReactNode

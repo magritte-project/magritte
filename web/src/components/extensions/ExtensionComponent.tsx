@@ -1,10 +1,9 @@
 import type { ExtensionManifest } from "@magritte/api"
 import { useEffect, useRef, useState } from "react"
 
+import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import { getErrorMessage } from "@/utilities/errors"
-
-import ExtensionIcon from "./ExtensionIcon"
 
 export interface ExtensionComponentProps {
     readonly manifest: ExtensionManifest

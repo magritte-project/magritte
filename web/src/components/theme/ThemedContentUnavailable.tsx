@@ -2,7 +2,7 @@ import { CircleNotchIcon, WarningCircleIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 import type { ReactNode } from "react"
 
-import ThemedButton from "./ThemedButton"
+import ThemedButton from "@/components/theme/ThemedButton"
 
 const variants = {
     fullScreen: {

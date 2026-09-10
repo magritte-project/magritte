@@ -1,7 +1,7 @@
 import type { ReadLibrarySongsSortBy } from "@magritte/api"
 import classNames from "classnames"
 
-import SongSortButton from "@/components/SongSortButton"
+import LibrarySongTableSort from "@/components/library/LibrarySongTableSort"
 
 export interface LibrarySongTableProps extends React.TableHTMLAttributes<HTMLTableElement> {
     readonly sortBy: ReadLibrarySongsSortBy
@@ -20,7 +20,7 @@ export default function LibrarySongTable({
             <thead>
                 <tr className="text-left font-semibold text-sm border-b border-separator">
                     <th className="w-8">
-                        <SongSortButton order={sortBy} setOrder={onChangeSortBy} />
+                        <LibrarySongTableSort order={sortBy} setOrder={onChangeSortBy} />
                     </th>
                     <th className="p-2 border-r border-separator">Title</th>
                     <th className="w-14 p-2 border-r border-separator">Time</th>

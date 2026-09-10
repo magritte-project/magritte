@@ -2,10 +2,10 @@ import { CaretLeftIcon, CommandIcon, ControlIcon } from "@phosphor-icons/react"
 import { useCanGoBack, useRouter } from "@tanstack/react-router"
 import { useCallback, type ReactNode } from "react"
 
-import NotificationsButton from "@/components/NotificationsButton"
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import UserButton from "@/components/UserButton"
+import NotificationsButton from "@/components/user/NotificationsButton"
+import UserButton from "@/components/user/UserButton"
 import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import useHotKeys from "@/hooks/hotKeysHook"
 

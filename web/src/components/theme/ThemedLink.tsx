@@ -1,6 +1,6 @@
 import { type LinkComponent, createLink } from "@tanstack/react-router"
 
-import ThemedAnchorComponent from "./ThemedAnchor"
+import ThemedAnchorComponent from "@/components/theme/ThemedAnchor"
 
 const CreatedLinkComponent = createLink(ThemedAnchorComponent)
 

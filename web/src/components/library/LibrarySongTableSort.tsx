@@ -52,12 +52,15 @@ const DEFAULT_ORDER: SongSortKey[] = [
     "+track_number",
 ]
 
-export interface SongSortButtonProps {
+export interface LibrarySongTableSortProps {
     readonly order?: SongSortKey[]
     readonly setOrder: React.Dispatch<React.SetStateAction<SongSortKey[] | undefined>>
 }
 
-export default function SongSortButton({ order = DEFAULT_ORDER, setOrder }: SongSortButtonProps) {
+export default function LibrarySongTableSort({
+    order = DEFAULT_ORDER,
+    setOrder,
+}: LibrarySongTableSortProps) {
     const handleSetOrder = useCallback(
         (newValue: React.SetStateAction<SongSortKey[]>) => {
             setOrder((oldValue) => {

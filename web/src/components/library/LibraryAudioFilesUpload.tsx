@@ -3,11 +3,10 @@ import { TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useCallback, useRef, useState } from "react"
 
 import { useIngestFiles } from "@/api/mutations/ingest"
+import ThemedButton from "@/components/theme/ThemedButton"
+import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useDismiss from "@/hooks/dismissHook"
-
-import ThemedButton from "./theme/ThemedButton"
-import ThemedContentUnavailable from "./theme/ThemedContentUnavailable"
-import ThemedSubtleButton from "./theme/ThemedSubtleButton"
 
 export interface AudioFilesUploadProps {
     readonly libraryId: number

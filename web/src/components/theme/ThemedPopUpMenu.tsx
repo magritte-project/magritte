@@ -4,8 +4,7 @@ import classNames from "classnames"
 import type { ReactNode } from "react"
 
 import AsyncButton from "@/components/reusable/AsyncButton"
-
-import ScopeRestricted from "../reusable/ScopeRestricted"
+import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 
 export interface ThemedPopUpMenuItem {
     readonly key: string
