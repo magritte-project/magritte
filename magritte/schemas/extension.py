@@ -5,6 +5,8 @@ from fastapi import HTTPException, status
 from httpx2 import AsyncClient
 from pydantic import BaseModel, Field, HttpUrl
 
+from magritte.schemas.base import URL_MAX_LENGTH
+
 
 class ExtensionPermissions(Enum):
     RUN_BACKGROUND = "run:background"
@@ -37,11 +39,27 @@ class ExtensionCommand(BaseModel):
 
 
 class ExtensionManifest(BaseModel):
-    name: Annotated[str, Field(description="A friendly name for the extension")]
-    id: Annotated[str, Field(description="A unique identifier for the extension")]
-    version: Annotated[str, Field(description="The version of the extension")]
+    name: Annotated[
+        str,
+        Field(description="A friendly name for the extension", max_length=255),
+    ]
+    id: Annotated[
+        str,
+        Field(
+            description="A unique identifier for the extension",
+            max_length=255,
+        ),
+    ]
+    version: Annotated[
+        str,
+        Field(description="The version of the extension", max_length=100),
+    ]
     description: Annotated[
-        str | None, Field(description="An optional description of the extension")
+        str | None,
+        Field(
+            description="An optional description of the extension",
+            max_length=1000,
+        ),
     ] = None
     url: Annotated[str, Field(description="The URL of the extension")]
     icon_url: Annotated[
@@ -97,7 +115,7 @@ class ExtensionManifest(BaseModel):
 
 
 class ExtensionImportAdmin(BaseModel):
-    manifest_url: HttpUrl
+    manifest_url: Annotated[HttpUrl, Field(min_length=1, max_length=URL_MAX_LENGTH)]
 
 
 class ExtensionRead(BaseModel):

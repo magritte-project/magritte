@@ -60,7 +60,10 @@ export const Route = createFileRoute("/sign-up")({
                     <form.AppField
                         name="username"
                         validators={{
-                            onSubmit: z.string().min(1, { error: "Username is required" }),
+                            onSubmit: z
+                                .string()
+                                .min(1, { error: "Username is required" })
+                                .max(255, { error: "Username is too long" }),
                         }}
                     >
                         {(field) => (

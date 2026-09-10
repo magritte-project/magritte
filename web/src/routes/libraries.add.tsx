@@ -1,5 +1,5 @@
 import { Field, Label } from "@headlessui/react"
-import type { LibraryCreate } from "@magritte/api"
+import { PATH_MAX_LENGTH, TAG_MAX_LENGTH, type LibraryCreate } from "@magritte/api"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import z from "zod"
@@ -59,9 +59,12 @@ export const Route = createFileRoute("/libraries/add")({
                     <form.AppField
                         name="name"
                         validators={{
-                            onChange: z.string().min(1, {
-                                error: "Names must have at least one characters",
-                            }),
+                            onChange: z
+                                .string()
+                                .min(1, {
+                                    error: "Names must have at least one characters",
+                                })
+                                .max(TAG_MAX_LENGTH, { error: "Name is too long" }),
                         }}
                     >
                         {(field) => <field.InputField placeholder="Name" />}
@@ -73,6 +76,7 @@ export const Route = createFileRoute("/libraries/add")({
                             onChange: z
                                 .string()
                                 .startsWith(".", { error: "Must be relative path" })
+                                .max(PATH_MAX_LENGTH, { error: "Path is too long" })
                                 .nullable(),
                         }}
                         listeners={{

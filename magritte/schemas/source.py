@@ -1,14 +1,18 @@
-from pydantic import BaseModel, field_serializer
+from typing import Annotated
+
+from pydantic import BaseModel, Field, field_serializer
+
+from magritte.schemas.base import TAG_MAX_LENGTH, URL_MAX_LENGTH
 
 
 class SourceCreate(BaseModel):
-    url: str
-    mime_type: str | None
+    url: Annotated[str, Field(max_length=URL_MAX_LENGTH)]
+    mime_type: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
 
 
 class SourceUpdate(BaseModel):
-    url: str | None = None
-    mime_type: str | None = None
+    url: Annotated[str | None, Field(max_length=URL_MAX_LENGTH)] = None
+    mime_type: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
     is_invalid: bool | None = None
 
 

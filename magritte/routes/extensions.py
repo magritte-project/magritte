@@ -12,7 +12,7 @@ from magritte.db import get_db_session
 from magritte.model.extension import Extension
 from magritte.model.user import User, UserExtensionLink
 from magritte.schemas.auth import OAuth2Scope
-from magritte.schemas.base import OperationResult
+from magritte.schemas.base import OperationResult, PaginatedQuery
 from magritte.schemas.extension import (
     ExtensionImportAdmin,
     ExtensionManifest,
@@ -32,9 +32,7 @@ router = APIRouter(prefix="/extensions")
 @router.post(
     "/available/import",
     response_model=OperationResult,
-    dependencies=[
-        Security(get_current_user, scopes=[OAuth2Scope.ADMIN]),
-    ],
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.ADMIN])],
     summary="Import an extension so it can be installed by users",
 )
 async def import_extension(
@@ -77,14 +75,12 @@ async def import_extension(
 @router.delete(
     "/available/{extension_id}",
     response_model=OperationResult,
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.ADMIN])],
     summary="Remove an extension for all users",
 )
 async def delete_extension(
     extension_id: int,
     background_tasks: BackgroundTasks,
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.ADMIN])
-    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
     user_events: Annotated[UserEvents, Depends(get_user_events)],
 ):
@@ -113,13 +109,12 @@ async def delete_extension(
 @router.get(
     "/available",
     response_model=LibraryMediaRead[ExtensionRead],
+    dependencies=[Security(get_current_user)],
     summary="Read extensions available on this instance",
 )
 async def read_available_extensions(
-    current_user: Annotated[User, Security(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    offset: Annotated[int, Query(description="The page offset to read from")] = 0,
-    limit: Annotated[int, Query(description="How many items to read per page")] = 100,
+    query: Annotated[PaginatedQuery, Query()],
 ):
     total, extensions = await Extension.read_many_with_total(
         where=[],
@@ -127,8 +122,8 @@ async def read_available_extensions(
         order_by=[
             col(Extension.manifest_name),
         ],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         session=session,
     )
     return LibraryMediaRead(
@@ -139,8 +134,8 @@ async def read_available_extensions(
             )
             for extension in extensions
         ],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         total=total,
     )
 
@@ -217,8 +212,7 @@ async def uninstall_extension(
 async def read_installed_extensions(
     current_user: Annotated[User, Security(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    offset: Annotated[int, Query(description="The page offset to read from")] = 0,
-    limit: Annotated[int, Query(description="How many items to read per page")] = 100,
+    query: Annotated[PaginatedQuery, Query()],
 ):
     total, extensions = await Extension.read_many_with_total(
         where=[
@@ -233,8 +227,8 @@ async def read_installed_extensions(
         order_by=[
             col(Extension.manifest_name),
         ],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         session=session,
     )
     return LibraryMediaRead(
@@ -245,7 +239,7 @@ async def read_installed_extensions(
             )
             for extension in extensions
         ],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         total=total,
     )

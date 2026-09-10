@@ -25,7 +25,7 @@ from magritte.db import get_db_session
 from magritte.model.notification import Notification
 from magritte.model.user import User, UserNotificationLink
 from magritte.schemas.auth import OAuth2Scope
-from magritte.schemas.base import OperationResult
+from magritte.schemas.base import OperationResult, PaginatedQuery
 from magritte.schemas.notification import (
     NotificationRead,
     NotificationsRead,
@@ -35,6 +35,7 @@ from magritte.schemas.user import (
     UserEventPreflight,
     UserFileAccessPreflight,
     UserProfileRead,
+    UserProfilesQuery,
     UserProfilesRead,
     UserProfileUpdate,
 )
@@ -88,8 +89,7 @@ async def read_notifications(
         User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    offset: Annotated[int, Query(description="The page offset to read from")] = 0,
-    limit: Annotated[int, Query(description="How many items to read per page")] = 100,
+    query: Annotated[PaginatedQuery, Query()],
 ):
     total, notifications = await Notification.read_many_with_total(
         where=[
@@ -104,8 +104,8 @@ async def read_notifications(
         order_by=[
             col(Notification.creation_date).desc(),
         ],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         session=session,
     )
     return NotificationsRead(
@@ -114,8 +114,8 @@ async def read_notifications(
             for notification in notifications
         ],
         total=total,
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
     )
 
 
@@ -280,25 +280,16 @@ async def stream_user_events(
 @router.get(
     "/all",
     response_model=UserProfilesRead,
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.PROFILE])],
     summary="Read details about users on this instance",
 )
 async def read_users(
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
-    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    query: Annotated[
-        str | None,
-        Query(
-            description="Query string to filter the users by",
-        ),
-    ] = None,
-    offset: Annotated[int, Query(description="The page offset to read from")] = 0,
-    limit: Annotated[int, Query(description="How many items to read per page")] = 100,
+    query: Annotated[UserProfilesQuery, Query()],
 ):
     where_criteria = list[ColumnExpressionArgument]()
-    if query is not None:
-        where_criteria.append(User.strs_ilike(query))
+    if query.query is not None:
+        where_criteria.append(User.strs_ilike(query.query))
 
     total, users = await User.read_many_with_total(
         where=[
@@ -306,14 +297,14 @@ async def read_users(
         ],
         joins=[],
         order_by=[col(User.last_updated).desc(), col(User.username).asc()],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         session=session,
     )
     return UserProfilesRead(
         users=[UserProfileRead(**user.model_dump()) for user in users],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         total=total,
     )
 
@@ -321,13 +312,11 @@ async def read_users(
 @router.get(
     "/all/{id_or_username}",
     response_model=UserProfileRead,
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.PROFILE])],
     summary="Read details a users on this instance",
 )
 async def read_user(
     id_or_username: str,
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
-    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     try:

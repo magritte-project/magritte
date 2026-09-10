@@ -20,7 +20,7 @@ from magritte.db import get_db_session
 from magritte.model.library import Library
 from magritte.model.user import User, UserLibraryLink
 from magritte.schemas.auth import OAuth2Scope
-from magritte.schemas.base import OperationResult
+from magritte.schemas.base import PATH_MAX_LENGTH, OperationResult
 from magritte.schemas.library import (
     LibraryCreate,
     LibraryHomePathRead,
@@ -53,13 +53,11 @@ async def read_libraries(
 @router.get(
     "/home-subpaths",
     response_model=LibraryHomePathRead,
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])],
     summary="Read subpaths a library can be configured to use as a home",
 )
 async def read_library_home_subpaths(
-    relative_to: Annotated[str, Query()],
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
-    ],
+    relative_to: Annotated[str, Query(max_length=PATH_MAX_LENGTH)],
 ):
     relative_to_path = Path(relative_to)
     if relative_to_path.is_absolute():

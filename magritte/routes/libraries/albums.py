@@ -11,7 +11,7 @@ from magritte.model.album import Album
 from magritte.model.artist import Artist
 from magritte.model.library import Library
 from magritte.model.user import User
-from magritte.schemas.album import AlbumRead, AlbumUpdate
+from magritte.schemas.album import AlbumQuery, AlbumRead, AlbumUpdate
 from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.library import LibraryMediaRead
@@ -144,20 +144,7 @@ async def read_library_albums(
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    query: Annotated[
-        str | None,
-        Query(
-            description="Query string to filter the albums by",
-        ),
-    ] = None,
-    artist_id: Annotated[
-        int | None,
-        Query(
-            description="ID of the artist to filter the songs by",
-        ),
-    ] = None,
-    offset: Annotated[int, Query(description="The page offset to read from")] = 0,
-    limit: Annotated[int, Query(description="How many items to read per page")] = 100,
+    query: Annotated[AlbumQuery, Query()],
 ):
     if not await Library.can_user_access_by_id(library_id, current_user.id, session):
         raise HTTPException(
@@ -165,10 +152,10 @@ async def read_library_albums(
         )
 
     where_criteria = list[ColumnExpressionArgument]()
-    if artist_id is not None:
-        where_criteria.append(col(Album.artist_id) == artist_id)
-    if query is not None:
-        where_criteria.append(Album.strs_ilike(query))
+    if query.artist_id is not None:
+        where_criteria.append(col(Album.artist_id) == query.artist_id)
+    if query.query is not None:
+        where_criteria.append(Album.strs_ilike(query.query))
 
     total, albums = await Album.read_many_with_total(
         where=[
@@ -181,8 +168,8 @@ async def read_library_albums(
         order_by=[
             col(Album.title),
         ],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         session=session,
     )
     return LibraryMediaRead(
@@ -196,7 +183,7 @@ async def read_library_albums(
             )
             for album in albums
         ],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         total=total,
     )

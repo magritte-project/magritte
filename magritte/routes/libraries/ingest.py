@@ -46,6 +46,7 @@ async def ingest_files(
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
+    # TODO: Limit # of files and file size
     if not config.enable_uploads:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -94,19 +95,23 @@ async def ingest_songs(
     new_songs = list[Song]()
     for create_song in batch.songs:
         if create_song.artist_name is not None:
-            artist, _ = await Artist(
+            artist, inserted = await Artist(
                 name=create_song.artist_name,
                 libraries=[library],
             ).try_insert_unique(
                 col(Artist.name) == create_song.artist_name,
                 session,
             )
-            # TODO: Handle insertion into new library
+            if not inserted:
+                await session.refresh(library)  # for rollback
+                artist.libraries = Library.combine(
+                    await artist.awaitable_attrs.libraries, [library]
+                )
         else:
             artist = None
         if create_song.album_title is not None:
             artist_id = artist.id if artist else None
-            album, _ = await Album(
+            album, inserted = await Album(
                 title=create_song.album_title,
                 artist_id=artist_id,
                 libraries=[library],
@@ -117,7 +122,11 @@ async def ingest_songs(
                 ),
                 session,
             )
-            # TODO: Handle insertion into new library
+            if not inserted:
+                await session.refresh(library)  # for rollbacks
+                album.libraries = Library.combine(
+                    await album.awaitable_attrs.libraries, [library]
+                )
         else:
             album = None
 

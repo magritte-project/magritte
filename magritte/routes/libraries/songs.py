@@ -24,9 +24,8 @@ from magritte.model.source import Source
 from magritte.model.user import User
 from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.auth import OAuth2Scope
-from magritte.schemas.base import SortOrder
 from magritte.schemas.library import LibraryMediaRead
-from magritte.schemas.song import SongRead, SongSort, SongSortKey, SongUpdate
+from magritte.schemas.song import SongQuery, SongRead, SongUpdate
 from magritte.schemas.source import SourceRead
 
 router = APIRouter()
@@ -185,32 +184,7 @@ async def read_library_songs(
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    query: Annotated[
-        str | None,
-        Query(
-            description="Query string to filter the songs by",
-        ),
-    ] = None,
-    album_id: Annotated[
-        int | None,
-        Query(
-            description="ID of the album to filter the songs by",
-        ),
-    ] = None,
-    artist_id: Annotated[
-        int | None,
-        Query(
-            description="ID of the artist to filter the songs by",
-        ),
-    ] = None,
-    sort_by: Annotated[list[SongSort], Query(description="How to sort the items")] = [
-        SongSort(SongSortKey.ARTIST_NAME, SortOrder.ASCENDING),
-        SongSort(SongSortKey.ALBUM_TITLE, SortOrder.ASCENDING),
-        SongSort(SongSortKey.DISC_NUMBER, SortOrder.ASCENDING),
-        SongSort(SongSortKey.TRACK_NUMBER, SortOrder.ASCENDING),
-    ],
-    offset: Annotated[int, Query(description="The page offset to read from")] = 0,
-    limit: Annotated[int, Query(description="How many items to read per page")] = 100,
+    query: Annotated[SongQuery, Query()],
 ):
     if not await Library.can_user_access_by_id(library_id, current_user.id, session):
         raise HTTPException(
@@ -218,12 +192,12 @@ async def read_library_songs(
         )
 
     where_criteria = list[ColumnExpressionArgument]()
-    if album_id is not None:
-        where_criteria.append(col(Song.album_id) == album_id)
-    if artist_id is not None:
-        where_criteria.append(col(Song.artist_id) == artist_id)
-    if query is not None:
-        where_criteria.append(Song.strs_ilike(query))
+    if query.album_id is not None:
+        where_criteria.append(col(Song.album_id) == query.album_id)
+    if query.artist_id is not None:
+        where_criteria.append(col(Song.artist_id) == query.artist_id)
+    if query.query is not None:
+        where_criteria.append(Song.strs_ilike(query.query))
 
     total, songs = await Song.read_many_with_total(
         where=[
@@ -234,9 +208,11 @@ async def read_library_songs(
             (Artist, col(Artist.id) == col(Song.artist_id)),
             (Album, col(Album.id) == col(Song.album_id)),
         ],
-        order_by=[Song.order_for_sort_key(sort.key, sort.order) for sort in sort_by],
-        offset=offset,
-        limit=limit,
+        order_by=[
+            Song.order_for_sort_key(sort.key, sort.order) for sort in query.sort_by
+        ],
+        offset=query.offset,
+        limit=query.limit,
         session=session,
     )
     return LibraryMediaRead(
@@ -254,7 +230,7 @@ async def read_library_songs(
             )
             for song in songs
         ],
-        offset=offset,
-        limit=limit,
+        offset=query.offset,
+        limit=query.limit,
         total=total,
     )

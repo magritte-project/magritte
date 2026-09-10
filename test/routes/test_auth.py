@@ -20,7 +20,7 @@ def test_sign_up_rejects_already_in_use_usernames(client: TestClient):
         "/sign-up",
         json={
             "username": "test",
-            "password": "pass",
+            "password": "passpass",
         },
     )
     assert response.status_code == 409

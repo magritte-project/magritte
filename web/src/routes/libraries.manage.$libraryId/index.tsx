@@ -1,7 +1,8 @@
 import { Field, Label } from "@headlessui/react"
-import type { LibraryUpdate } from "@magritte/api"
+import { TAG_MAX_LENGTH, type LibraryUpdate } from "@magritte/api"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { z } from "zod"
 
 import { useUpdateLibrary } from "@/api/mutations/libraries"
 import { readInstanceStatus } from "@/api/queries/auth"
@@ -45,7 +46,15 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/")({
         })
         return (
             <AppForm form={form} className="p-4 flex flex-col gap-4">
-                <form.AppField name="name" validators={{}}>
+                <form.AppField
+                    name="name"
+                    validators={{
+                        onChange: z
+                            .string()
+                            .min(1, { error: "Name is too short" })
+                            .max(TAG_MAX_LENGTH, { error: "Name is too long" }),
+                    }}
+                >
                     {(field) => (
                         <FieldDecoration field={field} label="Library Name">
                             <field.InputField placeholder="Name" />

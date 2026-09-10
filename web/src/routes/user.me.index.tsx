@@ -54,6 +54,7 @@ export const Route = createFileRoute("/user/me/")({
                                 .min(1, {
                                     error: "Name is too short",
                                 })
+                                .max(255, { error: "Name is too long" })
                                 .nullable(),
                         }}
                     >

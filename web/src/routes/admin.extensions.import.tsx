@@ -1,4 +1,4 @@
-import type { ExtensionImportAdmin } from "@magritte/api"
+import { URL_MAX_LENGTH, type ExtensionImportAdmin } from "@magritte/api"
 import { isSameOrigin } from "@magritte/sdk"
 import { createFileRoute } from "@tanstack/react-router"
 import z from "zod"
@@ -45,6 +45,7 @@ export const Route = createFileRoute("/admin/extensions/import")({
                                 .min(1, {
                                     error: "Extension URL is required",
                                 })
+                                .max(URL_MAX_LENGTH, { error: "Extension URL is too long" })
                                 .and(
                                     z
                                         .string()

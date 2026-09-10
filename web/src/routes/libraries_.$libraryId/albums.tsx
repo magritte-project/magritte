@@ -1,3 +1,4 @@
+import { TAG_MAX_LENGTH } from "@magritte/api"
 import { LibraryAlbumInput } from "@magritte/sdk"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
@@ -61,7 +62,14 @@ export const Route = createFileRoute("/libraries_/$libraryId/albums")({
             <CommandInputProvider value={commandInputs}>
                 <div className="m-2 flex flex-col gap-2">
                     <AppForm form={facetForm}>
-                        <facetForm.AppField name="query">
+                        <facetForm.AppField
+                            name="query"
+                            validators={{
+                                onChange: z
+                                    .string()
+                                    .max(TAG_MAX_LENGTH, { error: "Query is too long" }),
+                            }}
+                        >
                             {(field) => (
                                 <field.SearchInputField
                                     className="w-full"

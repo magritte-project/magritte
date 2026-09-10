@@ -301,6 +301,7 @@
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "minimum": 0,
                             "description": "The page offset to read from",
                             "default": 0,
                             "title": "Offset"
@@ -313,6 +314,8 @@
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
                             "description": "How many items to read per page",
                             "default": 100,
                             "title": "Limit"
@@ -420,6 +423,7 @@
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "minimum": 0,
                             "description": "The page offset to read from",
                             "default": 0,
                             "title": "Offset"
@@ -432,6 +436,8 @@
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
                             "description": "How many items to read per page",
                             "default": 100,
                             "title": "Limit"
@@ -591,11 +597,38 @@
                         "schema": { "type": "integer", "title": "Library Id" }
                     },
                     {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    },
+                    {
                         "name": "query",
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "anyOf": [{ "type": "string" }, { "type": "null" }],
+                            "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                             "description": "Query string to filter the albums by",
                             "title": "Query"
                         },
@@ -611,30 +644,6 @@
                             "title": "Artist Id"
                         },
                         "description": "ID of the artist to filter the songs by"
-                    },
-                    {
-                        "name": "offset",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "description": "The page offset to read from",
-                            "default": 0,
-                            "title": "Offset"
-                        },
-                        "description": "The page offset to read from"
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "description": "How many items to read per page",
-                            "default": 100,
-                            "title": "Limit"
-                        },
-                        "description": "How many items to read per page"
                     }
                 ],
                 "responses": {
@@ -789,22 +798,12 @@
                         "schema": { "type": "integer", "title": "Library Id" }
                     },
                     {
-                        "name": "query",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [{ "type": "string" }, { "type": "null" }],
-                            "description": "Query string to filter the artists by",
-                            "title": "Query"
-                        },
-                        "description": "Query string to filter the artists by"
-                    },
-                    {
                         "name": "offset",
                         "in": "query",
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "minimum": 0,
                             "description": "The page offset to read from",
                             "default": 0,
                             "title": "Offset"
@@ -817,11 +816,24 @@
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
                             "description": "How many items to read per page",
                             "default": 100,
                             "title": "Limit"
                         },
                         "description": "How many items to read per page"
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                            "description": "Query string to filter the artists by",
+                            "title": "Query"
+                        },
+                        "description": "Query string to filter the artists by"
                     }
                 ],
                 "responses": {
@@ -998,7 +1010,7 @@
                         "name": "relative_to",
                         "in": "query",
                         "required": true,
-                        "schema": { "type": "string", "title": "Relative To" }
+                        "schema": { "type": "string", "maxLength": 2000, "title": "Relative To" }
                     }
                 ],
                 "responses": {
@@ -1420,11 +1432,38 @@
                         "schema": { "type": "integer", "title": "Library Id" }
                     },
                     {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    },
+                    {
                         "name": "query",
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "anyOf": [{ "type": "string" }, { "type": "null" }],
+                            "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                             "description": "Query string to filter the songs by",
                             "title": "Query"
                         },
@@ -1495,30 +1534,6 @@
                             "title": "Sort By"
                         },
                         "description": "How to sort the items"
-                    },
-                    {
-                        "name": "offset",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "description": "The page offset to read from",
-                            "default": 0,
-                            "title": "Offset"
-                        },
-                        "description": "The page offset to read from"
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "description": "How many items to read per page",
-                            "default": 100,
-                            "title": "Limit"
-                        },
-                        "description": "How many items to read per page"
                     }
                 ],
                 "responses": {
@@ -1812,6 +1827,7 @@
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "minimum": 0,
                             "description": "The page offset to read from",
                             "default": 0,
                             "title": "Offset"
@@ -1824,6 +1840,8 @@
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
                             "description": "How many items to read per page",
                             "default": 100,
                             "title": "Limit"
@@ -1995,22 +2013,12 @@
                 "security": [{ "OAuth2PasswordBearer": ["profile"] }],
                 "parameters": [
                     {
-                        "name": "query",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "anyOf": [{ "type": "string" }, { "type": "null" }],
-                            "description": "Query string to filter the users by",
-                            "title": "Query"
-                        },
-                        "description": "Query string to filter the users by"
-                    },
-                    {
                         "name": "offset",
                         "in": "query",
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "minimum": 0,
                             "description": "The page offset to read from",
                             "default": 0,
                             "title": "Offset"
@@ -2023,11 +2031,24 @@
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
                             "description": "How many items to read per page",
                             "default": 100,
                             "title": "Limit"
                         },
                         "description": "How many items to read per page"
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "string", "maxLength": 255 }, { "type": "null" }],
+                            "description": "Query string to filter the users by",
+                            "title": "Query"
+                        },
+                        "description": "Query string to filter the users by"
                     }
                 ],
                 "responses": {
@@ -2125,7 +2146,7 @@
             "AlbumUpdate": {
                 "properties": {
                     "title": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Title"
                     },
                     "artist_id": {
@@ -2147,7 +2168,10 @@
             },
             "ArtistUpdate": {
                 "properties": {
-                    "name": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Name" }
+                    "name": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Name"
+                    }
                 },
                 "type": "object",
                 "title": "ArtistUpdate"
@@ -2155,21 +2179,21 @@
             "ArtworkCreate": {
                 "properties": {
                     "kind": { "$ref": "#/components/schemas/ArtworkKind" },
-                    "image_url": { "type": "string", "title": "Image Url" },
+                    "image_url": { "type": "string", "maxLength": 8000, "title": "Image Url" },
                     "background_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Background Color"
                     },
                     "primary_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Primary Color"
                     },
                     "secondary_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Secondary Color"
                     },
                     "tertiary_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Tertiary Color"
                     }
                 },
@@ -2228,23 +2252,23 @@
                         ]
                     },
                     "image_url": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 8000 }, { "type": "null" }],
                         "title": "Image Url"
                     },
                     "background_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Background Color"
                     },
                     "primary_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Primary Color"
                     },
                     "secondary_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Secondary Color"
                     },
                     "tertiary_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Tertiary Color"
                     }
                 },
@@ -2332,7 +2356,7 @@
                 "properties": {
                     "manifest_url": {
                         "type": "string",
-                        "maxLength": 2083,
+                        "maxLength": 8000,
                         "minLength": 1,
                         "format": "uri",
                         "title": "Manifest Url"
@@ -2346,21 +2370,24 @@
                 "properties": {
                     "name": {
                         "type": "string",
+                        "maxLength": 255,
                         "title": "Name",
                         "description": "A friendly name for the extension"
                     },
                     "id": {
                         "type": "string",
+                        "maxLength": 255,
                         "title": "Id",
                         "description": "A unique identifier for the extension"
                     },
                     "version": {
                         "type": "string",
+                        "maxLength": 100,
                         "title": "Version",
                         "description": "The version of the extension"
                     },
                     "description": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Description",
                         "description": "An optional description of the extension"
                     },
@@ -2458,7 +2485,7 @@
             "IngestArtwork": {
                 "properties": {
                     "kind": { "$ref": "#/components/schemas/ArtworkKind" },
-                    "image_url": { "type": "string", "title": "Image Url" },
+                    "image_url": { "type": "string", "maxLength": 8000, "title": "Image Url" },
                     "background_color": {
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Background Color"
@@ -2522,11 +2549,11 @@
             "IngestSong": {
                 "properties": {
                     "artist_name": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Artist Name"
                     },
                     "album_title": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Album Title"
                     },
                     "artworks": {
@@ -2542,23 +2569,23 @@
                     "start_time": { "type": "number", "title": "Start Time" },
                     "end_time": { "type": "number", "title": "End Time" },
                     "title": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Title"
                     },
                     "album_artist": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Album Artist"
                     },
                     "composer": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Composer"
                     },
                     "genre": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Genre"
                     },
                     "release_date": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Release Date"
                     },
                     "track_number": {
@@ -2578,7 +2605,7 @@
                         "title": "Disc Total"
                     },
                     "lyrics": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 5000 }, { "type": "null" }],
                         "title": "Lyrics"
                     },
                     "rating": {
@@ -2587,24 +2614,27 @@
                     },
                     "bpm": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "Bpm" },
                     "comment": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 5000 }, { "type": "null" }],
                         "title": "Comment"
                     },
                     "grouping": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Grouping"
                     },
-                    "mcn": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Mcn" },
+                    "mcn": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Mcn"
+                    },
                     "isrc": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Isrc"
                     },
                     "music_brainz_release_id": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Music Brainz Release Id"
                     },
                     "music_brainz_recording_id": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Music Brainz Recording Id"
                     }
                 },
@@ -2639,7 +2669,7 @@
             },
             "IngestSource": {
                 "properties": {
-                    "url": { "type": "string", "title": "Url" },
+                    "url": { "type": "string", "maxLength": 8000, "title": "Url" },
                     "mime_type": {
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Mime Type"
@@ -2661,9 +2691,9 @@
             },
             "LibraryCreate": {
                 "properties": {
-                    "name": { "type": "string", "title": "Name" },
+                    "name": { "type": "string", "maxLength": 1000, "title": "Name" },
                     "home_path": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 2000 }, { "type": "null" }],
                         "title": "Home Path"
                     },
                     "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" }
@@ -2803,7 +2833,7 @@
             "LibraryUpdate": {
                 "properties": {
                     "name": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Name"
                     },
                     "uploads_enabled": {
@@ -3062,23 +3092,23 @@
                         "title": "End Time"
                     },
                     "title": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Title"
                     },
                     "album_artist": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Album Artist"
                     },
                     "composer": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Composer"
                     },
                     "genre": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Genre"
                     },
                     "release_date": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Release Date"
                     },
                     "track_number": {
@@ -3098,7 +3128,7 @@
                         "title": "Disc Total"
                     },
                     "lyrics": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 5000 }, { "type": "null" }],
                         "title": "Lyrics"
                     },
                     "rating": {
@@ -3107,24 +3137,27 @@
                     },
                     "bpm": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "Bpm" },
                     "comment": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 5000 }, { "type": "null" }],
                         "title": "Comment"
                     },
                     "grouping": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Grouping"
                     },
-                    "mcn": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Mcn" },
+                    "mcn": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Mcn"
+                    },
                     "isrc": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Isrc"
                     },
                     "music_brainz_release_id": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Music Brainz Release Id"
                     },
                     "music_brainz_recording_id": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Music Brainz Recording Id"
                     }
                 },
@@ -3133,9 +3166,9 @@
             },
             "SourceCreate": {
                 "properties": {
-                    "url": { "type": "string", "title": "Url" },
+                    "url": { "type": "string", "maxLength": 8000, "title": "Url" },
                     "mime_type": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Mime Type"
                     }
                 },
@@ -3159,9 +3192,12 @@
             },
             "SourceUpdate": {
                 "properties": {
-                    "url": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Url" },
+                    "url": {
+                        "anyOf": [{ "type": "string", "maxLength": 8000 }, { "type": "null" }],
+                        "title": "Url"
+                    },
                     "mime_type": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Mime Type"
                     },
                     "is_invalid": {
@@ -3221,7 +3257,7 @@
             "UserProfileUpdate": {
                 "properties": {
                     "preferred_name": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Preferred Name"
                     },
                     "enable_playback_events": {
@@ -3250,8 +3286,13 @@
             },
             "UserSignUp": {
                 "properties": {
-                    "username": { "type": "string", "title": "Username" },
-                    "password": { "type": "string", "title": "Password" }
+                    "username": { "type": "string", "maxLength": 255, "title": "Username" },
+                    "password": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 8,
+                        "title": "Password"
+                    }
                 },
                 "type": "object",
                 "required": ["username", "password"],

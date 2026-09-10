@@ -1,11 +1,14 @@
 from pathlib import Path
+from typing import Annotated
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
+
+from magritte.schemas.base import PATH_MAX_LENGTH, TAG_MAX_LENGTH
 
 
 class LibraryCreate(BaseModel):
-    name: str
-    home_path: str | None
+    name: Annotated[str, Field(max_length=TAG_MAX_LENGTH)]
+    home_path: Annotated[str | None, Field(max_length=PATH_MAX_LENGTH)]
     uploads_enabled: bool
 
     @field_validator("home_path", mode="before")
@@ -17,7 +20,7 @@ class LibraryCreate(BaseModel):
 
 
 class LibraryUpdate(BaseModel):
-    name: str | None = None
+    name: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
     uploads_enabled: bool | None = None
 
 

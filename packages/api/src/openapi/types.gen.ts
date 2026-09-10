@@ -1826,18 +1826,6 @@ export type ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetData = {
     }
     query?: {
         /**
-         * Query
-         *
-         * Query string to filter the albums by
-         */
-        query?: string | null
-        /**
-         * Artist Id
-         *
-         * ID of the artist to filter the songs by
-         */
-        artist_id?: number | null
-        /**
          * Offset
          *
          * The page offset to read from
@@ -1849,6 +1837,18 @@ export type ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetData = {
          * How many items to read per page
          */
         limit?: number
+        /**
+         * Query
+         *
+         * Query string to filter the albums by
+         */
+        query?: string | null
+        /**
+         * Artist Id
+         *
+         * ID of the artist to filter the songs by
+         */
+        artist_id?: number | null
     }
     url: "/libraries/{library_id}/albums"
 }
@@ -1988,12 +1988,6 @@ export type ReadLibraryArtistsLibrariesLibraryIdArtistsGetData = {
     }
     query?: {
         /**
-         * Query
-         *
-         * Query string to filter the artists by
-         */
-        query?: string | null
-        /**
          * Offset
          *
          * The page offset to read from
@@ -2005,6 +1999,12 @@ export type ReadLibraryArtistsLibrariesLibraryIdArtistsGetData = {
          * How many items to read per page
          */
         limit?: number
+        /**
+         * Query
+         *
+         * Query string to filter the artists by
+         */
+        query?: string | null
     }
     url: "/libraries/{library_id}/artists"
 }
@@ -2522,6 +2522,18 @@ export type ReadLibrarySongsLibrariesLibraryIdSongsGetData = {
     }
     query?: {
         /**
+         * Offset
+         *
+         * The page offset to read from
+         */
+        offset?: number
+        /**
+         * Limit
+         *
+         * How many items to read per page
+         */
+        limit?: number
+        /**
          * Query
          *
          * Query string to filter the songs by
@@ -2574,18 +2586,6 @@ export type ReadLibrarySongsLibrariesLibraryIdSongsGetData = {
             | "+grouping"
             | "-grouping"
         >
-        /**
-         * Offset
-         *
-         * The page offset to read from
-         */
-        offset?: number
-        /**
-         * Limit
-         *
-         * How many items to read per page
-         */
-        limit?: number
     }
     url: "/libraries/{library_id}/songs"
 }
@@ -3015,12 +3015,6 @@ export type ReadUsersUsersAllGetData = {
     path?: never
     query?: {
         /**
-         * Query
-         *
-         * Query string to filter the users by
-         */
-        query?: string | null
-        /**
          * Offset
          *
          * The page offset to read from
@@ -3032,6 +3026,12 @@ export type ReadUsersUsersAllGetData = {
          * How many items to read per page
          */
         limit?: number
+        /**
+         * Query
+         *
+         * Query string to filter the users by
+         */
+        query?: string | null
     }
     url: "/users/all"
 }

@@ -6,7 +6,7 @@ import * as z from "zod"
  * AlbumUpdate
  */
 export const AlbumUpdateSchema = z.object({
-    title: z.string().nullish(),
+    title: z.string().max(1000).nullish(),
     artist_id: z.int().nullish(),
 })
 
@@ -22,7 +22,7 @@ export const ArtistReadSchema = z.object({
  * ArtistUpdate
  */
 export const ArtistUpdateSchema = z.object({
-    name: z.string().nullish(),
+    name: z.string().max(1000).nullish(),
 })
 
 /**
@@ -35,11 +35,11 @@ export const ArtworkKindSchema = z.enum(["front_cover"])
  */
 export const ArtworkCreateSchema = z.object({
     kind: ArtworkKindSchema,
-    image_url: z.string(),
-    background_color: z.string().nullable(),
-    primary_color: z.string().nullable(),
-    secondary_color: z.string().nullable(),
-    tertiary_color: z.string().nullable(),
+    image_url: z.string().max(8000),
+    background_color: z.string().max(1000).nullable(),
+    primary_color: z.string().max(1000).nullable(),
+    secondary_color: z.string().max(1000).nullable(),
+    tertiary_color: z.string().max(1000).nullable(),
 })
 
 /**
@@ -70,11 +70,11 @@ export const AlbumReadSchema = z.object({
  */
 export const ArtworkUpdateSchema = z.object({
     kind: ArtworkKindSchema.nullish(),
-    image_url: z.string().nullish(),
-    background_color: z.string().nullish(),
-    primary_color: z.string().nullish(),
-    secondary_color: z.string().nullish(),
-    tertiary_color: z.string().nullish(),
+    image_url: z.string().max(8000).nullish(),
+    background_color: z.string().max(1000).nullish(),
+    primary_color: z.string().max(1000).nullish(),
+    secondary_color: z.string().max(1000).nullish(),
+    tertiary_color: z.string().max(1000).nullish(),
 })
 
 /**
@@ -112,7 +112,7 @@ export const ExtensionCommandSchema = z.object({
  * ExtensionImportAdmin
  */
 export const ExtensionImportAdminSchema = z.object({
-    manifest_url: z.url().min(1).max(2083),
+    manifest_url: z.url().min(1).max(8000),
 })
 
 /**
@@ -135,10 +135,10 @@ export const ExtensionPermissionsSchema = z.enum([
  * ExtensionManifest
  */
 export const ExtensionManifestSchema = z.object({
-    name: z.string(),
-    id: z.string(),
-    version: z.string(),
-    description: z.string().nullish(),
+    name: z.string().max(255),
+    id: z.string().max(255),
+    version: z.string().max(100),
+    description: z.string().max(1000).nullish(),
     url: z.string(),
     icon_url: z.string().nullish(),
     preferredWidth: z.string().nullish(),
@@ -161,7 +161,7 @@ export const ExtensionReadSchema = z.object({
  */
 export const IngestArtworkSchema = z.object({
     kind: ArtworkKindSchema,
-    image_url: z.string(),
+    image_url: z.string().max(8000),
     background_color: z.string().nullable(),
     primary_color: z.string().nullable(),
     secondary_color: z.string().nullable(),
@@ -172,7 +172,7 @@ export const IngestArtworkSchema = z.object({
  * IngestSource
  */
 export const IngestSourceSchema = z.object({
-    url: z.string(),
+    url: z.string().max(8000),
     mime_type: z.string().nullable(),
 })
 
@@ -180,30 +180,30 @@ export const IngestSourceSchema = z.object({
  * IngestSong
  */
 export const IngestSongSchema = z.object({
-    artist_name: z.string().nullable(),
-    album_title: z.string().nullable(),
+    artist_name: z.string().max(1000).nullable(),
+    album_title: z.string().max(1000).nullable(),
     artworks: z.array(IngestArtworkSchema),
     sources: z.array(IngestSourceSchema),
     start_time: z.number(),
     end_time: z.number(),
-    title: z.string().nullable(),
-    album_artist: z.string().nullable(),
-    composer: z.string().nullable(),
-    genre: z.string().nullable(),
-    release_date: z.string().nullable(),
+    title: z.string().max(1000).nullable(),
+    album_artist: z.string().max(1000).nullable(),
+    composer: z.string().max(1000).nullable(),
+    genre: z.string().max(1000).nullable(),
+    release_date: z.string().max(1000).nullable(),
     track_number: z.int().nullable(),
     track_total: z.int().nullable(),
     disc_number: z.int().nullable(),
     disc_total: z.int().nullable(),
-    lyrics: z.string().nullable(),
+    lyrics: z.string().max(5000).nullable(),
     rating: z.number().nullable(),
     bpm: z.int().nullable(),
-    comment: z.string().nullable(),
-    grouping: z.string().nullable(),
-    mcn: z.string().nullable(),
-    isrc: z.string().nullable(),
-    music_brainz_release_id: z.string().nullable(),
-    music_brainz_recording_id: z.string().nullable(),
+    comment: z.string().max(5000).nullable(),
+    grouping: z.string().max(1000).nullable(),
+    mcn: z.string().max(1000).nullable(),
+    isrc: z.string().max(1000).nullable(),
+    music_brainz_release_id: z.string().max(1000).nullable(),
+    music_brainz_recording_id: z.string().max(1000).nullable(),
 })
 
 /**
@@ -226,8 +226,8 @@ export const InstanceStatusReadSchema = z.object({
  * LibraryCreate
  */
 export const LibraryCreateSchema = z.object({
-    name: z.string(),
-    home_path: z.string().nullable(),
+    name: z.string().max(1000),
+    home_path: z.string().max(2000).nullable(),
     uploads_enabled: z.boolean(),
 })
 
@@ -313,7 +313,7 @@ export const LibraryReadSchema = z.object({
  * LibraryUpdate
  */
 export const LibraryUpdateSchema = z.object({
-    name: z.string().nullish(),
+    name: z.string().max(1000).nullish(),
     uploads_enabled: z.boolean().nullish(),
 })
 
@@ -392,32 +392,32 @@ export const SongUpdateSchema = z.object({
     source_ids: z.array(z.int()).nullish(),
     start_time: z.number().nullish(),
     end_time: z.number().nullish(),
-    title: z.string().nullish(),
-    album_artist: z.string().nullish(),
-    composer: z.string().nullish(),
-    genre: z.string().nullish(),
-    release_date: z.string().nullish(),
+    title: z.string().max(1000).nullish(),
+    album_artist: z.string().max(1000).nullish(),
+    composer: z.string().max(1000).nullish(),
+    genre: z.string().max(1000).nullish(),
+    release_date: z.string().max(1000).nullish(),
     track_number: z.int().nullish(),
     track_total: z.int().nullish(),
     disc_number: z.int().nullish(),
     disc_total: z.int().nullish(),
-    lyrics: z.string().nullish(),
+    lyrics: z.string().max(5000).nullish(),
     rating: z.number().nullish(),
     bpm: z.int().nullish(),
-    comment: z.string().nullish(),
-    grouping: z.string().nullish(),
-    mcn: z.string().nullish(),
-    isrc: z.string().nullish(),
-    music_brainz_release_id: z.string().nullish(),
-    music_brainz_recording_id: z.string().nullish(),
+    comment: z.string().max(5000).nullish(),
+    grouping: z.string().max(1000).nullish(),
+    mcn: z.string().max(1000).nullish(),
+    isrc: z.string().max(1000).nullish(),
+    music_brainz_release_id: z.string().max(1000).nullish(),
+    music_brainz_recording_id: z.string().max(1000).nullish(),
 })
 
 /**
  * SourceCreate
  */
 export const SourceCreateSchema = z.object({
-    url: z.string(),
-    mime_type: z.string().nullable(),
+    url: z.string().max(8000),
+    mime_type: z.string().max(1000).nullable(),
 })
 
 /**
@@ -477,8 +477,8 @@ export const LibraryMediaReadSongReadSchema = z.object({
  * SourceUpdate
  */
 export const SourceUpdateSchema = z.object({
-    url: z.string().nullish(),
-    mime_type: z.string().nullish(),
+    url: z.string().max(8000).nullish(),
+    mime_type: z.string().max(1000).nullish(),
     is_invalid: z.boolean().nullish(),
 })
 
@@ -520,7 +520,7 @@ export const UserProfileReadSchema = z.object({
  * UserProfileUpdate
  */
 export const UserProfileUpdateSchema = z.object({
-    preferred_name: z.string().nullable(),
+    preferred_name: z.string().max(1000).nullable(),
     enable_playback_events: z.boolean(),
 })
 
@@ -538,8 +538,8 @@ export const UserProfilesReadSchema = z.object({
  * UserSignUp
  */
 export const UserSignUpSchema = z.object({
-    username: z.string(),
-    password: z.string(),
+    username: z.string().max(255),
+    password: z.string().min(8).max(100),
 })
 
 /**

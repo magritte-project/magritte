@@ -1,11 +1,16 @@
 from enum import Enum
-from typing import Any
+from typing import Annotated, Any
 
 from pydantic import BaseModel, Field, GetCoreSchemaHandler
 from pydantic_core import core_schema
 
 from magritte.schemas.artwork import ArtworkRead
-from magritte.schemas.base import SortOrder
+from magritte.schemas.base import (
+    EMBEDDED_TEXT_MAX_LENGTH,
+    TAG_MAX_LENGTH,
+    PaginatedQuery,
+    SortOrder,
+)
 from magritte.schemas.source import SourceRead
 
 
@@ -72,24 +77,28 @@ class SongUpdate(BaseModel):
     source_ids: list[int] | None = None
     start_time: float | None = None
     end_time: float | None = None
-    title: str | None = None
-    album_artist: str | None = None
-    composer: str | None = None
-    genre: str | None = None
-    release_date: str | None = None
+    title: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    album_artist: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    composer: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    genre: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    release_date: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
     track_number: int | None = None
     track_total: int | None = None
     disc_number: int | None = None
     disc_total: int | None = None
-    lyrics: str | None = None
+    lyrics: Annotated[str | None, Field(max_length=EMBEDDED_TEXT_MAX_LENGTH)] = None
     rating: float | None = None
     bpm: int | None = None
-    comment: str | None = None
-    grouping: str | None = None
-    mcn: str | None = None
-    isrc: str | None = None
-    music_brainz_release_id: str | None = None
-    music_brainz_recording_id: str | None = None
+    comment: Annotated[str | None, Field(max_length=EMBEDDED_TEXT_MAX_LENGTH)] = None
+    grouping: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    mcn: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    isrc: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    music_brainz_release_id: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = (
+        None
+    )
+    music_brainz_recording_id: Annotated[
+        str | None, Field(max_length=TAG_MAX_LENGTH)
+    ] = None
 
 
 class SongRead(BaseModel):
@@ -205,3 +214,31 @@ class SongRead(BaseModel):
     music_brainz_recording_id: str | None = Field(
         default=None,
     )
+
+
+class SongQuery(PaginatedQuery):
+    query: Annotated[
+        str | None,
+        Field(
+            max_length=TAG_MAX_LENGTH,
+            description="Query string to filter the songs by",
+        ),
+    ] = None
+    album_id: Annotated[
+        int | None,
+        Field(
+            description="ID of the album to filter the songs by",
+        ),
+    ] = None
+    artist_id: Annotated[
+        int | None,
+        Field(
+            description="ID of the artist to filter the songs by",
+        ),
+    ] = None
+    sort_by: Annotated[list[SongSort], Field(description="How to sort the items")] = [
+        SongSort(SongSortKey.ARTIST_NAME, SortOrder.ASCENDING),
+        SongSort(SongSortKey.ALBUM_TITLE, SortOrder.ASCENDING),
+        SongSort(SongSortKey.DISC_NUMBER, SortOrder.ASCENDING),
+        SongSort(SongSortKey.TRACK_NUMBER, SortOrder.ASCENDING),
+    ]

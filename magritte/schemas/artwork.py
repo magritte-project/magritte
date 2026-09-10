@@ -1,6 +1,9 @@
 from enum import Enum
+from typing import Annotated
 
-from pydantic import BaseModel, field_serializer, field_validator
+from pydantic import BaseModel, Field, field_serializer, field_validator
+
+from magritte.schemas.base import TAG_MAX_LENGTH, URL_MAX_LENGTH
 
 
 class ArtworkKind(str, Enum):
@@ -9,11 +12,11 @@ class ArtworkKind(str, Enum):
 
 class ArtworkCreate(BaseModel):
     kind: ArtworkKind
-    image_url: str
-    background_color: str | None
-    primary_color: str | None
-    secondary_color: str | None
-    tertiary_color: str | None
+    image_url: Annotated[str, Field(max_length=URL_MAX_LENGTH)]
+    background_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    primary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    secondary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    tertiary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
 
     @field_validator("image_url", mode="before")
     @classmethod
@@ -25,11 +28,11 @@ class ArtworkCreate(BaseModel):
 
 class ArtworkUpdate(BaseModel):
     kind: ArtworkKind | None = None
-    image_url: str | None = None
-    background_color: str | None = None
-    primary_color: str | None = None
-    secondary_color: str | None = None
-    tertiary_color: str | None = None
+    image_url: Annotated[str | None, Field(max_length=URL_MAX_LENGTH)] = None
+    background_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    primary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    secondary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    tertiary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
 
     @field_validator("image_url", mode="before")
     @classmethod

@@ -9,7 +9,6 @@ from sqlmodel import and_, col
 from magritte.auth import FeatureScope, get_current_user, get_feature_user
 from magritte.db import get_db_session
 from magritte.model.artwork import Artwork
-from magritte.model.user import User
 from magritte.schemas.artwork import ArtworkCreate, ArtworkRead, ArtworkUpdate
 from magritte.schemas.auth import OAuth2Scope
 
@@ -19,13 +18,11 @@ router = APIRouter(prefix="/artworks")
 @router.post(
     "/create",
     response_model=ArtworkRead,
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])],
     summary="Create an artwork",
 )
 async def create_artwork(
     create_artwork: ArtworkCreate,
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
-    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     create_artwork_image_hash = Artwork.create_image_hash(
@@ -57,14 +54,12 @@ async def create_artwork(
 @router.patch(
     "/{artwork_id}",
     response_model=ArtworkRead,
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])],
     summary="Update an artwork",
 )
 async def update_artwork(
     artwork_id: int,
     update_artwork: ArtworkUpdate,
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
-    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     artwork = await session.get(Artwork, artwork_id)
@@ -99,13 +94,11 @@ async def update_artwork(
 
 @router.delete(
     "/{artwork_id}",
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])],
     summary="Delete an artwork",
 )
 async def delete_artwork(
     artwork_id: int,
-    current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
-    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     artwork = await session.get(Artwork, artwork_id)
@@ -128,9 +121,7 @@ async def delete_artwork(
 @router.get(
     "/{artwork_id}/image",
     response_class=FileResponse,
-    dependencies=[
-        Depends(get_feature_user(FeatureScope.FILES_READ)),
-    ],
+    dependencies=[Depends(get_feature_user(FeatureScope.FILES_READ))],
     summary="Get the image of an artwork",
 )
 async def read_artwork_image(
