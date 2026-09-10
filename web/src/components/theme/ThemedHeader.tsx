@@ -13,7 +13,7 @@ export default function ThemedHeader({
 }: ThemedHeaderProps) {
     return (
         <header className="shrink-0 sticky top-0 isolate bg-linear-to-b from-primary/50 to-transparent text-sm font-semibold flex items-center gap-between p-outside z-40 overflow-x-auto">
-            <div className="absolute inset-0 backdrop-blur-lg mask-[linear-gradient(to_bottom,black,transparent)] -z-10" />
+            <div className="absolute inset-x-0 top-0 -bottom-full backdrop-blur-lg mask-[linear-gradient(to_bottom,black,transparent)] pointer-events-none -z-10" />
             {supplementaryStart}
             <div className="flex-1 flex items-center gap-between">{children}</div>
             {supplementaryEnd}

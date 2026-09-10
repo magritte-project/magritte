@@ -4,7 +4,7 @@ import { useCallback } from "react"
 
 import useVolume from "@/hooks/volumeHook"
 
-export default function VolumeControl() {
+export default function PlayerVolume() {
     const [volume, setVolume] = useVolume()
     const handleChange = useCallback(
         async (newValue: number | number[]) => {

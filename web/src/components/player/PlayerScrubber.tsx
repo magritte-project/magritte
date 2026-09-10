@@ -7,7 +7,7 @@ import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlaybackTime from "@/hooks/playbackTimeHook"
 import { formatDuration } from "@/utilities/duration"
 
-export default function NowPlayingScrubber() {
+export default function PlayerScrubber() {
     const { elapsedTime, totalTime, seekToTime, isSeeking } = usePlaybackTime()
     const playbackState = usePlaybackState()
     const handleChange = useCallback(

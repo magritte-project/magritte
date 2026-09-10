@@ -4,7 +4,8 @@ import classNames from "classnames"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useRef, useState } from "react"
 
-import NowPlayingScrubber from "@/components/NowPlayingScrubber"
+import PlayerScrubber from "@/components/player/PlayerScrubber"
+import PlayerVolume from "@/components/player/PlayerVolume"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import useHotKey from "@/hooks/hotKeyHook"
@@ -12,9 +13,7 @@ import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
 
-import VolumeControl from "../VolumeControl"
-
-export default function TransportControls() {
+export default function PlayerFooter() {
     const player = usePlayer()
     const playbackState = usePlaybackState()
     const playingItem = usePlayingItem()
@@ -71,8 +70,8 @@ export default function TransportControls() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <div className="relative isolate">
-                <div className="absolute inset-0 backdrop-blur-lg mask-[linear-gradient(to_top,black,transparent)] -z-10" />
+            <div className="relative isolate bg-linear-to-t from-primary/50 to-transparent">
+                <div className="absolute inset-x-0 -top-full bottom-0 backdrop-blur-lg mask-[linear-gradient(to_top,black,transparent)] pointer-events-none -z-10" />
                 <div className="p-outside flex items-center gap-6 max-w-2xl mx-auto">
                     <ArtworkImage
                         className="aspect-square w-20 shadow-lg shadow-high-contrast"
@@ -109,7 +108,7 @@ export default function TransportControls() {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 20 }}
                                 >
-                                    <NowPlayingScrubber />
+                                    <PlayerScrubber />
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -164,7 +163,7 @@ export default function TransportControls() {
                                     exit={{ opacity: 0, y: 20 }}
                                     className="pt-2.25"
                                 >
-                                    <VolumeControl />
+                                    <PlayerVolume />
                                 </motion.div>
                             )}
                         </AnimatePresence>
