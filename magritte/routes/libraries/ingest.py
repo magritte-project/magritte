@@ -46,7 +46,18 @@ async def ingest_files(
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
-    # TODO: Limit # of files and file size
+    if len(files) > 50:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Too many files",
+        )
+
+    if any(file.size > config.upload_max_file_size for file in files):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File size too large",
+        )
+
     if not config.enable_uploads:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

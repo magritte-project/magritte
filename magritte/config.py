@@ -44,6 +44,12 @@ class Config(BaseModel):
         description="Whether music files can be uploaded to this instance",
     )
 
+    upload_max_file_size: int = Field(
+        default=1024 * 1024 * 1024,  # 1 GiB
+        alias="UPLOAD_MAX_FILE_SIZE",
+        description="The maximum size of a file that can be uploaded to this instance",
+    )
+
     custom_db: str | None = Field(
         default=None,
         alias="DB",
