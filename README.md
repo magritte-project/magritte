@@ -1,81 +1,95 @@
 # Magritte
 
-## A personal music platform.
+A personal music platform
+
+[![Test](https://github.com/decarbonization/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/decarbonization/magritte/actions/workflows/test.yml)
+
+## The User Story
 
 - Have your own collection of music files? Install Magritte on your computer or server and start listening to your music from anywhere.
 - Use a streaming service? Magritte supports streaming from various providers through an ecosystem of extensions. Combine your own music collection with streaming to create a seamless listening experience.
 - Want to share your music with your family? Magritte supports multiple users and multiple libraries. Create a separate curated library for your family to listen to together.
 - Don't want to self-host? Use a public streaming only instance instead.
 
+---
+
 - Looking to understand your listening habits better but don't want to use a proprietary service? Magritte has built in support for scrobbling. Get insights without losing control over your data.
 - Like to hack on the code? Magritte is open source and contributions are welcome.
 
-[![Test](https://github.com/decarbonization/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/decarbonization/magritte/actions/workflows/test.yml)
-
-![Screenshot of the songs library view with a song playing](https://github.com/decarbonization/magritte/blob/main/README/screenshot.png?raw=true)
-
-## Scope
+## The Scope
 
 Magritte is intended to be highly flexible in how it can be configured and where it can be installed.
 
 - The first targeted configuration is in-home servers with a large storage medium available e.g. a Synology DiskStation or a Raspberry Pi with an m.2 hat.
 - In the medium term, Magritte will also be distributable as an app which can be installed on any device with a desktop class operating system.
 - Longer term, it will be possible to configure Magritte to run on cloud infrastructure. In this scenario, Magritte will default to not allowing file uploads to discourage it being used as a tool for piracy.
-- The ultimate goal is for Magritte to ship on its own dedicated hardware, likely something around the level of oomph of a Raspberry Pi 5.
+- The dream is for Magritte to ship on its own dedicated hardware, likely something around the level of oomph of a Raspberry Pi 5.
 
 ### Known Working Configurations
 
-- macOS 15.5 - 26.2
+- macOS 15.5 - 26.5
 - Arch Linux
 - Raspberry Pi OS
 
 ## Front ends
 
 - [web](/magritte/tree/main/web): The built-in web front end.
-- [rené](https://github.com/decarbonization/rene): A front end that runs on embedded Linux devices like the Raspberry Pi.
 
 ## AI Usage Disclosure
 
-Claude Code and Gemini were used for research, to generate config files, to find solutions for bugs, to generate some SQL queries, and to generate some of the code in the AI-related extensions. A majority of the code in this repository was handwritten.
+Claude Code and Gemini were used for research, to generate config files, to find solutions for bugs, to generate some SQL queries, to apply repetitive pattern refactors, and to generate some of the code in the AI-related extensions. A majority of the code in this repository was handwritten.
 
 ## Installation
+
+### For Users
+
+Magritte is distributed as a Python package. You can install it using `pip`:
+
+```sh
+$ pip install magritte
+```
+
+If you are installing Magritte on your own machine, you can use the `desktop` extra to simplify the post-installation process:
+
+```sh
+$ pip install magritte[desktop]
+```
+
+### For Developers
 
 Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling and [`just`](https://just.systems/) to handle tasks. Follow the Getting Started directions to install `asdf` on your machine. Once you've installed `asdf`, you can bootstrap your development environment:
 
 ```sh
-./bootstrap
+$ ./bootstrap
 ```
-
-### After Installation
 
 Bootstrapping the development environment creates a single `.env` file at the root project directory and symlinks it into the `server/` and `web/` subdirectories. Edit the entries the `.env` file to be suitable for your local working environment.
 
-#### Secrets
+### Secrets
 
 Because Magritte is intended to be installable into a wide range of environments, it offers multiple solutions for managing secrets:
 
 1. Secrets may be loaded from the environment. If the environment contains a full set of secrets, Magritte will use those values when signing and validating sensitive data. **This is the solution to use if you are running Magritte on a server or in the cloud.**
-2. Secrets may be automatically generated, stored, and loaded from the user's keyring (Keychain, KWallet, etc). This requires enabling the `desktop` extras when installing Magritte (done automatically by the `bootstap` script). **This is a good solution if you are running Magritte on your computer.**
+2. Secrets may be automatically generated, stored, and loaded from the user's keyring (Keychain, KWallet, etc). This requires enabling the `desktop` extras when installing Magritte (done automatically by the `bootstap` script for development). **This is a good solution if you are running Magritte on your own machine.**
 
-Magritte can generate secrets and salts for you:
+If you plan for Magritte to load secrets from the environment, it can generate secrets and salts for you:
 
 ```sh
-# Run twice: once for SESSION_TOKEN_SECRET and again for FEATURE_TOKEN_SECRET
-uv run magritte new-token-secret
-# Run once for SALT
-uv run magritte new-password-salt
+$ magritte generate-secrets
 ```
+
+Paste the result into your `.env` file.
 
 #### Extensions
 
-You may wish to review the `.env` files in the extension projects included in the monorepo. The `bootstrap` script will create `.env` files in any extensions which have them, but further configuration such as API keys may be necessary for an extension to function.
+If you are doing development on Magritte or its first party extensions, you may wish to review the `.env` files in the extension projects included in the monorepo. The `bootstrap` script will create `.env` files in any extensions which have them, but further configuration such as API keys may be necessary for an extension to function.
 
 ## Development
 
 Once you've installed all of the prerequisites, you can run the development API and web servers:
 
 ```sh
-just dev
+$ just dev
 ```
 
 After a few moments, you should be able to navigate to the Magritte web front end in your browser:
@@ -87,23 +101,45 @@ http://localhost:6479/
 To execute the tests:
 
 ```sh
-just test
+$ just test
 ```
+
+### First Party Extensions
 
 To run a development server for a specific extension, use the `extensions::dev` recipe with the extension name as an argument:
 
 ```sh
-just extensions::dev applemusic
+$ just extensions::dev applemusic
 ```
 
-Out of the box, Magritte does not know about any extensions. To add an extension, sign in as an administrator and navigate to the Admin area using the user menu in the top right corner. Once there, click the + import extension button and enter the extension's URL. For example, the Apple Music extension running locally would have the URL <http://localhost:9292/>. After an extension has been imported, any user can install it from the My Settings page located in the user menu.
+Activating an extension with the `extensions::dev` recipe will automatically import the extension to your local Magritte instance and run the extension's development server. To add the extension to your user account:
+
+1. Navigate to the My Settings page
+2. Select Extensions
+3. Click the + add extension button
+4. Pick the extension from the list
+
+The extension can now be opened by searching for it in the cmd+k command palette.
+
+### Third Party Extensions
+
+Third party extensions can be built using the `@magritte/sdk` package. When developing a third party extension, you will need to manually import it into your local Magritte instance:
+
+1. Sign in to an administrator account
+2. Click the User menu in the top right corner
+3. Select Admin
+4. Select Extensions
+5. Click the + import extension button
+6. Enter the extension's development server URL – for example, the Apple Music extension would have the URL `http://localhost:9292/`
+
+After an extension has been imported, any user can install it from the Extensions area of the My Settings page located in the user menu.
 
 ### DB Migrations
 
 To create a new database migration, use the `server::db-create-migration` recipe with the migration name as an argument:
 
 ```sh
-just server::db-create-migration "extensions_table"
+$ just server::db-create-migration "extensions_table"
 ```
 
 This will create a new migration file in `server/migrations/` with the given name.
@@ -111,39 +147,39 @@ This will create a new migration file in `server/migrations/` with the given nam
 The next time you run Magritte, it should automatically apply your migration during start up. To manually apply the migration to the database, use the `server::db-migrate` recipe:
 
 ```sh
-just server::db-migrate
+$ just server::db-migrate
 ```
 
 If you need to clear the database and start fresh, you can delete it from the file system and restart the server. Assuming you haven't set a custom `DATA_HOME` environment variable, the database file will be located at `~/.magritte/db.sqlite3`. You may also wish to delete the artwork cache directory at `~/.magritte/artwork/`, however this is not generally required.
 
-## Packaging
+### Packaging
 
 The server and web app can be packaged together for execution outside of a development environment:
 
 ```sh
-just build
+$ just build
 ```
 
 The package recipe will first build the web app, then bundle the server into a python package which includes both the server and web app code. This package can then be installed and run outside of a development environment.
 
-## Publishing
+### Publishing
 
 To publish the front end packages, run the following command:
 
 ```sh
-just packages::publish
+$ just packages::publish
 ```
 
 To publish the server package with the web app bundled in, run the following commands:
 
 ```sh
-just web::build
-just server::publish
+$ just web::build
+$ just server::publish
 ```
 
 ## Data Architecture
 
-Magritte is intended to manage multiple libraries. Each library is owned by a single user, a member of a household. Each library contains zero or more songs, artists, and albums. Unless set to private, all users on a Magritte server may access the contents of any library, but they may only edit items in their own library. Songs from one library can be linked to another. Linked songs are read only.
+Magritte is intended to manage multiple libraries. Each library is owned by a single user, a member of a household. Each library contains zero or more songs, artists, and albums. By default, a library is only accessible to the user which created it. Additional users can be added to a library to share access with different permissions for read, write, and remove. Songs may be added to another library on the same instance.
 
 ```
 ┌─────┐
@@ -182,7 +218,7 @@ Songs in a Magritte library can have multiple sources associated with them. This
 
 Files backing sources may be de-duplicated. This means that e.g. a single file can serve as the source for an identical single and album track.
 
-By default, files are treated as read only. Editing a song's metadata _does not_ modify the underlying files. Re-encoding a file during upload will never erase the original.
+Files are treated as read only – editing a song's metadata _does not_ modify the underlying files. Use dedicated software for this like mp3tag before importing files into Magritte.
 
 ## Streaming Service Libraries
 

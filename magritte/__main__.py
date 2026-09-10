@@ -38,16 +38,21 @@ def dump_openapi_main(args: Namespace):
         print(dump)
 
 
-def new_token_secret(args: Namespace):
+def generate_secrets(args: Namespace):
     import secrets
 
-    print(secrets.token_hex(64))
+    secret_keys = [
+        "SESSION_TOKEN_SECRET",
+        "FEATURE_TOKEN_SECRET",
+    ]
+    for key in secret_keys:
+        print(f"{key}={secrets.token_hex(64)}")
 
-
-def new_salt(args: Namespace):
-    import secrets
-
-    print(secrets.token_hex(32))
+    salt_keys = [
+        "SALT",
+    ]
+    for key in salt_keys:
+        print(f"{key}={secrets.token_hex(32)}")
 
 
 async def import_extension(args: Namespace):
@@ -129,19 +134,12 @@ if __name__ == "__main__":
     )
     parser_dump_openapi.set_defaults(func=dump_openapi_main)
 
-    ## new-token-secret
-    parser_new_token_secret = subparsers.add_parser(
-        "new-token-secret",
-        help="Make a secure random token for a .env file",
+    ## generate-secrets
+    parser_generate_secrets = subparsers.add_parser(
+        "generate-secrets",
+        help="Generate secrets for a .env file",
     )
-    parser_new_token_secret.set_defaults(func=new_token_secret)
-
-    ## new-password-salt
-    parser_new_salt = subparsers.add_parser(
-        "new-password-salt",
-        help="Make a password salt for a .env file",
-    )
-    parser_new_salt.set_defaults(func=new_salt)
+    parser_generate_secrets.set_defaults(func=generate_secrets)
 
     ## import-extension
     parser_import_extension = subparsers.add_parser(
