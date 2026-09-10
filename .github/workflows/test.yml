@@ -34,14 +34,10 @@ jobs:
               run: ./bootstrap
             - name: Seed .env
               run: |
-                  ENV=ci
-                  sed -i.bak "s#^\(ENV=\).*#\1${ENV//#/\\#}#" .env && rm .env.bak
-                  SESSION_TOKEN_SECRET=$(uv run magritte new-token-secret)
-                  sed -i.bak "s#^\(SESSION_TOKEN_SECRET=\).*#\1${SESSION_TOKEN_SECRET//#/\\#}#" .env && rm .env.bak
-                  FEATURE_TOKEN_SECRET=$(uv run magritte new-token-secret)
-                  sed -i.bak "s#^\(FEATURE_TOKEN_SECRET=\).*#\1${FEATURE_TOKEN_SECRET//#/\\#}#" .env && rm .env.bak
-                  SALT=$(uv run magritte new-password-salt)
-                  sed -i.bak "s#^\(SALT=\).*#\1${SALT//#/\\#}#" .env && rm .env.bak
+                  ./admin generate-secrets > .env
+                  echo "ENV=ci" >> .env
+                  echo "VITE_ENV=dev" >> .env
+                  echo "VITE_API_URL=/api" >> .env
             - name: Lint
               run: just lint
             - name: Format
