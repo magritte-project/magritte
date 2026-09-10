@@ -9,6 +9,8 @@ from typing import Literal, Self, assert_never
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field
 
+logger = logging.getLogger(__name__)
+
 _dotenv_path = Path(".env").resolve()
 load_dotenv(_dotenv_path)
 
@@ -112,25 +114,52 @@ class Config(BaseModel):
     )
 
 
-class SecretsConfig(BaseModel):
+class SecretsConfig:
     """
     Encapsulates secrets configuration for the current session.
     """
 
-    session_token_secret: str = Field(
-        min_length=128,
-        description="The secret used when signing user session access tokens",
-    )
+    def __init__(
+        self,
+        *,
+        session_token_secret: str | None,
+        feature_token_secret: str | None,
+        salt: bytes | None,
+    ):
+        if session_token_secret is not None and len(session_token_secret) < 128:
+            raise ValueError("session_token_secret must be at least 128 characters")
 
-    feature_token_secret: str = Field(
-        min_length=128,
-        description="The secret used when signing feature access tokens",
-    )
+        if feature_token_secret is not None and len(feature_token_secret) < 128:
+            raise ValueError("feature_token_secret must be at least 128 characters")
 
-    salt: bytes = Field(
-        min_length=64,
-        description="The salt added to passwords before storing them in the DB",
-    )
+        if salt is not None and len(salt) < 64:
+            raise ValueError("salt must be at least 64 characters")
+
+        self._session_token_secret: str | None = session_token_secret
+        self._feature_token_secret: str | None = feature_token_secret
+        self._salt: bytes | None = salt
+
+    @property
+    def session_token_secret(self) -> str:
+        """The secret used when signing user session access tokens"""
+        if self._session_token_secret is None:
+            raise ValueError("session_token_secret is not set")
+        return self._session_token_secret
+
+    @property
+    def feature_token_secret(self) -> str:
+        """The secret used when signing feature access tokens"""
+        if self._feature_token_secret is None:
+            raise ValueError("feature_token_secret is not set")
+        return self._feature_token_secret
+
+    @property
+    def salt(self) -> bytes:
+        """The salt added to passwords before storing them in the DB"""
+
+        if self._salt is None:
+            raise ValueError("salt is not set")
+        return self._salt
 
     @classmethod
     def _from_env(cls) -> Self | None:
@@ -173,47 +202,52 @@ class SecretsConfig(BaseModel):
 
         try:
             import keyring
+            import keyring.errors
 
-            session_token_secret = keyring.get_password(
-                "magritte", "session_token_secret"
-            )
-            if session_token_secret is None:
-                if not create:
-                    return None
-
-                session_token_secret = secrets.token_hex(64)
-                keyring.set_password(
-                    "magritte", "session_token_secret", session_token_secret
+            try:
+                session_token_secret = keyring.get_password(
+                    "magritte", "session_token_secret"
                 )
-                print("Generated random session token secret", file=sys.stderr)
+                if session_token_secret is None:
+                    if not create:
+                        return None
 
-            feature_token_secret = keyring.get_password(
-                "magritte", "feature_token_secret"
-            )
-            if feature_token_secret is None:
-                if not create:
-                    return None
+                    session_token_secret = secrets.token_hex(64)
+                    keyring.set_password(
+                        "magritte", "session_token_secret", session_token_secret
+                    )
+                    print("Generated random session token secret", file=sys.stderr)
 
-                feature_token_secret = secrets.token_hex(64)
-                keyring.set_password(
-                    "magritte", "feature_token_secret", feature_token_secret
+                feature_token_secret = keyring.get_password(
+                    "magritte", "feature_token_secret"
                 )
-                print("Generated random feature token secret", file=sys.stderr)
+                if feature_token_secret is None:
+                    if not create:
+                        return None
 
-            salt = keyring.get_password("magritte", "salt")
-            if salt is None:
-                if not create:
-                    return None
+                    feature_token_secret = secrets.token_hex(64)
+                    keyring.set_password(
+                        "magritte", "feature_token_secret", feature_token_secret
+                    )
+                    print("Generated random feature token secret", file=sys.stderr)
 
-                salt = secrets.token_hex(32)
-                keyring.set_password("magritte", "salt", salt)
-                print("Generated random salt", file=sys.stderr)
+                salt = keyring.get_password("magritte", "salt")
+                if salt is None:
+                    if not create:
+                        return None
 
-            return cls(
-                session_token_secret=session_token_secret,
-                feature_token_secret=feature_token_secret,
-                salt=salt.encode(),
-            )
+                    salt = secrets.token_hex(32)
+                    keyring.set_password("magritte", "salt", salt)
+                    print("Generated random salt", file=sys.stderr)
+
+                return cls(
+                    session_token_secret=session_token_secret,
+                    feature_token_secret=feature_token_secret,
+                    salt=salt.encode(),
+                )
+            except keyring.errors.KeyringError as e:
+                logger.warning(f"Failed to load secrets from keyring: {e}")
+                return None
         except ImportError:
             # NOTE: keyring is a 'desktop' extra dependency
             return None
@@ -234,7 +268,12 @@ class SecretsConfig(BaseModel):
         if from_keyring := cls._from_keyring():
             return from_keyring
 
-        raise ValueError("No secrets configured or available")
+        logger.warning("No secrets configured or available")
+        return cls(
+            session_token_secret=None,
+            feature_token_secret=None,
+            salt=None,
+        )
 
 
 config = Config.from_dot_env()
