@@ -144,7 +144,7 @@ export class PlaybackEventRecorder {
                 if (player.playingItem !== null && typeof player.playingItem.id === "number") {
                     const now = new Date().toISOString()
                     const currentTime = await player.getCurrentTime()
-                    const elapsedTime = currentTime.elapsedTime ?? 0
+                    const elapsedTime = Math.round(currentTime.elapsedTime ?? 0)
                     switch (event.playbackState) {
                         case "paused":
                             this.enqueue({

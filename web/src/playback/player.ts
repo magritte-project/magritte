@@ -254,7 +254,8 @@ export class Player {
             await this.stop()
             return false
         }
-        await this._playItem(precedingItem, { playNow: true })
+        const playNow = this._playingItem === null || this.playbackState !== "paused"
+        await this._playItem(precedingItem, { playNow })
         return true
     }
 
@@ -264,7 +265,8 @@ export class Player {
             await this.stop()
             return false
         }
-        await this._playItem(followingItem, { playNow: true })
+        const playNow = this._playingItem === null || this.playbackState !== "paused"
+        await this._playItem(followingItem, { playNow })
         return true
     }
 
