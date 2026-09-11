@@ -109,7 +109,7 @@ export class ExtensionRuntime {
         this._available = new Map()
         this._attachments = new Map()
         this._extensions = new Map()
-        ;[this._events, this.$events] = createEvent()
+        ;[this._events, this.$events] = createEvent({ label: "ExtensionRuntime" })
 
         this._api.userEventsManager.subscribe((event) => {
             if (event.event_type === "extensions_changed") {

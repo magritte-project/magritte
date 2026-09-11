@@ -44,7 +44,7 @@ export class Player {
 
     constructor(engineRegistry: PlaybackEngineRegistry) {
         this._engineRegistry = engineRegistry
-        ;[this._events, this.$events] = createEvent()
+        ;[this._events, this.$events] = createEvent({ label: "Player", awaitsCallbacks: false })
         this._playedItems = new CountingStack("id")
         this._shuffleContext = new ShuffleContext(this._playedItems)
         this._modes = PlaybackModes.default

@@ -19,7 +19,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         initialPage: LibraryMediaReadSongRead,
         criteria: ReadLibrarySongsCriteria,
     ) {
-        ;[, this.$events] = createEvent<QueueEvent>()
+        ;[, this.$events] = createEvent({ label: "LibraryQueue" })
 
         // TODO: Wire up events
 

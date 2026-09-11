@@ -24,6 +24,20 @@ describe("events", () => {
             expect(_events(42)).resolves.not.toThrow()
             expect(vi.mocked(callback)).toHaveBeenCalled()
         })
+
+        it("should not block without await callbacks", async () => {
+            const [_events, $events] = createEvent<number>({ awaitsCallbacks: false })
+            const callback = vi.fn().mockResolvedValue(undefined)
+            $events(
+                (_event) =>
+                    new Promise(() => {
+                        /* never complete */
+                    }),
+            )
+            $events(callback)
+            await _events(42)
+            expect(vi.mocked(callback)).toHaveBeenCalled()
+        })
     })
 
     describe("#filterTo", () => {

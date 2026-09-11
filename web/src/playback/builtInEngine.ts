@@ -40,7 +40,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         this._fileAccess = api.fileAccess
         this._localCache = localCache
         this._audio = new Audio()
-        ;[this._events, this.$events] = createEvent()
+        ;[this._events, this.$events] = createEvent({ label: "BuiltInPlaybackEngine" })
 
         this._playingItem = null
 

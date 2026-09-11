@@ -20,7 +20,7 @@ export class CommandInputs {
     constructor() {
         this._inputs = []
         this._kinds = new CountedSet()
-        ;[this._events, this.$events] = createEvent<CommandInputsEvent>()
+        ;[this._events, this.$events] = createEvent({ label: "CommandInputs" })
     }
 
     readonly $events: EventStream<CommandInputsEvent>

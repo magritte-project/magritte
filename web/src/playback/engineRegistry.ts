@@ -21,7 +21,7 @@ export default class PlaybackEngineRegistry {
     constructor({ defaultEngine }: PlaybackEngineRegistryOptions) {
         this._engines = new Map()
         this._defaultEngine = defaultEngine
-        ;[this._events, this.$events] = createEvent<PlaybackEngineRegistryEvent>()
+        ;[this._events, this.$events] = createEvent({ label: "PlaybackEngineRegistry" })
     }
 
     readonly $events: EventStream<PlaybackEngineRegistryEvent>

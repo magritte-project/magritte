@@ -28,6 +28,52 @@ export type EventSink<TEvent> = (event: TEvent) => Promise<void>
  */
 export type EventStream<TEvent> = (callback: EventCallback<TEvent>) => EventCallbackUnsubscriber
 
+export interface EventCreateOptions {
+    /** Optional label for the event to improve logging */
+    readonly label?: string
+
+    /** Whether to await each callback before continuing */
+    readonly awaitsCallbacks?: boolean
+}
+
+function buildEventSink<TEvent>(
+    callbacks: EventCallback<TEvent>[],
+    { label = "anonymous", awaitsCallbacks = true }: EventCreateOptions,
+): EventSink<TEvent> {
+    const callOut = async (callback: EventCallback<TEvent>, event: TEvent) => {
+        try {
+            await callback(event)
+        } catch (error) {
+            console.error(`*** Unhandled error in ${label} event callback`, error)
+        }
+    }
+    if (awaitsCallbacks) {
+        return async (event: TEvent) => {
+            for (const callback of callbacks) {
+                await callOut(callback, event)
+            }
+        }
+    } else {
+        return async (event: TEvent) => {
+            for (const callback of callbacks) {
+                callOut(callback, event)
+            }
+        }
+    }
+}
+
+function buildEventStream<TEvent>(callbacks: EventCallback<TEvent>[]): EventStream<TEvent> {
+    return (callback: EventCallback<TEvent>) => {
+        callbacks.push(callback)
+        return () => {
+            const index = callbacks.indexOf(callback)
+            if (index !== -1) {
+                callbacks.splice(index, 1)
+            }
+        }
+    }
+}
+
 /**
  * Create an event sink and stream pair to expose events from an object.
  *
@@ -51,26 +97,12 @@ export type EventStream<TEvent> = (callback: EventCallback<TEvent>) => EventCall
  *
  * @returns A tuple of a sink and a stream.
  */
-export function createEvent<TEvent>(): [EventSink<TEvent>, EventStream<TEvent>] {
+export function createEvent<TEvent>(
+    options: EventCreateOptions = {},
+): [EventSink<TEvent>, EventStream<TEvent>] {
     const callbacks: EventCallback<TEvent>[] = []
-    const sink: EventSink<TEvent> = async (event: TEvent) => {
-        for (const callback of callbacks) {
-            try {
-                await callback(event)
-            } catch (error) {
-                console.error(`*** Unhandled error in event callback: ${error}`)
-            }
-        }
-    }
-    const stream: EventStream<TEvent> = (callback: EventCallback<TEvent>) => {
-        callbacks.push(callback)
-        return () => {
-            const index = callbacks.indexOf(callback)
-            if (index !== -1) {
-                callbacks.splice(index, 1)
-            }
-        }
-    }
+    const sink = buildEventSink<TEvent>(callbacks, options)
+    const stream = buildEventStream<TEvent>(callbacks)
     return [sink, stream]
 }
 

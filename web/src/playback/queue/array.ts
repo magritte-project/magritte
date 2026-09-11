@@ -10,7 +10,7 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
     }
 
     constructor(items: readonly Item[] = []) {
-        ;[this._events, this.$events] = createEvent<QueueEvent>()
+        ;[this._events, this.$events] = createEvent({ label: "ArrayQueue" })
         this._items = [...items]
     }
 

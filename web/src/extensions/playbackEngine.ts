@@ -17,8 +17,6 @@ import type {
 import type { PlaybackModes } from "@/playback/modes"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
-// TODO: Finish this
-
 export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
     private readonly _events: EventSink<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
@@ -28,7 +26,7 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
         private readonly engine: ExtensionPlaybackEngine,
         private readonly sourceSchemes: readonly string[],
     ) {
-        ;[this._events, this.$events] = createEvent()
+        ;[this._events, this.$events] = createEvent({ label: "ExtensionPlaybackEngineProxy" })
         this._playingItem = null
 
         broadcaster.subscribe(PlaybackEnginePlaybackStateDidChange, async () => {

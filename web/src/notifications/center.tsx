@@ -39,7 +39,7 @@ export class NotificationCenter {
     ][]
 
     constructor(queryClient: QueryClient, api: API) {
-        ;[this._events, this.$events] = createEvent()
+        ;[this._events, this.$events] = createEvent({ label: "NotificationCenter" })
         this._queryClient = queryClient
         this._seenNotifications = { status: "unloaded" }
         this._serverNotifications = []

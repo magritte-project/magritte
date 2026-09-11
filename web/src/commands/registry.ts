@@ -73,7 +73,7 @@ export class CommandRegistry {
     private readonly _commands: Fuse<Command>
 
     constructor() {
-        ;[this._events, this.$events] = createEvent<CommandRegistryEvent>()
+        ;[this._events, this.$events] = createEvent({ label: "CommandRegistry" })
         this._registeredCommandIDs = new Set()
         this._commands = new Fuse<Command>([], {
             keys: ["searchTerms" satisfies keyof Command],
