@@ -114,47 +114,51 @@ export default function PlayerFooter() {
                         </AnimatePresence>
                     </motion.div>
                     <motion.div layout className="flex flex-col">
-                        <motion.div
-                            layout
-                            className="flex items-center gap-between drop-shadow-lg drop-shadow-high-contrast"
-                        >
-                            <AsyncButton
-                                className={classNames(
-                                    "p-2 rounded-full active:bg-on-primary/10",
-                                    "font-bold text-on-primary disabled:opacity-disabled",
-                                )}
-                                onClick={() => player.skipPrevious()}
-                            >
-                                <SkipBackIcon size="1.4rem" weight="fill" aria-label="Play" />
-                            </AsyncButton>
-                            <AsyncButton
-                                className={classNames(
-                                    "p-2 rounded-full active:bg-on-primary/10",
-                                    "font-bold text-on-primary disabled:opacity-disabled",
-                                )}
-                                onClick={() =>
-                                    player.playbackState === "playing"
-                                        ? player.pause()
-                                        : player.resume()
-                                }
-                            >
-                                {playbackState === "playing" ? (
-                                    <PauseIcon size="1.4rem" weight="fill" aria-label="Pause" />
-                                ) : (
-                                    <PlayIcon size="1.4rem" weight="fill" aria-label="Next" />
-                                )}
-                            </AsyncButton>
-                            <AsyncButton
-                                className={classNames(
-                                    "p-2 rounded-full active:bg-on-primary/10",
-                                    "font-bold text-on-primary disabled:opacity-disabled",
-                                )}
-                                onClick={() => player.skipNext()}
-                            >
-                                <SkipForwardIcon size="1.4rem" weight="fill" aria-label="Play" />
-                            </AsyncButton>
-                        </motion.div>
                         <AnimatePresence initial={false}>
+                            <motion.div
+                                layout
+                                className="flex items-center gap-between drop-shadow-lg drop-shadow-high-contrast"
+                            >
+                                <AsyncButton
+                                    className={classNames(
+                                        "p-2 rounded-full active:bg-on-primary/10",
+                                        "font-bold text-on-primary disabled:opacity-disabled",
+                                    )}
+                                    onClick={() => player.skipPrevious()}
+                                >
+                                    <SkipBackIcon size="1.4rem" weight="fill" aria-label="Play" />
+                                </AsyncButton>
+                                <AsyncButton
+                                    className={classNames(
+                                        "p-2 rounded-full active:bg-on-primary/10",
+                                        "font-bold text-on-primary disabled:opacity-disabled",
+                                    )}
+                                    onClick={() =>
+                                        player.playbackState === "playing"
+                                            ? player.pause()
+                                            : player.resume()
+                                    }
+                                >
+                                    {playbackState === "playing" ? (
+                                        <PauseIcon size="1.4rem" weight="fill" aria-label="Pause" />
+                                    ) : (
+                                        <PlayIcon size="1.4rem" weight="fill" aria-label="Next" />
+                                    )}
+                                </AsyncButton>
+                                <AsyncButton
+                                    className={classNames(
+                                        "p-2 rounded-full active:bg-on-primary/10",
+                                        "font-bold text-on-primary disabled:opacity-disabled",
+                                    )}
+                                    onClick={() => player.skipNext()}
+                                >
+                                    <SkipForwardIcon
+                                        size="1.4rem"
+                                        weight="fill"
+                                        aria-label="Play"
+                                    />
+                                </AsyncButton>
+                            </motion.div>
                             {(isExpanded || isPrimarilyTouch) && (
                                 <motion.div
                                     key="nowPlayingVolume"
