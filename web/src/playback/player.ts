@@ -231,7 +231,8 @@ export class Player {
     }
 
     async replaceQueue({ newQueue, startingItem, ...options }: ReplaceQueueOptions): Promise<void> {
-        await this.stop()
+        this._playedItems.clear()
+        await this._activeEngine?.stop()
 
         // TODO: Observe queue events
         this._queue = newQueue
@@ -293,6 +294,12 @@ export class Player {
     async stop(): Promise<void> {
         this._playedItems.clear()
         await this._activeEngine?.stop()
+
+        this._playbackState = "stopped"
+        await this._events({ type: "playbackStateDidChange", playbackState: "stopped" })
+
+        this._playingItem = null
+        await this._events({ type: "playingItemChanged" })
     }
 }
 

@@ -183,8 +183,8 @@ export class PlaybackEventRecorder {
                         recorded_at: new Date().toISOString(),
                         kind: "stop",
                         song_id: event.lastItem.id,
-                        start_time: event.lastItem.end_time,
-                        end_time: event.lastItem.end_time,
+                        start_time: Math.round(event.lastItem.end_time),
+                        end_time: Math.round(event.lastItem.end_time),
                     })
                 }
                 break
