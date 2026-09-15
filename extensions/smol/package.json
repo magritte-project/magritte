@@ -16,7 +16,7 @@
         "check": "oxlint && oxfmt --check"
     },
     "dependencies": {
-        "@browser-ai/transformers-js": "2.2.2",
+        "@browser-ai/transformers-js": "3.0.3",
         "@headlessui/react": "catalog:",
         "@magritte/rpc": "workspace:*",
         "@magritte/sdk": "workspace:*",
@@ -24,7 +24,7 @@
         "@tailwindcss/vite": "catalog:",
         "@tanstack/react-query": "catalog:",
         "@uidotdev/usehooks": "catalog:",
-        "ai": "7.0.37",
+        "ai": "7.0.99",
         "classnames": "catalog:",
         "react": "catalog:",
         "react-dom": "catalog:",

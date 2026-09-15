@@ -20,19 +20,17 @@ export const Route = createFileRoute("/libraries")({
         const { data: libraries } = useSuspenseQuery(readLibraries(api))
 
         const libraryCommands = useMemo(() => {
-            return libraries.map(
-                (library): Command => ({
-                    id: `libraries.read[${library.id}]`,
-                    searchTerms: `library ${library.name}`,
-                    requiredInputKinds: [],
-                    present: async () => ({ displayName: library.name, disabled: false }),
-                    execute: async () =>
-                        navigate({
-                            to: "/libraries/$libraryId",
-                            params: { libraryId: String(library.id) },
-                        }),
-                }),
-            )
+            return libraries.map((library): Command => ({
+                id: `libraries.read[${library.id}]`,
+                searchTerms: `library ${library.name}`,
+                requiredInputKinds: [],
+                present: async () => ({ displayName: library.name, disabled: false }),
+                execute: async () =>
+                    navigate({
+                        to: "/libraries/$libraryId",
+                        params: { libraryId: String(library.id) },
+                    }),
+            }))
         }, [navigate, libraries])
         return (
             <CommandsProvider commands={libraryCommands}>

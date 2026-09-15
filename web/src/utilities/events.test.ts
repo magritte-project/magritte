@@ -21,7 +21,7 @@ describe("events", () => {
             const [_events, $events] = createEvent<number>()
             const callback = vi.fn().mockRejectedValue(new Error("test"))
             $events(callback)
-            expect(_events(42)).resolves.not.toThrow()
+            await expect(_events(42)).resolves.not.toThrow()
             expect(vi.mocked(callback)).toHaveBeenCalled()
         })
 

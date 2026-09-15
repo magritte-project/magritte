@@ -47,7 +47,7 @@
         "generate-openapi": "openapi-ts"
     },
     "devDependencies": {
-        "@hey-api/openapi-ts": "0.0.0-next-20260724070045",
+        "@hey-api/openapi-ts": "0.0.0-next-20260824173136",
         "@typescript/typescript6": "6.0.2",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
