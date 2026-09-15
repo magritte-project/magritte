@@ -1,5 +1,9 @@
 import { useCallback, useState } from "react"
 
+import {
+    primaryButtonClassName,
+    secondaryButtonClassName,
+} from "@/components/reusable/buttonStyles"
 import useAuthorization from "@/hooks/authorizationHook"
 
 export default function AuthorizeButton() {
@@ -18,7 +22,12 @@ export default function AuthorizeButton() {
         }
     }, [isAuthorized, authorize, deauthorize])
     return (
-        <button type="button" onClick={handleClick} disabled={isBusy}>
+        <button
+            type="button"
+            className={isAuthorized ? secondaryButtonClassName : primaryButtonClassName}
+            onClick={handleClick}
+            disabled={isBusy}
+        >
             {isAuthorized ? "Deauthorize" : "Authorize"}
         </button>
     )

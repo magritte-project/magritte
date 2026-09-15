@@ -1174,6 +1174,28 @@ export type SourceCreate = {
 }
 
 /**
+ * SourceLookup
+ */
+export type SourceLookup = {
+    /**
+     * Urls
+     */
+    urls: Array<string>
+}
+
+/**
+ * SourceLookupRead
+ */
+export type SourceLookupRead = {
+    /**
+     * Urls
+     *
+     * The looked up URLs which belong to songs in the library
+     */
+    urls: Array<string>
+}
+
+/**
  * SourceRead
  */
 export type SourceRead = {
@@ -2460,6 +2482,38 @@ export type UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchRespon
 
 export type UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchResponse =
     UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchResponses[keyof UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchResponses]
+
+export type LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostData = {
+    body: SourceLookup
+    path: {
+        /**
+         * Library Id
+         */
+        library_id: number
+    }
+    query?: never
+    url: "/libraries/{library_id}/songs/sources"
+}
+
+export type LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostError =
+    LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostErrors[keyof LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostErrors]
+
+export type LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: SourceLookupRead
+}
+
+export type LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostResponse =
+    LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostResponses[keyof LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostResponses]
 
 export type DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData = {
     body?: never

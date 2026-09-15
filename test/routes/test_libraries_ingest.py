@@ -133,6 +133,75 @@ class TestIngestSongs:
         ) == first_response_json[0].get("sources")[0].get("id")
 
     @pytest.mark.asyncio
+    async def test_deduplicates_within_a_batch(
+        self,
+        client: TestClient,
+        faker: Faker,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        artist_name = faker.name()
+        album_title = faker.word()
+        artwork = {
+            "kind": "front_cover",
+            "image_url": faker.image_url(),
+            "background_color": faker.hex_color(),
+            "primary_color": faker.hex_color(),
+            "secondary_color": faker.hex_color(),
+            "tertiary_color": faker.hex_color(),
+        }
+
+        # It should ingest multiple songs sharing a new album, artist, and artwork
+        response = client.post(
+            "/libraries/2/ingest/songs",
+            json={
+                "songs": [
+                    {
+                        "artist_name": artist_name,
+                        "album_title": album_title,
+                        "artworks": [artwork],
+                        "sources": [
+                            {
+                                "url": faker.url(),
+                                "mime_type": faker.mime_type("audio"),
+                            }
+                        ],
+                        "start_time": 0,
+                        "end_time": randint(30, 300),
+                        "title": faker.sentence(nb_words=3),
+                        "album_artist": None,
+                        "composer": None,
+                        "genre": None,
+                        "release_date": None,
+                        "track_number": track_number,
+                        "track_total": 3,
+                        "disc_number": 1,
+                        "disc_total": 1,
+                        "lyrics": None,
+                        "rating": None,
+                        "bpm": None,
+                        "comment": "TestIngestSongs",
+                        "grouping": None,
+                        "mcn": None,
+                        "isrc": None,
+                        "music_brainz_release_id": None,
+                        "music_brainz_recording_id": None,
+                    }
+                    for track_number in range(1, 4)
+                ],
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+        response_json = response.json()
+        assert len(response_json) == 3
+        assert len({song.get("id") for song in response_json}) == 3
+        assert len({song.get("artist_id") for song in response_json}) == 1
+        assert len({song.get("album_id") for song in response_json}) == 1
+        assert len({song.get("artworks")[0].get("id") for song in response_json}) == 1
+
+    @pytest.mark.asyncio
     async def test_deduplicates_artists_and_albums_across_libraries(
         self,
         client: TestClient,

@@ -1302,6 +1302,47 @@
                 }
             }
         },
+        "/libraries/{library_id}/songs/sources": {
+            "post": {
+                "summary": "Look up which source URLs belong to songs in a library",
+                "operationId": "lookup_library_song_sources_libraries__library_id__songs_sources_post",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/SourceLookup" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/SourceLookupRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/libraries/{library_id}/songs/{song_id}": {
             "get": {
                 "summary": "Read a song",
@@ -3283,6 +3324,32 @@
                 "type": "object",
                 "required": ["url", "mime_type", "extension_manifest_id", "extension_tag"],
                 "title": "SourceCreate"
+            },
+            "SourceLookup": {
+                "properties": {
+                    "urls": {
+                        "items": { "type": "string", "maxLength": 8000 },
+                        "type": "array",
+                        "maxItems": 500,
+                        "title": "Urls"
+                    }
+                },
+                "type": "object",
+                "required": ["urls"],
+                "title": "SourceLookup"
+            },
+            "SourceLookupRead": {
+                "properties": {
+                    "urls": {
+                        "items": { "type": "string" },
+                        "type": "array",
+                        "title": "Urls",
+                        "description": "The looked up URLs which belong to songs in the library"
+                    }
+                },
+                "type": "object",
+                "required": ["urls"],
+                "title": "SourceLookupRead"
             },
             "SourceRead": {
                 "properties": {

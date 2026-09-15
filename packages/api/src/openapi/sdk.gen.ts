@@ -62,6 +62,9 @@ import type {
     InstallExtensionExtensionsAvailableExtensionIdInstallPostData,
     InstallExtensionExtensionsAvailableExtensionIdInstallPostErrors,
     InstallExtensionExtensionsAvailableExtensionIdInstallPostResponses,
+    LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostData,
+    LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostErrors,
+    LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostResponses,
     MarkAllNotificationsReadUsersNotificationsMarkAllReadPostData,
     MarkAllNotificationsReadUsersNotificationsMarkAllReadPostResponses,
     ReadAllSourcesSourcesAllGetData,
@@ -1011,6 +1014,35 @@ export const updateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatch = <
         responseStyle: "data",
         security: [{ scheme: "bearer", type: "http" }],
         url: "/libraries/{library_id}/permission/{user_id}",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Look up which source URLs belong to songs in a library
+ */
+export const lookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPost = <
+    ThrowOnError extends boolean = false,
+>(
+    options: Options<LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostData, ThrowOnError>,
+): RequestResult<
+    LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostResponses,
+    LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).post<
+        LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostResponses,
+        LookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPostErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/libraries/{library_id}/songs/sources",
         ...options,
         headers: {
             "Content-Type": "application/json",

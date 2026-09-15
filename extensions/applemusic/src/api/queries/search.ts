@@ -1,30 +1,39 @@
 import { queryOptions } from "@tanstack/react-query"
 
 import { search } from "@/api/keys/search"
+import type { AlbumResource } from "@/musickit/models/album"
+import type { ArtistResource } from "@/musickit/models/artist"
 import type { MusicSearchResponse } from "@/musickit/models/search"
+import type { SongResource } from "@/musickit/models/song"
 
-export function searchSongs(
-    musicKit: MusicKit.Instance,
-    term: string,
-    offset: number = 0,
-    limit: number = 20,
-) {
+export interface CatalogSearchResults {
+    readonly artists: readonly ArtistResource[]
+    readonly albums: readonly AlbumResource[]
+    readonly songs: readonly SongResource[]
+}
+
+const searchTypes = "artists,albums,songs"
+
+export function searchCatalog(musicKit: MusicKit.Instance, term: string, limit: number = 10) {
     return queryOptions({
-        queryKey: search(term, "songs"),
-        queryFn: async () => {
+        queryKey: search(term, searchTypes, limit),
+        queryFn: async (): Promise<CatalogSearchResults> => {
             if (!term) {
-                return []
+                return { artists: [], albums: [], songs: [] }
             }
             const { data: response } = await musicKit.api.music<MusicSearchResponse>(
                 "/v1/catalog/{{storefrontId}}/search",
                 {
                     term,
-                    types: "songs",
-                    offset: String(offset),
+                    types: searchTypes,
                     limit: String(limit),
                 },
             )
-            return response.results?.songs?.data ?? []
+            return {
+                artists: response.results?.artists?.data ?? [],
+                albums: response.results?.albums?.data ?? [],
+                songs: response.results?.songs?.data ?? [],
+            }
         },
     })
 }
