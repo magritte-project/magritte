@@ -2481,6 +2481,11 @@
                         ],
                         "title": "Commands",
                         "description": "An optional array of commands supported by the extension"
+                    },
+                    "catalogSearch": {
+                        "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+                        "title": "Catalogsearch",
+                        "description": "Whether the extension can search a streaming music catalog"
                     }
                 },
                 "type": "object",

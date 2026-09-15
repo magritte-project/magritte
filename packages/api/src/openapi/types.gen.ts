@@ -310,6 +310,12 @@ export type ExtensionManifest = {
      * An optional array of commands supported by the extension
      */
     commands?: Array<ExtensionCommand> | null
+    /**
+     * Catalogsearch
+     *
+     * Whether the extension can search a streaming music catalog
+     */
+    catalogSearch?: boolean | null
 }
 
 /**

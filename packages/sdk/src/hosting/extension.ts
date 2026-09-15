@@ -2,6 +2,7 @@ import type { ExtensionManifest } from "@magritte/api"
 import { cast, implement, RPCBroadcaster, RPCConnection } from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
+import { type CatalogSearcher, CatalogSearcherProtocol } from "../catalog"
 import { type CommandCoordinator, CommandCoordinatorProtocol } from "../commands/coordinator"
 import { CommandResponderProtocol, type CommandResponder } from "../commands/responder"
 import { type Library, LibraryProtocol } from "../library"
@@ -99,5 +100,9 @@ export class Extension {
 
     async playbackEngine(): Promise<PlaybackEngine> {
         return cast(PlaybackEngineProtocol, this.connection.remoteObject)
+    }
+
+    async catalogSearcher(): Promise<CatalogSearcher> {
+        return cast(CatalogSearcherProtocol, this.connection.remoteObject)
     }
 }

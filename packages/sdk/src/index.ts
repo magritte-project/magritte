@@ -12,6 +12,7 @@ export * from "./playback/playbackEngine"
 export * from "./playback/player"
 export * from "./playback/state"
 
+export * from "./catalog"
 export * from "./library"
 export * from "./manifest"
 export * from "./notificationCenter"

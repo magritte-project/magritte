@@ -15,6 +15,7 @@
         "playback:control"
     ],
     "sourceSchemes": ["applemusic"],
+    "catalogSearch": true,
     "commands": [
         {
             "id": "account.authorize",

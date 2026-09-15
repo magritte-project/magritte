@@ -7,6 +7,7 @@ import {
 } from "@magritte/rpc"
 import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transports"
 
+import { CatalogSearcherProtocol, type CatalogSearcher } from "../catalog"
 import { CommandCoordinatorProtocol, type CommandCoordinator } from "../commands/coordinator"
 import { CommandResponderProtocol, type CommandResponder } from "../commands/responder"
 import { LibraryProtocol, type Library } from "../library"
@@ -22,6 +23,7 @@ export interface ExtensionExportsOptions {
 export interface ExtensionExportsObject {
     readonly commandResponder?: CommandResponder
     readonly playbackEngine?: PlaybackEngine
+    readonly catalogSearcher?: CatalogSearcher
 }
 
 export type ExtensionExports =
@@ -29,7 +31,7 @@ export type ExtensionExports =
     | ((options: ExtensionExportsOptions) => Promise<ExtensionExportsObject>)
 
 async function implementExports(options: ExtensionExportsOptions, exports: ExtensionExports) {
-    const { commandResponder, playbackEngine } =
+    const { commandResponder, playbackEngine, catalogSearcher } =
         typeof exports === "function" ? await exports(options) : exports
     const implementations: ProtocolImplementation[] = []
     if (commandResponder) {
@@ -37,6 +39,9 @@ async function implementExports(options: ExtensionExportsOptions, exports: Exten
     }
     if (playbackEngine) {
         implementations.push(implement(PlaybackEngineProtocol, playbackEngine))
+    }
+    if (catalogSearcher) {
+        implementations.push(implement(CatalogSearcherProtocol, catalogSearcher))
     }
     return implementations
 }

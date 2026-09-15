@@ -119,5 +119,25 @@ describe("CommandRegistry", () => {
 
             expect(subscriber).not.toHaveBeenCalledWith({ type: "registeredCommandsDidChange" })
         })
+
+        it("should keep all commands and lookups current when adding after a removal", () => {
+            const subject = new CommandRegistry()
+            const command = (id: string) => ({
+                id,
+                searchTerms: id,
+                requiredInputKinds: [],
+                present: async () => ({ displayName: "", disabled: false }),
+                execute: async () => {},
+            })
+
+            subject.add(command("foo"), command("bar"))
+            subject.removeByID("bar")
+            subject.add(command("baz"))
+
+            expect(subject.all.map((c) => c.id)).toEqual(["foo", "baz"])
+            expect(subject.getByID("bar")).toBeUndefined()
+            expect(subject.getByID("baz")?.id).toBe("baz")
+            expect(subject.search("baz").map((c) => c.id)).toEqual(["baz"])
+        })
     })
 })

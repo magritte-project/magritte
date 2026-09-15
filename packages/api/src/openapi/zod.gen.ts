@@ -146,6 +146,7 @@ export const ExtensionManifestSchema = z.object({
     permissions: z.array(ExtensionPermissionsSchema).nullish(),
     sourceSchemes: z.array(z.string()).nullish(),
     commands: z.array(ExtensionCommandSchema).nullish(),
+    catalogSearch: z.boolean().nullish(),
 })
 
 /**

@@ -12,6 +12,7 @@ import { ExtensionHostContext } from "@/contexts/extensionHostContext"
 import { MusicKitContext } from "@/contexts/musicKitContext"
 import AppleMusicPlaybackEngine from "@/extension/engine"
 import AppleMusicCommandResponder from "@/extension/responder"
+import AppleMusicCatalogSearcher from "@/extension/searcher"
 import { initializeMusicKit } from "@/musickit/initialization"
 import { createDefaultClientTokenFactory } from "@/musickit/tokens/default"
 
@@ -33,6 +34,7 @@ try {
             return {
                 commandResponder: new AppleMusicCommandResponder(musicKit),
                 playbackEngine: new AppleMusicPlaybackEngine(broadcaster, musicKit),
+                catalogSearcher: new AppleMusicCatalogSearcher(musicKit),
             }
         },
     })

@@ -96,6 +96,13 @@ class ExtensionManifest(BaseModel):
             description="An optional array of commands supported by the extension",
         ),
     ] = None
+    catalog_search: Annotated[
+        bool | None,
+        Field(
+            alias="catalogSearch",
+            description="Whether the extension can search a streaming music catalog",
+        ),
+    ] = None
 
     @classmethod
     async def fetch_from(cls, client: AsyncClient, manifest_url: HttpUrl):

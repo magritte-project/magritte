@@ -32,7 +32,11 @@ export function exportCommandCoordinator(
             const commands = query ? registry.search(query) : registry.all
             return await Promise.all(
                 commands
-                    .filter((command) => inputs.hasAllOf(...command.requiredInputKinds))
+                    .filter(
+                        (command) =>
+                            command.view === undefined &&
+                            inputs.hasAllOf(...command.requiredInputKinds),
+                    )
                     .map(async (command) => {
                         const presentation = await command.present(inputs)
                         return {
@@ -45,7 +49,7 @@ export function exportCommandCoordinator(
         runCommand: enforcePermissions(manifest, ["commands:run"], async ({ id }) => {
             // TODO: Show confirmation before running the command
             const command = registry.getByID(id)
-            if (!command) {
+            if (!command || command.view !== undefined) {
                 throw new Error(`Command not found: ${id}`)
             }
             if (!inputs.hasAllOf(...command.requiredInputKinds)) {
