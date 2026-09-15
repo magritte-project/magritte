@@ -15,6 +15,10 @@ code {
     font-family: "Fira Mono", monospace;
 }*/
 
+body {
+    background-color: white;
+}
+
 #app:empty {
     height: 100vh;
     background-repeat: no-repeat;

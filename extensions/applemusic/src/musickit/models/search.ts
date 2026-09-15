@@ -17,6 +17,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import { type AlbumResource } from "./album"
+import { type ArtistResource } from "./artist"
 import { type UnknownMusicResource } from "./base"
 import { type SongResource } from "./song"
 
@@ -53,7 +55,7 @@ export interface MusicSearchResults {
     /**
      * The albums results for a term search for specific resource types.
      */
-    readonly albums?: ResourceSearchResult<UnknownMusicResource>
+    readonly albums?: ResourceSearchResult<AlbumResource>
 
     /**
      * The Apple curators results for a term search for specific resource types.
@@ -63,7 +65,7 @@ export interface MusicSearchResults {
     /**
      * The artists results for a term search for specific resource types.
      */
-    readonly artists?: ResourceSearchResult<UnknownMusicResource>
+    readonly artists?: ResourceSearchResult<ArtistResource>
 
     /**
      * The curators results for a term search for specific resource types.

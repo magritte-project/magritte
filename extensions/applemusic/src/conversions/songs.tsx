@@ -2,6 +2,14 @@ import type { IngestSong } from "@magritte/api"
 import type { PlayableItem } from "@magritte/sdk"
 
 import type { SongResource } from "@/musickit/models/song"
+import { formatArtworkUrl } from "@/utilities/artwork"
+
+/** The URL of the source used to play a song, which also identifies it in libraries */
+export function songResourceToSourceUrl(song: SongResource): string {
+    // Library songs (from library albums and playlists) have their own IDs, prefer the catalog's
+    const songId = song.attributes?.playParams?.catalogId ?? song.id
+    return `applemusic:///songs/${songId}`
+}
 
 export function songResourceToIngestSong(song: SongResource): IngestSong {
     return {
@@ -9,7 +17,7 @@ export function songResourceToIngestSong(song: SongResource): IngestSong {
         end_time: (song.attributes?.durationInMillis ?? 0) / 1000,
         sources: [
             {
-                url: `applemusic:///songs/${song.id}`,
+                url: songResourceToSourceUrl(song),
                 mime_type: null,
             },
         ],
@@ -17,9 +25,7 @@ export function songResourceToIngestSong(song: SongResource): IngestSong {
             ? [
                   {
                       kind: "front_cover",
-                      image_url: song.attributes.artwork.url
-                          .replace("{w}", String(Math.min(1000, song.attributes.artwork.width)))
-                          .replace("{h}", String(Math.min(1000, song.attributes.artwork.height))),
+                      image_url: formatArtworkUrl(song.attributes.artwork, 1000),
                       background_color: song.attributes.artwork.bgColor ?? null,
                       primary_color: song.attributes.artwork.textColor1 ?? null,
                       secondary_color: song.attributes.artwork.textColor2 ?? null,

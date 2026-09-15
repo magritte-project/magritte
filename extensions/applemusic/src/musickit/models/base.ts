@@ -213,6 +213,16 @@ export interface MusicPlayParameters {
      * The kind of the content to use for playback.
      */
     readonly kind: string
+
+    /**
+     * (Library content only) The catalog ID of the content, when it exists in the catalog.
+     */
+    readonly catalogId?: string
+
+    /**
+     * (Library content only) Indicates whether the content is in the user's library.
+     */
+    readonly isLibrary?: boolean
 }
 
 /**

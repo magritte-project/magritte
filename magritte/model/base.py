@@ -200,6 +200,15 @@ class LibraryModel(SQLModel, AsyncAttrs):
         if a unique constraint violation was encountered, and
         a boolean indicating whether the model was inserted.
         """
+        # Look for an existing model first, because recovering from a unique
+        # constraint violation rolls back the whole transaction, discarding
+        # anything else inserted earlier in the same request (e.g. a batch).
+        # Earlier inserts were already flushed, and autoflushing now would try
+        # to cascade this not-yet-added model through its relationships.
+        with session.no_autoflush:
+            existing = await session.scalar(select(type(self)).where(unique_by))
+        if existing:
+            return existing, False
         try:
             session.add(self)
             await session.flush()

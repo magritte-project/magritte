@@ -59,17 +59,15 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
     const handleDismiss = useCallback(() => setSelectedId(null), [setSelectedId])
     const commands = useMemo(() => {
         return [
-            ...available.map(
-                (extension): Command => ({
-                    id: `extensions.reveal[${extension.id}]`,
-                    searchTerms: `show open ${extension.name} extension`,
-                    requiredInputKinds: [],
-                    present: async () => ({
-                        displayName: `extensions: ${extension.name}`,
-                    }),
-                    execute: async () => setSelectedId(extension.id),
+            ...available.map((extension): Command => ({
+                id: `extensions.reveal[${extension.id}]`,
+                searchTerms: `show open ${extension.name} extension`,
+                requiredInputKinds: [],
+                present: async () => ({
+                    displayName: `extensions: ${extension.name}`,
                 }),
-            ),
+                execute: async () => setSelectedId(extension.id),
+            })),
             {
                 id: `extensions.close`,
                 searchTerms: "close extension",
@@ -107,6 +105,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                         />
                         <Panel
                             collapsible
+                            minSize="12rem"
                             className={classNames("relative flex flex-col overflow-auto", {
                                 "h-screen": !preferVerticalOrientation,
                             })}
@@ -148,7 +147,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                                         ))}
                                     </div>
                                 </ThemedHeader>
-                                <main className="flex-1">
+                                <main className="flex-1 px-outside pb-outside">
                                     <ExtensionComponent manifest={selectedExtension} />
                                 </main>
                             </DismissContextProvider>

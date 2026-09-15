@@ -13,17 +13,27 @@ export default function ExtensionComponent({ manifest }: ExtensionComponentProps
     const extensionRuntime = useExtensionRuntime()
     const containerRef = useRef<HTMLDivElement | null>(null)
     const [error, setError] = useState<unknown | null>(null)
+    const [isLoaded, setIsLoaded] = useState(
+        () => extensionRuntime.getRunning(manifest.id) !== null,
+    )
 
     useEffect(() => {
         if (!containerRef.current) {
             return
         }
 
+        setIsLoaded(extensionRuntime.getRunning(manifest.id) !== null)
         const unsubscribe = extensionRuntime.$events((event) => {
             switch (event.type) {
                 case "extensionLoaded":
                     if (event.extension.manifest.id === manifest.id) {
                         setError(null)
+                        setIsLoaded(true)
+                    }
+                    break
+                case "extensionUnloaded":
+                    if (event.extension.manifest.id === manifest.id) {
+                        setIsLoaded(false)
                     }
                     break
                 case "extensionLoadFailed":
@@ -50,7 +60,10 @@ export default function ExtensionComponent({ manifest }: ExtensionComponentProps
             ref={containerRef}
             className="h-full flex flex-col gap-between items-center justify-center"
         >
-            <ExtensionIcon iconUrl={manifest.icon_url} name={manifest.name} size="4rem" />
+            {/* Extensions may have translucent backgrounds, so the placeholder must not show through */}
+            {!isLoaded && (
+                <ExtensionIcon iconUrl={manifest.icon_url} name={manifest.name} size="4rem" />
+            )}
             {error !== null && (
                 <div className="px-outside text-center text-sm font-medium text-on-secondary">
                     {getErrorMessage(error)}

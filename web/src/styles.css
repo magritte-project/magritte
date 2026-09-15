@@ -104,6 +104,11 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Extension iframes are positioned outside of the panel tree, so they would swallow pointer events mid-resize */
+body:has([data-separator="active"]) iframe {
+    pointer-events: none;
+}
+
 code,
 pre {
     font-family: var(--default-mono-font-family);

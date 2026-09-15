@@ -6,6 +6,8 @@
 }
 
 body {
+    /* The host blurs whatever is behind the panel, so this lets it show through */
+    background-color: rgb(255 255 255 / 70%);
     font-family: "FiraGo", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

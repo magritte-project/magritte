@@ -11,7 +11,7 @@ from fastapi import (
 )
 from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col
+from sqlmodel import col, select
 
 from magritte.auth import get_current_user
 from magritte.db import get_db_session
@@ -19,16 +19,57 @@ from magritte.model.album import Album
 from magritte.model.artist import Artist
 from magritte.model.artwork import Artwork
 from magritte.model.library import Library
-from magritte.model.song import Song
+from magritte.model.song import Song, SongLibraryLink, SongSourceLink
 from magritte.model.source import Source
 from magritte.model.user import User
 from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.library import LibraryMediaRead
 from magritte.schemas.song import SongQuery, SongRead, SongUpdate
-from magritte.schemas.source import SourceRead
+from magritte.schemas.source import SourceLookup, SourceLookupRead, SourceRead
 
 router = APIRouter()
+
+
+@router.post(
+    "/{library_id}/songs/sources",
+    response_model=SourceLookupRead,
+    summary="Look up which source URLs belong to songs in a library",
+)
+async def lookup_library_song_sources(
+    library_id: int,
+    lookup: SourceLookup,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not await Library.can_user_access_by_id(
+        library_id,
+        current_user.id,
+        session,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    if not lookup.urls:
+        return SourceLookupRead(urls=[])
+
+    urls = await session.scalars(
+        select(Source.url)
+        .distinct()
+        .join(SongSourceLink, col(SongSourceLink.source_id) == col(Source.id))
+        .join(
+            SongLibraryLink,
+            col(SongLibraryLink.song_id) == col(SongSourceLink.song_id),
+        )
+        .where(
+            col(SongLibraryLink.library_id) == library_id,
+            col(Source.url).in_(lookup.urls),
+        )
+    )
+    return SourceLookupRead(urls=list(urls))
 
 
 @router.get(
