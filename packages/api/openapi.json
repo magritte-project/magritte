@@ -1423,7 +1423,7 @@
             "get": {
                 "summary": "Read a page of songs in a library",
                 "operationId": "read_library_songs_libraries__library_id__songs_get",
-                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
                 "parameters": [
                     {
                         "name": "library_id",
@@ -1597,6 +1597,83 @@
                     }
                 },
                 "security": [{ "OAuth2PasswordBearer": [] }]
+            }
+        },
+        "/sources/all": {
+            "get": {
+                "summary": "Read a page of sources matching the query",
+                "operationId": "read_all_sources_sources_all_get",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    },
+                    {
+                        "name": "extension_manifest_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "string" }, { "type": "null" }],
+                            "title": "Extension Manifest Id"
+                        }
+                    },
+                    {
+                        "name": "extension_tags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                { "type": "array", "items": { "type": "string" } },
+                                { "type": "null" }
+                            ],
+                            "title": "Extension Tags"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LibraryMediaRead_SourceRead_"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/sources/create": {
@@ -2487,19 +2564,19 @@
                     "kind": { "$ref": "#/components/schemas/ArtworkKind" },
                     "image_url": { "type": "string", "maxLength": 8000, "title": "Image Url" },
                     "background_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Background Color"
                     },
                     "primary_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Primary Color"
                     },
                     "secondary_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Secondary Color"
                     },
                     "tertiary_color": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Tertiary Color"
                     }
                 },
@@ -2671,12 +2748,20 @@
                 "properties": {
                     "url": { "type": "string", "maxLength": 8000, "title": "Url" },
                     "mime_type": {
-                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Mime Type"
+                    },
+                    "extension_manifest_id": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Extension Manifest Id"
+                    },
+                    "extension_tag": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Extension Tag"
                     }
                 },
                 "type": "object",
-                "required": ["url", "mime_type"],
+                "required": ["url", "mime_type", "extension_manifest_id", "extension_tag"],
                 "title": "IngestSource"
             },
             "InstanceStatusRead": {
@@ -2774,6 +2859,21 @@
                 "type": "object",
                 "required": ["items", "offset", "limit", "total"],
                 "title": "LibraryMediaRead[SongRead]"
+            },
+            "LibraryMediaRead_SourceRead_": {
+                "properties": {
+                    "items": {
+                        "items": { "$ref": "#/components/schemas/SourceRead" },
+                        "type": "array",
+                        "title": "Items"
+                    },
+                    "offset": { "type": "integer", "title": "Offset" },
+                    "limit": { "type": "integer", "title": "Limit" },
+                    "total": { "type": "integer", "title": "Total" }
+                },
+                "type": "object",
+                "required": ["items", "offset", "limit", "total"],
+                "title": "LibraryMediaRead[SourceRead]"
             },
             "LibraryPermissionCreate": {
                 "properties": {
@@ -3170,10 +3270,18 @@
                     "mime_type": {
                         "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Mime Type"
+                    },
+                    "extension_manifest_id": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Extension Manifest Id"
+                    },
+                    "extension_tag": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Extension Tag"
                     }
                 },
                 "type": "object",
-                "required": ["url", "mime_type"],
+                "required": ["url", "mime_type", "extension_manifest_id", "extension_tag"],
                 "title": "SourceCreate"
             },
             "SourceRead": {
@@ -3184,10 +3292,25 @@
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Mime Type"
                     },
-                    "is_invalid": { "type": "boolean", "title": "Is Invalid" }
+                    "is_invalid": { "type": "boolean", "title": "Is Invalid" },
+                    "extension_manifest_id": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Extension Manifest Id"
+                    },
+                    "extension_tag": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Extension Tag"
+                    }
                 },
                 "type": "object",
-                "required": ["id", "url", "mime_type", "is_invalid"],
+                "required": [
+                    "id",
+                    "url",
+                    "mime_type",
+                    "is_invalid",
+                    "extension_manifest_id",
+                    "extension_tag"
+                ],
                 "title": "SourceRead"
             },
             "SourceUpdate": {
@@ -3203,6 +3326,14 @@
                     "is_invalid": {
                         "anyOf": [{ "type": "boolean" }, { "type": "null" }],
                         "title": "Is Invalid"
+                    },
+                    "extension_manifest_id": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Extension Manifest Id"
+                    },
+                    "extension_tag": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Extension Tag"
                     }
                 },
                 "type": "object",

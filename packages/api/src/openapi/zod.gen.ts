@@ -162,10 +162,10 @@ export const ExtensionReadSchema = z.object({
 export const IngestArtworkSchema = z.object({
     kind: ArtworkKindSchema,
     image_url: z.string().max(8000),
-    background_color: z.string().nullable(),
-    primary_color: z.string().nullable(),
-    secondary_color: z.string().nullable(),
-    tertiary_color: z.string().nullable(),
+    background_color: z.string().max(1000).nullable(),
+    primary_color: z.string().max(1000).nullable(),
+    secondary_color: z.string().max(1000).nullable(),
+    tertiary_color: z.string().max(1000).nullable(),
 })
 
 /**
@@ -173,7 +173,9 @@ export const IngestArtworkSchema = z.object({
  */
 export const IngestSourceSchema = z.object({
     url: z.string().max(8000),
-    mime_type: z.string().nullable(),
+    mime_type: z.string().max(1000).nullable(),
+    extension_manifest_id: z.string().max(1000).nullable(),
+    extension_tag: z.string().max(1000).nullable(),
 })
 
 /**
@@ -418,6 +420,8 @@ export const SongUpdateSchema = z.object({
 export const SourceCreateSchema = z.object({
     url: z.string().max(8000),
     mime_type: z.string().max(1000).nullable(),
+    extension_manifest_id: z.string().max(1000).nullable(),
+    extension_tag: z.string().max(1000).nullable(),
 })
 
 /**
@@ -428,6 +432,18 @@ export const SourceReadSchema = z.object({
     url: z.string(),
     mime_type: z.string().nullable(),
     is_invalid: z.boolean(),
+    extension_manifest_id: z.string().nullable(),
+    extension_tag: z.string().nullable(),
+})
+
+/**
+ * LibraryMediaRead[SourceRead]
+ */
+export const LibraryMediaReadSourceReadSchema = z.object({
+    items: z.array(SourceReadSchema),
+    offset: z.int(),
+    limit: z.int(),
+    total: z.int(),
 })
 
 /**
@@ -480,6 +496,8 @@ export const SourceUpdateSchema = z.object({
     url: z.string().max(8000).nullish(),
     mime_type: z.string().max(1000).nullish(),
     is_invalid: z.boolean().nullish(),
+    extension_manifest_id: z.string().max(1000).nullish(),
+    extension_tag: z.string().max(1000).nullish(),
 })
 
 /**

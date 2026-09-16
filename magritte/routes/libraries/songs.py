@@ -181,7 +181,7 @@ async def delete_library_song(
 async def read_library_songs(
     library_id: int,
     current_user: Annotated[
-        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
     query: Annotated[SongQuery, Query()],

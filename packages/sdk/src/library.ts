@@ -1,6 +1,16 @@
-import { IngestSongSchema, LibraryReadSchema } from "@magritte/api"
+import {
+    IngestSongSchema,
+    LibraryMediaReadSourceReadSchema,
+    LibraryReadSchema,
+} from "@magritte/api"
 import { protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
+
+export const LibraryReadExtensionSources = z4.object({
+    extensionTags: z4.array(z4.string()).optional(),
+    offset: z4.number().optional(),
+    limit: z4.number().optional(),
+})
 
 export const LibraryBulkIngestableSongs = z4.object({
     libraryId: z4.number(),
@@ -13,6 +23,12 @@ export const LibraryProtocol = protocol("Magritte.Host.Library", {
     readLibraries: {
         input: z4.void(),
         output: z4.array(LibraryReadSchema),
+    },
+
+    /** Read sources owned by the calling extension */
+    readExtensionSources: {
+        input: LibraryReadExtensionSources,
+        output: LibraryMediaReadSourceReadSchema,
     },
 
     /** Bulk ingest songs into a library */

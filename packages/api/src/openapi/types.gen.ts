@@ -523,6 +523,14 @@ export type IngestSource = {
      * Mime Type
      */
     mime_type: string | null
+    /**
+     * Extension Manifest Id
+     */
+    extension_manifest_id: string | null
+    /**
+     * Extension Tag
+     */
+    extension_tag: string | null
 }
 
 /**
@@ -649,6 +657,28 @@ export type LibraryMediaReadSongRead = {
      * Items
      */
     items: Array<SongRead>
+    /**
+     * Offset
+     */
+    offset: number
+    /**
+     * Limit
+     */
+    limit: number
+    /**
+     * Total
+     */
+    total: number
+}
+
+/**
+ * LibraryMediaRead[SourceRead]
+ */
+export type LibraryMediaReadSourceRead = {
+    /**
+     * Items
+     */
+    items: Array<SourceRead>
     /**
      * Offset
      */
@@ -1133,6 +1163,14 @@ export type SourceCreate = {
      * Mime Type
      */
     mime_type: string | null
+    /**
+     * Extension Manifest Id
+     */
+    extension_manifest_id: string | null
+    /**
+     * Extension Tag
+     */
+    extension_tag: string | null
 }
 
 /**
@@ -1155,6 +1193,14 @@ export type SourceRead = {
      * Is Invalid
      */
     is_invalid: boolean
+    /**
+     * Extension Manifest Id
+     */
+    extension_manifest_id: string | null
+    /**
+     * Extension Tag
+     */
+    extension_tag: string | null
 }
 
 /**
@@ -1173,6 +1219,14 @@ export type SourceUpdate = {
      * Is Invalid
      */
     is_invalid?: boolean | null
+    /**
+     * Extension Manifest Id
+     */
+    extension_manifest_id?: string | null
+    /**
+     * Extension Tag
+     */
+    extension_tag?: string | null
 }
 
 /**
@@ -2641,6 +2695,54 @@ export type IngestPlaybackEventsPlaybackEventsIngestPostResponses = {
 
 export type IngestPlaybackEventsPlaybackEventsIngestPostResponse =
     IngestPlaybackEventsPlaybackEventsIngestPostResponses[keyof IngestPlaybackEventsPlaybackEventsIngestPostResponses]
+
+export type ReadAllSourcesSourcesAllGetData = {
+    body?: never
+    path?: never
+    query?: {
+        /**
+         * Offset
+         *
+         * The page offset to read from
+         */
+        offset?: number
+        /**
+         * Limit
+         *
+         * How many items to read per page
+         */
+        limit?: number
+        /**
+         * Extension Manifest Id
+         */
+        extension_manifest_id?: string | null
+        /**
+         * Extension Tags
+         */
+        extension_tags?: Array<string> | null
+    }
+    url: "/sources/all"
+}
+
+export type ReadAllSourcesSourcesAllGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type ReadAllSourcesSourcesAllGetError =
+    ReadAllSourcesSourcesAllGetErrors[keyof ReadAllSourcesSourcesAllGetErrors]
+
+export type ReadAllSourcesSourcesAllGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: LibraryMediaReadSourceRead
+}
+
+export type ReadAllSourcesSourcesAllGetResponse =
+    ReadAllSourcesSourcesAllGetResponses[keyof ReadAllSourcesSourcesAllGetResponses]
 
 export type CreateSourceSourcesCreatePostData = {
     body: SourceCreate

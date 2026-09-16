@@ -17,6 +17,7 @@ import {
     ingestSongsLibrariesLibraryIdIngestSongsPost,
     installExtensionExtensionsAvailableExtensionIdInstallPost,
     markAllNotificationsReadUsersNotificationsMarkAllReadPost,
+    readAllSourcesSourcesAllGet,
     readAvailableExtensionsExtensionsAvailableGet,
     readFilesPreflightUsersFilesPreflightPost,
     readInstalledExtensionsExtensionsInstalledGet,
@@ -68,6 +69,7 @@ import {
     type LibraryMediaReadArtistRead,
     type LibraryMediaReadExtensionRead,
     type LibraryMediaReadSongRead,
+    type LibraryMediaReadSourceRead,
     type LibraryPermissionCreate,
     type LibraryPermissionRead,
     type LibraryPermissionUpdate,
@@ -78,6 +80,7 @@ import {
     type NotificationUpdate,
     type OperationResult,
     type PlaybackEventIngestResult,
+    type ReadAllSourcesSourcesAllGetData,
     type ReadLibrarySongsLibrariesLibraryIdSongsGetData,
     type SongRead,
     type SongUpdate,
@@ -465,6 +468,12 @@ export class APIClient {
     }
 
     // -- Source Routes -- //
+
+    async readAllSources(
+        query?: ReadAllSourcesSourcesAllGetData["query"],
+    ): Promise<LibraryMediaReadSourceRead> {
+        return await readAllSourcesSourcesAllGet({ ...this.options, query })
+    }
 
     async createSource(body: SourceCreate): Promise<SourceRead> {
         return await createSourceSourcesCreatePost({ ...this.options, body })

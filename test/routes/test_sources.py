@@ -18,6 +18,8 @@ async def throwaway_source(
         json={
             "url": faker.url(),
             "mime_type": faker.mime_type("audio"),
+            "extension_manifest_id": None,
+            "extension_tag": None,
         },
         headers={"Authorization": f"Bearer {session.access_token}"},
     )
@@ -36,6 +38,8 @@ class TestCreateSource:
             json={
                 "url": "about:blank",
                 "mime_type": None,
+                "extension_manifest_id": None,
+                "extension_tag": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -45,6 +49,8 @@ class TestCreateSource:
         assert response_json.get("url") == "about:blank"
         assert response_json.get("mime_type") is None
         assert response_json.get("is_invalid") is False
+        assert response_json.get("extension_manifest_id") is None
+        assert response_json.get("extension_tag") is None
 
     def test_handles_duplication(
         self,
@@ -57,6 +63,8 @@ class TestCreateSource:
             json={
                 "url": "about:blank",
                 "mime_type": None,
+                "extension_manifest_id": None,
+                "extension_tag": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -68,6 +76,8 @@ class TestCreateSource:
             json={
                 "url": "about:blank",
                 "mime_type": "application/null",
+                "extension_manifest_id": None,
+                "extension_tag": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -77,6 +87,8 @@ class TestCreateSource:
         assert second_response_json.get("url") == first_response_json.get("url")
         assert second_response_json.get("mime_type") == "application/null"
         assert second_response_json.get("is_invalid") is False
+        assert second_response_json.get("extension_manifest_id") is None
+        assert second_response_json.get("extension_tag") is None
 
     def test_requires_user(
         self,
@@ -87,6 +99,8 @@ class TestCreateSource:
             json={
                 "url": "about:blank",
                 "mime_type": None,
+                "extension_manifest_id": None,
+                "extension_tag": None,
             },
         )
         assert response.status_code == 401
@@ -199,6 +213,104 @@ class TestReadSource:
         )
         assert response.status_code == 404
         assert response.json().get("detail") == "Source not found"
+
+
+class TestReadAllSources:
+    def test_with_extension_manifest_id(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        faker: Faker,
+        throwaway_source: int,
+    ):
+        session = sign_in("test", "password")
+
+        create_response = client.post(
+            "/sources/create",
+            json={
+                "url": faker.url(),
+                "mime_type": faker.mime_type("audio"),
+                "extension_manifest_id": "magritte.test",
+                "extension_tag": None,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        throwaway_source_with_extension = create_response.json().get("id")
+
+        read_response = client.get(
+            "/sources/all?extension_manifest_id=magritte.test",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        read_json = read_response.json()
+        assert read_response.status_code == 200
+        assert read_json.get("total") == 1
+        assert any(
+            source.get("id") == throwaway_source_with_extension
+            for source in read_json.get("items")
+        )
+        assert not any(
+            source.get("id") == throwaway_source for source in read_json.get("items")
+        )
+
+    def test_with_extension_tags(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        faker: Faker,
+        throwaway_source: int,
+    ):
+        session = sign_in("test", "password")
+
+        create_response = client.post(
+            "/sources/create",
+            json={
+                "url": faker.url(),
+                "mime_type": faker.mime_type("audio"),
+                "extension_manifest_id": "magritte.test",
+                "extension_tag": None,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        throwaway_source_with_extension = create_response.json().get("id")
+
+        create_response = client.post(
+            "/sources/create",
+            json={
+                "url": faker.url(),
+                "mime_type": faker.mime_type("audio"),
+                "extension_manifest_id": "magritte.test",
+                "extension_tag": "abc123",
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        throwaway_source_with_extension_and_tag = create_response.json().get("id")
+
+        read_response = client.get(
+            "/sources/all?extension_tags=abc123",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        read_json = read_response.json()
+        assert read_response.status_code == 200
+        assert read_json.get("total") == 1
+        assert any(
+            source.get("id") == throwaway_source_with_extension_and_tag
+            for source in read_json.get("items")
+        )
+        assert not any(
+            source.get("id") == throwaway_source_with_extension
+            for source in read_json.get("items")
+        )
+        assert not any(
+            source.get("id") == throwaway_source for source in read_json.get("items")
+        )
+
+    def test_requires_user(
+        self,
+        client: TestClient,
+    ):
+        response = client.get("/sources/all")
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not authenticated"
 
 
 class TestStreamSourceFile:

@@ -2,18 +2,24 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field, field_serializer
 
-from magritte.schemas.base import TAG_MAX_LENGTH, URL_MAX_LENGTH
+from magritte.schemas.base import TAG_MAX_LENGTH, URL_MAX_LENGTH, PaginatedQuery
 
 
 class SourceCreate(BaseModel):
     url: Annotated[str, Field(max_length=URL_MAX_LENGTH)]
     mime_type: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    extension_manifest_id: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    extension_tag: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
 
 
 class SourceUpdate(BaseModel):
     url: Annotated[str | None, Field(max_length=URL_MAX_LENGTH)] = None
     mime_type: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
     is_invalid: bool | None = None
+    extension_manifest_id: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = (
+        None
+    )
+    extension_tag: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
 
 
 class SourceRead(BaseModel):
@@ -21,6 +27,8 @@ class SourceRead(BaseModel):
     url: str
     mime_type: str | None
     is_invalid: bool
+    extension_manifest_id: str | None
+    extension_tag: str | None
 
     @field_serializer("url", mode="plain")
     def redact_file_urls(self, url: str):
@@ -31,3 +39,8 @@ class SourceRead(BaseModel):
         if url.startswith("file:"):
             return f"magritte:///sources/{self.id}/file"
         return url
+
+
+class SourceQuery(PaginatedQuery):
+    extension_manifest_id: str | None = None
+    extension_tags: list[str] | None = None

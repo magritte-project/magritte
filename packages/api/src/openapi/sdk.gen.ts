@@ -64,6 +64,9 @@ import type {
     InstallExtensionExtensionsAvailableExtensionIdInstallPostResponses,
     MarkAllNotificationsReadUsersNotificationsMarkAllReadPostData,
     MarkAllNotificationsReadUsersNotificationsMarkAllReadPostResponses,
+    ReadAllSourcesSourcesAllGetData,
+    ReadAllSourcesSourcesAllGetErrors,
+    ReadAllSourcesSourcesAllGetResponses,
     ReadArtworkImageArtworksArtworkIdImageGetData,
     ReadArtworkImageArtworksArtworkIdImageGetErrors,
     ReadArtworkImageArtworksArtworkIdImageGetResponses,
@@ -1142,6 +1145,29 @@ export const ingestPlaybackEventsPlaybackEventsIngestPost = <ThrowOnError extend
             "Content-Type": "application/json",
             ...options.headers,
         },
+    })
+
+/**
+ * Read a page of sources matching the query
+ */
+export const readAllSourcesSourcesAllGet = <ThrowOnError extends boolean = false>(
+    options?: Options<ReadAllSourcesSourcesAllGetData, ThrowOnError>,
+): RequestResult<
+    ReadAllSourcesSourcesAllGetResponses,
+    ReadAllSourcesSourcesAllGetErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options?.client ?? client).get<
+        ReadAllSourcesSourcesAllGetResponses,
+        ReadAllSourcesSourcesAllGetErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/sources/all",
+        ...options,
     })
 
 /**

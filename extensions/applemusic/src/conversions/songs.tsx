@@ -11,6 +11,8 @@ export function songResourceToIngestSong(song: SongResource): IngestSong {
             {
                 url: `applemusic:///songs/${song.id}`,
                 mime_type: null,
+                extension_manifest_id: "magritte.applemusic",
+                extension_tag: String(song.id),
             },
         ],
         artworks: song.attributes?.artwork

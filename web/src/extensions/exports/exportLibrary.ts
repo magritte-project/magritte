@@ -20,11 +20,25 @@ export function exportLibrary(
                 uploads_enabled: false,
             }))
         }),
+        readExtensionSources: enforcePermissions(
+            manifest,
+            ["libraries:read"],
+            async ({ offset, limit, extensionTags }) => {
+                return await api.client.readAllSources({
+                    extension_manifest_id: manifest.id,
+                    extension_tags: extensionTags,
+                    offset,
+                    limit,
+                })
+            },
+        ),
         bulkIngestSongs: enforcePermissions(
             manifest,
             ["libraries:write"],
             async ({ libraryId, songs }) => {
-                await api.client.ingestSongs(libraryId, { songs })
+                await api.client.ingestSongs(libraryId, {
+                    songs: songs.map((song) => ({ ...song, extension_manifest_id: manifest.id })),
+                })
                 await queryClient.invalidateQueries({
                     queryKey: libraryArtists(libraryId),
                     exact: false,

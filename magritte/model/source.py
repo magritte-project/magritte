@@ -23,6 +23,14 @@ class Source(LibraryModel, table=True):
         default=False,
         description="Whether this source is known to be invalid",
     )
+    extension_manifest_id: str | None = Field(
+        default=None,
+        description="The manifest ID of the extension which provided this source",
+    )
+    extension_tag: str | None = Field(
+        default=None,
+        description="The custom tag set by the extension which provided this source",
+    )
     songs: list[Song] = Relationship(
         back_populates="sources",
         link_model=SongSourceLink,

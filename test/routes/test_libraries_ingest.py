@@ -30,6 +30,8 @@ class TestIngestSongs:
         source = {
             "url": faker.url(),
             "mime_type": faker.mime_type("audio"),
+            "extension_manifest_id": None,
+            "extension_tag": None,
         }
 
         # It should ingest songs, including their submodels
@@ -178,6 +180,8 @@ class TestIngestSongs:
         source = {
             "url": faker.url(),
             "mime_type": faker.mime_type("audio"),
+            "extension_manifest_id": None,
+            "extension_tag": None,
         }
 
         # It should ingest songs, including their submodels

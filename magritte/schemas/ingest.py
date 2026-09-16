@@ -13,15 +13,17 @@ from magritte.schemas.base import (
 class IngestArtwork(BaseModel):
     kind: ArtworkKind
     image_url: Annotated[str, Field(max_length=URL_MAX_LENGTH)]
-    background_color: str | None
-    primary_color: str | None
-    secondary_color: str | None
-    tertiary_color: str | None
+    background_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    primary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    secondary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    tertiary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
 
 
 class IngestSource(BaseModel):
     url: Annotated[str, Field(max_length=URL_MAX_LENGTH)]
-    mime_type: str | None
+    mime_type: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    extension_manifest_id: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
+    extension_tag: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
 
 
 class IngestSong(BaseModel):
