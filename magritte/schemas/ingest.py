@@ -9,6 +9,9 @@ from magritte.schemas.base import (
     URL_MAX_LENGTH,
 )
 
+INGEST_BATCH_MAX_SIZE: int = 50
+"""The maximum number of items that can be ingested in a single batch."""
+
 
 class IngestArtwork(BaseModel):
     kind: ArtworkKind
@@ -54,4 +57,4 @@ class IngestSong(BaseModel):
 
 
 class BulkIngestSongs(BaseModel):
-    songs: Annotated[list[IngestSong], Field(max_length=50)]
+    songs: Annotated[list[IngestSong], Field(max_length=INGEST_BATCH_MAX_SIZE)]

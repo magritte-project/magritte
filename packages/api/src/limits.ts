@@ -9,3 +9,9 @@ export const PATH_MAX_LENGTH = 2000
 
 /** The maximum length of a URL. */
 export const URL_MAX_LENGTH = 8000
+
+/** The maximum number of items to read per page. */
+export const LIMIT_MAX = 250
+
+/** The maximum number of items that can be ingested in a single batch. */
+export const INGEST_BATCH_MAX_SIZE = 50

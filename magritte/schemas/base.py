@@ -15,6 +15,9 @@ PATH_MAX_LENGTH: int = 2000
 URL_MAX_LENGTH: int = 8000
 """The maximum length of a URL."""
 
+LIMIT_MAX: int = 250
+"""The maximum number of items to read per page."""
+
 
 class SortOrder(str, Enum):
     ASCENDING = "+"
@@ -29,5 +32,5 @@ class OperationResult(BaseModel):
 class PaginatedQuery(BaseModel):
     offset: Annotated[int, Field(ge=0, description="The page offset to read from")] = 0
     limit: Annotated[
-        int, Field(ge=1, le=250, description="How many items to read per page")
+        int, Field(ge=1, le=LIMIT_MAX, description="How many items to read per page")
     ] = 100
