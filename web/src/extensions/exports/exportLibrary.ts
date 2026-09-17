@@ -2,7 +2,7 @@ import type { API, ExtensionManifest } from "@magritte/api"
 import type { Library } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 
-import { libraryArtists, libraryAlbums, librarySongs } from "@/api/keys/libraries"
+import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import { enforcePermissions } from "@/extensions/exports/permissions"
 import { resolveResourceUrl } from "@/utilities/resources"
 
@@ -23,8 +23,9 @@ export function exportLibrary(
         readExtensionSources: enforcePermissions(
             manifest,
             ["libraries:read"],
-            async ({ offset, limit, extensionTags }) => {
+            async ({ libraryId, offset, limit, extensionTags }) => {
                 return await api.client.readAllSources({
+                    library_id: libraryId,
                     extension_manifest_id: manifest.id,
                     extension_tags: extensionTags,
                     offset,

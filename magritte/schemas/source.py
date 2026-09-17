@@ -42,5 +42,6 @@ class SourceRead(BaseModel):
 
 
 class SourceQuery(PaginatedQuery):
+    library_id: int | None = None
     extension_manifest_id: str | None = None
     extension_tags: list[str] | None = None

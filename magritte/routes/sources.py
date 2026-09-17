@@ -9,7 +9,9 @@ from sqlmodel import col
 
 from magritte.auth import FeatureScope, get_current_user, get_feature_user
 from magritte.db import get_db_session
+from magritte.model import Library, Song
 from magritte.model.source import Source
+from magritte.model.user import User
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.library import LibraryMediaRead
 from magritte.schemas.source import SourceCreate, SourceQuery, SourceRead, SourceUpdate
@@ -20,14 +22,28 @@ router = APIRouter(prefix="/sources")
 @router.get(
     "/all",
     response_model=LibraryMediaRead[SourceRead],
-    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])],
     summary="Read a page of sources matching the query",
 )
 async def read_all_sources(
     query: Annotated[SourceQuery, Query()],
+    current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     where_criteria = list[ColumnExpressionArgument]()
+    if query.library_id is not None:
+        if not await Library.can_user_access_by_id(
+            query.library_id,
+            current_user.id,
+            session,
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+            )
+        where_criteria.append(
+            col(Source.songs).any(
+                col(Song.libraries).any(col(Library.id) == query.library_id)
+            )
+        )
     if query.extension_manifest_id is not None:
         where_criteria.append(
             col(Source.extension_manifest_id) == query.extension_manifest_id

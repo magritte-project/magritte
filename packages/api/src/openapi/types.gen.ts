@@ -2713,6 +2713,10 @@ export type ReadAllSourcesSourcesAllGetData = {
          */
         limit?: number
         /**
+         * Library Id
+         */
+        library_id?: number | null
+        /**
          * Extension Manifest Id
          */
         extension_manifest_id?: string | null

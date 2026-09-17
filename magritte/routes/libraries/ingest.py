@@ -173,6 +173,8 @@ async def ingest_songs(
             source, inserted = await Source(
                 url=create_source.url,
                 mime_type=create_source.mime_type,
+                extension_manifest_id=create_source.extension_manifest_id,
+                extension_tag=create_source.extension_tag,
             ).try_insert_unique(
                 col(Source.url) == create_source.url,
                 session,
@@ -180,6 +182,8 @@ async def ingest_songs(
             if not inserted:
                 source.mime_type = create_source.mime_type
                 source.is_invalid = False
+                source.extension_manifest_id = create_source.extension_manifest_id
+                source.extension_tag = create_source.extension_tag
             sources.append(source)
 
         new_song = Song(

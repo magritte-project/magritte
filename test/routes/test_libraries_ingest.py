@@ -165,6 +165,8 @@ class TestIngestSongs:
                             {
                                 "url": faker.url(),
                                 "mime_type": faker.mime_type("audio"),
+                                "extension_manifest_id": None,
+                                "extension_tag": None,
                             }
                         ],
                         "start_time": 0,

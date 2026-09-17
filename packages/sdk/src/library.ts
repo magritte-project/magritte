@@ -2,14 +2,16 @@ import {
     IngestSongSchema,
     LibraryMediaReadSourceReadSchema,
     LibraryReadSchema,
+    LIMIT_MAX,
 } from "@magritte/api"
 import { protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
 export const LibraryReadExtensionSources = z4.object({
+    libraryId: z4.number().optional(),
     extensionTags: z4.array(z4.string()).optional(),
     offset: z4.number().optional(),
-    limit: z4.number().optional(),
+    limit: z4.number().max(LIMIT_MAX).optional(),
 })
 
 export const LibraryBulkIngestableSongs = z4.object({

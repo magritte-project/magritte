@@ -1,3 +1,5 @@
+from random import randint
+
 import pytest_asyncio
 from faker import Faker
 from fastapi.testclient import TestClient
@@ -216,6 +218,80 @@ class TestReadSource:
 
 
 class TestReadAllSources:
+    def test_with_library_id(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        faker: Faker,
+    ):
+        session = sign_in("test", "password")
+
+        create_library_response = client.post(
+            "/libraries/create",
+            json={
+                "name": faker.word(),
+                "home_path": None,
+                "uploads_enabled": False,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert create_library_response.status_code == 200
+        library_id = create_library_response.json().get("id")
+
+        create_response = client.post(
+            f"/libraries/{library_id}/ingest/songs",
+            json={
+                "songs": [
+                    {
+                        "artist_name": faker.name(),
+                        "album_title": faker.word(),
+                        "artworks": [],
+                        "sources": [
+                            {
+                                "url": faker.url(),
+                                "mime_type": faker.mime_type("audio"),
+                                "extension_manifest_id": "magritte.test",
+                                "extension_tag": "abc123",
+                            }
+                        ],
+                        "start_time": 0,
+                        "end_time": randint(30, 300),
+                        "title": faker.sentence(nb_words=3),
+                        "album_artist": None,
+                        "composer": None,
+                        "genre": None,
+                        "release_date": None,
+                        "track_number": 1,
+                        "track_total": 10,
+                        "disc_number": 1,
+                        "disc_total": 1,
+                        "lyrics": None,
+                        "rating": None,
+                        "bpm": None,
+                        "comment": "TestReadAllSources",
+                        "grouping": None,
+                        "mcn": None,
+                        "isrc": None,
+                        "music_brainz_release_id": None,
+                        "music_brainz_recording_id": None,
+                    },
+                ],
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert create_response.status_code == 200
+
+        read_response = client.get(
+            f"/sources/all?library_id={library_id}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        read_json = read_response.json()
+        assert read_response.status_code == 200
+        assert read_json.get("total") == 1
+        assert any(
+            source.get("extension_tag") == "abc123" for source in read_json.get("items")
+        )
+
     def test_with_extension_manifest_id(
         self,
         client: TestClient,

@@ -1603,7 +1603,7 @@
             "get": {
                 "summary": "Read a page of sources matching the query",
                 "operationId": "read_all_sources_sources_all_get",
-                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "security": [{ "OAuth2PasswordBearer": [] }],
                 "parameters": [
                     {
                         "name": "offset",
@@ -1631,6 +1631,15 @@
                             "title": "Limit"
                         },
                         "description": "How many items to read per page"
+                    },
+                    {
+                        "name": "library_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                            "title": "Library Id"
+                        }
                     },
                     {
                         "name": "extension_manifest_id",
