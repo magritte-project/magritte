@@ -8,6 +8,7 @@ import { Fragment, useCallback, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibrarySongs } from "@/api/queries/libraries"
+import LibraryAlbumHeader from "@/components/library/LibraryAlbumHeader"
 import LibrarySongTable from "@/components/library/LibrarySongTable"
 import LibrarySongTableRow from "@/components/library/LibrarySongTableRow"
 import AppForm from "@/components/reusable/AppForm"
@@ -118,6 +119,9 @@ export const Route = createFileRoute("/libraries_/$libraryId/songs")({
         return (
             <CommandInputProvider value={commandInputs}>
                 <div className="m-2 flex flex-col gap-2 cursor-default">
+                    {albumId && (
+                        <LibraryAlbumHeader libraryId={Number(libraryId)} albumId={albumId} />
+                    )}
                     <AppForm form={facetForm}>
                         <facetForm.AppField
                             name="query"
