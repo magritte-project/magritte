@@ -1,7 +1,6 @@
 import { Outlet, useRouterState } from "@tanstack/react-router"
 
 import PlayerFooter from "@/components/chrome/PlayerFooter"
-import PlayerOverlay from "@/components/chrome/PlayerOverlay"
 import ExtensionPanelLayout from "@/components/extensions/ExtensionPanelLayout"
 import NotificationCenterLayout from "@/components/structure/NotificationCenterLayout"
 import Wiring from "@/components/structure/Wiring"
@@ -25,7 +24,7 @@ export default function RootLayout() {
                         {!hideTransportControls && <PlayerFooter />}
                     </ExtensionPanelLayout>
                 )}
-                <PlayerOverlay />
+                {/*<PlayerOverlay />*/}
             </Wiring>
         </NotificationCenterLayout>
     )
