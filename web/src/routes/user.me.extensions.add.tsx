@@ -1,4 +1,4 @@
-import { PlusIcon } from "@phosphor-icons/react"
+import { ArrowSquareInIcon, PlusIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
@@ -9,7 +9,9 @@ import ModalHeader from "@/components/chrome/ModalHeader"
 import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import Modal from "@/components/reusable/Modal"
+import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import TableFooter from "@/components/reusable/TableFooter"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
 
 export const Route = createFileRoute("/user/me/extensions/add")({
@@ -34,7 +36,23 @@ export const Route = createFileRoute("/user/me/extensions/add")({
 
         return (
             <Modal className="w-120">
-                <ModalHeader>Available Extensions</ModalHeader>
+                <ModalHeader
+                    supplementaryEnd={
+                        <ScopeRestricted expected={["admin"]}>
+                            <ThemedSubtleButton
+                                type="button"
+                                title="Import Extension"
+                                onClick={() =>
+                                    navigate({ to: "/admin/extensions/import", replace: true })
+                                }
+                            >
+                                <ArrowSquareInIcon weight="bold" />
+                            </ThemedSubtleButton>
+                        </ScopeRestricted>
+                    }
+                >
+                    Available Extensions
+                </ModalHeader>
                 <div className="flex flex-col gap-between">
                     <ol>
                         {availableExtensions.items.map((extension) => (
@@ -48,6 +66,7 @@ export const Route = createFileRoute("/user/me/extensions/add")({
                                         await installMutation.mutateAsync(extension.id)
                                         navigate({
                                             to: "/user/me/extensions",
+                                            replace: true,
                                         })
                                     }}
                                 >

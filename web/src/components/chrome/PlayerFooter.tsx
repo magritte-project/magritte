@@ -124,15 +124,17 @@ export default function PlayerFooter() {
                                         "p-2 rounded-full active:bg-on-primary/10",
                                         "font-bold text-on-primary disabled:opacity-disabled",
                                     )}
+                                    title="Skip Previous"
                                     onClick={() => player.skipPrevious()}
                                 >
-                                    <SkipBackIcon size="1.4rem" weight="fill" aria-label="Play" />
+                                    <SkipBackIcon size="1.4rem" weight="fill" />
                                 </AsyncButton>
                                 <AsyncButton
                                     className={classNames(
                                         "p-2 rounded-full active:bg-on-primary/10",
                                         "font-bold text-on-primary disabled:opacity-disabled",
                                     )}
+                                    title={playbackState === "playing" ? "Pause" : "Play"}
                                     onClick={() =>
                                         player.playbackState === "playing"
                                             ? player.pause()
@@ -140,9 +142,9 @@ export default function PlayerFooter() {
                                     }
                                 >
                                     {playbackState === "playing" ? (
-                                        <PauseIcon size="1.4rem" weight="fill" aria-label="Pause" />
+                                        <PauseIcon size="1.4rem" weight="fill" />
                                     ) : (
-                                        <PlayIcon size="1.4rem" weight="fill" aria-label="Next" />
+                                        <PlayIcon size="1.4rem" weight="fill" />
                                     )}
                                 </AsyncButton>
                                 <AsyncButton
@@ -150,13 +152,10 @@ export default function PlayerFooter() {
                                         "p-2 rounded-full active:bg-on-primary/10",
                                         "font-bold text-on-primary disabled:opacity-disabled",
                                     )}
+                                    title="Skip Next"
                                     onClick={() => player.skipNext()}
                                 >
-                                    <SkipForwardIcon
-                                        size="1.4rem"
-                                        weight="fill"
-                                        aria-label="Play"
-                                    />
+                                    <SkipForwardIcon size="1.4rem" weight="fill" />
                                 </AsyncButton>
                             </motion.div>
                             {(isExpanded || isPrimarilyTouch) && (

@@ -68,8 +68,8 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/permissions")
                     {allUsers.users.map((user) => (
                         <li key={user.id} className="flex items-center gap-2 text-sm">
                             <span className="flex-1 text-sm">{user.username}</span>
-                            <ThemedSubtleButton onClick={() => handleAddUser(user.id)}>
-                                <PlusIcon aria-label="Add" />
+                            <ThemedSubtleButton title="Add" onClick={() => handleAddUser(user.id)}>
+                                <PlusIcon />
                             </ThemedSubtleButton>
                         </li>
                     ))}
@@ -184,8 +184,13 @@ function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
                 />
                 <Label htmlFor={`permissions[${data.user_id}].canRemove`}>Can Remove</Label>
             </Field>
-            <ThemedButton buttonComponent={AsyncButton} destructive onClick={handleDelete}>
-                <TrashIcon aria-label="Revoke Access" />
+            <ThemedButton
+                buttonComponent={AsyncButton}
+                destructive
+                title="Revoke Access"
+                onClick={handleDelete}
+            >
+                <TrashIcon />
             </ThemedButton>
         </div>
     )

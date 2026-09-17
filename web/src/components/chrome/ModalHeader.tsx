@@ -21,8 +21,8 @@ export default function ModalHeader({
         <ThemedHeader
             supplementaryStart={
                 <>
-                    <ThemedSubtleButton onClick={dismiss}>
-                        <CaretLeftIcon weight="bold" aria-label="Dismiss" />
+                    <ThemedSubtleButton onClick={dismiss} title="Dismiss">
+                        <CaretLeftIcon weight="bold" />
                     </ThemedSubtleButton>
                     {supplementaryStart}
                 </>

@@ -46,9 +46,10 @@ export default function TableFooter({
                     type="button"
                     className="text-key active:text-key-active disabled:opacity-disabled font-bold"
                     disabled={!canGoBack}
+                    title="Previous Page"
                     onClick={handleGoBack}
                 >
-                    <CaretLeftIcon weight="bold" aria-label="Previous Page" />
+                    <CaretLeftIcon weight="bold" />
                 </button>
             )}
             <span className="text-sm text-on-secondary">
@@ -59,9 +60,10 @@ export default function TableFooter({
                     type="button"
                     className="text-key active:text-key-active disabled:opacity-disabled font-bold"
                     disabled={canGoForward}
+                    title="Next Page"
                     onClick={handleGoForward}
                 >
-                    <CaretRightIcon weight="bold" aria-label="Next Page" />
+                    <CaretRightIcon weight="bold" />
                 </button>
             )}
         </footer>

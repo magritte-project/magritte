@@ -1,4 +1,4 @@
-import { PlusIcon } from "@phosphor-icons/react"
+import { ArrowSquareInIcon, PlusIcon } from "@phosphor-icons/react"
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
@@ -12,6 +12,7 @@ import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import PermissionInfo from "@/components/extensions/PermissionInfo"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import Modal from "@/components/reusable/Modal"
+import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
@@ -84,10 +85,15 @@ export const Route = createFileRoute("/user/me/extensions")({
 
         return (
             <div className="flex flex-col gap-3">
-                <header className="flex items-center gap-3">
+                <header className="flex items-center gap-between">
                     <h1 className="flex-1 text-2xl font-bold">Installed Extensions</h1>
-                    <ThemedLink to="/user/me/extensions/add">
-                        <PlusIcon aria-label="Add" />
+                    <ScopeRestricted expected={["admin"]}>
+                        <ThemedLink to="/admin/extensions/import" title="Import Extension">
+                            <ArrowSquareInIcon size="1.2rem" weight="bold" />
+                        </ThemedLink>
+                    </ScopeRestricted>
+                    <ThemedLink to="/user/me/extensions/add" title="Add Extension">
+                        <PlusIcon size="1.2rem" weight="bold" />
                     </ThemedLink>
                 </header>
                 <ol className="flex items-start content-start flex-wrap gap-2">
@@ -137,13 +143,15 @@ export const Route = createFileRoute("/user/me/extensions")({
                 >
                     <ModalHeader
                         supplementaryEnd={
-                            <ThemedSubtleButton
-                                buttonComponent={AsyncButton}
-                                onClick={handleUninstallClick}
-                                title="Uninstall"
-                            >
-                                <TrashIcon />
-                            </ThemedSubtleButton>
+                            <div>
+                                <ThemedSubtleButton
+                                    buttonComponent={AsyncButton}
+                                    onClick={handleUninstallClick}
+                                    title="Uninstall"
+                                >
+                                    <TrashIcon />
+                                </ThemedSubtleButton>
+                            </div>
                         }
                     >
                         About Extension

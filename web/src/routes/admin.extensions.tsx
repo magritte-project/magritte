@@ -1,4 +1,4 @@
-import { PlusIcon } from "@phosphor-icons/react"
+import { ArrowSquareInIcon } from "@phosphor-icons/react"
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
@@ -86,8 +86,8 @@ export const Route = createFileRoute("/admin/extensions")({
             <div className="flex flex-col gap-3">
                 <header className="flex items-center gap-3">
                     <h1 className="flex-1 text-2xl font-bold">Available Extensions</h1>
-                    <ThemedLink to="/admin/extensions/import">
-                        <PlusIcon aria-label="Import" />
+                    <ThemedLink to="/admin/extensions/import" title="Import Extension">
+                        <ArrowSquareInIcon size="1.2rem" weight="bold" />
                     </ThemedLink>
                 </header>
                 <ol className="flex items-start content-start flex-wrap gap-2">

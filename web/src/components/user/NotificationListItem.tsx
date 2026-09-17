@@ -54,15 +54,17 @@ export default function NotificationListItem({
                 disabled={
                     updateMutation.isPending || deleteMutation.isPending || notification.is_read
                 }
+                title="Mark as Read"
                 onClick={handleMarkAsRead}
             >
-                <CheckIcon aria-label="Mark as Read" />
+                <CheckIcon />
             </ThemedSubtleButton>
             <ThemedSubtleButton
                 disabled={updateMutation.isPending || deleteMutation.isPending}
+                title="Delete"
                 onClick={handleDelete}
             >
-                <TrashIcon aria-label="Delete" />
+                <TrashIcon />
             </ThemedSubtleButton>
         </li>
     )

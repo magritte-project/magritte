@@ -73,6 +73,7 @@ export const Route = createFileRoute("/libraries")({
                                             <button
                                                 type="button"
                                                 className="cursor-pointer text-key active:text-key-active disabled:opacity-disabled"
+                                                title="Edit"
                                                 onClick={(e) => {
                                                     e.preventDefault()
                                                     e.stopPropagation()
@@ -83,7 +84,7 @@ export const Route = createFileRoute("/libraries")({
                                                     })
                                                 }}
                                             >
-                                                <PencilIcon aria-label="Edit" weight="duotone" />
+                                                <PencilIcon weight="duotone" />
                                             </button>
                                         </div>
                                     </Link>

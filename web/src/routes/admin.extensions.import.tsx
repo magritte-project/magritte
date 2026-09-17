@@ -9,11 +9,14 @@ import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"
 import Modal from "@/components/reusable/Modal"
 import { useAppForm } from "@/hooks/formHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/admin/extensions/import")({
     component: function AdminExtensionsImport() {
         const navigate = Route.useNavigate()
         const importMutation = useImportExtension()
+        const notificationCenter = useNotificationCenter()
         const form = useAppForm({
             defaultValues: {
                 manifest_url: "",
@@ -26,9 +29,13 @@ export const Route = createFileRoute("/admin/extensions/import")({
                     await importMutation.mutateAsync({ manifest_url })
                     navigate({
                         to: "/admin/extensions",
+                        replace: true,
                     })
-                } catch (e) {
-                    alert(`Could not import extension: ${e}`)
+                } catch (error) {
+                    notificationCenter.showToast({
+                        message: `Could not import extension: ${getErrorMessage(error)}`,
+                        type: "error",
+                    })
                 }
             },
         })

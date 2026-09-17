@@ -14,6 +14,8 @@ import Modal from "@/components/reusable/Modal"
 import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries/add")({
     beforeLoad({
@@ -33,6 +35,7 @@ export const Route = createFileRoute("/libraries/add")({
         const api = useAPI()
         const { data: instanceStatus } = useSuspenseQuery(readInstanceStatus(api))
         const createLibraryMutation = useCreateLibrary()
+        const notificationCenter = useNotificationCenter()
 
         const form = useAppForm({
             defaultValues: {
@@ -46,9 +49,13 @@ export const Route = createFileRoute("/libraries/add")({
                     navigate({
                         to: "/libraries/$libraryId",
                         params: { libraryId: String(library.id) },
+                        replace: true,
                     })
-                } catch (e) {
-                    alert(`Could not sign in: ${e}`)
+                } catch (error) {
+                    notificationCenter.showToast({
+                        message: `Could not sign in: ${getErrorMessage(error)}`,
+                        type: "error",
+                    })
                 }
             },
         })

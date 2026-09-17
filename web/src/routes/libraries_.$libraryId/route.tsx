@@ -27,7 +27,11 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
             navigate({ to: ".", search: (oldSearch) => ({ ...oldSearch, upload: true }) })
         }, [navigate])
         const dismissUpload = useCallback(() => {
-            navigate({ to: ".", search: (oldSearch) => ({ ...oldSearch, upload: undefined }) })
+            navigate({
+                to: ".",
+                search: (oldSearch) => ({ ...oldSearch, upload: undefined }),
+                replace: true,
+            })
         }, [navigate])
         const commands = useMemo(
             (): readonly Command[] => [
