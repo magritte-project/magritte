@@ -37,7 +37,7 @@ Magritte is intended to be highly flexible in how it can be configured and where
 
 ## AI Usage Disclosure
 
-Claude Code and Gemini were used for research, to generate config files, to find solutions for bugs, to generate some SQL queries, to apply repetitive pattern refactors, and to generate some of the code in the AI-related extensions. A majority of the code in this repository was handwritten.
+Claude Code and Gemini were used for research, to generate config files, to find solutions for bugs, to generate some SQL queries, to apply repetitive pattern refactors, and to generate code in the extensions. A majority of the code in the core Magritte codebases was handwritten.
 
 ## Installation
 
