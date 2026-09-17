@@ -39,6 +39,7 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                     id: `libraries.${params.libraryId}.uploadFiles`,
                     searchTerms: "upload audio files",
                     requiredInputKinds: [],
+                    highlightAvailability: false,
                     present: async () => ({ displayName: "library: Upload Audio Files" }),
                     execute: async () => presentUpload(),
                 },

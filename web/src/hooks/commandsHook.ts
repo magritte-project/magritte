@@ -6,22 +6,23 @@ import useCommandRegistry from "@/hooks/commandRegistryHook"
 import { filterTo, combineUnsubscribers } from "@/utilities/events"
 
 export interface UseCommandsOptions {
-    readonly search: string
+    readonly search?: string
 }
 
-export default function useCommands({ search }: UseCommandsOptions) {
+export default function useCommands({ search }: UseCommandsOptions = {}) {
     const registry = useCommandRegistry()
     const inputs = useCommandInputs()
     const [results, setResults] = useState<readonly Command[]>(() => registry.all)
 
     useEffect(() => {
-        if (!search) {
-            setResults(registry.all)
-            return
-        }
         function refreshResults() {
-            const results = registry.search(search)
-            setResults(results)
+            if (search) {
+                const results = registry.search(search)
+                setResults(results)
+            } else {
+                const all = registry.all
+                setResults(all)
+            }
         }
         refreshResults()
         return combineUnsubscribers(

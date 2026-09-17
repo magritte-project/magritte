@@ -2432,6 +2432,12 @@
                         "type": "array",
                         "title": "Requiredinputkinds",
                         "description": "The kinds of the inputs this command requires to execute"
+                    },
+                    "highlightAvailability": {
+                        "type": "boolean",
+                        "title": "Highlightavailability",
+                        "description": "Whether the command should be highlighted when it becomes available",
+                        "default": false
                     }
                 },
                 "type": "object",

@@ -25,6 +25,7 @@ export const Route = createFileRoute("/libraries")({
                     id: `libraries.read[${library.id}]`,
                     searchTerms: `library ${library.name}`,
                     requiredInputKinds: [],
+                    highlightAvailability: false,
                     present: async () => ({ displayName: library.name, disabled: false }),
                     execute: async () =>
                         navigate({

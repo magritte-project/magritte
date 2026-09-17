@@ -228,6 +228,12 @@ export type ExtensionCommand = {
      * The kinds of the inputs this command requires to execute
      */
     requiredInputKinds: Array<string>
+    /**
+     * Highlightavailability
+     *
+     * Whether the command should be highlighted when it becomes available
+     */
+    highlightAvailability?: boolean
 }
 
 /**

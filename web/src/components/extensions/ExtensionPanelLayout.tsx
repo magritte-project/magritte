@@ -64,6 +64,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                     id: `extensions.reveal[${extension.id}]`,
                     searchTerms: `show open ${extension.name} extension`,
                     requiredInputKinds: [],
+                    highlightAvailability: false,
                     present: async () => ({
                         displayName: `extensions: ${extension.name}`,
                     }),
@@ -74,11 +75,12 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 id: `extensions.close`,
                 searchTerms: "close extension",
                 requiredInputKinds: [],
+                highlightAvailability: false,
                 present: async () => ({
                     displayName: `extensions: close`,
                 }),
                 execute: async () => setSelectedId(null),
-            },
+            } satisfies Command,
         ]
     }, [available, setSelectedId])
 

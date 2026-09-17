@@ -24,6 +24,7 @@ async function getExtensionCommands(extension: Extension): Promise<readonly Comm
                 id: getExtensionCommandID(extension.manifest, definition),
                 searchTerms: `${extension.manifest.name} ${definition.searchTerms}`,
                 requiredInputKinds: definition.requiredInputKinds,
+                highlightAvailability: definition.highlightAvailability ?? false,
                 present: async (inputs: CommandInputs) => {
                     try {
                         const presentation = await responder.presentCommand({

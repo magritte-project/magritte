@@ -37,6 +37,13 @@ class ExtensionCommand(BaseModel):
             description="The kinds of the inputs this command requires to execute",
         ),
     ]
+    highlight_availability: Annotated[
+        bool,
+        Field(
+            alias="highlightAvailability",
+            description="Whether the command should be highlighted when it becomes available",
+        ),
+    ] = False
 
 
 class ExtensionManifest(BaseModel):

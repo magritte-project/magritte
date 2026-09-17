@@ -12,6 +12,9 @@ export interface Command {
     /** The kinds of the inputs this command requires to execute */
     readonly requiredInputKinds: readonly string[]
 
+    /** Whether the command should be highlighted when it becomes available */
+    readonly highlightAvailability: boolean
+
     /** Present the command to the user with the given inputs */
     readonly present: (inputs: CommandInputs) => Promise<CommandPresentation>
 

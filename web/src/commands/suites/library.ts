@@ -13,6 +13,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             id: `libraries.artists`,
             searchTerms: "library artists",
             requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            highlightAvailability: false,
             present: async () => ({
                 displayName: "library: Artists",
             }),
@@ -28,6 +29,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             id: `libraries.albums`,
             searchTerms: "library albums",
             requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            highlightAvailability: false,
             present: async () => ({
                 displayName: "library: Albums",
             }),
@@ -43,6 +45,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             id: `libraries.songs`,
             searchTerms: "library songs",
             requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            highlightAvailability: false,
             present: async () => ({
                 displayName: "library: Songs",
             }),
@@ -57,6 +60,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
         {
             id: `libraries.deleteSongs`,
             searchTerms: "library remove delete songs",
+            highlightAvailability: true,
             requiredInputKinds: [
                 getCommandInputKind(LibraryInput),
                 getCommandInputKind(LibrarySongInput),
@@ -111,6 +115,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                 getCommandInputKind(LibraryInput),
                 getCommandInputKind(LibrarySongInput),
             ],
+            highlightAvailability: true,
             present: async () => ({
                 displayName: "library: Download Selected Songs…",
             }),
@@ -167,6 +172,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             id: "libraries.requestSync",
             searchTerms: "library sync files",
             requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            highlightAvailability: false,
             present: async () => ({
                 displayName: "library: Request Sync",
             }),

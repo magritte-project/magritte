@@ -106,6 +106,7 @@ export const ExtensionCommandSchema = z.object({
     id: z.string(),
     searchTerms: z.string(),
     requiredInputKinds: z.array(z.string()),
+    highlightAvailability: z.boolean().optional(),
 })
 
 /**
