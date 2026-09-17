@@ -4,8 +4,13 @@
     "icons": [
         {
             "src": "favicon.ico",
-            "sizes": "128x128",
+            "sizes": "64x64",
             "type": "image/x-icon"
+        },
+        {
+            "src": "icon64.png",
+            "type": "image/png",
+            "sizes": "64x64"
         },
         {
             "src": "icon128.png",
@@ -13,14 +18,9 @@
             "sizes": "128x128"
         },
         {
-            "src": "icon256.png",
+            "src": "icon192.png",
             "type": "image/png",
-            "sizes": "256x256"
-        },
-        {
-            "src": "icon384.png",
-            "type": "image/png",
-            "sizes": "384x384"
+            "sizes": "192x192"
         },
         {
             "src": "icon.svg",

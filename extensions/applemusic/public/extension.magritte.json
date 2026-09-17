@@ -4,6 +4,7 @@
     "id": "magritte.applemusic",
     "version": "0.0.0",
     "url": "/",
+    "icon_url": "/icon.svg",
     "preferredWidth": "16rem",
     "preferredHeight": "16rem",
     "permissions": [
