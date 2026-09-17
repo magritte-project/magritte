@@ -235,9 +235,6 @@ export class ExtensionRuntime {
         try {
             // Transparent so extensions can use translucent backgrounds over the blur
             iframe.style.background = "transparent"
-            // Must match the default color scheme of extension documents, otherwise
-            // browsers paint an opaque canvas behind the iframe's content
-            iframe.style.colorScheme = "light"
             iframe.style.borderRadius = "12px"
             iframe.style.backdropFilter = "blur(20px)"
             iframe.style.display = "none"
