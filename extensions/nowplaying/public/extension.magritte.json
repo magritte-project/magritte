@@ -1,9 +1,0 @@
-{
-    "name": "Now Playing",
-    "id": "magritte.nowplaying",
-    "version": "0.0.0",
-    "url": "/",
-    "preferredWidth": "16rem",
-    "preferredHeight": "16rem",
-    "permissions": ["playback:read", "playback:control"]
-}
