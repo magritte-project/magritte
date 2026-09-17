@@ -81,7 +81,14 @@ import {
     type OperationResult,
     type PlaybackEventIngestResult,
     type ReadAllSourcesSourcesAllGetData,
+    type ReadAvailableExtensionsExtensionsAvailableGetData,
+    type ReadInstalledExtensionsExtensionsInstalledGetData,
+    type ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetData,
+    type ReadLibraryArtistsLibrariesLibraryIdArtistsGetData,
+    type ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetData,
     type ReadLibrarySongsLibrariesLibraryIdSongsGetData,
+    type ReadNotificationsUsersNotificationsGetData,
+    type ReadUsersUsersAllGetData,
     type SongRead,
     type SongUpdate,
     type SourceCreate,
@@ -207,11 +214,10 @@ export class APIClient {
         return await updateMeUsersMePost({ ...this.options, body })
     }
 
-    async readNotifications(offset?: number, limit?: number): Promise<NotificationsRead> {
-        return await readNotificationsUsersNotificationsGet({
-            ...this.options,
-            query: { offset, limit },
-        })
+    async readNotifications(
+        query?: ReadNotificationsUsersNotificationsGetData["query"],
+    ): Promise<NotificationsRead> {
+        return await readNotificationsUsersNotificationsGet({ ...this.options, query })
     }
 
     async readNotification(notification_id: number): Promise<NotificationRead> {
@@ -254,8 +260,8 @@ export class APIClient {
         })
     }
 
-    async readAllUsers(query?: string, offset?: number, limit?: number): Promise<UserProfilesRead> {
-        return await readUsersUsersAllGet({ ...this.options, query: { query, offset, limit } })
+    async readAllUsers(query?: ReadUsersUsersAllGetData["query"]): Promise<UserProfilesRead> {
+        return await readUsersUsersAllGet({ ...this.options, query })
     }
 
     async readFilesPreflight(): Promise<UserFileAccessPreflight> {
@@ -268,11 +274,10 @@ export class APIClient {
         return await readLibrariesLibrariesGet(this.options)
     }
 
-    async readLibraryHomeSubpaths(relative_to: string): Promise<LibraryHomePathRead> {
-        return await readLibraryHomeSubpathsLibrariesHomeSubpathsGet({
-            ...this.options,
-            query: { relative_to },
-        })
+    async readLibraryHomeSubpaths(
+        query: ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetData["query"],
+    ): Promise<LibraryHomePathRead> {
+        return await readLibraryHomeSubpathsLibrariesHomeSubpathsGet({ ...this.options, query })
     }
 
     async createLibrary(body: LibraryCreate): Promise<LibraryRead> {
@@ -356,15 +361,12 @@ export class APIClient {
 
     async readLibraryAlbums(
         library_id: number,
-        query?: string,
-        artist_id?: number,
-        offset?: number,
-        limit?: number,
+        query?: ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetData["query"],
     ): Promise<LibraryMediaReadAlbumRead> {
         return await readLibraryAlbumsLibrariesLibraryIdAlbumsGet({
             ...this.options,
             path: { library_id },
-            query: { query, artist_id, offset, limit },
+            query,
         })
     }
 
@@ -396,14 +398,12 @@ export class APIClient {
 
     async readLibraryArtists(
         library_id: number,
-        query?: string,
-        offset?: number,
-        limit?: number,
+        query?: ReadLibraryArtistsLibrariesLibraryIdArtistsGetData["query"],
     ): Promise<LibraryMediaReadArtistRead> {
         return await readLibraryArtistsLibrariesLibraryIdArtistsGet({
             ...this.options,
             path: { library_id },
-            query: { query, offset, limit },
+            query,
         })
     }
 
@@ -435,17 +435,12 @@ export class APIClient {
 
     async readLibrarySongs(
         library_id: number,
-        query?: string,
-        album_id?: number,
-        artist_id?: number,
-        sort_by?: ReadLibrarySongsSortBy,
-        offset?: number,
-        limit?: number,
+        query?: ReadLibrarySongsLibrariesLibraryIdSongsGetData["query"],
     ): Promise<LibraryMediaReadSongRead> {
         return await readLibrarySongsLibrariesLibraryIdSongsGet({
             ...this.options,
             path: { library_id },
-            query: { query, album_id, artist_id, sort_by, offset, limit },
+            query,
         })
     }
 
@@ -539,13 +534,9 @@ export class APIClient {
     }
 
     async readAvailableExtensions(
-        offset?: number,
-        limit?: number,
+        query?: ReadAvailableExtensionsExtensionsAvailableGetData["query"],
     ): Promise<LibraryMediaReadExtensionRead> {
-        return await readAvailableExtensionsExtensionsAvailableGet({
-            ...this.options,
-            query: { offset, limit },
-        })
+        return await readAvailableExtensionsExtensionsAvailableGet({ ...this.options, query })
     }
 
     async installExtension(extension_id: number): Promise<OperationResult> {
@@ -563,12 +554,8 @@ export class APIClient {
     }
 
     async readInstalledExtensions(
-        offset?: number,
-        limit?: number,
+        query?: ReadInstalledExtensionsExtensionsInstalledGetData["query"],
     ): Promise<LibraryMediaReadExtensionRead> {
-        return await readInstalledExtensionsExtensionsInstalledGet({
-            ...this.options,
-            query: { offset, limit },
-        })
+        return await readInstalledExtensionsExtensionsInstalledGet({ ...this.options, query })
     }
 }

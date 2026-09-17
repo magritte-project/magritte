@@ -30,7 +30,7 @@ export function readLibrary(api: API, library_id: number) {
 export function readLibraryHomeSubpaths(api: API, relative_to: string) {
     return queryOptions({
         queryKey: [...libraries(), "subpaths", relative_to],
-        queryFn: () => api.client.readLibraryHomeSubpaths(relative_to),
+        queryFn: () => api.client.readLibraryHomeSubpaths({ relative_to }),
     })
 }
 
@@ -64,12 +64,11 @@ export function readLibraryAlbums(api: API, criteria: ReadLibraryAlbumsCriteria)
             criteria.offset,
         ),
         queryFn: () =>
-            api.client.readLibraryAlbums(
-                criteria.libraryId,
-                criteria.query,
-                criteria.artistId,
-                criteria.offset,
-            ),
+            api.client.readLibraryAlbums(criteria.libraryId, {
+                query: criteria.query,
+                artist_id: criteria.artistId,
+                offset: criteria.offset,
+            }),
     })
 }
 
@@ -90,7 +89,10 @@ export function readLibraryArtists(api: API, criteria: ReadLibraryArtistsCriteri
     return queryOptions({
         queryKey: libraryArtists(criteria.libraryId, criteria.query, criteria.offset),
         queryFn: () =>
-            api.client.readLibraryArtists(criteria.libraryId, criteria.query, criteria.offset),
+            api.client.readLibraryArtists(criteria.libraryId, {
+                query: criteria.query,
+                offset: criteria.offset,
+            }),
     })
 }
 
@@ -123,14 +125,13 @@ export function readLibrarySongs(api: API, criteria: ReadLibrarySongsCriteria) {
             criteria.limit,
         ),
         queryFn: () =>
-            api.client.readLibrarySongs(
-                criteria.libraryId,
-                criteria.query,
-                criteria.albumId,
-                criteria.artistId,
-                criteria.sortBy,
-                criteria.offset,
-                criteria.limit,
-            ),
+            api.client.readLibrarySongs(criteria.libraryId, {
+                query: criteria.query,
+                album_id: criteria.albumId,
+                artist_id: criteria.artistId,
+                sort_by: criteria.sortBy,
+                offset: criteria.offset,
+                limit: criteria.limit,
+            }),
     })
 }

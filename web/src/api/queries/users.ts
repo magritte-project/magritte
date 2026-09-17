@@ -20,7 +20,7 @@ export function userProfile(api: API, enabled = true) {
 export function readNotifications(api: API, offset?: number, limit?: number, enabled = true) {
     return queryOptions({
         queryKey: userMeNotifications(offset, limit),
-        queryFn: () => api.client.readNotifications(offset, limit),
+        queryFn: () => api.client.readNotifications({ offset, limit }),
         enabled,
     })
 }
@@ -42,7 +42,7 @@ export function readAllUsers(
 ) {
     return queryOptions({
         queryKey: usersAll(query, offset, limit),
-        queryFn: () => api.client.readAllUsers(query, offset, limit),
+        queryFn: () => api.client.readAllUsers({ query, offset, limit }),
         enabled,
     })
 }
