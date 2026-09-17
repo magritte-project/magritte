@@ -16,7 +16,6 @@ import {
     ingestPlaybackEventsPlaybackEventsIngestPost,
     ingestSongsLibrariesLibraryIdIngestSongsPost,
     installExtensionExtensionsAvailableExtensionIdInstallPost,
-    lookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPost,
     markAllNotificationsReadUsersNotificationsMarkAllReadPost,
     readAllSourcesSourcesAllGet,
     readAvailableExtensionsExtensionsAvailableGet,
@@ -86,8 +85,6 @@ import {
     type SongRead,
     type SongUpdate,
     type SourceCreate,
-    type SourceLookup,
-    type SourceLookupRead,
     type SourceRead,
     type SourceUpdate,
     type UserEventPreflight,
@@ -449,17 +446,6 @@ export class APIClient {
             ...this.options,
             path: { library_id },
             query: { query, album_id, artist_id, sort_by, offset, limit },
-        })
-    }
-
-    async lookupLibrarySongSources(
-        library_id: number,
-        body: SourceLookup,
-    ): Promise<SourceLookupRead> {
-        return await lookupLibrarySongSourcesLibrariesLibraryIdSongsSourcesPost({
-            ...this.options,
-            path: { library_id },
-            body,
         })
     }
 

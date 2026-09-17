@@ -425,20 +425,6 @@ export const SourceCreateSchema = z.object({
 })
 
 /**
- * SourceLookup
- */
-export const SourceLookupSchema = z.object({
-    urls: z.array(z.string().max(8000)).max(500),
-})
-
-/**
- * SourceLookupRead
- */
-export const SourceLookupReadSchema = z.object({
-    urls: z.array(z.string()),
-})
-
-/**
  * SourceRead
  */
 export const SourceReadSchema = z.object({

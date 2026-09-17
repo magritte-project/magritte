@@ -59,15 +59,17 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
     const handleDismiss = useCallback(() => setSelectedId(null), [setSelectedId])
     const commands = useMemo(() => {
         return [
-            ...available.map((extension): Command => ({
-                id: `extensions.reveal[${extension.id}]`,
-                searchTerms: `show open ${extension.name} extension`,
-                requiredInputKinds: [],
-                present: async () => ({
-                    displayName: `extensions: ${extension.name}`,
+            ...available.map(
+                (extension): Command => ({
+                    id: `extensions.reveal[${extension.id}]`,
+                    searchTerms: `show open ${extension.name} extension`,
+                    requiredInputKinds: [],
+                    present: async () => ({
+                        displayName: `extensions: ${extension.name}`,
+                    }),
+                    execute: async () => setSelectedId(extension.id),
                 }),
-                execute: async () => setSelectedId(extension.id),
-            })),
+            ),
             {
                 id: `extensions.close`,
                 searchTerms: "close extension",

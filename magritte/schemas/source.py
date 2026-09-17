@@ -22,19 +22,6 @@ class SourceUpdate(BaseModel):
     extension_tag: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
 
 
-class SourceLookup(BaseModel):
-    urls: Annotated[
-        list[Annotated[str, Field(max_length=URL_MAX_LENGTH)]],
-        Field(max_length=500),
-    ]
-
-
-class SourceLookupRead(BaseModel):
-    urls: list[str] = Field(
-        description="The looked up URLs which belong to songs in the library",
-    )
-
-
 class SourceRead(BaseModel):
     id: int
     url: str

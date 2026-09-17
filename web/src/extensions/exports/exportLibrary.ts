@@ -53,14 +53,6 @@ export function exportLibrary(
                 })
             },
         ),
-        lookupSongSources: enforcePermissions(
-            manifest,
-            ["libraries:read"],
-            async ({ libraryId, urls }) => {
-                const lookup = await api.client.lookupLibrarySongSources(libraryId, { urls })
-                return lookup.urls
-            },
-        ),
         resolveArtworkImageUrl: enforcePermissions(manifest, ["libraries:read"], async (url) => {
             const token = await api.fileAccess.token()
             return resolveResourceUrl(url, token)

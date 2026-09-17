@@ -4,12 +4,9 @@ import { useQuery } from "@tanstack/react-query"
 
 import { useBulkIngestSongsMutation } from "@/api/mutations/library"
 import { readLibraries } from "@/api/queries/library"
-import {
-    readLibrariesContainingSources,
-    readSourcesMissingFromLibrary,
-} from "@/api/queries/librarySources"
+import { readIsAlreadyIngested, readTagsMissingFromLibrary } from "@/api/queries/librarySources"
 import { iconButtonClassName, secondaryButtonClassName } from "@/components/reusable/buttonStyles"
-import { songResourceToIngestSong, songResourceToSourceUrl } from "@/conversions/songs"
+import { songResourceToExtensionTag, songResourceToIngestSong } from "@/conversions/songs"
 import useExtensionHost from "@/hooks/extensionHostHook"
 import type { SongResource } from "@/musickit/models/song"
 
@@ -30,28 +27,27 @@ export default function AddToLibraryMenu({
     const librariesQuery = useQuery(readLibraries(extensionHost))
     const ingestMutation = useBulkIngestSongsMutation()
 
-    const libraryIds = librariesQuery.data?.map((library) => library.id) ?? []
-    const urls = songs?.map(songResourceToSourceUrl) ?? []
-    const containingQuery = useQuery({
-        ...readLibrariesContainingSources(extensionHost, libraryIds, urls),
-        enabled: libraryIds.length > 0 && urls.length > 0,
+    const tags = songs?.map(songResourceToExtensionTag) ?? []
+    const ingestedQuery = useQuery({
+        ...readIsAlreadyIngested(extensionHost, tags),
+        enabled: tags.length > 0,
     })
-    const containingLibraryIds = containingQuery.data ?? []
-    const isInLibrary = containingLibraryIds.length > 0
+    // Sources aren't scoped to a library, so a song already ingested by this extension
+    // anywhere counts as already being in every library
+    const isInLibrary = ingestedQuery.data ?? false
 
     const handleAdd = async (libraryId: number) => {
         try {
             const songsToAdd = songs ?? (await getSongs?.()) ?? []
-            // Skip songs already in the library, so adding again never creates duplicates
-            const missingUrls = await readSourcesMissingFromLibrary(
+            // Skip songs already ingested by this extension, so adding again never creates duplicates
+            const missingTags = await readTagsMissingFromLibrary(
                 extensionHost,
-                libraryId,
-                songsToAdd.map(songResourceToSourceUrl),
+                songsToAdd.map(songResourceToExtensionTag),
             )
             const missingSongs = new Map(
                 songsToAdd
-                    .map((song) => [songResourceToSourceUrl(song), song] as const)
-                    .filter(([url]) => missingUrls.has(url)),
+                    .map((song) => [songResourceToExtensionTag(song), song] as const)
+                    .filter(([tag]) => missingTags.has(tag)),
             )
             if (missingSongs.size > 0) {
                 await ingestMutation.mutateAsync({
@@ -87,30 +83,24 @@ export default function AddToLibraryMenu({
                 onClick={(e) => e.stopPropagation()}
             >
                 {librariesQuery.isSuccess ? (
-                    librariesQuery.data.map((library, index) => {
-                        const isInThisLibrary = containingLibraryIds.includes(library.id)
-                        return (
-                            <MenuItem
-                                key={`library[${library.id}@${index}]`}
-                                disabled={isInThisLibrary}
+                    librariesQuery.data.map((library, index) => (
+                        <MenuItem key={`library[${library.id}@${index}]`} disabled={isInLibrary}>
+                            <button
+                                type="button"
+                                className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white data-focus:bg-blue-600 data-focus:text-white disabled:hover:bg-inherit disabled:hover:text-inherit disabled:opacity-70"
+                                disabled={isInLibrary}
+                                onClick={() => handleAdd(library.id)}
                             >
-                                <button
-                                    type="button"
-                                    className="min-w-32 text-left p-2 flex items-center gap-2 hover:bg-blue-600 hover:text-white data-focus:bg-blue-600 data-focus:text-white disabled:hover:bg-inherit disabled:hover:text-inherit disabled:opacity-70"
-                                    disabled={isInThisLibrary}
-                                    onClick={() => handleAdd(library.id)}
-                                >
-                                    {isInThisLibrary ? (
-                                        <>
-                                            <CheckIcon /> In {library.name}
-                                        </>
-                                    ) : (
-                                        <>Add to {library.name}</>
-                                    )}
-                                </button>
-                            </MenuItem>
-                        )
-                    })
+                                {isInLibrary ? (
+                                    <>
+                                        <CheckIcon /> In {library.name}
+                                    </>
+                                ) : (
+                                    <>Add to {library.name}</>
+                                )}
+                            </button>
+                        </MenuItem>
+                    ))
                 ) : (
                     <div className="min-w-32 p-2 text-gray-500">
                         {librariesQuery.isError ? "Could not load libraries" : "Loading..."}

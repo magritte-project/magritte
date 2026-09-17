@@ -11,6 +11,12 @@ export function songResourceToSourceUrl(song: SongResource): string {
     return `applemusic:///songs/${songId}`
 }
 
+export function songResourceToExtensionTag(song: SongResource): string {
+    // Library songs (from library albums and playlists) have their own IDs, prefer the catalog's
+    const songId = song.attributes?.playParams?.catalogId ?? song.id
+    return `song_${String(songId)}`
+}
+
 export function songResourceToIngestSong(song: SongResource): IngestSong {
     return {
         start_time: 0,
@@ -20,7 +26,7 @@ export function songResourceToIngestSong(song: SongResource): IngestSong {
                 url: songResourceToSourceUrl(song),
                 mime_type: null,
                 extension_manifest_id: "magritte.applemusic",
-                extension_tag: String(song.id),
+                extension_tag: songResourceToExtensionTag(song),
             },
         ],
         artworks: song.attributes?.artwork
