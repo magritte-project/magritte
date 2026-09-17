@@ -26,7 +26,9 @@ router = APIRouter(prefix="/sources")
 )
 async def read_all_sources(
     query: Annotated[SourceQuery, Query()],
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     where_criteria = list[ColumnExpressionArgument]()

@@ -1603,7 +1603,7 @@
             "get": {
                 "summary": "Read a page of sources matching the query",
                 "operationId": "read_all_sources_sources_all_get",
-                "security": [{ "OAuth2PasswordBearer": [] }],
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
                 "parameters": [
                     {
                         "name": "offset",
