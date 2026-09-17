@@ -1,11 +1,9 @@
+import { LIMIT_MAX } from "@magritte/api"
 import type { ExtensionHost } from "@magritte/sdk"
 import { queryOptions } from "@tanstack/react-query"
 
 import { librarySources } from "@/api/keys/librarySources"
 import { BatchLoader } from "@/utilities/batchLoader"
-
-/** The maximum number of extension tags looked up in a single page */
-const lookupBatchSize = 200
 
 const sourceLoaders = new WeakMap<ExtensionHost, Map<number, BatchLoader<string, boolean>>>()
 
@@ -22,13 +20,13 @@ function getSourceLoader(extensionHost: ExtensionHost, libraryId: number) {
             const { items } = await library.readExtensionSources({
                 libraryId,
                 extensionTags: [...extensionTags],
-                limit: lookupBatchSize,
+                limit: LIMIT_MAX,
             })
             const foundTags = new Set(
                 items.flatMap((item) => (item.extension_tag ? [item.extension_tag] : [])),
             )
             return new Map(extensionTags.map((tag) => [tag, foundTags.has(tag)]))
-        }, lookupBatchSize)
+        }, LIMIT_MAX)
         loaders.set(libraryId, loader)
     }
     return loader

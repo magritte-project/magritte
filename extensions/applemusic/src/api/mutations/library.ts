@@ -1,11 +1,9 @@
+import { INGEST_BATCH_MAX_SIZE } from "@magritte/api"
 import type { LibraryBulkIngestableSongsInput } from "@magritte/sdk"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { librarySources } from "@/api/keys/librarySources"
 import useExtensionHost from "@/hooks/extensionHostHook"
-
-/** The maximum number of songs the server accepts in a single bulk ingest */
-const bulkIngestBatchSize = 50
 
 export function useBulkIngestSongsMutation() {
     const extensionHost = useExtensionHost()
@@ -15,10 +13,10 @@ export function useBulkIngestSongsMutation() {
         onSettled: () => queryClient.invalidateQueries({ queryKey: librarySources() }),
         mutationFn: async ({ libraryId, songs }: LibraryBulkIngestableSongsInput) => {
             const library = await extensionHost.library()
-            for (let start = 0; start < songs.length; start += bulkIngestBatchSize) {
+            for (let start = 0; start < songs.length; start += INGEST_BATCH_MAX_SIZE) {
                 await library.bulkIngestSongs({
                     libraryId,
-                    songs: songs.slice(start, start + bulkIngestBatchSize),
+                    songs: songs.slice(start, start + INGEST_BATCH_MAX_SIZE),
                 })
             }
         },
