@@ -271,13 +271,13 @@ export type ExtensionManifest = {
     /**
      * Url
      *
-     * The URL of the extension
+     * The possibly relative URL of the extension
      */
     url: string
     /**
      * Icon Url
      *
-     * The URL of the extension's icon, if any
+     * The possibly relative URL of the extension's icon, if any
      */
     icon_url?: string | null
     /**

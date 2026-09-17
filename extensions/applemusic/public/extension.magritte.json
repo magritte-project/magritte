@@ -3,7 +3,7 @@
     "description": "Play Apple Music tracks and add them to your library",
     "id": "magritte.applemusic",
     "version": "0.0.0",
-    "url": "http://localhost:9292/",
+    "url": "/",
     "preferredWidth": "16rem",
     "preferredHeight": "16rem",
     "permissions": [

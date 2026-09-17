@@ -1,6 +1,11 @@
+from unittest.mock import AsyncMock, Mock
+
+import pytest
 import pytest_asyncio
 from faker import Faker
 from fastapi.testclient import TestClient
+from httpx2 import AsyncClient, Response
+from pydantic import HttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conftest import SignIn
@@ -34,6 +39,64 @@ async def throwaway_extension(
     await db_session.commit()
 
     return throwaway_extension_id
+
+
+class TestExtensionManifest:
+    @pytest.mark.asyncio
+    async def test_resolves_relative_urls(
+        self,
+        faker: Faker,
+    ):
+        mock_manifest = ExtensionManifest(
+            name=faker.name(),
+            id=faker.uuid4(),
+            version="0.0.0",
+            description=faker.sentence(),
+            url="/",
+            icon_url="/icon.svg",
+        )
+        mock_client = Mock(spec=AsyncClient)
+        mock_client.get = AsyncMock(
+            return_value=Response(
+                status_code=200,
+                text=mock_manifest.model_dump_json(),
+            )
+        )
+
+        fetched_manifest = await ExtensionManifest.fetch_from(
+            client=mock_client,
+            manifest_url=HttpUrl("http://localhost:1234/extension.magritte.json"),
+        )
+        assert fetched_manifest.url == "http://localhost:1234/"
+        assert fetched_manifest.icon_url == "http://localhost:1234/icon.svg"
+
+    @pytest.mark.asyncio
+    async def test_leaves_absolute_urls_unmodified(
+        self,
+        faker: Faker,
+    ):
+        mock_manifest = ExtensionManifest(
+            name=faker.name(),
+            id=faker.uuid4(),
+            version="0.0.0",
+            description=faker.sentence(),
+            url="http://localhost:4321/",
+            icon_url="http://localhost:4321/icon.svg",
+        )
+        mock_client = Mock(spec=AsyncClient)
+        mock_client.get = AsyncMock(
+            return_value=Response(
+                status_code=200,
+                text=mock_manifest.model_dump_json(),
+            )
+        )
+
+        fetched_manifest = await ExtensionManifest.fetch_from(
+            client=mock_client,
+            manifest_url=HttpUrl("http://localhost:1234/extension.magritte.json"),
+        )
+        assert fetched_manifest.url == "http://localhost:4321/"
+        assert fetched_manifest.icon_url == "http://localhost:4321/icon.svg"
 
 
 class TestDeleteExtension:

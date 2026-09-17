@@ -2471,12 +2471,12 @@
                     "url": {
                         "type": "string",
                         "title": "Url",
-                        "description": "The URL of the extension"
+                        "description": "The possibly relative URL of the extension"
                     },
                     "icon_url": {
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Icon Url",
-                        "description": "The URL of the extension's icon, if any"
+                        "description": "The possibly relative URL of the extension's icon, if any"
                     },
                     "preferredWidth": {
                         "anyOf": [{ "type": "string" }, { "type": "null" }],

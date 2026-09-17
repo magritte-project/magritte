@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Annotated
+from urllib.parse import urljoin
 
 from fastapi import HTTPException, status
 from httpx2 import AsyncClient
@@ -61,9 +62,10 @@ class ExtensionManifest(BaseModel):
             max_length=1000,
         ),
     ] = None
-    url: Annotated[str, Field(description="The URL of the extension")]
+    url: Annotated[str, Field(description="The possibly relative URL of the extension")]
     icon_url: Annotated[
-        str | None, Field(description="The URL of the extension's icon, if any")
+        str | None,
+        Field(description="The possibly relative URL of the extension's icon, if any"),
     ] = None
     preferred_width: Annotated[
         str | None,
@@ -97,6 +99,12 @@ class ExtensionManifest(BaseModel):
         ),
     ] = None
 
+    def resolve_relative_urls(self, manifest_url: HttpUrl):
+        """Resolve any relative URLs in the manifest against the manifest URL"""
+        self.url = urljoin(str(manifest_url), self.url)
+        if self.icon_url:
+            self.icon_url = urljoin(str(manifest_url), self.icon_url)
+
     @classmethod
     async def fetch_from(cls, client: AsyncClient, manifest_url: HttpUrl):
         response = await client.get(
@@ -111,7 +119,9 @@ class ExtensionManifest(BaseModel):
                 detail="Manifest could not be fetched",
             )
 
-        return cls.model_validate_json(response.text)
+        manifest = cls.model_validate_json(response.text)
+        manifest.resolve_relative_urls(manifest_url)
+        return manifest
 
 
 class ExtensionImportAdmin(BaseModel):

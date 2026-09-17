@@ -59,7 +59,7 @@ async def import_extension(args: Namespace):
     import pathlib
 
     from fastapi import HTTPException, status
-    from pydantic import FileUrl
+    from pydantic import FileUrl, HttpUrl
 
     from magritte.db import get_db_engine, get_db_session
     from magritte.model import Extension
@@ -70,6 +70,7 @@ async def import_extension(args: Namespace):
         raise FileNotFoundError("Manifest file not found")
 
     manifest = ExtensionManifest.model_validate_json(manifest_path.read_text())
+    manifest.resolve_relative_urls(HttpUrl(args.dev_server_url))
 
     engine = await get_db_engine()
     async for session in get_db_session(engine):
@@ -149,7 +150,14 @@ if __name__ == "__main__":
     parser_import_extension.add_argument(
         "--manifest-path",
         "-m",
+        required=True,
         help="Location of an extension manifest file",
+    )
+    parser_import_extension.add_argument(
+        "--dev-server-url",
+        "-u",
+        required=True,
+        help="URL of the dev server that serves the extension",
     )
     parser_import_extension.set_defaults(func=import_extension)
 
@@ -161,6 +169,7 @@ if __name__ == "__main__":
     parser_delete_extension.add_argument(
         "--id",
         "-i",
+        required=True,
         help="The manifest ID of the extension to delete",
     )
     parser_delete_extension.set_defaults(func=delete_extension)

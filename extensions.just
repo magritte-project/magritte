@@ -1,5 +1,7 @@
 dev subproject:
-    ./admin import-extension -m "./extensions/{{subproject}}/public/extension.magritte.json"
+    ./admin import-extension \
+        -m "./extensions/{{subproject}}/public/extension.magritte.json" \
+        -u "http://localhost:$(node -pe "require('./extensions/{{subproject}}/package.json').scripts.dev.match(/--port (\d+)/)[1]")"
     pnpm --filter "./extensions/{{subproject}}" run dev
 
 test:

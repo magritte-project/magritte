@@ -2,7 +2,7 @@
     "name": "Smol",
     "id": "magritte.smol",
     "version": "0.0.0",
-    "url": "http://localhost:7665/",
+    "url": "/",
     "preferredWidth": "16rem",
     "preferredHeight": "16rem",
     "permissions": [
