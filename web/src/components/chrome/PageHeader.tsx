@@ -1,6 +1,5 @@
 import { CaretLeftIcon, DiscIcon, MicrophoneStageIcon, MusicNotesIcon } from "@phosphor-icons/react"
 import { useCanGoBack, useNavigate, useParams, useRouter } from "@tanstack/react-router"
-import { useMediaQuery } from "@uidotdev/usehooks"
 import { type ReactNode } from "react"
 
 import LibrariesButton from "@/components/chrome/LibrariesButton"
@@ -10,7 +9,7 @@ import UserNotificationsButton from "@/components/chrome/UserNotificationsButton
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
-import useHotKey from "@/hooks/hotKeyHook"
+import useIsInstalledApp from "@/hooks/installedAppHook"
 
 export interface PageHeaderProps {
     readonly children?: ReactNode
@@ -21,52 +20,15 @@ export default function PageHeader({ children }: PageHeaderProps) {
     const { libraryId } = useParams({ strict: false })
     const { history } = useRouter()
     const canGoBack = useCanGoBack()
-    const isStandalone = useMediaQuery("(display-mode: standalone)")
-
-    useHotKey({ key: "1" }, () => {
-        if (libraryId !== undefined) {
-            navigate({
-                to: "/libraries/$libraryId/artists",
-                params: { libraryId },
-            })
-            return true
-        } else {
-            return false
-        }
-    })
-    useHotKey({ key: "2" }, () => {
-        if (libraryId !== undefined) {
-            navigate({
-                to: "/libraries/$libraryId/albums",
-                params: { libraryId },
-            })
-            return true
-        } else {
-            return false
-        }
-    })
-    useHotKey({ key: "3" }, () => {
-        if (libraryId !== undefined) {
-            navigate({
-                to: "/libraries/$libraryId/songs",
-                params: { libraryId },
-            })
-            return true
-        } else {
-            return false
-        }
-    })
-
+    const isInstalledApp = useIsInstalledApp()
     return (
         <ThemedHeader
             supplementaryStart={
-                <ThemedSubtleButton
-                    className={!isStandalone ? "hidden" : undefined}
-                    disabled={!canGoBack}
-                    onClick={() => history.back()}
-                >
-                    <CaretLeftIcon weight="bold" />
-                </ThemedSubtleButton>
+                isInstalledApp ? (
+                    <ThemedSubtleButton disabled={!canGoBack} onClick={() => history.back()}>
+                        <CaretLeftIcon weight="bold" />
+                    </ThemedSubtleButton>
+                ) : undefined
             }
             supplementaryEnd={
                 <>
