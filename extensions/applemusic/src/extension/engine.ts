@@ -139,7 +139,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         this._broadcaster.send(PlaybackEnginePlayingItemChanged, undefined)
     }
 
-    async skipPreviousInQueue(): Promise<boolean> {
+    async skipPreviousItemSubdivision(): Promise<boolean> {
         if (this._musicKit.queue.nextPlayableItem !== undefined) {
             await this._musicKit.skipToNextItem()
             return true
@@ -148,7 +148,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         }
     }
 
-    async skipNextInQueue(): Promise<boolean> {
+    async skipNextItemSubdivision(): Promise<boolean> {
         if (this._musicKit.queue.previousPlayableItem !== undefined) {
             await this._musicKit.skipToPreviousItem()
             return true

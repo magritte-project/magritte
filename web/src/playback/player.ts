@@ -250,6 +250,12 @@ export class Player {
             await this.seek(0)
             return true
         }
+        if (this._activeEngine !== null) {
+            const skipped = await this._activeEngine.skipPreviousItemChapter()
+            if (skipped) {
+                return true
+            }
+        }
         const precedingItem = await this._dequeuePreviousItem()
         if (precedingItem === null) {
             await this.stop()
@@ -261,6 +267,12 @@ export class Player {
     }
 
     async skipNext(): Promise<boolean> {
+        if (this._activeEngine !== null) {
+            const skipped = await this._activeEngine.skipNextItemChapter()
+            if (skipped) {
+                return true
+            }
+        }
         const followingItem = await this._dequeueNextItem()
         if (followingItem === null) {
             await this.stop()

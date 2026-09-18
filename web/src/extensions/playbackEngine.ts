@@ -75,12 +75,12 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
         await this.engine.enqueue(options)
     }
 
-    async skipPreviousInQueue(): Promise<boolean> {
-        return await this.engine.skipPreviousInQueue()
+    async skipPreviousItemChapter(): Promise<boolean> {
+        return await this.engine.skipPreviousItemSubdivision()
     }
 
-    async skipNextInQueue(): Promise<boolean> {
-        return await this.engine.skipNextInQueue()
+    async skipNextItemChapter(): Promise<boolean> {
+        return await this.engine.skipNextItemSubdivision()
     }
 
     async getCurrentTime(): Promise<PlaybackTime> {

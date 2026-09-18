@@ -65,7 +65,7 @@ export interface PlaybackEngine {
      * in its implementation of this method. It is only intended to be implemented
      * by engines which play audio from a source other than the library.
      */
-    skipPreviousInQueue(): Promise<boolean>
+    skipPreviousItemChapter(): Promise<boolean>
 
     /**
      * Skip the currently playing item in the engine's queue to play the next one.
@@ -74,7 +74,7 @@ export interface PlaybackEngine {
      * in its implementation of this method. It is only intended to be implemented
      * by engines which play audio from a source other than the library.
      */
-    skipNextInQueue(): Promise<boolean>
+    skipNextItemChapter(): Promise<boolean>
 
     getCurrentTime(): Promise<PlaybackTime>
     seek(newTime: number): Promise<void>

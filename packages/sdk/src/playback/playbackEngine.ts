@@ -65,22 +65,22 @@ export const PlaybackEngineProtocol = protocol("Magritte.Extension.PlaybackEngin
     enqueue: { input: PlaybackEngineEnqueueOptions, output: z4.void() },
 
     /**
-     * Skip the currently playing item in the engine's queue to play the previous one.
+     * Skip to the previous subdivision within the currently playing item.
      *
-     * An engine which plays a single item at a time may simply return `false`
-     * in its implementation of this method. It is only intended to be implemented
-     * by engines which play audio from a source other than the library.
+     * A subdivision can be a chapter within a podcast or audiobook,
+     * or a song within a radio station. If the engine is playing an
+     * item without subdivisions, it should return `false`.
      */
-    skipPreviousInQueue: { input: z4.void(), output: z4.boolean() },
+    skipPreviousItemSubdivision: { input: z4.void(), output: z4.boolean() },
 
     /**
-     * Skip the currently playing item in the engine's queue to play the next one.
+     * Skip to the next subdivision within the currently playing item.
      *
-     * An engine which plays a single item at a time may simply return `false`
-     * in its implementation of this method. It is only intended to be implemented
-     * by engines which play audio from a source other than the library.
+     * A subdivision can be a chapter within a podcast or audiobook,
+     * or a song within a radio station. If the engine is playing an
+     * item without subdivisions, it should return `false`.
      */
-    skipNextInQueue: { input: z4.void(), output: z4.boolean() },
+    skipNextItemSubdivision: { input: z4.void(), output: z4.boolean() },
 
     seek: {
         input: z4.object({ newTime: z4.number() }),

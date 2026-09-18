@@ -156,11 +156,11 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         }
     }
 
-    async skipPreviousInQueue(): Promise<boolean> {
+    async skipPreviousItemChapter(): Promise<boolean> {
         return false
     }
 
-    async skipNextInQueue(): Promise<boolean> {
+    async skipNextItemChapter(): Promise<boolean> {
         return false
     }
 
