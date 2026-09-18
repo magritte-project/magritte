@@ -12,6 +12,7 @@ import { CommandResponderProtocol, type CommandResponder } from "../commands/res
 import { SearchCommandResponderProtocol, type SearchCommandResponder } from "../commands/search"
 import { LibraryProtocol, type Library } from "../library"
 import { NotificationCenterProtocol, type NotificationCenter } from "../notificationCenter"
+import { PanelProtocol, type Panel } from "../panel"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../playback/playbackEngine"
 import { PlayerProtocol, type Player } from "../playback/player"
 import { createDeferred, type Deferred } from "../utilities"
@@ -159,5 +160,9 @@ export class ExtensionHost {
 
     async player(): Promise<Player> {
         return cast(PlayerProtocol, this.connection.remoteObject)
+    }
+
+    async panel(): Promise<Panel> {
+        return cast(PanelProtocol, this.connection.remoteObject)
     }
 }

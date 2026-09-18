@@ -8,6 +8,7 @@ import { type SearchCommandResponder, SearchCommandResponderProtocol } from "../
 import { type Library, LibraryProtocol } from "../library"
 import { getExtensionOrigin } from "../manifest"
 import { type NotificationCenter, NotificationCenterProtocol } from "../notificationCenter"
+import { type Panel, PanelProtocol } from "../panel"
 import { type PlaybackEngine, PlaybackEngineProtocol } from "../playback/playbackEngine"
 import { type Player, PlayerProtocol } from "../playback/player"
 import { createDeferred, type Deferred } from "../utilities"
@@ -28,6 +29,7 @@ export interface HostExportsObject {
     readonly notificationCenter: NotificationCenter
     readonly library: Library
     readonly player: Player
+    readonly panel: Panel
 }
 
 export type HostExports =
@@ -35,13 +37,14 @@ export type HostExports =
     | ((options: HostExportsOptions) => Promise<HostExportsObject>)
 
 async function implementExports(options: HostExportsOptions, exports: HostExports) {
-    const { commandCoordinator, notificationCenter, library, player } =
+    const { commandCoordinator, notificationCenter, library, player, panel } =
         typeof exports === "function" ? await exports(options) : exports
     return [
         implement(CommandCoordinatorProtocol, commandCoordinator),
         implement(NotificationCenterProtocol, notificationCenter),
         implement(LibraryProtocol, library),
         implement(PlayerProtocol, player),
+        implement(PanelProtocol, panel),
     ]
 }
 

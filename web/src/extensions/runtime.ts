@@ -7,6 +7,7 @@ import type { CommandRegistry } from "@/commands/registry"
 import { exportCommandCoordinator } from "@/extensions/exports/exportCommandCoordinator"
 import { exportLibrary } from "@/extensions/exports/exportLibrary"
 import { exportNotificationCenter } from "@/extensions/exports/exportNotificationCenter"
+import { exportPanel } from "@/extensions/exports/exportPanel"
 import { exportPlayer } from "@/extensions/exports/exportPlayer"
 import type { NotificationCenter } from "@/notifications/center"
 import type { Player } from "@/playback/player"
@@ -63,6 +64,13 @@ export type ExtensionRuntimeEvent =
 
           /** The extension that was unloaded */
           extension: Extension
+      }
+    | {
+          /* An extension asked for the panel presenting it to be closed */
+          type: "extensionCloseRequested"
+
+          /** The manifest of the extension */
+          manifest: ExtensionManifest
       }
     | {
           /* An extension was removed from the runtime */
@@ -214,6 +222,23 @@ export class ExtensionRuntime {
         }
     }
 
+    /**
+     * Ask whichever panel is presenting an extension to close it.
+     *
+     * The extension stays available and can be reopened; only the
+     * presentation of this one extension goes away.
+     */
+    requestClose(id: string): boolean {
+        const manifest = this._available.get(id)
+        if (manifest === undefined) {
+            return false
+        }
+
+        console.debug("Extension requested close", manifest)
+        this._dispatch({ type: "extensionCloseRequested", manifest })
+        return true
+    }
+
     async sync() {
         if (this._api.userSessionManager.current === null) {
             for (const id of Array.from(this._available.keys())) {
@@ -322,6 +347,7 @@ export class ExtensionRuntime {
                     notificationCenter: exportNotificationCenter(this._notificationCenter),
                     library: exportLibrary(manifest, this._queryClient, this._api),
                     player: exportPlayer(manifest, broadcaster, this._player),
+                    panel: exportPanel(manifest, this),
                 }),
             })
             extension.connection.subscribe(
