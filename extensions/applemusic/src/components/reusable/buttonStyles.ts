@@ -6,3 +6,6 @@ export const secondaryButtonClassName =
 
 export const iconButtonClassName =
     "shrink-0 flex items-center justify-center rounded-md p-1 hover:bg-black/10 disabled:opacity-60"
+
+/** Drops a button's label when the panel is too narrow for it, leaving only its icon */
+export const buttonLabelClassName = "max-[20rem]:hidden"

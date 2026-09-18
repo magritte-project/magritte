@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import AddToLibraryMenu from "@/components/AddToLibraryMenu"
+import AddToLibraryButton from "@/components/AddToLibraryButton"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import ItemRow from "@/components/reusable/ItemRow"
 import type { SongResource } from "@/musickit/models/song"
@@ -32,7 +32,7 @@ export default function SongRow({ song, leading, subtitle, onPlay }: SongRowProp
                 subtitle ?? joinDetails(song.attributes?.artistName, song.attributes?.albumName)
             }
             onClick={onPlay}
-            accessory={<AddToLibraryMenu songs={[song]} />}
+            accessory={<AddToLibraryButton songs={[song]} />}
         />
     )
 }
