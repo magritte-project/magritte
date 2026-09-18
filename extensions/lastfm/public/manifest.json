@@ -1,0 +1,14 @@
+{
+    "short_name": "Magritte - Last.fm",
+    "name": "Magritte - Last.fm",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "any"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#b90000",
+    "background_color": "#ffffff"
+}

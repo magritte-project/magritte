@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Last.fm">
+    <rect width="128" height="128" rx="28" fill="#b90000" />
+    <g fill="#ffffff">
+        <circle cx="34" cy="86" r="10" />
+        <path d="M56 42h11v54H56z" />
+        <path d="M78 42h11v54H78z" />
+        <path d="M100 42h11v54h-11z" opacity="0.65" />
+        <path d="M24 42h20v11H24z" />
+    </g>
+</svg>
