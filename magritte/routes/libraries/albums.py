@@ -92,6 +92,8 @@ async def update_library_album(
     for name, value in changes.items():
         setattr(album, name, value)
 
+    album.has_altered_metadata = True
+
     await session.flush()
     return AlbumRead(
         **album.model_dump(),

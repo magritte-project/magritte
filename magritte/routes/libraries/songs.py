@@ -123,6 +123,8 @@ async def update_library_song(
     if update_song.source_ids:
         song.sources = await Source.get_many(update_song.source_ids, session)
 
+    song.has_altered_metadata = True
+
     await session.flush()
     return SongRead(
         **song.model_dump(),

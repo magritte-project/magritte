@@ -86,6 +86,8 @@ async def update_library_artist(
     for name, value in changes.items():
         setattr(artist, name, value)
 
+    artist.has_altered_metadata = True
+
     await session.flush()
     return ArtistRead(
         **artist.model_dump(),
