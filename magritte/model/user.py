@@ -19,11 +19,13 @@ class UserLibraryLink(SQLModel, table=True):
     user_id: int | None = Field(
         default=None,
         foreign_key="users.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
     library_id: int | None = Field(
         default=None,
         foreign_key="libraries.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
     can_add: bool = Field(
@@ -46,11 +48,13 @@ class UserNotificationLink(SQLModel, table=True):
     user_id: int | None = Field(
         default=None,
         foreign_key="users.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
     notification_id: int | None = Field(
         default=None,
         foreign_key="notifications.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
 

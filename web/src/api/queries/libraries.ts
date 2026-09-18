@@ -8,6 +8,7 @@ import {
     libraryAlbums,
     libraryArtist,
     libraryArtists,
+    libraryIgnoredResources,
     libraryPermissions,
     librarySong,
     librarySongs,
@@ -38,6 +39,21 @@ export function readLibraryPermissions(api: API, libraryId: number) {
     return queryOptions({
         queryKey: libraryPermissions(libraryId),
         queryFn: () => api.client.readLibraryPermissions(libraryId),
+    })
+}
+
+export interface ReadLibraryIgnoredResourcesCriteria {
+    readonly offset?: number
+}
+
+export function readLibraryIgnoredResources(
+    api: API,
+    libraryId: number,
+    criteria?: ReadLibraryIgnoredResourcesCriteria,
+) {
+    return queryOptions({
+        queryKey: libraryIgnoredResources(libraryId, criteria),
+        queryFn: () => api.client.readLibraryIgnoredResources(libraryId, criteria),
     })
 }
 

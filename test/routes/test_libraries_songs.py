@@ -2,8 +2,11 @@ import pytest
 import pytest_asyncio
 from faker import Faker
 from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import col
 
 from conftest import SignIn
+from magritte.model.ignored_resource import IgnoredResource
 
 
 @pytest_asyncio.fixture
@@ -205,6 +208,73 @@ class TestDeleteLibrarySong:
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
         assert response.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_with_suppress_source_file(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        faker: Faker,
+        db_session: AsyncSession,
+    ):
+        session = sign_in("test", "password")
+
+        mock_source_url = faker.url()
+        response = client.post(
+            "/libraries/2/ingest/songs",
+            json={
+                "songs": [
+                    {
+                        "artist_name": None,
+                        "album_title": None,
+                        "artworks": [],
+                        "sources": [
+                            {
+                                "url": mock_source_url,
+                                "mime_type": None,
+                                "extension_manifest_id": None,
+                                "extension_tag": None,
+                            }
+                        ],
+                        "start_time": 0,
+                        "end_time": 0,
+                        "title": faker.sentence(nb_words=3),
+                        "album_artist": None,
+                        "composer": None,
+                        "genre": None,
+                        "release_date": None,
+                        "track_number": 1,
+                        "track_total": 10,
+                        "disc_number": 1,
+                        "disc_total": 1,
+                        "lyrics": None,
+                        "rating": None,
+                        "bpm": None,
+                        "comment": "test_with_suppress_source_file",
+                        "grouping": None,
+                        "mcn": None,
+                        "isrc": None,
+                        "music_brainz_release_id": None,
+                        "music_brainz_recording_id": None,
+                    },
+                ],
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+        song_id = response.json()[0].get("id")
+
+        response = client.delete(
+            f"/libraries/2/songs/{song_id}?suppress_source_file=true",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+
+        assert await IgnoredResource.exists(
+            where=[col(IgnoredResource.url) == mock_source_url],
+            joins=[],
+            session=db_session,
+        ), "It should add song source to the ignored resources table"
 
     @pytest.mark.asyncio
     async def test_requires_library_remove_permission(

@@ -590,6 +590,20 @@ export type LibraryHomePathRead = {
 }
 
 /**
+ * LibraryIgnoredResourceRead
+ */
+export type LibraryIgnoredResourceRead = {
+    /**
+     * Id
+     */
+    id: number
+    /**
+     * Url
+     */
+    url: string
+}
+
+/**
  * LibraryMediaRead[AlbumRead]
  */
 export type LibraryMediaReadAlbumRead = {
@@ -641,6 +655,28 @@ export type LibraryMediaReadExtensionRead = {
      * Items
      */
     items: Array<ExtensionRead>
+    /**
+     * Offset
+     */
+    offset: number
+    /**
+     * Limit
+     */
+    limit: number
+    /**
+     * Total
+     */
+    total: number
+}
+
+/**
+ * LibraryMediaRead[LibraryIgnoredResourceRead]
+ */
+export type LibraryMediaReadLibraryIgnoredResourceRead = {
+    /**
+     * Items
+     */
+    items: Array<LibraryIgnoredResourceRead>
     /**
      * Offset
      */
@@ -2467,6 +2503,84 @@ export type UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchRespon
 export type UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchResponse =
     UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchResponses[keyof UpdateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatchResponses]
 
+export type ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetData = {
+    body?: never
+    path: {
+        /**
+         * Library Id
+         */
+        library_id: number
+    }
+    query?: {
+        /**
+         * Offset
+         */
+        offset?: number
+        /**
+         * Limit
+         */
+        limit?: number
+    }
+    url: "/libraries/{library_id}/ignored"
+}
+
+export type ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetError =
+    ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetErrors[keyof ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetErrors]
+
+export type ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: LibraryMediaReadLibraryIgnoredResourceRead
+}
+
+export type ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetResponse =
+    ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetResponses[keyof ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetResponses]
+
+export type DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteData = {
+    body?: never
+    path: {
+        /**
+         * Library Id
+         */
+        library_id: number
+        /**
+         * Ignored Resource Id
+         */
+        ignored_resource_id: number
+    }
+    query?: never
+    url: "/libraries/{library_id}/ignored/{ignored_resource_id}"
+}
+
+export type DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteError =
+    DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteErrors[keyof DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteErrors]
+
+export type DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteResponses =
+    {
+        /**
+         * Successful Response
+         */
+        200: OperationResult
+    }
+
+export type DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteResponse =
+    DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteResponses[keyof DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteResponses]
+
 export type DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData = {
     body?: never
     path: {
@@ -2479,7 +2593,12 @@ export type DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData = {
          */
         song_id: number
     }
-    query?: never
+    query?: {
+        /**
+         * Suppress Source File
+         */
+        suppress_source_file?: boolean
+    }
     url: "/libraries/{library_id}/songs/{song_id}"
 }
 

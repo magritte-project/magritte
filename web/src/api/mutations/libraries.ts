@@ -12,6 +12,7 @@ import {
     library,
     libraryAlbums,
     libraryArtists,
+    libraryIgnoredResources,
     libraryPermissions,
     librarySong,
     librarySongs,
@@ -77,6 +78,21 @@ export function useDeleteLibraryPermission(libraryId: number, userId: number) {
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: libraryPermissions(libraryId),
+            })
+        },
+    })
+}
+
+export function useDeleteLibraryIgnoredResource(libraryId: number) {
+    const queryClient = useQueryClient()
+    const { client } = useAPI()
+    return useMutation({
+        mutationFn: (resourceId: number) =>
+            client.deleteLibraryIgnoredResource(libraryId, resourceId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: libraryIgnoredResources(libraryId),
+                exact: false,
             })
         },
     })

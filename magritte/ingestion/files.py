@@ -7,6 +7,7 @@ from pathlib import Path
 from pathvalidate import sanitize_filename
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import col
 from tinytag import TinyTag, UnsupportedFormatError
 
 from magritte.ingestion.artwork import try_ingest_artwork
@@ -14,6 +15,7 @@ from magritte.ingestion.canon import Canonizer
 from magritte.ingestion.types import get_mime_types
 from magritte.model.album import Album
 from magritte.model.artist import Artist
+from magritte.model.ignored_resource import IgnoredResource
 from magritte.model.library import Library
 from magritte.model.notification import Notification
 from magritte.model.song import Song
@@ -110,6 +112,18 @@ async def _try_ingest_file(
     if existing_source:
         await ensure_libraries_linked(existing_source, libraries, session)
         raise FileExistsError("File has already been ingested")
+
+    if await IgnoredResource.exists(
+        where=[
+            col(IgnoredResource.url) == file_url,
+            col(IgnoredResource.libraries).any(
+                col(Library.id).in_([library.id for library in libraries])
+            ),
+        ],
+        joins=[],
+        session=session,
+    ):
+        raise FileExistsError("File ignored by user")
 
     try:
         tags = TinyTag.get(path, image=True)

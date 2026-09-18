@@ -1302,6 +1302,103 @@
                 }
             }
         },
+        "/libraries/{library_id}/ignored": {
+            "get": {
+                "summary": "Read the ignored resources of a library",
+                "operationId": "read_library_ignored_resources_libraries__library_id__ignored_get",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 0,
+                            "title": "Offset"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "default": 100,
+                            "title": "Limit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LibraryMediaRead_LibraryIgnoredResourceRead_"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/libraries/{library_id}/ignored/{ignored_resource_id}": {
+            "delete": {
+                "summary": "Delete an ignored resource from a library",
+                "operationId": "delete_library_ignored_resource_libraries__library_id__ignored__ignored_resource_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    },
+                    {
+                        "name": "ignored_resource_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Ignored Resource Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/libraries/{library_id}/songs/{song_id}": {
             "get": {
                 "summary": "Read a song",
@@ -1401,6 +1498,16 @@
                         "in": "path",
                         "required": true,
                         "schema": { "type": "integer", "title": "Song Id" }
+                    },
+                    {
+                        "name": "suppress_source_file",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "Suppress Source File"
+                        }
                     }
                 ],
                 "responses": {
@@ -2815,6 +2922,15 @@
                 "required": ["relative_to", "subpaths"],
                 "title": "LibraryHomePathRead"
             },
+            "LibraryIgnoredResourceRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "url": { "type": "string", "title": "Url" }
+                },
+                "type": "object",
+                "required": ["id", "url"],
+                "title": "LibraryIgnoredResourceRead"
+            },
             "LibraryMediaRead_AlbumRead_": {
                 "properties": {
                     "items": {
@@ -2859,6 +2975,21 @@
                 "type": "object",
                 "required": ["items", "offset", "limit", "total"],
                 "title": "LibraryMediaRead[ExtensionRead]"
+            },
+            "LibraryMediaRead_LibraryIgnoredResourceRead_": {
+                "properties": {
+                    "items": {
+                        "items": { "$ref": "#/components/schemas/LibraryIgnoredResourceRead" },
+                        "type": "array",
+                        "title": "Items"
+                    },
+                    "offset": { "type": "integer", "title": "Offset" },
+                    "limit": { "type": "integer", "title": "Limit" },
+                    "total": { "type": "integer", "title": "Total" }
+                },
+                "type": "object",
+                "required": ["items", "offset", "limit", "total"],
+                "title": "LibraryMediaRead[LibraryIgnoredResourceRead]"
             },
             "LibraryMediaRead_SongRead_": {
                 "properties": {

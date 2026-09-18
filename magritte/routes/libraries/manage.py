@@ -17,13 +17,16 @@ from sqlmodel import col, select
 from magritte.auth import get_current_user
 from magritte.config import config
 from magritte.db import get_db_session
+from magritte.model.ignored_resource import IgnoredResource
 from magritte.model.library import Library
 from magritte.model.user import User, UserLibraryLink
 from magritte.schemas.auth import OAuth2Scope
-from magritte.schemas.base import PATH_MAX_LENGTH, OperationResult
+from magritte.schemas.base import PATH_MAX_LENGTH, OperationResult, PaginatedQuery
 from magritte.schemas.library import (
     LibraryCreate,
     LibraryHomePathRead,
+    LibraryIgnoredResourceRead,
+    LibraryMediaRead,
     LibraryPermissionCreate,
     LibraryPermissionRead,
     LibraryPermissionUpdate,
@@ -395,5 +398,80 @@ async def delete_library_permission(
 
     return OperationResult(
         message="Permission deleted",
+        row_count=1,
+    )
+
+
+@router.get(
+    "/{library_id}/ignored",
+    response_model=LibraryMediaRead[LibraryIgnoredResourceRead],
+    summary="Read the ignored resources of a library",
+)
+async def read_library_ignored_resources(
+    library_id: int,
+    query: Annotated[PaginatedQuery, Depends()],
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not await Library.can_user_access_by_id(library_id, current_user.id, session):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    total, ignored_resources = await IgnoredResource.read_many_with_total(
+        where=[col(IgnoredResource.libraries).any(col(Library.id) == library_id)],
+        joins=[],
+        order_by=[col(IgnoredResource.creation_date).desc()],
+        offset=query.offset,
+        limit=query.limit,
+        session=session,
+    )
+    return LibraryMediaRead(
+        items=[
+            LibraryIgnoredResourceRead(**ignored_resource.model_dump())
+            for ignored_resource in ignored_resources
+        ],
+        offset=query.offset,
+        limit=query.limit,
+        total=total,
+    )
+
+
+@router.delete(
+    "/{library_id}/ignored/{ignored_resource_id}",
+    response_model=OperationResult,
+    summary="Delete an ignored resource from a library",
+)
+async def delete_library_ignored_resource(
+    library_id: int,
+    ignored_resource_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not await Library.can_user_access_by_id(
+        library_id, current_user.id, session, can_edit=True
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    ignored_resource = await session.get(IgnoredResource, ignored_resource_id)
+    if not ignored_resource or not any(
+        library.id == library_id
+        for library in await ignored_resource.awaitable_attrs.libraries
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Ignored resource not found"
+        )
+
+    await session.delete(ignored_resource)
+    await session.flush()
+
+    return OperationResult(
+        message="Ignored resource deleted",
         row_count=1,
     )

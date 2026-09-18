@@ -84,7 +84,9 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                 }
                 try {
                     for (const song of songs) {
-                        await api.client.deleteLibrarySong(library.id, song.id)
+                        await api.client.deleteLibrarySong(library.id, song.id, {
+                            suppress_source_file: true,
+                        })
                     }
                 } catch (error) {
                     notificationCenter.showToast({

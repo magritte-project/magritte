@@ -7,6 +7,7 @@ import {
     deleteExtensionExtensionsAvailableExtensionIdDelete,
     deleteLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdDelete,
     deleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDelete,
+    deleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDelete,
     deleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDelete,
     deleteLibrarySongLibrariesLibraryIdSongsSongIdDelete,
     deleteNotificationUsersNotificationsNotificationIdDelete,
@@ -28,6 +29,7 @@ import {
     readLibraryArtistLibrariesLibraryIdArtistsArtistIdGet,
     readLibraryArtistsLibrariesLibraryIdArtistsGet,
     readLibraryHomeSubpathsLibrariesHomeSubpathsGet,
+    readLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGet,
     readLibraryLibrariesLibraryIdGet,
     readLibraryPermissionsLibrariesLibraryIdPermissionsGet,
     readLibrarySongLibrariesLibraryIdSongsSongIdGet,
@@ -60,6 +62,7 @@ import {
     type ArtworkUpdate,
     type BodySignInSignInPost,
     type BulkIngestSongs,
+    type DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData,
     type ExtensionImportAdmin,
     type IngestPlaybackEvent,
     type InstanceStatusRead,
@@ -68,6 +71,7 @@ import {
     type LibraryMediaReadAlbumRead,
     type LibraryMediaReadArtistRead,
     type LibraryMediaReadExtensionRead,
+    type LibraryMediaReadLibraryIgnoredResourceRead,
     type LibraryMediaReadSongRead,
     type LibraryMediaReadSourceRead,
     type LibraryPermissionCreate,
@@ -86,6 +90,7 @@ import {
     type ReadLibraryAlbumsLibrariesLibraryIdAlbumsGetData,
     type ReadLibraryArtistsLibrariesLibraryIdArtistsGetData,
     type ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetData,
+    type ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetData,
     type ReadLibrarySongsLibrariesLibraryIdSongsGetData,
     type ReadNotificationsUsersNotificationsGetData,
     type ReadUsersUsersAllGetData,
@@ -333,6 +338,27 @@ export class APIClient {
         })
     }
 
+    async readLibraryIgnoredResources(
+        library_id: number,
+        query?: ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetData["query"],
+    ): Promise<LibraryMediaReadLibraryIgnoredResourceRead> {
+        return await readLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGet({
+            ...this.options,
+            path: { library_id },
+            query,
+        })
+    }
+
+    async deleteLibraryIgnoredResource(
+        library_id: number,
+        ignored_resource_id: number,
+    ): Promise<OperationResult> {
+        return await deleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDelete({
+            ...this.options,
+            path: { library_id, ignored_resource_id },
+        })
+    }
+
     async updateLibraryAlbum(
         library_id: number,
         album_id: number,
@@ -419,10 +445,15 @@ export class APIClient {
         })
     }
 
-    async deleteLibrarySong(library_id: number, song_id: number): Promise<void> {
+    async deleteLibrarySong(
+        library_id: number,
+        song_id: number,
+        query?: DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData["query"],
+    ): Promise<void> {
         await deleteLibrarySongLibrariesLibraryIdSongsSongIdDelete({
             ...this.options,
             path: { library_id, song_id },
+            query,
         })
     }
 

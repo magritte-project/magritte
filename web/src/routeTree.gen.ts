@@ -29,6 +29,7 @@ import { Route as LibrariesLibraryIdSongsRouteImport } from './routes/libraries_
 import { Route as UserMeIndexRouteImport } from './routes/user.me.index'
 import { Route as UserMeExtensionsRouteImport } from './routes/user.me.extensions'
 import { Route as LibrariesManageLibraryIdIndexRouteImport } from './routes/libraries.manage.$libraryId/index'
+import { Route as LibrariesManageLibraryIdIgnoredRouteImport } from './routes/libraries.manage.$libraryId/ignored'
 import { Route as LibrariesManageLibraryIdPermissionsRouteImport } from './routes/libraries.manage.$libraryId/permissions'
 import { Route as UserMeExtensionsAddRouteImport } from './routes/user.me.extensions.add'
 
@@ -136,6 +137,12 @@ const LibrariesManageLibraryIdIndexRoute =
     path: '/',
     getParentRoute: () => LibrariesManageLibraryIdRouteRoute,
   } as any)
+const LibrariesManageLibraryIdIgnoredRoute =
+  LibrariesManageLibraryIdIgnoredRouteImport.update({
+    id: '/ignored',
+    path: '/ignored',
+    getParentRoute: () => LibrariesManageLibraryIdRouteRoute,
+  } as any)
 const LibrariesManageLibraryIdPermissionsRoute =
   LibrariesManageLibraryIdPermissionsRouteImport.update({
     id: '/permissions',
@@ -168,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/user/me/extensions': typeof UserMeExtensionsRouteWithChildren
   '/libraries/$libraryId/': typeof LibrariesLibraryIdIndexRoute
   '/user/me/': typeof UserMeIndexRoute
+  '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
   '/user/me/extensions/add': typeof UserMeExtensionsAddRoute
   '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
@@ -188,6 +196,7 @@ export interface FileRoutesByTo {
   '/user/me/extensions': typeof UserMeExtensionsRouteWithChildren
   '/libraries/$libraryId': typeof LibrariesLibraryIdIndexRoute
   '/user/me': typeof UserMeIndexRoute
+  '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
   '/user/me/extensions/add': typeof UserMeExtensionsAddRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdIndexRoute
@@ -213,6 +222,7 @@ export interface FileRoutesById {
   '/user/me/extensions': typeof UserMeExtensionsRouteWithChildren
   '/libraries_/$libraryId/': typeof LibrariesLibraryIdIndexRoute
   '/user/me/': typeof UserMeIndexRoute
+  '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
   '/user/me/extensions/add': typeof UserMeExtensionsAddRoute
   '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/user/me/extensions'
     | '/libraries/$libraryId/'
     | '/user/me/'
+    | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
     | '/user/me/extensions/add'
     | '/libraries/manage/$libraryId/'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/user/me/extensions'
     | '/libraries/$libraryId'
     | '/user/me'
+    | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
     | '/user/me/extensions/add'
     | '/libraries/manage/$libraryId'
@@ -283,6 +295,7 @@ export interface FileRouteTypes {
     | '/user/me/extensions'
     | '/libraries_/$libraryId/'
     | '/user/me/'
+    | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
     | '/user/me/extensions/add'
     | '/libraries/manage/$libraryId/'
@@ -440,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibrariesManageLibraryIdIndexRouteImport
       parentRoute: typeof LibrariesManageLibraryIdRouteRoute
     }
+    '/libraries/manage/$libraryId/ignored': {
+      id: '/libraries/manage/$libraryId/ignored'
+      path: '/ignored'
+      fullPath: '/libraries/manage/$libraryId/ignored'
+      preLoaderRoute: typeof LibrariesManageLibraryIdIgnoredRouteImport
+      parentRoute: typeof LibrariesManageLibraryIdRouteRoute
+    }
     '/libraries/manage/$libraryId/permissions': {
       id: '/libraries/manage/$libraryId/permissions'
       path: '/permissions'
@@ -482,12 +502,14 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface LibrariesManageLibraryIdRouteRouteChildren {
+  LibrariesManageLibraryIdIgnoredRoute: typeof LibrariesManageLibraryIdIgnoredRoute
   LibrariesManageLibraryIdPermissionsRoute: typeof LibrariesManageLibraryIdPermissionsRoute
   LibrariesManageLibraryIdIndexRoute: typeof LibrariesManageLibraryIdIndexRoute
 }
 
 const LibrariesManageLibraryIdRouteRouteChildren: LibrariesManageLibraryIdRouteRouteChildren =
   {
+    LibrariesManageLibraryIdIgnoredRoute: LibrariesManageLibraryIdIgnoredRoute,
     LibrariesManageLibraryIdPermissionsRoute:
       LibrariesManageLibraryIdPermissionsRoute,
     LibrariesManageLibraryIdIndexRoute: LibrariesManageLibraryIdIndexRoute,

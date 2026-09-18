@@ -18,11 +18,13 @@ class ArtistLibraryLink(SQLModel, table=True):
     artist_id: int | None = Field(
         default=None,
         foreign_key="artists.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
     library_id: int | None = Field(
         default=None,
         foreign_key="libraries.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
 
@@ -30,6 +32,11 @@ class ArtistLibraryLink(SQLModel, table=True):
 class Artist(LibraryModel, table=True):
     __tablename__: str = "artists"
 
+    has_altered_metadata: bool = Field(
+        default=False,
+        description="Whether the song's metadata has been altered from the source",
+        sa_column_kwargs={"server_default": "false"},
+    )
     name: str = Field(
         description="The name of the artist",
         unique=True,

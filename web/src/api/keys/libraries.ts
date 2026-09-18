@@ -10,6 +10,10 @@ export function libraryPermissions(libraryId: number) {
     return [...library(libraryId), "permissions"] as const
 }
 
+export function libraryIgnoredResources<Rest extends any[]>(libraryId: number, ...rest: Rest) {
+    return [...library(libraryId), "ignoredResources", ...rest] as const
+}
+
 export function libraryAlbums<Rest extends any[]>(libraryId: number, ...rest: Rest) {
     return [...library(libraryId), "albums", ...rest] as const
 }

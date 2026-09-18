@@ -1,4 +1,4 @@
-import { ArrowsClockwiseIcon, GearSixIcon, UsersThreeIcon } from "@phosphor-icons/react"
+import { ArrowsClockwiseIcon, GearSixIcon, ListIcon, UsersThreeIcon } from "@phosphor-icons/react"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"
 
@@ -50,6 +50,12 @@ export const Route = createFileRoute("/libraries/manage/$libraryId")({
                             params={{ libraryId }}
                             icon={UsersThreeIcon}
                             label="Permissions"
+                        />
+                        <ThemedTabItemLink
+                            to="/libraries/manage/$libraryId/ignored"
+                            params={{ libraryId }}
+                            icon={ListIcon}
+                            label="Ignored"
                         />
                     </div>
                     <ThemedSubtleButton

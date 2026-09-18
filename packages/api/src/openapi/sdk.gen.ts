@@ -35,6 +35,9 @@ import type {
     DeleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDeleteData,
     DeleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDeleteErrors,
     DeleteLibraryArtistLibrariesLibraryIdArtistsArtistIdDeleteResponses,
+    DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteData,
+    DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteErrors,
+    DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteResponses,
     DeleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDeleteData,
     DeleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDeleteErrors,
     DeleteLibraryPermissionLibrariesLibraryIdPermissionUserIdDeleteResponses,
@@ -97,6 +100,9 @@ import type {
     ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetData,
     ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetErrors,
     ReadLibraryHomeSubpathsLibrariesHomeSubpathsGetResponses,
+    ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetData,
+    ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetErrors,
+    ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetResponses,
     ReadLibraryLibrariesLibraryIdGetData,
     ReadLibraryLibrariesLibraryIdGetErrors,
     ReadLibraryLibrariesLibraryIdGetResponses,
@@ -1016,6 +1022,59 @@ export const updateLibraryPermissionLibrariesLibraryIdPermissionUserIdPatch = <
             "Content-Type": "application/json",
             ...options.headers,
         },
+    })
+
+/**
+ * Read the ignored resources of a library
+ */
+export const readLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGet = <
+    ThrowOnError extends boolean = false,
+>(
+    options: Options<ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetData, ThrowOnError>,
+): RequestResult<
+    ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetResponses,
+    ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).get<
+        ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetResponses,
+        ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/libraries/{library_id}/ignored",
+        ...options,
+    })
+
+/**
+ * Delete an ignored resource from a library
+ */
+export const deleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDelete = <
+    ThrowOnError extends boolean = false,
+>(
+    options: Options<
+        DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteData,
+        ThrowOnError
+    >,
+): RequestResult<
+    DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteResponses,
+    DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).delete<
+        DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteResponses,
+        DeleteLibraryIgnoredResourceLibrariesLibraryIdIgnoredIgnoredResourceIdDeleteErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/libraries/{library_id}/ignored/{ignored_resource_id}",
+        ...options,
     })
 
 /**

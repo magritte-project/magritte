@@ -243,6 +243,14 @@ export const LibraryHomePathReadSchema = z.object({
 })
 
 /**
+ * LibraryIgnoredResourceRead
+ */
+export const LibraryIgnoredResourceReadSchema = z.object({
+    id: z.int(),
+    url: z.string(),
+})
+
+/**
  * LibraryMediaRead[AlbumRead]
  */
 export const LibraryMediaReadAlbumReadSchema = z.object({
@@ -267,6 +275,16 @@ export const LibraryMediaReadArtistReadSchema = z.object({
  */
 export const LibraryMediaReadExtensionReadSchema = z.object({
     items: z.array(ExtensionReadSchema),
+    offset: z.int(),
+    limit: z.int(),
+    total: z.int(),
+})
+
+/**
+ * LibraryMediaRead[LibraryIgnoredResourceRead]
+ */
+export const LibraryMediaReadLibraryIgnoredResourceReadSchema = z.object({
+    items: z.array(LibraryIgnoredResourceReadSchema),
     offset: z.int(),
     limit: z.int(),
     total: z.int(),

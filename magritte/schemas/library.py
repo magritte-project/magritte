@@ -62,3 +62,8 @@ class LibraryMediaRead[Item: BaseModel](BaseModel):
 class LibraryHomePathRead(BaseModel):
     relative_to: str
     subpaths: list[str]
+
+
+class LibraryIgnoredResourceRead(BaseModel):
+    id: int
+    url: str

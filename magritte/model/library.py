@@ -5,6 +5,7 @@ from sqlmodel import Field, Relationship, and_, col, select
 from magritte.model.album import Album, AlbumLibraryLink
 from magritte.model.artist import Artist, ArtistLibraryLink
 from magritte.model.base import LibraryModel
+from magritte.model.ignored_resource import IgnoredResource, IgnoredResourceLibraryLink
 from magritte.model.song import Song, SongLibraryLink
 from magritte.model.user import User, UserLibraryLink
 
@@ -42,6 +43,11 @@ class Library(LibraryModel, table=True):
     albums: list[Album] = Relationship(
         back_populates="libraries",
         link_model=AlbumLibraryLink,
+        sa_relationship_kwargs={"lazy": "noload"},
+    )
+    ignored_resources: list[IgnoredResource] = Relationship(
+        back_populates="libraries",
+        link_model=IgnoredResourceLibraryLink,
         sa_relationship_kwargs={"lazy": "noload"},
     )
 

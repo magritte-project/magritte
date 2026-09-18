@@ -38,11 +38,13 @@ class SongLibraryLink(SQLModel, table=True):
     song_id: int | None = Field(
         default=None,
         foreign_key="songs.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
     library_id: int | None = Field(
         default=None,
         foreign_key="libraries.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
 
@@ -53,11 +55,13 @@ class SongSourceLink(SQLModel, table=True):
     song_id: int | None = Field(
         default=None,
         foreign_key="songs.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
     source_id: int | None = Field(
         default=None,
         foreign_key="sources.id",
+        ondelete="CASCADE",
         primary_key=True,
     )
 
@@ -65,9 +69,16 @@ class SongSourceLink(SQLModel, table=True):
 class Song(LibraryModel, table=True):
     __tablename__: str = "songs"
 
+    has_altered_metadata: bool = Field(
+        default=False,
+        description="Whether the song's metadata has been altered from the source",
+        sa_column_kwargs={"server_default": "false"},
+    )
+
     artist_id: int | None = Field(
         default=None,
         foreign_key="artists.id",
+        ondelete="SET NULL",
         description="ID of this song's artist, if any",
     )
     artist: Union["Artist", None] = Relationship(
@@ -79,6 +90,7 @@ class Song(LibraryModel, table=True):
     album_id: int | None = Field(
         default=None,
         foreign_key="albums.id",
+        ondelete="SET NULL",
         description="ID of this song's album, if any",
     )
     album: Union["Album", None] = Relationship(

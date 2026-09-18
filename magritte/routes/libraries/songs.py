@@ -18,6 +18,7 @@ from magritte.db import get_db_session
 from magritte.model.album import Album
 from magritte.model.artist import Artist
 from magritte.model.artwork import Artwork
+from magritte.model.ignored_resource import IgnoredResource
 from magritte.model.library import Library
 from magritte.model.song import Song
 from magritte.model.source import Source
@@ -27,6 +28,7 @@ from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.library import LibraryMediaRead
 from magritte.schemas.song import SongQuery, SongRead, SongUpdate
 from magritte.schemas.source import SourceRead
+from magritte.utilities.gc import garbage_collect
 
 router = APIRouter()
 
@@ -147,6 +149,7 @@ async def delete_library_song(
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
     background_tasks: BackgroundTasks,
+    suppress_source_file: Annotated[bool, Query()] = False,
 ):
     if not await Library.can_user_access_by_id(
         library_id,
@@ -164,13 +167,23 @@ async def delete_library_song(
             status_code=status.HTTP_404_NOT_FOUND, detail="Song not found"
         )
 
+    if suppress_source_file:
+        library = await session.get_one(Library, library_id)
+        for source in await song.awaitable_attrs.sources:
+            ignored_resource, _ = await IgnoredResource(
+                url=source.url,
+            ).try_insert_unique(
+                col(IgnoredResource.url) == source.url,
+                session,
+            )
+            ignored_resource.libraries = Library.combine(
+                [library], await ignored_resource.awaitable_attrs.libraries
+            )
+
     await session.delete(song)
     await session.flush()
 
-    # TODO: Figure out why deleting things with unique constraints
-    #       leaves behind ghost data which prevents entities from
-    #       being re-created later.
-    # background_tasks.add_task(garbage_collect, session)
+    background_tasks.add_task(garbage_collect, session)
 
 
 @router.get(
