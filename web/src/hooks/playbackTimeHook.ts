@@ -18,23 +18,21 @@ export default function usePlaybackTime(): UsePlaybackTimeResult {
         elapsedTime: null,
     })
     const [isSeeking, setIsSeeking] = useState(false)
+    const updateCurrentTime = useCallback(async () => {
+        const currentTime = await player.getCurrentTime()
+        setCurrentTime(currentTime)
+    }, [player])
     useEffect(() => {
         if (isSeeking || player.playbackState !== "playing") {
             return
         }
-        const update = async () => {
-            const currentTime = await player.getCurrentTime()
-            setCurrentTime(currentTime)
-        }
-        update()
-
         const interval = setInterval(() => {
-            update()
+            updateCurrentTime()
         }, 1000)
         return () => {
             clearInterval(interval)
         }
-    }, [player, isSeeking, player.playbackState])
+    }, [isSeeking, player.playbackState, updateCurrentTime])
     const totalTime = currentTime.totalTime
     const elapsedTime = currentTime.elapsedTime
     const remainingTime =
@@ -43,12 +41,13 @@ export default function usePlaybackTime(): UsePlaybackTimeResult {
         async (newTime: number) => {
             try {
                 setIsSeeking(true)
-                player.seek(newTime)
+                await player.seek(newTime)
+                await updateCurrentTime()
             } finally {
                 setIsSeeking(false)
             }
         },
-        [player],
+        [player, updateCurrentTime],
     )
     return {
         totalTime,
