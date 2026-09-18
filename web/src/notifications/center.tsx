@@ -26,7 +26,7 @@ export type NotificationCenterConfirmOptions = Omit<DialogOptions, "type" | "but
 }
 
 export class NotificationCenter {
-    private readonly _events: EventSink<NotificationCenterEvent>
+    private readonly _dispatch: EventSink<NotificationCenterEvent>
     private readonly _queryClient: QueryClient
     private _seenNotifications: SeenNotifications
     private _serverNotifications: readonly NotificationRead[]
@@ -39,7 +39,7 @@ export class NotificationCenter {
     ][]
 
     constructor(queryClient: QueryClient, api: API) {
-        ;[this._events, this.$events] = createEvent({ label: "NotificationCenter" })
+        ;[this._dispatch, this.subscribe] = createEvent({ label: "NotificationCenter" })
         this._queryClient = queryClient
         this._seenNotifications = { status: "unloaded" }
         this._serverNotifications = []
@@ -75,7 +75,7 @@ export class NotificationCenter {
     ) {
         if (result.isSuccess) {
             this._serverNotifications = result.data.items
-            this._events({ type: "serverNotificationsDidChange" })
+            this._dispatch({ type: "serverNotificationsDidChange" })
 
             switch (this._seenNotifications.status) {
                 case "unloaded":
@@ -104,7 +104,7 @@ export class NotificationCenter {
         }
     }
 
-    readonly $events: EventStream<NotificationCenterEvent>
+    readonly subscribe: EventStream<NotificationCenterEvent>
 
     get serverNotifications(): readonly NotificationRead[] {
         return this._serverNotifications
@@ -123,14 +123,14 @@ export class NotificationCenter {
         this._toasts = [...this._toasts, options]
         if (this._toasts.length === 1) {
             this._dismissToastLater()
-            this._events({ type: "toastDidChange" })
+            this._dispatch({ type: "toastDidChange" })
         }
     }
 
     dismissToast(): void {
         if (this._toasts.length > 0) {
             this._toasts = this._toasts.slice(1)
-            this._events({ type: "toastDidChange" })
+            this._dispatch({ type: "toastDidChange" })
         }
         if (this._toastTimeoutId !== null) {
             clearTimeout(this._toastTimeoutId)
@@ -156,7 +156,7 @@ export class NotificationCenter {
             options.timeout ?? secondsToMilliseconds(60),
         )
         this._dialogs = [...this._dialogs, [options, resolver, timeoutId]]
-        this._events({ type: "dialogDidChange" })
+        this._dispatch({ type: "dialogDidChange" })
         return resolver.promise
     }
 
@@ -173,7 +173,7 @@ export class NotificationCenter {
             }
             clearTimeout(timeoutId)
             this._dialogs = this._dialogs.slice(1)
-            this._events({ type: "dialogDidChange" })
+            this._dispatch({ type: "dialogDidChange" })
         }
     }
 

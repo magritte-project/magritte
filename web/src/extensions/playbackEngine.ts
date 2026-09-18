@@ -18,7 +18,7 @@ import type { PlaybackModes } from "@/playback/modes"
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
-    private readonly _events: EventSink<PlaybackEngineEvent>
+    private readonly _dispatch: EventSink<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
     constructor(
@@ -26,32 +26,32 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
         private readonly engine: ExtensionPlaybackEngine,
         private readonly sourceSchemes: readonly string[],
     ) {
-        ;[this._events, this.$events] = createEvent({ label: "ExtensionPlaybackEngineProxy" })
+        ;[this._dispatch, this.subscribe] = createEvent({ label: "ExtensionPlaybackEngineProxy" })
         this._playingItem = null
 
         broadcaster.subscribe(PlaybackEnginePlaybackStateDidChange, async () => {
             const { playbackState, playingItem: item } = await this.engine.getNowPlaying()
             this._playingItem = item
-            this._events({ type: "playbackStateDidChange", playbackState })
+            this._dispatch({ type: "playbackStateDidChange", playbackState })
         })
         broadcaster.subscribe(PlaybackEnginePlayingItemChanged, async () => {
             const { playingItem } = await this.engine.getNowPlaying()
             this._playingItem = playingItem
-            this._events({ type: "playingItemChanged" })
+            this._dispatch({ type: "playingItemChanged" })
         })
         broadcaster.subscribe(PlaybackEngineEncounteredError, async (data) => {
-            this._events({
+            this._dispatch({
                 type: "encounteredError",
                 error: new Error(data?.message ?? ""),
             })
         })
         broadcaster.subscribe(PlaybackEngineEndOfAudio, async () => {
-            this._events({ type: "endOfAudio", lastItem: this._playingItem })
+            this._dispatch({ type: "endOfAudio", lastItem: this._playingItem })
             this._playingItem = null
         })
     }
 
-    readonly $events: EventStream<PlaybackEngineEvent>
+    readonly subscribe: EventStream<PlaybackEngineEvent>
 
     async syncPlaybackModes(modes: PlaybackModes): Promise<void> {
         await this.engine.syncPlaybackModes(modes)

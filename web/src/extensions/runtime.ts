@@ -96,7 +96,7 @@ export class ExtensionRuntime {
     /** Tracks loaded extensions */
     private readonly _extensions: Map<string, ExtensionState>
 
-    private readonly _events: EventSink<ExtensionRuntimeEvent>
+    private readonly _dispatch: EventSink<ExtensionRuntimeEvent>
 
     constructor(options: ExtensionRuntimeOptions) {
         this._container = options.container
@@ -109,7 +109,7 @@ export class ExtensionRuntime {
         this._available = new Map()
         this._attachments = new Map()
         this._extensions = new Map()
-        ;[this._events, this.$events] = createEvent({ label: "ExtensionRuntime" })
+        ;[this._dispatch, this.subscribe] = createEvent({ label: "ExtensionRuntime" })
 
         this._api.userEventsManager.subscribe((event) => {
             if (event.event_type === "extensions_changed") {
@@ -119,7 +119,7 @@ export class ExtensionRuntime {
         this._api.userSessionManager.addEventListener("usersessionchanged", () => this.sync())
     }
 
-    readonly $events: EventStream<ExtensionRuntimeEvent>
+    readonly subscribe: EventStream<ExtensionRuntimeEvent>
 
     /** The currently available extensions */
     get available(): Iterable<ExtensionManifest> {
@@ -146,7 +146,7 @@ export class ExtensionRuntime {
         this._available.set(manifest.id, manifest)
 
         console.debug("Extension added", manifest)
-        this._events({ type: "extensionAdded", manifest })
+        this._dispatch({ type: "extensionAdded", manifest })
 
         if (manifest.permissions?.includes("run:eager")) {
             this._loadIfNeeded(manifest.id)
@@ -161,7 +161,7 @@ export class ExtensionRuntime {
             this._available.delete(id)
 
             console.debug("Extension Removed", manifest)
-            this._events({ type: "extensionRemoved", manifest })
+            this._dispatch({ type: "extensionRemoved", manifest })
             return true
         } else {
             return false
@@ -275,12 +275,12 @@ export class ExtensionRuntime {
 
             console.debug("Loaded extension", id)
             this._extensions.set(id, { status: "loaded", iframe, extension })
-            this._events({ type: "extensionLoaded", extension })
+            this._dispatch({ type: "extensionLoaded", extension })
         } catch (error) {
             iframe.remove()
             console.error("*** Could not load extension", manifest.id, error)
             this._extensions.set(id, { status: "unloaded" })
-            this._events({ type: "extensionLoadFailed", manifest, error })
+            this._dispatch({ type: "extensionLoadFailed", manifest, error })
         }
     }
 
@@ -298,7 +298,7 @@ export class ExtensionRuntime {
                 state.iframe.remove()
                 state.extension.disconnect()
 
-                this._events({ type: "extensionUnloaded", extension: state.extension })
+                this._dispatch({ type: "extensionUnloaded", extension: state.extension })
             }
             this._extensions.delete(id)
             return true

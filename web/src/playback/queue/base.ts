@@ -17,7 +17,7 @@ export interface RandomItemContext<Item extends { id: unknown }> {
 }
 
 export interface Queue<Item extends { id: unknown }> {
-    readonly $events: EventStream<QueueEvent>
+    readonly subscribe: EventStream<QueueEvent>
     hasItem(item: Item): Promise<boolean>
     firstItem(): Promise<Item | null>
     lastItem(): Promise<Item | null>

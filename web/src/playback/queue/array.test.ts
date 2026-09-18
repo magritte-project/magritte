@@ -76,7 +76,7 @@ describe("ArrayQueue", () => {
         it("should dispatch an event", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
             const callback = vi.fn()
-            subject.$events(callback)
+            subject.subscribe(callback)
             await subject.push(mockTestItem())
             expect(callback).toHaveBeenCalledWith({ type: "queueDidChange" })
         })
@@ -92,7 +92,7 @@ describe("ArrayQueue", () => {
         it("should dispatch an event", async () => {
             const subject = new ArrayQueue<TestItem>(mockItems)
             const callback = vi.fn()
-            subject.$events(callback)
+            subject.subscribe(callback)
             await subject.removeAt(0)
             expect(callback).toHaveBeenCalledWith({ type: "queueDidChange" })
         })

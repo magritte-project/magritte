@@ -69,19 +69,19 @@ async function getExtensionCommands(extension: Extension): Promise<readonly Comm
 export type CommandRegistryEvent = { type: "registeredCommandsDidChange" }
 
 export class CommandRegistry {
-    private readonly _events: EventSink<CommandRegistryEvent>
+    private readonly _dispatch: EventSink<CommandRegistryEvent>
     private readonly _registeredCommandIDs: Set<string>
     private readonly _commands: Fuse<Command>
 
     constructor() {
-        ;[this._events, this.$events] = createEvent({ label: "CommandRegistry" })
+        ;[this._dispatch, this.subscribe] = createEvent({ label: "CommandRegistry" })
         this._registeredCommandIDs = new Set()
         this._commands = new Fuse<Command>([], {
             keys: ["searchTerms" satisfies keyof Command],
         })
     }
 
-    readonly $events: EventStream<CommandRegistryEvent>
+    readonly subscribe: EventStream<CommandRegistryEvent>
 
     get all(): readonly Command[] {
         return this._commands.getIndex().docs
@@ -99,7 +99,7 @@ export class CommandRegistry {
             this._commands.add(command)
             this._registeredCommandIDs.add(command.id)
         }
-        this._events({ type: "registeredCommandsDidChange" })
+        this._dispatch({ type: "registeredCommandsDidChange" })
     }
 
     removeByID(...commandIDs: string[]): boolean {
@@ -110,7 +110,7 @@ export class CommandRegistry {
             for (const command of deletedCommands) {
                 this._registeredCommandIDs.delete(command.id)
             }
-            this._events({ type: "registeredCommandsDidChange" })
+            this._dispatch({ type: "registeredCommandsDidChange" })
         }
         return deleted
     }
@@ -134,7 +134,7 @@ export class CommandRegistry {
                 this.add(...commands)
             }),
         )
-        extensionRuntime.$events(async (event) => {
+        extensionRuntime.subscribe(async (event) => {
             switch (event.type) {
                 case "extensionLoaded": {
                     const commands = await getExtensionCommands(event.extension)

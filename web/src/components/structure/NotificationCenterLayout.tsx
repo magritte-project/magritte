@@ -5,7 +5,7 @@ import { createPortal } from "react-dom"
 import DialogModal from "@/components/chrome/DialogModal"
 import ToastNotification from "@/components/chrome/ToastNotification"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { filterTo } from "@/utilities/events"
+import { justEventsMatching } from "@/utilities/events"
 
 export interface NotificationCenterLayoutProps {
     readonly children?: ReactNode
@@ -16,12 +16,16 @@ export default function NotificationCenterLayout({ children }: NotificationCente
 
     const presentedDialog = useSyncExternalStore(
         (onStoreChange) =>
-            notificationCenter.$events(filterTo("type", "dialogDidChange", onStoreChange)),
+            notificationCenter.subscribe(
+                justEventsMatching("type", "dialogDidChange", onStoreChange),
+            ),
         () => notificationCenter.dialog,
     )
     const presentedToast = useSyncExternalStore(
         (onStoreChange) =>
-            notificationCenter.$events(filterTo("type", "toastDidChange", onStoreChange)),
+            notificationCenter.subscribe(
+                justEventsMatching("type", "toastDidChange", onStoreChange),
+            ),
         () => notificationCenter.toast,
     )
 

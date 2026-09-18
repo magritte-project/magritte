@@ -15,15 +15,15 @@ export type CommandInputsEvent = { readonly type: "commandInputsDidChange" }
 export class CommandInputs {
     private readonly _inputs: CommandInput[]
     private readonly _kinds: CountedSet<string>
-    private readonly _events: EventSink<CommandInputsEvent>
+    private readonly _dispatch: EventSink<CommandInputsEvent>
 
     constructor() {
         this._inputs = []
         this._kinds = new CountedSet()
-        ;[this._events, this.$events] = createEvent({ label: "CommandInputs" })
+        ;[this._dispatch, this.subscribe] = createEvent({ label: "CommandInputs" })
     }
 
-    readonly $events: EventStream<CommandInputsEvent>
+    readonly subscribe: EventStream<CommandInputsEvent>
 
     add(input: CommandInput): void {
         const toReplace =
@@ -38,7 +38,7 @@ export class CommandInputs {
             this._inputs.push(input)
             this._kinds.add(input.kind)
         }
-        this._events({ type: "commandInputsDidChange" })
+        this._dispatch({ type: "commandInputsDidChange" })
     }
 
     remove(kind: string, id: CommandInputID): void {
@@ -48,7 +48,7 @@ export class CommandInputs {
         if (toRemove !== -1) {
             this._inputs.splice(toRemove, 1)
             this._kinds.delete(kind)
-            this._events({ type: "commandInputsDidChange" })
+            this._dispatch({ type: "commandInputsDidChange" })
         }
     }
 

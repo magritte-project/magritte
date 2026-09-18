@@ -13,7 +13,7 @@ export function exportCommandCoordinator(
     registry: CommandRegistry,
 ): CommandCoordinator {
     if (manifest.permissions?.includes("commands:input:read")) {
-        const unsubscribe = inputs.$events(async (event) => {
+        const unsubscribe = inputs.subscribe(async (event) => {
             switch (event.type) {
                 case "commandInputsDidChange":
                     broadcaster.send(CommandInputsDidChange, undefined)

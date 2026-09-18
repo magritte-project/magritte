@@ -56,7 +56,7 @@ describe("CommandInputs", () => {
         it("should post a commandInputsDidChange event when an input", () => {
             const subject = new CommandInputs()
             const subscriber = vi.fn()
-            subject.$events(subscriber)
+            subject.subscribe(subscriber)
 
             subject.add({ kind: "library", id: 1 })
 
@@ -68,7 +68,7 @@ describe("CommandInputs", () => {
         it("should remove the input if it exists", () => {
             const subject = new CommandInputs()
             const subscriber = vi.fn()
-            subject.$events(subscriber)
+            subject.subscribe(subscriber)
 
             subject.add({ kind: "library", id: 1 })
             subject.remove("library", 1)
@@ -80,7 +80,7 @@ describe("CommandInputs", () => {
         it("should not post a commandInputsDidChange event when removing an input that does not exist", () => {
             const subject = new CommandInputs()
             const subscriber = vi.fn()
-            subject.$events(subscriber)
+            subject.subscribe(subscriber)
 
             expect(() => subject.remove("library", 1)).not.toThrow()
 

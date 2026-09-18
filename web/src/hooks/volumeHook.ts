@@ -1,13 +1,14 @@
 import { useCallback, useSyncExternalStore } from "react"
 
 import usePlayer from "@/hooks/playerHook"
-import { filterTo } from "@/utilities/events"
+import { justEventsMatching } from "@/utilities/events"
 import { resolveNewValue } from "@/utilities/react"
 
 export default function useVolume(): [number, React.Dispatch<React.SetStateAction<number>>] {
     const player = usePlayer()
     const volume = useSyncExternalStore(
-        (onStoreChange) => player.$events(filterTo("type", "volumeDidChange", onStoreChange)),
+        (onStoreChange) =>
+            player.subscribe(justEventsMatching("type", "volumeDidChange", onStoreChange)),
         () => player.volume,
     )
     const setVolume = useCallback(

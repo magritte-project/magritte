@@ -9,14 +9,14 @@ import ThemedButton from "@/components/theme/ThemedButton"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
-import { filterTo } from "@/utilities/events"
+import { justEventsMatching } from "@/utilities/events"
 
 export default function UserNotificationsButton() {
     const notificationCenter = useNotificationCenter()
     const notifications = useSyncExternalStore(
         (onStoreChange) =>
-            notificationCenter.$events(
-                filterTo("type", "serverNotificationsDidChange", onStoreChange),
+            notificationCenter.subscribe(
+                justEventsMatching("type", "serverNotificationsDidChange", onStoreChange),
             ),
         () => notificationCenter.serverNotifications,
     )

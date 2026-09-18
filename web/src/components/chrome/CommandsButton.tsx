@@ -9,7 +9,7 @@ import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommandRegistry from "@/hooks/commandRegistryHook"
 import useHotKeys from "@/hooks/hotKeysHook"
-import { combineUnsubscribers, filterTo } from "@/utilities/events"
+import { combineUnsubscribers, justEventsMatching } from "@/utilities/events"
 
 const highlightedCommandListVariants: Variants = {
     hidden: {},
@@ -42,8 +42,12 @@ export default function CommandsButton() {
         }
         refreshHighlighted()
         return combineUnsubscribers(
-            registry.$events(filterTo("type", "registeredCommandsDidChange", refreshHighlighted)),
-            inputs.$events(filterTo("type", "commandInputsDidChange", refreshHighlighted)),
+            registry.subscribe(
+                justEventsMatching("type", "registeredCommandsDidChange", refreshHighlighted),
+            ),
+            inputs.subscribe(
+                justEventsMatching("type", "commandInputsDidChange", refreshHighlighted),
+            ),
         )
     }, [inputs, registry])
     const handleWillExecute = useCallback(() => {

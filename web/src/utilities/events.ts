@@ -82,17 +82,17 @@ function buildEventStream<TEvent>(callbacks: EventCallback<TEvent>[]): EventStre
  * prefixed with an underscore `_` and the stream with a dollar sign `$`:
  *
  * ```typescript
- * private readonly _events: EventSink<MyEvent>
- * readonly $events: EventStream<MyEvent>
+ * private readonly _dispatch: EventSink<MyEvent>
+ * readonly subscribe: EventStream<MyEvent>
  *
  * constructor() {
- *     ;[this._events, this.$events] = createEvent()
+ *     ;[this._dispatch, this.subscribe] = createEvent()
  * }
  * ```
  *
- * To dispatch an event, call the sink directly: `this._events(event)`.
+ * To dispatch an event, call the sink directly: `this._dispatch(event)`.
  *
- * To subscribe, call the stream directly: `const unsubscribe = this.$events(callback)`.
+ * To subscribe, call the stream directly: `const unsubscribe = this.subscribe(callback)`.
  * The stream returns an unsubscribe function; call it to stop receiving events.
  *
  * @returns A tuple of a sink and a stream.
@@ -112,7 +112,7 @@ export function createEvent<TEvent>(
  *
  * Usage:
  * ```typescript
- * const unsubscribe = player.$events(filterTo("type", "playingItemChanged", ({ playingItem }) => {
+ * const unsubscribe = player.subscribe(justEventsMatching("type", "playingItemChanged", ({ playingItem }) => {
  *     ...
  * }))
  * ```
@@ -123,7 +123,7 @@ export function createEvent<TEvent>(
  * @returns An event callback that invokes the provided callback
  * only when the discriminator field matches.
  */
-export function filterTo<
+export function justEventsMatching<
     TEvent extends {},
     TDiscriminator extends keyof TEvent,
     TType extends TEvent[TDiscriminator],

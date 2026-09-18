@@ -33,14 +33,14 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     private readonly _fileAccess: FileAccess
     private readonly _localCache: LocalCache
     private readonly _audio: HTMLAudioElement
-    private readonly _events: EventSink<PlaybackEngineEvent>
+    private readonly _dispatch: EventSink<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
     constructor(api: API, localCache: LocalCache, parent: HTMLElement = document.body) {
         this._fileAccess = api.fileAccess
         this._localCache = localCache
         this._audio = new Audio()
-        ;[this._events, this.$events] = createEvent({ label: "BuiltInPlaybackEngine" })
+        ;[this._dispatch, this.subscribe] = createEvent({ label: "BuiltInPlaybackEngine" })
 
         this._playingItem = null
 
@@ -58,25 +58,25 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     private _handleCanPlay(_event: Event) {
-        this._events({
+        this._dispatch({
             type: "playbackStateDidChange",
             playbackState: _getPlaybackState(this._audio),
         })
     }
 
     private _handleDurationChange(_event: Event) {
-        this._events({ type: "playingItemChanged" })
+        this._dispatch({ type: "playingItemChanged" })
     }
 
     private _handleEnded(_event: Event) {
         const lastItem = this._playingItem
         this.stop()
-        this._events({ type: "endOfAudio", lastItem })
+        this._dispatch({ type: "endOfAudio", lastItem })
     }
 
     private _handleError(_event: Event) {
         const mediaError = this._audio.error
-        this._events({
+        this._dispatch({
             type: "encounteredError",
             error: new Error(
                 mediaError ? `${mediaError.message} (${mediaError.code})` : "Unknown error",
@@ -85,14 +85,14 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     private _handlePause(_event: Event) {
-        this._events({
+        this._dispatch({
             type: "playbackStateDidChange",
             playbackState: _getPlaybackState(this._audio),
         })
     }
 
     private _handlePlay(_event: Event) {
-        this._events({
+        this._dispatch({
             type: "playbackStateDidChange",
             playbackState: _getPlaybackState(this._audio),
         })
@@ -107,7 +107,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         }
     }
 
-    readonly $events: EventStream<PlaybackEngineEvent>
+    readonly subscribe: EventStream<PlaybackEngineEvent>
 
     async syncPlaybackModes(_modes: PlaybackModes): Promise<void> {
         /** Nothing to do in this engine */
@@ -142,7 +142,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         this._audio.load()
 
         this._playingItem = itemToPlay
-        this._events({ type: "playingItemChanged" })
+        this._dispatch({ type: "playingItemChanged" })
 
         if (playNow) {
             await this._audio.play()
@@ -178,11 +178,11 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
 
     async stop(): Promise<void> {
         this._swapSrc("")
-        this._events({
+        this._dispatch({
             type: "playbackStateDidChange",
             playbackState: "stopped",
         })
         this._playingItem = null
-        this._events({ type: "playingItemChanged" })
+        this._dispatch({ type: "playingItemChanged" })
     }
 }

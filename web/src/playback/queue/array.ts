@@ -2,7 +2,7 @@ import type { Queue, QueueEvent, RandomItemContext } from "@/playback/queue/base
 import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
 
 export default class ArrayQueue<Item extends { id: unknown }> implements Queue<Item> {
-    private readonly _events: EventSink<QueueEvent>
+    private readonly _dispatch: EventSink<QueueEvent>
     private readonly _items: Item[]
 
     static of<Item extends { id: unknown }>(...items: Item[]): ArrayQueue<Item> {
@@ -10,11 +10,11 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
     }
 
     constructor(items: readonly Item[] = []) {
-        ;[this._events, this.$events] = createEvent({ label: "ArrayQueue" })
+        ;[this._dispatch, this.subscribe] = createEvent({ label: "ArrayQueue" })
         this._items = [...items]
     }
 
-    readonly $events: EventStream<QueueEvent>
+    readonly subscribe: EventStream<QueueEvent>
 
     get length(): number {
         return this._items.length
@@ -77,7 +77,7 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
 
     async push(...items: readonly Item[]): Promise<void> {
         this._items.push(...items)
-        await this._events({ type: "queueDidChange" })
+        await this._dispatch({ type: "queueDidChange" })
     }
 
     async removeAt(index: number): Promise<Item> {
@@ -85,7 +85,7 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
             throw new Error("Invalid index")
         }
         const removed = this._items.splice(index, 1)
-        await this._events({ type: "queueDidChange" })
+        await this._dispatch({ type: "queueDidChange" })
         return removed[0]
     }
 
@@ -100,11 +100,11 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
         }
         const item = this._items.splice(source, 1)[0]
         this._items.splice(destination, 0, item)
-        await this._events({ type: "queueDidChange" })
+        await this._dispatch({ type: "queueDidChange" })
     }
 
     async clear(): Promise<void> {
         this._items.length = 0
-        await this._events({ type: "queueDidChange" })
+        await this._dispatch({ type: "queueDidChange" })
     }
 }

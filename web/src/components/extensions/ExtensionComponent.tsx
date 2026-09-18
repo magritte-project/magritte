@@ -23,7 +23,7 @@ export default function ExtensionComponent({ manifest }: ExtensionComponentProps
         }
 
         setIsLoaded(extensionRuntime.getRunning(manifest.id) !== null)
-        const unsubscribe = extensionRuntime.$events((event) => {
+        const unsubscribe = extensionRuntime.subscribe((event) => {
             switch (event.type) {
                 case "extensionLoaded":
                     if (event.extension.manifest.id === manifest.id) {

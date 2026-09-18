@@ -12,7 +12,7 @@ export function exportPlayer(
     player: HostPlayer,
 ): ExtensionPlayer {
     if (manifest.permissions?.includes("playback:read")) {
-        const unsubscribe = player.$events(async (event) => {
+        const unsubscribe = player.subscribe(async (event) => {
             switch (event.type) {
                 case "playbackStateDidChange":
                 case "playingItemChanged":

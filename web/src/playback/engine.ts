@@ -35,7 +35,7 @@ export interface PlaybackEngineEnqueueOptions {
 
 export interface PlaybackEngine {
     /** Events relating to the state of this playback engine */
-    readonly $events: EventStream<PlaybackEngineEvent>
+    readonly subscribe: EventStream<PlaybackEngineEvent>
 
     /** Sync the playback modes for this engine */
     syncPlaybackModes(modes: PlaybackModes): Promise<void>

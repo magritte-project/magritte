@@ -18,7 +18,7 @@ describe("CommandRegistry", () => {
             ).not.toThrow()
 
             const subscriber = vi.fn()
-            subject.$events(subscriber)
+            subject.subscribe(subscriber)
 
             expect(() =>
                 subject.add({
@@ -61,7 +61,7 @@ describe("CommandRegistry", () => {
         it("should post registeredCommandsDidChange event if command is added", () => {
             const subject = new CommandRegistry()
             const subscriber = vi.fn()
-            subject.$events(subscriber)
+            subject.subscribe(subscriber)
 
             expect(() =>
                 subject.add({
@@ -93,7 +93,7 @@ describe("CommandRegistry", () => {
             ).not.toThrow()
 
             const subscriber = vi.fn()
-            subject.$events(subscriber)
+            subject.subscribe(subscriber)
 
             expect(() =>
                 subject.remove({
@@ -112,7 +112,7 @@ describe("CommandRegistry", () => {
         it("should not post registeredCommandsDidChange event if command is not removed", () => {
             const subject = new CommandRegistry()
             const subscriber = vi.fn()
-            subject.$events(subscriber)
+            subject.subscribe(subscriber)
 
             expect(() =>
                 subject.remove({

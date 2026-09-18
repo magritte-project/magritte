@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import type { Command } from "@/commands/base"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommandRegistry from "@/hooks/commandRegistryHook"
-import { filterTo, combineUnsubscribers } from "@/utilities/events"
+import { justEventsMatching, combineUnsubscribers } from "@/utilities/events"
 
 export interface UseCommandsOptions {
     readonly search?: string
@@ -26,8 +26,10 @@ export default function useCommands({ search }: UseCommandsOptions = {}) {
         }
         refreshResults()
         return combineUnsubscribers(
-            registry.$events(filterTo("type", "registeredCommandsDidChange", refreshResults)),
-            inputs.$events(filterTo("type", "commandInputsDidChange", refreshResults)),
+            registry.subscribe(
+                justEventsMatching("type", "registeredCommandsDidChange", refreshResults),
+            ),
+            inputs.subscribe(justEventsMatching("type", "commandInputsDidChange", refreshResults)),
         )
     }, [search, inputs, registry])
 

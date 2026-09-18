@@ -19,7 +19,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         initialPage: LibraryMediaReadSongRead,
         criteria: ReadLibrarySongsCriteria,
     ) {
-        ;[, this.$events] = createEvent({ label: "LibraryQueue" })
+        ;[, this.subscribe] = createEvent({ label: "LibraryQueue" })
 
         // TODO: Wire up events
 
@@ -91,7 +91,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         return [-1, -1]
     }
 
-    readonly $events: EventStream<QueueEvent>
+    readonly subscribe: EventStream<QueueEvent>
 
     async hasItem(item: PlayableItem): Promise<boolean> {
         for await (const [, page] of this._allPages()) {

@@ -214,6 +214,6 @@ export class PlaybackEventRecorder {
     }
 
     wireUpPlayer(player: Player) {
-        player.$events((event) => this._handlePlayerEvent(player, event))
+        player.subscribe((event) => this._handlePlayerEvent(player, event))
     }
 }
