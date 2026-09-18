@@ -23,6 +23,12 @@ export type PlayerEvent =
     | { type: "queueDidChange" }
     | { type: "playbackModesDidChange"; modes: PlaybackModes }
     | { type: "volumeDidChange"; volume: number }
+    | {
+          type: "playingItemSeeked"
+          totalTime: number | null
+          oldTime: number | null
+          newTime: number
+      }
 
 export interface ReplaceQueueOptions extends Omit<PlaybackEngineEnqueueOptions, "itemToPlay"> {
     readonly newQueue: Queue<PlayableItem>
@@ -292,7 +298,9 @@ export class Player {
     }
 
     async seek(newTime: number): Promise<void> {
+        const { totalTime, elapsedTime: oldTime } = await this.getCurrentTime()
         await this._activeEngine?.seek(newTime)
+        await this._events({ type: "playingItemSeeked", totalTime, oldTime, newTime })
     }
 
     async pause(): Promise<void> {

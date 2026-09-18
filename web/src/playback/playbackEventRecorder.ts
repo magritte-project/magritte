@@ -177,6 +177,22 @@ export class PlaybackEventRecorder {
                     this.flushLater()
                 }
                 break
+            case "playingItemSeeked":
+                if (
+                    event.oldTime !== null &&
+                    event.oldTime !== event.newTime &&
+                    player.playingItem !== null &&
+                    typeof player.playingItem.id === "number"
+                ) {
+                    this.enqueue({
+                        recorded_at: new Date().toISOString(),
+                        kind: event.newTime > event.oldTime ? "fast_forward" : "rewind",
+                        song_id: player.playingItem.id,
+                        start_time: Math.round(event.oldTime),
+                        end_time: Math.round(event.newTime),
+                    })
+                }
+                break
             case "endOfAudio":
                 if (event.lastItem !== null && typeof event.lastItem.id === "number") {
                     this.enqueue({
