@@ -60,7 +60,11 @@ export class PlaybackEventRecorder {
     async enqueue(...playbackEvents: readonly IngestPlaybackEvent[]): Promise<void> {
         const tx = this.db.transaction("playback-events", "readwrite")
         for (const playbackEvent of playbackEvents) {
-            await tx.store.put(playbackEvent)
+            await tx.store.put({
+                ...playbackEvent,
+                start_time: Math.round(playbackEvent.start_time),
+                end_time: Math.round(playbackEvent.end_time),
+            })
         }
         await tx.done
     }
@@ -144,7 +148,7 @@ export class PlaybackEventRecorder {
                 if (player.playingItem !== null && typeof player.playingItem.id === "number") {
                     const now = new Date().toISOString()
                     const currentTime = await player.getCurrentTime()
-                    const elapsedTime = Math.round(currentTime.elapsedTime ?? 0)
+                    const elapsedTime = currentTime.elapsedTime ?? 0
                     switch (event.playbackState) {
                         case "paused":
                             this.enqueue({
@@ -188,8 +192,8 @@ export class PlaybackEventRecorder {
                         recorded_at: new Date().toISOString(),
                         kind: event.newTime > event.oldTime ? "fast_forward" : "rewind",
                         song_id: player.playingItem.id,
-                        start_time: Math.round(event.oldTime),
-                        end_time: Math.round(event.newTime),
+                        start_time: event.oldTime,
+                        end_time: event.newTime,
                     })
                 }
                 break
@@ -199,8 +203,8 @@ export class PlaybackEventRecorder {
                         recorded_at: new Date().toISOString(),
                         kind: "stop",
                         song_id: event.lastItem.id,
-                        start_time: Math.round(event.lastItem.end_time),
-                        end_time: Math.round(event.lastItem.end_time),
+                        start_time: event.lastItem.end_time,
+                        end_time: event.lastItem.end_time,
                     })
                 }
                 break
