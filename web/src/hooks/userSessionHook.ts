@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useCallback, useMemo, useSyncExternalStore } from "react"
 
 import useAPI from "@/hooks/apiHook"
+import { justEventsMatching } from "@/utilities/events"
 
 export interface UseUserSessionResult {
     readonly current: UserSession | null
@@ -20,8 +21,9 @@ export default function useUserSession(): UseUserSessionResult {
                 queryClient.clear()
                 onStoreChange()
             }
-            userSessionManager.addEventListener("usersessionchanged", listener)
-            return () => userSessionManager.removeEventListener("usersessionchanged", listener)
+            return userSessionManager.subscribe(
+                justEventsMatching("type", "currentChanged", listener),
+            )
         },
         () => {
             return userSessionManager.current
@@ -29,8 +31,9 @@ export default function useUserSession(): UseUserSessionResult {
     )
     const isSignedIn = useSyncExternalStore(
         (onStoreChange) => {
-            userSessionManager.addEventListener("usersessionchanged", onStoreChange)
-            return () => userSessionManager.removeEventListener("usersessionchanged", onStoreChange)
+            return userSessionManager.subscribe(
+                justEventsMatching("type", "currentChanged", onStoreChange),
+            )
         },
         () => {
             return userSessionManager.isSignedIn

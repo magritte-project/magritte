@@ -10,7 +10,12 @@ import { exportNotificationCenter } from "@/extensions/exports/exportNotificatio
 import { exportPlayer } from "@/extensions/exports/exportPlayer"
 import type { NotificationCenter } from "@/notifications/center"
 import type { Player } from "@/playback/player"
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+import {
+    createEvent,
+    justEventsMatching,
+    type EventSink,
+    type EventStream,
+} from "@/utilities/events"
 
 export interface ExtensionRuntimeOptions {
     readonly container: HTMLElement
@@ -111,12 +116,12 @@ export class ExtensionRuntime {
         this._extensions = new Map()
         ;[this._dispatch, this.subscribe] = createEvent({ label: "ExtensionRuntime" })
 
-        this._api.userEventsManager.subscribe((event) => {
-            if (event.event_type === "extensions_changed") {
-                this.sync()
-            }
-        })
-        this._api.userSessionManager.addEventListener("usersessionchanged", () => this.sync())
+        this._api.userEventsManager.subscribe(
+            justEventsMatching("event_type", "extensions_changed", () => this.sync()),
+        )
+        this._api.userSessionManager.subscribe(
+            justEventsMatching("type", "currentChanged", () => this.sync()),
+        )
     }
 
     readonly subscribe: EventStream<ExtensionRuntimeEvent>

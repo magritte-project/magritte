@@ -33,8 +33,11 @@ export function createMagritteRouter(context: MagritteRouterContext) {
         defaultPreloadStaleTime: 0,
     })
 
-    context.api.client.addEventListener("unauthorized", () => {
-        if (!router.state.matches.some((match) => match.staticData.noAuth === true)) {
+    context.api.client.subscribe((event) => {
+        if (
+            event.type === "unauthorized" &&
+            !router.state.matches.some((match) => match.staticData.noAuth === true)
+        ) {
             const currentLocation = router.getParsedLocationHref(router.state.location)
             router.navigate({
                 to: "/sign-in",

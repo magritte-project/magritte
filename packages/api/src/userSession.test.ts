@@ -35,7 +35,7 @@ describe("userSession", () => {
         it("should post currentDidChange event", async () => {
             const subject = new StorageUserSessionManager(mockStorage())
             const listener = vi.fn()
-            subject.addEventListener("usersessionchanged", listener)
+            subject.subscribe(listener)
             subject.current = { accessToken: "<NOISE>", scopes: [] }
             expect(listener).toHaveBeenCalled()
         })

@@ -67,27 +67,9 @@ export interface RPCConnectionOptions {
     readonly timeout?: number
 }
 
-export class RPCConnectionTimeoutEvent extends Event {
-    constructor(
-        public readonly command: RPCCommand,
-        eventInit?: EventInit,
-    ) {
-        super("timeout", eventInit)
-    }
-}
+export type RPCConnectionEvent = { type: "timeout" } | { type: "invalidated" }
 
-export class RPCConnectionInvalidatedEvent extends Event {
-    constructor(eventInit?: EventInit) {
-        super("invalidated", eventInit)
-    }
-}
-
-interface RPCConnectionEventMap {
-    timeout: RPCConnectionTimeoutEvent
-    invalidated: RPCConnectionInvalidatedEvent
-}
-
-export class RPCConnection extends EventTarget {
+export class RPCConnection {
     /**
      * Tracks the current RPC connection, if any.
      */
@@ -101,8 +83,7 @@ export class RPCConnection extends EventTarget {
     }
 
     constructor(options: RPCConnectionOptions) {
-        super()
-
+        this.subscribers = []
         this._isValid = true
         this.$timeout = new Local(options.timeout ?? 7_000)
         this.pending = new Map<string, PendingSend>()
@@ -127,6 +108,9 @@ export class RPCConnection extends EventTarget {
             this.handleMessage(reply)
         }
     }
+
+    /** The event subscribers for the connection */
+    private readonly subscribers: ((event: RPCConnectionEvent) => void)[]
 
     /** Read/write backing for public isValid property */
     private _isValid: boolean
@@ -219,7 +203,7 @@ export class RPCConnection extends EventTarget {
             const timeoutId = setTimeout(() => {
                 $reject(new Error("Operation timed out"))
                 this.pending.delete(id)
-                this.dispatchEvent(new RPCConnectionTimeoutEvent(command))
+                this._dispatch({ type: "timeout" })
             }, this.timeout)
             this.pending.set(id, {
                 resolve: (result) => {
@@ -254,32 +238,26 @@ export class RPCConnection extends EventTarget {
 
         this._isValid = false
 
-        this.dispatchEvent(new RPCConnectionInvalidatedEvent())
+        this._dispatch({ type: "invalidated" })
     }
 
-    addEventListener<K extends keyof RPCConnectionEventMap>(
-        type: K,
-        listener: (this: RPCConnection, ev: RPCConnectionEventMap[K]) => any,
-        options?: AddEventListenerOptions | boolean,
-    ): void
-    override addEventListener(
-        type: string,
-        callback: EventListenerOrEventListenerObject | null,
-        options?: AddEventListenerOptions | boolean,
-    ): void {
-        super.addEventListener(type, callback, options)
+    private _dispatch(event: RPCConnectionEvent) {
+        for (const subscriber of this.subscribers.slice()) {
+            try {
+                subscriber(event)
+            } catch (error) {
+                console.error(`*** Unhandled error in RPC connection event subscriber`, error)
+            }
+        }
     }
 
-    removeEventListener<K extends keyof RPCConnectionEventMap>(
-        type: K,
-        listener: (this: RPCConnection, ev: RPCConnectionEventMap[K]) => any,
-        options?: AddEventListenerOptions | boolean,
-    ): void
-    override removeEventListener(
-        type: string,
-        callback: EventListenerOrEventListenerObject | null,
-        options?: EventListenerOptions | boolean,
-    ): void {
-        super.removeEventListener(type, callback, options)
+    subscribe(subscriber: (event: RPCConnectionEvent) => void): () => void {
+        this.subscribers.push(subscriber)
+        return () => {
+            const toRemove = this.subscribers.indexOf(subscriber)
+            if (toRemove !== -1) {
+                this.subscribers.splice(toRemove, 1)
+            }
+        }
     }
 }

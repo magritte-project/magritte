@@ -113,15 +113,7 @@ export type ReadLibrarySongsSortBy = NonNullable<
     ReadLibrarySongsLibrariesLibraryIdSongsGetData["query"]
 >["sort_by"]
 
-export class APIClientUnauthorizedEvent extends Event {
-    constructor(eventInit?: EventInit) {
-        super("unauthorized", eventInit)
-    }
-}
-
-interface APIClientEvents {
-    unauthorized: APIClientUnauthorizedEvent
-}
+export type APIClientEvent = { type: "unauthorized" }
 
 export interface APIClientOptions {
     readonly baseUrl: string
@@ -130,19 +122,28 @@ export interface APIClientOptions {
 
 export class APIClient {
     private readonly options: { throwOnError: true; client: Client }
-    private readonly events: EventTarget
+    private readonly subscribers: ((event: APIClientEvent) => void)[]
 
     constructor({ baseUrl, userSessionManager }: APIClientOptions) {
         const client = createClient({
             baseUrl,
             auth: () => userSessionManager.current?.accessToken,
         })
-        const events = new EventTarget()
+        const subscribers: ((event: APIClientEvent) => void)[] = []
         client.interceptors.response.use(async (response) => {
             if (!response.ok) {
                 if (response.status === 401) {
                     userSessionManager.current = null
-                    events.dispatchEvent(new APIClientUnauthorizedEvent())
+                    for (const subscriber of this.subscribers.slice()) {
+                        try {
+                            subscriber({ type: "unauthorized" })
+                        } catch (error) {
+                            console.error(
+                                `*** Unhandled error in API client event subscriber`,
+                                error,
+                            )
+                        }
+                    }
                 }
 
                 let message = `${response.status}: ${response.statusText}`
@@ -173,23 +174,19 @@ export class APIClient {
             return response
         })
         this.options = { throwOnError: true, client }
-        this.events = events
+        this.subscribers = subscribers
     }
 
-    // -- Event Handling -- //
+    // -- API Client Events -- //
 
-    addEventListener<K extends keyof APIClientEvents>(
-        event: K,
-        listener: (event: APIClientEvents[K]) => void,
-    ): void {
-        this.events.addEventListener(event, listener)
-    }
-
-    removeEventListener<K extends keyof APIClientEvents>(
-        event: K,
-        listener: (event: APIClientEvents[K]) => void,
-    ): void {
-        this.events.removeEventListener(event, listener)
+    subscribe(subscriber: (event: APIClientEvent) => void): () => void {
+        this.subscribers.push(subscriber)
+        return () => {
+            const toRemove = this.subscribers.indexOf(subscriber)
+            if (toRemove !== -1) {
+                this.subscribers.splice(toRemove, 1)
+            }
+        }
     }
 
     // -- Instance Status -- //

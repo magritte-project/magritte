@@ -23,7 +23,11 @@ export class UserEventsManager {
         this.subscribers = []
         this.state = { type: "notConnected" }
 
-        userSessionManager.addEventListener("usersessionchanged", () => this._syncWithUserSession())
+        userSessionManager.subscribe((event) => {
+            if (event.type === "currentChanged") {
+                this._syncWithUserSession()
+            }
+        })
         this._syncWithUserSession()
     }
 
