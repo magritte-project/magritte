@@ -1,6 +1,6 @@
 import { useRouteContext } from "@tanstack/react-router"
 
-import type { SearchRegistry } from "@/search/registry"
+import type { SearchRegistry } from "@/commands/searchRegistry"
 
 export default function useSearchRegistry(): SearchRegistry {
     const searchRegistry = useRouteContext({

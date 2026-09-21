@@ -4,6 +4,7 @@ import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { type CommandCoordinator, CommandCoordinatorProtocol } from "../commands/coordinator"
 import { CommandResponderProtocol, type CommandResponder } from "../commands/responder"
+import { type SearchCommandResponder, SearchCommandResponderProtocol } from "../commands/search"
 import { type Library, LibraryProtocol } from "../library"
 import { getExtensionOrigin } from "../manifest"
 import { type NotificationCenter, NotificationCenterProtocol } from "../notificationCenter"
@@ -99,5 +100,9 @@ export class Extension {
 
     async playbackEngine(): Promise<PlaybackEngine> {
         return cast(PlaybackEngineProtocol, this.connection.remoteObject)
+    }
+
+    async searchCommandResponder(): Promise<SearchCommandResponder> {
+        return cast(SearchCommandResponderProtocol, this.connection.remoteObject)
     }
 }
