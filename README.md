@@ -39,6 +39,19 @@ Magritte is intended to be highly flexible in how it can be configured and where
 
 Claude Code and Gemini were used for research, to generate config files, to find solutions for bugs, to generate some SQL queries, to apply repetitive pattern refactors, and to generate code in the extensions. A majority of the code in the core Magritte codebases was handwritten.
 
+## Contributors
+
+Contributions are welcomed! Kindly keep these things in mind:
+
+- Pull requests should be short enough to review in about 15 minutes.
+- An easy to digest summary / explanation increases chances of your changes being accepted.
+- Please limit pull requests to a single commit when possible.
+- A change set should not touch both an extension and the main codebase.
+  - Please separate out any new APIs required by your extension changes into their own pull request.
+  - Ideally any new extension APIs were preceded by an enhancement / issue issue.
+- Update the AI usage disclosure in this README if you use a new AI tool or apply AI in a new way on this codebase.
+- Be mindful of the license for the part of the codebase you are working on.
+
 ## Installation
 
 ### For Users
