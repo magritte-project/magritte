@@ -5,17 +5,17 @@ import z4 from "zod/v4"
  */
 export const onlyOne = "__onlyOne__" as const
 
-export const CommandInputID = z4.union([z4.string(), z4.number()])
-export type CommandInputID = z4.infer<typeof CommandInputID>
+export const CommandInputIDSchema = z4.union([z4.string(), z4.number()])
+export type CommandInputID = z4.infer<typeof CommandInputIDSchema>
 
-export const CommandInput = z4.looseObject({
+export const CommandInputSchema = z4.looseObject({
     /** A string describing the kind of the input */
     kind: z4.string().readonly(),
 
     /** A unique identifier for the input */
-    id: CommandInputID.readonly(),
+    id: CommandInputIDSchema.readonly(),
 })
-export type CommandInput = z4.infer<typeof CommandInput>
+export type CommandInput = z4.infer<typeof CommandInputSchema>
 
 export function getCommandInputKind<TKind extends string>(
     schema: z4.ZodObject<{ kind: z4.ZodReadonly<z4.ZodLiteral<TKind>> }>,
@@ -46,8 +46,8 @@ export function onlyCommandInputOf<
     return schema.parse(inputsOfKind[0])
 }
 
-export const CommandInputQuery = z4.object({
+export const CommandInputQuerySchema = z4.object({
     /** The kinds of input to query for */
     kinds: z4.array(z4.string()).readonly(),
 })
-export type CommandInputQuery = z4.infer<typeof CommandInputQuery>
+export type CommandInputQuery = z4.infer<typeof CommandInputQuerySchema>

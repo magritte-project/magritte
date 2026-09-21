@@ -1,6 +1,10 @@
 import type { ExtensionManifest } from "@magritte/api"
 import { RPCBroadcaster } from "@magritte/rpc"
-import { type CommandCoordinator, CommandInputsDidChange, CommandQueryResult } from "@magritte/sdk"
+import {
+    type CommandCoordinator,
+    CommandInputsDidChange,
+    type CommandQueryResult,
+} from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"

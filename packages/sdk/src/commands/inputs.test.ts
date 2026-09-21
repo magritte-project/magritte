@@ -1,15 +1,21 @@
 import { describe, expect, it } from "vitest"
 import z4 from "zod/v4"
 
-import { allCommandInputsOf, CommandInput, onlyCommandInputOf, onlyOne } from "./inputs"
+import {
+    allCommandInputsOf,
+    type CommandInput,
+    CommandInputSchema,
+    onlyCommandInputOf,
+    onlyOne,
+} from "./inputs"
 
-const TestLibraryInput = CommandInput.extend({
+const TestLibraryInput = CommandInputSchema.extend({
     kind: z4.literal("library").readonly(),
 })
-const TestLibrarySongInput = CommandInput.extend({
+const TestLibrarySongInput = CommandInputSchema.extend({
     kind: z4.literal("library.song").readonly(),
 })
-const TestUserSessionInput = CommandInput.extend({
+const TestUserSessionInput = CommandInputSchema.extend({
     kind: z4.literal("user.session").readonly(),
     id: z4.literal(onlyOne).readonly(),
 })

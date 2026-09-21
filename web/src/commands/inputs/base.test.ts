@@ -1,16 +1,16 @@
-import { CommandInput, onlyOne } from "@magritte/sdk"
+import { CommandInputSchema, onlyOne } from "@magritte/sdk"
 import { describe, expect, it, vi } from "vitest"
 import z4 from "zod"
 
 import { CommandInputs } from "./base"
 
-const TestLibraryInput = CommandInput.extend({
+const TestLibraryInput = CommandInputSchema.extend({
     kind: z4.literal("library").readonly(),
 })
-const TestLibrarySongInput = CommandInput.extend({
+const TestLibrarySongInput = CommandInputSchema.extend({
     kind: z4.literal("library.song").readonly(),
 })
-const TestUserSessionInput = CommandInput.extend({
+const TestUserSessionInput = CommandInputSchema.extend({
     kind: z4.literal("user.session").readonly(),
     id: z4.literal(onlyOne).readonly(),
 })

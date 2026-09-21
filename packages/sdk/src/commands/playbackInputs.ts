@@ -1,26 +1,26 @@
 import z4 from "zod"
 
-import { PlayableItem } from "../playback/items"
-import { PlaybackModes, PlaybackState } from "../playback/state"
-import { CommandInput, onlyOne } from "./inputs"
+import { PlayableItemSchema } from "../playback/items"
+import { PlaybackModesSchema, PlaybackStateSchema } from "../playback/state"
+import { CommandInputSchema, onlyOne } from "./inputs"
 
-export const PlaybackStateInput = CommandInput.extend({
+export const PlaybackStateInputSchema = CommandInputSchema.extend({
     kind: z4.literal("playbackState").readonly(),
     id: z4.literal(onlyOne).readonly(),
-    current: PlaybackState,
+    current: PlaybackStateSchema,
 })
-export type PlaybackStateInput = z4.infer<typeof PlaybackStateInput>
+export type PlaybackStateInput = z4.infer<typeof PlaybackStateInputSchema>
 
-export const PlaybackModesInput = CommandInput.extend({
+export const PlaybackModesInputSchema = CommandInputSchema.extend({
     kind: z4.literal("playbackModes").readonly(),
     id: z4.literal(onlyOne).readonly(),
-    current: PlaybackModes,
+    current: PlaybackModesSchema,
 })
-export type PlaybackModesInput = z4.infer<typeof PlaybackModesInput>
+export type PlaybackModesInput = z4.infer<typeof PlaybackModesInputSchema>
 
-export const PlayingItemInput = CommandInput.extend({
+export const PlayingItemInputSchema = CommandInputSchema.extend({
     kind: z4.literal("playingItem").readonly(),
     id: z4.literal(onlyOne).readonly(),
-    current: PlayableItem,
+    current: PlayableItemSchema,
 })
-export type PlayingItemInput = z4.infer<typeof PlayingItemInput>
+export type PlayingItemInput = z4.infer<typeof PlayingItemInputSchema>

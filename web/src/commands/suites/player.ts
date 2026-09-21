@@ -1,9 +1,12 @@
 import {
     getCommandInputKind,
     onlyOne,
-    PlaybackModesInput,
-    PlaybackStateInput,
-    PlayingItemInput,
+    type PlaybackModesInput,
+    PlaybackModesInputSchema,
+    type PlaybackStateInput,
+    PlaybackStateInputSchema,
+    type PlayingItemInput,
+    PlayingItemInputSchema,
 } from "@magritte/sdk"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
@@ -17,7 +20,7 @@ export function playerCommands(router: RegisteredRouter): Command[] {
         {
             id: "playback.skipPrevious",
             searchTerms: "playback skip previous",
-            requiredInputKinds: [getCommandInputKind(PlaybackStateInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackStateInputSchema)],
             highlightAvailability: false,
             present: async () => ({ displayName: "playback: Skip Previous", disabled: false }),
             execute: async () => {
@@ -28,10 +31,10 @@ export function playerCommands(router: RegisteredRouter): Command[] {
         {
             id: "playback.playPaused",
             searchTerms: "playback play pause",
-            requiredInputKinds: [getCommandInputKind(PlaybackStateInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackStateInputSchema)],
             highlightAvailability: false,
             present: async (inputs) => {
-                const { current } = inputs.only(PlaybackStateInput)
+                const { current } = inputs.only(PlaybackStateInputSchema)
                 return {
                     displayName: current === "playing" ? "playback: Pause" : "playback: Play",
                     disabled: current === "stopped",
@@ -49,7 +52,7 @@ export function playerCommands(router: RegisteredRouter): Command[] {
         {
             id: "playback.skipNext",
             searchTerms: "playback skip next",
-            requiredInputKinds: [getCommandInputKind(PlaybackStateInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackStateInputSchema)],
             highlightAvailability: false,
             present: async () => ({ displayName: "playback: Skip Next", disabled: false }),
             execute: async () => {
@@ -60,10 +63,10 @@ export function playerCommands(router: RegisteredRouter): Command[] {
         {
             id: "playback.repeatOff",
             searchTerms: "playback repeat off",
-            requiredInputKinds: [getCommandInputKind(PlaybackModesInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackModesInputSchema)],
             highlightAvailability: false,
             present: async (inputs) => {
-                const { current } = inputs.only(PlaybackModesInput)
+                const { current } = inputs.only(PlaybackModesInputSchema)
                 return {
                     displayName: "playback: Repeat Off",
                     disabled: current.repeat === "off",
@@ -77,10 +80,10 @@ export function playerCommands(router: RegisteredRouter): Command[] {
         {
             id: "playback.repeatAll",
             searchTerms: "playback repeat all",
-            requiredInputKinds: [getCommandInputKind(PlaybackModesInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackModesInputSchema)],
             highlightAvailability: false,
             present: async (inputs) => {
-                const { current } = inputs.only(PlaybackModesInput)
+                const { current } = inputs.only(PlaybackModesInputSchema)
                 return {
                     displayName: "playback: Repeat All",
                     disabled: current.repeat === "all",
@@ -94,10 +97,10 @@ export function playerCommands(router: RegisteredRouter): Command[] {
         {
             id: "playback.repeatOne",
             searchTerms: "playback repeat one",
-            requiredInputKinds: [getCommandInputKind(PlaybackModesInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackModesInputSchema)],
             highlightAvailability: false,
             present: async (inputs) => {
-                const { current } = inputs.only(PlaybackModesInput)
+                const { current } = inputs.only(PlaybackModesInputSchema)
                 return {
                     displayName: "playback: Repeat One",
                     disabled: current.repeat === "one",
@@ -111,10 +114,10 @@ export function playerCommands(router: RegisteredRouter): Command[] {
         {
             id: "playback.shuffleOnOff",
             searchTerms: "playback shuffle on off toggle",
-            requiredInputKinds: [getCommandInputKind(PlaybackModesInput)],
+            requiredInputKinds: [getCommandInputKind(PlaybackModesInputSchema)],
             highlightAvailability: false,
             present: async (inputs) => {
-                const { current } = inputs.only(PlaybackModesInput)
+                const { current } = inputs.only(PlaybackModesInputSchema)
                 return {
                     displayName:
                         current.shuffle === "on" ? "playback: Shuffle Off" : "playback: Shuffle On",
@@ -147,7 +150,7 @@ export function wirePlayerCommandInputs(player: Player, inputs: CommandInputs) {
                 current: player.playingItem,
             } satisfies PlayingItemInput)
         } else {
-            inputs.remove(getCommandInputKind(PlayingItemInput), onlyOne)
+            inputs.remove(getCommandInputKind(PlayingItemInputSchema), onlyOne)
         }
     }
     updatePlayerInputs()

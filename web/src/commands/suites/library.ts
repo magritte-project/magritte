@@ -1,4 +1,4 @@
-import { getCommandInputKind, LibraryInput, LibrarySongInput } from "@magritte/sdk"
+import { getCommandInputKind, LibraryInputSchema, LibrarySongInputSchema } from "@magritte/sdk"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
@@ -12,13 +12,13 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
         {
             id: `libraries.artists`,
             searchTerms: "library artists",
-            requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            requiredInputKinds: [getCommandInputKind(LibraryInputSchema)],
             highlightAvailability: false,
             present: async () => ({
                 displayName: "library: Artists",
             }),
             execute: async (inputs) => {
-                const [library] = inputs.allOf(LibraryInput)
+                const [library] = inputs.allOf(LibraryInputSchema)
                 router.navigate({
                     to: "/libraries/$libraryId/artists",
                     params: { libraryId: String(library.id) },
@@ -28,13 +28,13 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
         {
             id: `libraries.albums`,
             searchTerms: "library albums",
-            requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            requiredInputKinds: [getCommandInputKind(LibraryInputSchema)],
             highlightAvailability: false,
             present: async () => ({
                 displayName: "library: Albums",
             }),
             execute: async (inputs) => {
-                const [library] = inputs.allOf(LibraryInput)
+                const [library] = inputs.allOf(LibraryInputSchema)
                 router.navigate({
                     to: "/libraries/$libraryId/albums",
                     params: { libraryId: String(library.id) },
@@ -44,13 +44,13 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
         {
             id: `libraries.songs`,
             searchTerms: "library songs",
-            requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            requiredInputKinds: [getCommandInputKind(LibraryInputSchema)],
             highlightAvailability: false,
             present: async () => ({
                 displayName: "library: Songs",
             }),
             execute: async (inputs) => {
-                const [library] = inputs.allOf(LibraryInput)
+                const [library] = inputs.allOf(LibraryInputSchema)
                 router.navigate({
                     to: "/libraries/$libraryId/songs",
                     params: { libraryId: String(library.id) },
@@ -62,16 +62,16 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             searchTerms: "library remove delete songs",
             highlightAvailability: true,
             requiredInputKinds: [
-                getCommandInputKind(LibraryInput),
-                getCommandInputKind(LibrarySongInput),
+                getCommandInputKind(LibraryInputSchema),
+                getCommandInputKind(LibrarySongInputSchema),
             ],
             present: async () => ({
                 displayName: "library: Delete Selected Songs…",
             }),
             execute: async (inputs) => {
                 const { api, notificationCenter, queryClient } = getMagritteRouterContext(router)
-                const [library] = inputs.allOf(LibraryInput)
-                const songs = inputs.allOf(LibrarySongInput)
+                const [library] = inputs.allOf(LibraryInputSchema)
+                const songs = inputs.allOf(LibrarySongInputSchema)
 
                 const confirmed = await notificationCenter.confirm({
                     title: `Are you sure you want to remove ${songs.length} song${songs.length !== 1 ? "s" : ""}?`,
@@ -114,16 +114,16 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             id: `libraries.downloadSongs`,
             searchTerms: "library download songs",
             requiredInputKinds: [
-                getCommandInputKind(LibraryInput),
-                getCommandInputKind(LibrarySongInput),
+                getCommandInputKind(LibraryInputSchema),
+                getCommandInputKind(LibrarySongInputSchema),
             ],
             highlightAvailability: true,
             present: async () => ({
                 displayName: "library: Download Selected Songs…",
             }),
             execute: async (inputs) => {
-                const [library] = inputs.allOf(LibraryInput)
-                const songs = inputs.allOf(LibrarySongInput)
+                const [library] = inputs.allOf(LibraryInputSchema)
+                const songs = inputs.allOf(LibrarySongInputSchema)
                 const { api, notificationCenter, localCache } = getMagritteRouterContext(router)
                 const librarySongs = await Promise.all(
                     songs.map((song) => api.client.readLibrarySong(library.id, song.id)),
@@ -173,13 +173,13 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
         {
             id: "libraries.requestSync",
             searchTerms: "library sync files",
-            requiredInputKinds: [getCommandInputKind(LibraryInput)],
+            requiredInputKinds: [getCommandInputKind(LibraryInputSchema)],
             highlightAvailability: false,
             present: async () => ({
                 displayName: "library: Request Sync",
             }),
             execute: async (inputs) => {
-                const libraries = inputs.allOf(LibraryInput)
+                const libraries = inputs.allOf(LibraryInputSchema)
                 const { api } = getMagritteRouterContext(router)
                 await Promise.all(
                     libraries.map((library) => api.client.requestSyncLibrary(library.id)),

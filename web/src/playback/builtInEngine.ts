@@ -1,5 +1,5 @@
 import type { API, FileAccess } from "@magritte/api"
-import { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk"
+import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk"
 
 import type {
     PlaybackEngine,

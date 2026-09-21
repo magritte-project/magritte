@@ -1,4 +1,4 @@
-import { LibraryInput } from "@magritte/sdk"
+import type { LibraryInput } from "@magritte/sdk"
 import { DiscIcon, MicrophoneIcon, MusicNotesIcon } from "@phosphor-icons/react"
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useCallback, useMemo } from "react"

@@ -1,17 +1,17 @@
 import { defineBroadcast, protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
-import { PlayableItem } from "./items"
-import { PlaybackTime } from "./player"
-import { PlaybackState, PlaybackModes } from "./state"
+import { PlayableItemSchema } from "./items"
+import { PlaybackTimeSchema } from "./player"
+import { PlaybackStateSchema, PlaybackModesSchema } from "./state"
 
-export const PlaybackEngineEnqueueOptions = z4
+export const PlaybackEngineEnqueueOptionsSchema = z4
     .object({
         /**
          * The item to play, typically from the library, but may
          * be from other source like a streaming music service.
          * */
-        itemToPlay: PlayableItem,
+        itemToPlay: PlayableItemSchema,
 
         /**
          * Whether to immediately start playback of the item.
@@ -31,38 +31,38 @@ export const PlaybackEngineEnqueueOptions = z4
     })
     .readonly()
 
-export type PlaybackEngineEnqueueOptions = z4.infer<typeof PlaybackEngineEnqueueOptions>
+export type PlaybackEngineEnqueueOptions = z4.infer<typeof PlaybackEngineEnqueueOptionsSchema>
 
 export const PlaybackEngineProtocol = protocol("Magritte.Extension.PlaybackEngine", {
     /** Retrieve the current playback time and total time. */
     getCurrentTime: {
         input: z4.void(),
-        output: PlaybackTime,
+        output: PlaybackTimeSchema,
     },
 
     /** Get the current playback state and item. */
     getNowPlaying: {
         input: z4.void(),
         output: z4.object({
-            playbackState: PlaybackState,
-            playingItem: PlayableItem.nullable(),
+            playbackState: PlaybackStateSchema,
+            playingItem: PlayableItemSchema.nullable(),
         }),
     },
 
     /** Synchronize the playback modes for this engine */
-    syncPlaybackModes: { input: PlaybackModes, output: z4.void() },
+    syncPlaybackModes: { input: PlaybackModesSchema, output: z4.void() },
 
     /** Sync this engine's volume level */
     syncVolume: { input: z4.number().gte(0).lte(1), output: z4.void() },
 
     /** Check whether this playback engine can play a given item. */
     canEnqueue: {
-        input: z4.object({ item: PlayableItem }),
+        input: z4.object({ item: PlayableItemSchema }),
         output: z4.boolean(),
     },
 
     /** Enqueue an item to in order to play it with this engine. */
-    enqueue: { input: PlaybackEngineEnqueueOptions, output: z4.void() },
+    enqueue: { input: PlaybackEngineEnqueueOptionsSchema, output: z4.void() },
 
     /**
      * Skip to the previous subdivision within the currently playing item.

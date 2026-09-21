@@ -1,5 +1,5 @@
 import { TAG_MAX_LENGTH } from "@magritte/api"
-import { LibraryAlbumInput } from "@magritte/sdk"
+import type { LibraryAlbumInput } from "@magritte/sdk"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useDebounce } from "@uidotdev/usehooks"

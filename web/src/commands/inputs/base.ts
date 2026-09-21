@@ -1,9 +1,9 @@
 import {
-    CommandInputID,
     allCommandInputsOf,
     onlyCommandInputOf,
     onlyOne,
     type CommandInput,
+    type CommandInputID,
 } from "@magritte/sdk"
 import z4 from "zod/v4"
 

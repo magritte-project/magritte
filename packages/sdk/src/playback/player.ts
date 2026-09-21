@@ -1,27 +1,27 @@
 import { defineBroadcast, protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod"
 
-import { PlayableItem } from "./items"
-import { PlaybackState } from "./state"
+import { PlayableItemSchema } from "./items"
+import { PlaybackStateSchema } from "./state"
 
-export const PlaybackTime = z4.object({
+export const PlaybackTimeSchema = z4.object({
     totalTime: z4.number().nullable(),
     elapsedTime: z4.number().nullable(),
 })
-export type PlaybackTime = z4.infer<typeof PlaybackTime>
+export type PlaybackTime = z4.infer<typeof PlaybackTimeSchema>
 
-export const ReplaceQueueOptions = z4.object({
-    newQueueItems: z4.array(PlayableItem).readonly(),
-    startingItem: PlayableItem.optional().readonly(),
+export const ReplaceQueueOptionsSchema = z4.object({
+    newQueueItems: z4.array(PlayableItemSchema).readonly(),
+    startingItem: PlayableItemSchema.optional().readonly(),
     playNow: z4.boolean().optional().readonly(),
 })
-export type ReplaceQueueOptions = z4.infer<typeof ReplaceQueueOptions>
+export type ReplaceQueueOptions = z4.infer<typeof ReplaceQueueOptionsSchema>
 
-export const NowPlaying = z4.object({
-    state: PlaybackState,
-    item: PlayableItem.nullable(),
+export const NowPlayingSchema = z4.object({
+    state: PlaybackStateSchema,
+    item: PlayableItemSchema.nullable(),
 })
-export type NowPlaying = z4.infer<typeof NowPlaying>
+export type NowPlaying = z4.infer<typeof NowPlayingSchema>
 
 /**
  * A protocol which allows an extension to interact with the player in the host.
@@ -30,7 +30,7 @@ export const PlayerProtocol = protocol("Magritte.Host.Player", {
     /** Retrieve the current playback time and total time. */
     getCurrentTime: {
         input: z4.void(),
-        output: PlaybackTime,
+        output: PlaybackTimeSchema,
     },
 
     /** Seek to a new playback time. */
@@ -44,12 +44,12 @@ export const PlayerProtocol = protocol("Magritte.Host.Player", {
     /** Get the current playback state and item. */
     getNowPlaying: {
         input: z4.void(),
-        output: NowPlaying,
+        output: NowPlayingSchema,
     },
 
     /** Replace any existing queue with a new one. */
     replaceQueue: {
-        input: ReplaceQueueOptions,
+        input: ReplaceQueueOptionsSchema,
         output: z4.void(),
     },
 
