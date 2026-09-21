@@ -1,4 +1,8 @@
+import { TAG_MAX_LENGTH } from "@magritte/api"
 import z4 from "zod/v4"
+
+export const SearchResultIDSchema = z4.string().max(TAG_MAX_LENGTH)
+export type SearchResultID = z4.infer<typeof SearchResultIDSchema>
 
 export const SearchResultIconAppearanceSchema = z4.enum(["plain", "square", "circle"])
 export type SearchResultIconAppearance = z4.infer<typeof SearchResultIconAppearanceSchema>
@@ -10,7 +14,7 @@ export const SearchResultIconSchema = z4.object({
 export type SearchResultIcon = z4.infer<typeof SearchResultIconSchema>
 
 export const SearchResultSchema = z4.object({
-    id: z4.string().readonly(),
+    id: SearchResultIDSchema.readonly(),
     icon: SearchResultIconSchema.optional().readonly(),
     title: z4.string().readonly(),
     subtitle: z4.string().optional().readonly(),

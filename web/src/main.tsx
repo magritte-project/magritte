@@ -20,6 +20,8 @@ import { connectMediaSession } from "@/playback/mediaSession"
 import { PlaybackEventRecorder } from "@/playback/playbackEventRecorder"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
+import { SearchRegistry } from "@/search/registry"
+import { LibrarySongsSearchResponder } from "@/search/responders/librarySongs"
 
 import "@/styles.css"
 
@@ -33,6 +35,9 @@ try {
     // Set up commands
     const commandInputs = new CommandInputs()
     const commandRegistry = new CommandRegistry()
+
+    // Set up search
+    const searchRegistry = new SearchRegistry()
 
     // Set up user events
     const notificationCenter = new NotificationCenter(queryClient, api)
@@ -64,6 +69,7 @@ try {
         api,
         commandInputs,
         commandRegistry,
+        searchRegistry,
         extensionRuntime,
         localCache,
         notificationCenter,
@@ -77,6 +83,11 @@ try {
     wirePlayerCommandInputs(player, commandInputs)
     commandRegistry.wireUpExtensions(extensionRuntime)
     connectMediaSession(api, player)
+
+    // Hook up search
+    searchRegistry.add(
+        new LibrarySongsSearchResponder({ router, api, player, commandInputs, notificationCenter }),
+    )
 
     // Render the app
     const rootElement = document.getElementById("app")

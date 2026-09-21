@@ -10,11 +10,13 @@ import type { LocalCache } from "@/playback/localFileCache"
 import type { Player } from "@/playback/player"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
+import type { SearchRegistry } from "@/search/registry"
 
 export interface MagritteRouterContext {
     readonly api: API
     readonly commandInputs: CommandInputs
     readonly commandRegistry: CommandRegistry
+    readonly searchRegistry: SearchRegistry
     readonly extensionRuntime: ExtensionRuntime
     readonly localCache: LocalCache
     readonly notificationCenter: NotificationCenter
