@@ -4,12 +4,12 @@
  * @param event A dispatched event.
  * @returns A promise if the callback performs async work; `undefined` otherwise.
  */
-export type EventCallback<TEvent> = (event: TEvent) => void | Promise<void>
+export type EventSubscriber<TEvent> = (event: TEvent) => void | Promise<void>
 
 /**
- * A function that unsubscribes a callback from an event stream.
+ * A function that stops a subscriber being called when an event is dispatched.
  */
-export type EventCallbackUnsubscriber = () => void
+export type EventUnsubscriber = () => void
 
 /**
  * A function that dispatches an event to all subscribed callbacks.
@@ -17,98 +17,99 @@ export type EventCallbackUnsubscriber = () => void
  * @param event The event to dispatch.
  * @returns A promise that resolves when all callbacks have been called.
  */
-export type EventSink<TEvent> = (event: TEvent) => Promise<void>
+export type EventDispatch<TEvent> = (event: TEvent) => Promise<void>
 
 /**
- * A function that subscribes a callback to an event stream,
+ * A function that subscribes a callback to an event,
  * returning another function to unsubscribe it.
  *
- * @param callback The function to call when the event is dispatched.
- * @returns A function which unsubscribes the callback when called.
+ * @param subscriber The function to call when the event is dispatched.
+ * @returns A function which unsubscribes the subscriber when called.
  */
-export type EventStream<TEvent> = (callback: EventCallback<TEvent>) => EventCallbackUnsubscriber
+export type EventSubscribe<TEvent> = (subscriber: EventSubscriber<TEvent>) => EventUnsubscriber
 
 export interface EventCreateOptions {
     /** Optional label for the event to improve logging */
     readonly label?: string
 
-    /** Whether to await each callback before continuing */
-    readonly awaitsCallbacks?: boolean
+    /** Whether to await each subscriber before continuing */
+    readonly awaitSubscribers?: boolean
 }
 
-function buildEventSink<TEvent>(
-    callbacks: EventCallback<TEvent>[],
-    { label = "anonymous", awaitsCallbacks = true }: EventCreateOptions,
-): EventSink<TEvent> {
-    const callOut = async (callback: EventCallback<TEvent>, event: TEvent) => {
+function buildEventDispatch<TEvent>(
+    subscribers: EventSubscriber<TEvent>[],
+    { label = "anonymous", awaitSubscribers = true }: EventCreateOptions,
+): EventDispatch<TEvent> {
+    const callOut = async (subscriber: EventSubscriber<TEvent>, event: TEvent) => {
         try {
-            await callback(event)
+            await subscriber(event)
         } catch (error) {
-            console.error(`*** Unhandled error in ${label} event callback`, error)
+            console.error(`*** Unhandled error in ${label} event subscriber`, error)
         }
     }
-    if (awaitsCallbacks) {
+    if (awaitSubscribers) {
         return async (event: TEvent) => {
-            for (const callback of callbacks) {
-                await callOut(callback, event)
+            for (const subscriber of subscribers.slice()) {
+                await callOut(subscriber, event)
             }
         }
     } else {
         return async (event: TEvent) => {
-            for (const callback of callbacks) {
-                callOut(callback, event)
+            for (const subscriber of subscribers.slice()) {
+                callOut(subscriber, event)
             }
         }
     }
 }
 
-function buildEventStream<TEvent>(callbacks: EventCallback<TEvent>[]): EventStream<TEvent> {
-    return (callback: EventCallback<TEvent>) => {
-        callbacks.push(callback)
+function buildEventSubscribe<TEvent>(
+    subscribers: EventSubscriber<TEvent>[],
+): EventSubscribe<TEvent> {
+    return (subscriber: EventSubscriber<TEvent>) => {
+        subscribers.push(subscriber)
         return () => {
-            const index = callbacks.indexOf(callback)
+            const index = subscribers.indexOf(subscriber)
             if (index !== -1) {
-                callbacks.splice(index, 1)
+                subscribers.splice(index, 1)
             }
         }
     }
 }
 
 /**
- * Create an event sink and stream pair to expose events from an object.
+ * Create dispatch and subscribe functions to expose events from an object.
  *
- * To use, declare a private property to hold the event sink and a public
- * property to expose the event stream. By convention, the sink should be
- * prefixed with an underscore `_` and the stream with a dollar sign `$`:
+ * To use, declare a private property to hold the dispatch and a public
+ * property to expose the subscribe:
  *
  * ```typescript
- * private readonly _dispatch: EventSink<MyEvent>
- * readonly subscribe: EventStream<MyEvent>
+ * private readonly _dispatch: EventDispatch<MyEvent>
+ * readonly subscribe: EventSubscribe<MyEvent>
  *
  * constructor() {
  *     ;[this._dispatch, this.subscribe] = createEvent()
  * }
  * ```
  *
- * To dispatch an event, call the sink directly: `this._dispatch(event)`.
+ * To dispatch an event, use the dispatch function: `this._dispatch(event)`.
  *
- * To subscribe, call the stream directly: `const unsubscribe = this.subscribe(callback)`.
- * The stream returns an unsubscribe function; call it to stop receiving events.
+ * To subscribe, call the subscribe function: `const unsubscribe = this.subscribe(callback)`.
+ * The subscribe function returns an unsubscribe function; call it to stop receiving events.
  *
- * @returns A tuple of a sink and a stream.
+ * @returns A tuple of a dispatch and a subscribe function.
  */
 export function createEvent<TEvent>(
     options: EventCreateOptions = {},
-): [EventSink<TEvent>, EventStream<TEvent>] {
-    const callbacks: EventCallback<TEvent>[] = []
-    const sink = buildEventSink<TEvent>(callbacks, options)
-    const stream = buildEventStream<TEvent>(callbacks)
-    return [sink, stream]
+): [EventDispatch<TEvent>, EventSubscribe<TEvent>] {
+    const callbacks: EventSubscriber<TEvent>[] = []
+    const dispatch = buildEventDispatch<TEvent>(callbacks, options)
+    const subscribe = buildEventSubscribe<TEvent>(callbacks)
+    return [dispatch, subscribe]
 }
 
 /**
- * Creates an event callback that invokes the provided callback
- * only when the discriminator field matches.
+ * Creates an event subscriber that invokes the provided
+ * subscriber only when the discriminator field matches.
  *
  * Usage:
  * ```typescript
@@ -119,8 +120,8 @@ export function createEvent<TEvent>(
  *
  * @param discriminator The key of the discriminator field in the event type.
  * @param type The value of the discriminator field to match.
- * @param callback The callback to invoke when the event is dispatched.
- * @returns An event callback that invokes the provided callback
+ * @param subscriber The subscriber to invoke when the event is dispatched.
+ * @returns An event subscriber that invokes the provided subscriber
  * only when the discriminator field matches.
  */
 export function justEventsMatching<
@@ -130,11 +131,11 @@ export function justEventsMatching<
 >(
     discriminator: TDiscriminator,
     type: TType,
-    callback: EventCallback<Extract<TEvent, { [discriminator]: TType }>>,
-): EventCallback<TEvent> {
+    subscriber: EventSubscriber<Extract<TEvent, { [discriminator]: TType }>>,
+): EventSubscriber<TEvent> {
     return async (event: TEvent) => {
         if (event[discriminator] === type) {
-            await callback(event as Extract<TEvent, { [discriminator]: TType }>)
+            await subscriber(event as Extract<TEvent, { [discriminator]: TType }>)
         }
     }
 }
@@ -145,9 +146,7 @@ export function justEventsMatching<
  * @param unsubscribers The unsubscribers to combine.
  * @returns An unsubscribe function that calls all the provided unsubscribers.
  */
-export function combineUnsubscribers(
-    ...unsubscribers: EventCallbackUnsubscriber[]
-): EventCallbackUnsubscriber {
+export function combineUnsubscribers(...unsubscribers: EventUnsubscriber[]): EventUnsubscriber {
     return () => {
         for (const unsubscribe of unsubscribers) {
             unsubscribe()

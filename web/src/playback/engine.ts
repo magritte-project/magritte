@@ -1,7 +1,7 @@
 import type { PlayableItem, PlaybackState, PlaybackTime } from "@magritte/sdk"
 
 import type { PlaybackModes } from "@/playback/modes"
-import { type EventStream } from "@/utilities/events"
+import { type EventSubscribe } from "@/utilities/events"
 
 export type PlaybackEngineEvent =
     | { type: "playbackStateDidChange"; playbackState: PlaybackState }
@@ -35,7 +35,7 @@ export interface PlaybackEngineEnqueueOptions {
 
 export interface PlaybackEngine {
     /** Events relating to the state of this playback engine */
-    readonly subscribe: EventStream<PlaybackEngineEvent>
+    readonly subscribe: EventSubscribe<PlaybackEngineEvent>
 
     /** Sync the playback modes for this engine */
     syncPlaybackModes(modes: PlaybackModes): Promise<void>

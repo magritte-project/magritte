@@ -11,9 +11,9 @@ import ArrayQueue from "@/playback/queue/array"
 import { type Queue, type RandomItemContext } from "@/playback/queue/base"
 import { CountingStack, type ReadonlyCountingStack } from "@/utilities/countingStack"
 import {
-    type EventCallbackUnsubscriber,
-    type EventSink,
-    type EventStream,
+    type EventUnsubscriber,
+    type EventDispatch,
+    type EventSubscribe,
     createEvent,
 } from "@/utilities/events"
 import { resolveNewValue } from "@/utilities/react"
@@ -37,11 +37,11 @@ export interface ReplaceQueueOptions extends Omit<PlaybackEngineEnqueueOptions, 
 
 export class Player {
     private readonly _engineRegistry: PlaybackEngineRegistry
-    private readonly _dispatch: EventSink<PlayerEvent>
+    private readonly _dispatch: EventDispatch<PlayerEvent>
     private readonly _playedItems: CountingStack<PlayableItem, "id">
     private readonly _shuffleContext: ShuffleContext
     private _modes: PlaybackModes
-    private _activeEngineEventUnsubscribe: EventCallbackUnsubscriber | null
+    private _activeEngineEventUnsubscribe: EventUnsubscriber | null
     private _activeEngine: PlaybackEngine | null
     private _queue: Queue<PlayableItem>
     private _playingItem: PlayableItem | null
@@ -50,7 +50,10 @@ export class Player {
 
     constructor(engineRegistry: PlaybackEngineRegistry) {
         this._engineRegistry = engineRegistry
-        ;[this._dispatch, this.subscribe] = createEvent({ label: "Player", awaitsCallbacks: false })
+        ;[this._dispatch, this.subscribe] = createEvent({
+            label: "Player",
+            awaitSubscribers: false,
+        })
         this._playedItems = new CountingStack("id")
         this._shuffleContext = new ShuffleContext(this._playedItems)
         this._modes = PlaybackModes.default
@@ -223,7 +226,7 @@ export class Player {
     }
 
     /** Events relating to the state of playback */
-    readonly subscribe: EventStream<PlayerEvent>
+    readonly subscribe: EventSubscribe<PlayerEvent>
 
     async setPlaybackModes(
         newModes: PlaybackModes | ((prevState: PlaybackModes) => PlaybackModes),

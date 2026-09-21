@@ -4,7 +4,7 @@ import type { QueryClient } from "@tanstack/react-query"
 
 import { readLibrarySongs, type ReadLibrarySongsCriteria } from "@/api/queries/libraries"
 import type { Queue, QueueContext, QueueEvent, RandomItemContext } from "@/playback/queue/base"
-import { createEvent, type EventStream } from "@/utilities/events"
+import { createEvent, type EventSubscribe } from "@/utilities/events"
 
 export default class LibraryQueue implements Queue<PlayableItem> {
     private readonly _api: API
@@ -91,7 +91,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         return [-1, -1]
     }
 
-    readonly subscribe: EventStream<QueueEvent>
+    readonly subscribe: EventSubscribe<QueueEvent>
 
     async hasItem(item: PlayableItem): Promise<boolean> {
         for await (const [, page] of this._allPages()) {

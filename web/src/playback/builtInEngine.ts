@@ -8,7 +8,7 @@ import type {
 } from "@/playback/engine"
 import type { LocalCache } from "@/playback/localFileCache"
 import type { PlaybackModes } from "@/playback/modes"
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 import { resolveResourceUrl } from "@/utilities/resources"
 
 function _findBestUrl(item: PlayableItem): string | undefined {
@@ -33,7 +33,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     private readonly _fileAccess: FileAccess
     private readonly _localCache: LocalCache
     private readonly _audio: HTMLAudioElement
-    private readonly _dispatch: EventSink<PlaybackEngineEvent>
+    private readonly _dispatch: EventDispatch<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
     constructor(api: API, localCache: LocalCache, parent: HTMLElement = document.body) {
@@ -107,7 +107,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         }
     }
 
-    readonly subscribe: EventStream<PlaybackEngineEvent>
+    readonly subscribe: EventSubscribe<PlaybackEngineEvent>
 
     async syncPlaybackModes(_modes: PlaybackModes): Promise<void> {
         /** Nothing to do in this engine */

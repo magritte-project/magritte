@@ -10,7 +10,7 @@ import { secondsToMilliseconds } from "motion/react"
 
 import { userMeNotification, userMeNotifications } from "@/api/keys/users"
 import { readNotifications } from "@/api/queries/users"
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 import { promiseResolver, type PromiseResolver } from "@/utilities/promises"
 
 export type NotificationCenterEvent =
@@ -26,7 +26,7 @@ export type NotificationCenterConfirmOptions = Omit<DialogOptions, "type" | "but
 }
 
 export class NotificationCenter {
-    private readonly _dispatch: EventSink<NotificationCenterEvent>
+    private readonly _dispatch: EventDispatch<NotificationCenterEvent>
     private readonly _queryClient: QueryClient
     private _seenNotifications: SeenNotifications
     private _serverNotifications: readonly NotificationRead[]
@@ -104,7 +104,7 @@ export class NotificationCenter {
         }
     }
 
-    readonly subscribe: EventStream<NotificationCenterEvent>
+    readonly subscribe: EventSubscribe<NotificationCenterEvent>
 
     get serverNotifications(): readonly NotificationRead[] {
         return this._serverNotifications

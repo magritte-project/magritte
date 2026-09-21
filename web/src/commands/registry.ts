@@ -5,7 +5,7 @@ import Fuse from "fuse.js"
 import type { Command } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { ExtensionRuntime } from "@/extensions/runtime"
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 
 function getExtensionCommandID(manifest: ExtensionManifest, definition: ExtensionCommand) {
     return `${manifest.id}:${definition.id}`
@@ -69,7 +69,7 @@ async function getExtensionCommands(extension: Extension): Promise<readonly Comm
 export type CommandRegistryEvent = { type: "registeredCommandsDidChange" }
 
 export class CommandRegistry {
-    private readonly _dispatch: EventSink<CommandRegistryEvent>
+    private readonly _dispatch: EventDispatch<CommandRegistryEvent>
     private readonly _registeredCommandIDs: Set<string>
     private readonly _commands: Fuse<Command>
 
@@ -81,7 +81,7 @@ export class CommandRegistry {
         })
     }
 
-    readonly subscribe: EventStream<CommandRegistryEvent>
+    readonly subscribe: EventSubscribe<CommandRegistryEvent>
 
     get all(): readonly Command[] {
         return this._commands.getIndex().docs

@@ -13,8 +13,8 @@ import type { Player } from "@/playback/player"
 import {
     createEvent,
     justEventsMatching,
-    type EventSink,
-    type EventStream,
+    type EventDispatch,
+    type EventSubscribe,
 } from "@/utilities/events"
 
 export interface ExtensionRuntimeOptions {
@@ -101,7 +101,7 @@ export class ExtensionRuntime {
     /** Tracks loaded extensions */
     private readonly _extensions: Map<string, ExtensionState>
 
-    private readonly _dispatch: EventSink<ExtensionRuntimeEvent>
+    private readonly _dispatch: EventDispatch<ExtensionRuntimeEvent>
 
     constructor(options: ExtensionRuntimeOptions) {
         this._container = options.container
@@ -124,7 +124,7 @@ export class ExtensionRuntime {
         )
     }
 
-    readonly subscribe: EventStream<ExtensionRuntimeEvent>
+    readonly subscribe: EventSubscribe<ExtensionRuntimeEvent>
 
     /** The currently available extensions */
     get available(): Iterable<ExtensionManifest> {

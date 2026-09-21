@@ -6,60 +6,60 @@ describe("events", () => {
     describe("#createEvent", () => {
         it("should notify active subscribers", async () => {
             const [_dispatch, subscribe] = createEvent<number>()
-            const firstCallback = vi.fn().mockResolvedValue(undefined)
-            const unsubscribeFirst = subscribe(firstCallback)
-            const secondCallback = vi.fn().mockResolvedValue(undefined)
-            subscribe(secondCallback)
+            const firstSubscriber = vi.fn().mockResolvedValue(undefined)
+            const unsubscribeFirst = subscribe(firstSubscriber)
+            const secondSubscriber = vi.fn().mockResolvedValue(undefined)
+            subscribe(secondSubscriber)
             unsubscribeFirst()
             await _dispatch(42)
 
-            expect(vi.mocked(firstCallback)).not.toHaveBeenCalled()
-            expect(vi.mocked(secondCallback)).toHaveBeenCalled()
+            expect(vi.mocked(firstSubscriber)).not.toHaveBeenCalled()
+            expect(vi.mocked(secondSubscriber)).toHaveBeenCalled()
         })
 
         it("should not allow errors to propagate", async () => {
             const [_dispatch, subscribe] = createEvent<number>()
-            const callback = vi.fn().mockRejectedValue(new Error("test"))
-            subscribe(callback)
+            const subscriber = vi.fn().mockRejectedValue(new Error("test"))
+            subscribe(subscriber)
             expect(_dispatch(42)).resolves.not.toThrow()
-            expect(vi.mocked(callback)).toHaveBeenCalled()
+            expect(vi.mocked(subscriber)).toHaveBeenCalled()
         })
 
-        it("should not block without await callbacks", async () => {
-            const [_dispatch, subscribe] = createEvent<number>({ awaitsCallbacks: false })
-            const callback = vi.fn().mockResolvedValue(undefined)
+        it("should not block without await subscribers", async () => {
+            const [_dispatch, subscribe] = createEvent<number>({ awaitSubscribers: false })
+            const subscriber = vi.fn().mockResolvedValue(undefined)
             subscribe(
                 (_event) =>
                     new Promise(() => {
                         /* never complete */
                     }),
             )
-            subscribe(callback)
+            subscribe(subscriber)
             await _dispatch(42)
-            expect(vi.mocked(callback)).toHaveBeenCalled()
+            expect(vi.mocked(subscriber)).toHaveBeenCalled()
         })
     })
 
-    describe("#filterTo", () => {
+    describe("#justEventsMatching", () => {
         it("should only forward events of the specified type", async () => {
             const [_dispatch, subscribe] = createEvent<
                 { type: "added"; result: number } | { type: "subtracted"; result: number }
             >()
-            const callback = vi.fn().mockResolvedValue(undefined)
-            subscribe(justEventsMatching("type", "added", callback))
+            const subscriber = vi.fn().mockResolvedValue(undefined)
+            subscribe(justEventsMatching("type", "added", subscriber))
 
             await _dispatch({ type: "added", result: 42 })
-            expect(vi.mocked(callback)).toHaveBeenCalledWith({ type: "added", result: 42 })
+            expect(vi.mocked(subscriber)).toHaveBeenCalledWith({ type: "added", result: 42 })
 
             await _dispatch({ type: "subtracted", result: 1984 })
-            expect(vi.mocked(callback)).not.toHaveBeenCalledWith({
+            expect(vi.mocked(subscriber)).not.toHaveBeenCalledWith({
                 type: "subtracted",
                 result: 1984,
             })
         })
     })
 
-    describe("#unsubscribeAll", () => {
+    describe("#combineUnsubscribers", () => {
         it("should unsubscribe all active subscribers", () => {
             const first = vi.fn()
             const second = vi.fn()

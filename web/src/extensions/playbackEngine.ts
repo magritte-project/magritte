@@ -15,10 +15,10 @@ import type {
     PlaybackEngineEvent,
 } from "@/playback/engine"
 import type { PlaybackModes } from "@/playback/modes"
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 
 export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
-    private readonly _dispatch: EventSink<PlaybackEngineEvent>
+    private readonly _dispatch: EventDispatch<PlaybackEngineEvent>
     private _playingItem: PlayableItem | null
 
     constructor(
@@ -51,7 +51,7 @@ export class ExtensionPlaybackEngineProxy implements PlaybackEngine {
         })
     }
 
-    readonly subscribe: EventStream<PlaybackEngineEvent>
+    readonly subscribe: EventSubscribe<PlaybackEngineEvent>
 
     async syncPlaybackModes(modes: PlaybackModes): Promise<void> {
         await this.engine.syncPlaybackModes(modes)

@@ -8,14 +8,14 @@ import {
 import z4 from "zod/v4"
 
 import { CountedSet } from "@/utilities/countedSet"
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 
 export type CommandInputsEvent = { readonly type: "commandInputsDidChange" }
 
 export class CommandInputs {
     private readonly _inputs: CommandInput[]
     private readonly _kinds: CountedSet<string>
-    private readonly _dispatch: EventSink<CommandInputsEvent>
+    private readonly _dispatch: EventDispatch<CommandInputsEvent>
 
     constructor() {
         this._inputs = []
@@ -23,7 +23,7 @@ export class CommandInputs {
         ;[this._dispatch, this.subscribe] = createEvent({ label: "CommandInputs" })
     }
 
-    readonly subscribe: EventStream<CommandInputsEvent>
+    readonly subscribe: EventSubscribe<CommandInputsEvent>
 
     add(input: CommandInput): void {
         const toReplace =

@@ -1,7 +1,7 @@
 import type { API } from "@magritte/api"
 import type { QueryClient } from "@tanstack/react-query"
 
-import type { EventStream } from "@/utilities/events"
+import type { EventSubscribe } from "@/utilities/events"
 
 export type QueueEvent = { type: "queueDidChange" }
 
@@ -17,7 +17,7 @@ export interface RandomItemContext<Item extends { id: unknown }> {
 }
 
 export interface Queue<Item extends { id: unknown }> {
-    readonly subscribe: EventStream<QueueEvent>
+    readonly subscribe: EventSubscribe<QueueEvent>
     hasItem(item: Item): Promise<boolean>
     firstItem(): Promise<Item | null>
     lastItem(): Promise<Item | null>

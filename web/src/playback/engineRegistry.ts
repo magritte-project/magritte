@@ -3,7 +3,7 @@ import { type Extension, type PlayableItem } from "@magritte/sdk"
 import { ExtensionPlaybackEngineProxy } from "@/extensions/playbackEngine"
 import type { ExtensionRuntime, ExtensionRuntimeEvent } from "@/extensions/runtime"
 import type { PlaybackEngine } from "@/playback/engine"
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 
 export type PlaybackEngineRegistryEvent =
     | { type: "playbackEngineRegistered"; engine: PlaybackEngine }
@@ -16,7 +16,7 @@ export interface PlaybackEngineRegistryOptions {
 export default class PlaybackEngineRegistry {
     private readonly _engines: Map<string, PlaybackEngine>
     private readonly _defaultEngine: PlaybackEngine
-    private readonly _dispatch: EventSink<PlaybackEngineRegistryEvent>
+    private readonly _dispatch: EventDispatch<PlaybackEngineRegistryEvent>
 
     constructor({ defaultEngine }: PlaybackEngineRegistryOptions) {
         this._engines = new Map()
@@ -24,7 +24,7 @@ export default class PlaybackEngineRegistry {
         ;[this._dispatch, this.subscribe] = createEvent({ label: "PlaybackEngineRegistry" })
     }
 
-    readonly subscribe: EventStream<PlaybackEngineRegistryEvent>
+    readonly subscribe: EventSubscribe<PlaybackEngineRegistryEvent>
 
     private async _registerExtension(extension: Extension) {
         if (!extension.manifest.sourceSchemes || extension.manifest.sourceSchemes.length === 0) {

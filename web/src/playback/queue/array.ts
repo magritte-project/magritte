@@ -1,8 +1,8 @@
 import type { Queue, QueueEvent, RandomItemContext } from "@/playback/queue/base"
-import { createEvent, type EventSink, type EventStream } from "@/utilities/events"
+import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 
 export default class ArrayQueue<Item extends { id: unknown }> implements Queue<Item> {
-    private readonly _dispatch: EventSink<QueueEvent>
+    private readonly _dispatch: EventDispatch<QueueEvent>
     private readonly _items: Item[]
 
     static of<Item extends { id: unknown }>(...items: Item[]): ArrayQueue<Item> {
@@ -14,7 +14,7 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
         this._items = [...items]
     }
 
-    readonly subscribe: EventStream<QueueEvent>
+    readonly subscribe: EventSubscribe<QueueEvent>
 
     get length(): number {
         return this._items.length
