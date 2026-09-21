@@ -3,7 +3,7 @@ import { useCanGoBack, useRouter } from "@tanstack/react-router"
 import { useMediaQuery } from "@uidotdev/usehooks"
 import { type ReactNode } from "react"
 
-import CommandsButton from "@/components/chrome/CommandsButton"
+import PaletteButton from "@/components/chrome/PaletteButton"
 import UserButton from "@/components/chrome/UserButton"
 import UserNotificationsButton from "@/components/chrome/UserNotificationsButton"
 import ThemedHeader from "@/components/theme/ThemedHeader"
@@ -30,7 +30,7 @@ export default function PageHeader({ children }: PageHeaderProps) {
             }
             supplementaryEnd={
                 <>
-                    <CommandsButton />
+                    <PaletteButton />
                     <UserNotificationsButton />
                     <UserButton />
                 </>

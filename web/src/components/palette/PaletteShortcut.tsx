@@ -6,17 +6,13 @@ import type { Command } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
 import { getErrorMessage } from "@/utilities/errors"
 
-export interface HighlightedCommandButtonProps {
+export interface PaletteShortcutProps {
     readonly inputs: CommandInputs
     readonly command: Command
     readonly onWillExecute?: () => void
 }
 
-export default function HighlightedCommandButton({
-    inputs,
-    command,
-    onWillExecute,
-}: HighlightedCommandButtonProps) {
+export default function PaletteShortcut({ inputs, command, onWillExecute }: PaletteShortcutProps) {
     const presentationQuery = useQuery({
         queryKey: ["commands", command.id],
         queryFn: () => command.present(inputs),

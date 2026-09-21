@@ -5,11 +5,10 @@ import { useCallback } from "react"
 import { createPortal } from "react-dom"
 
 import type { Command } from "@/commands/base"
-import CommandPaletteOption from "@/components/commands/CommandPaletteOption"
+import PaletteCommandResults from "@/components/palette/PaletteCommandResults"
 import useCommandInputs from "@/hooks/commandInputsHook"
-import useCommands from "@/hooks/commandsHook"
 
-export interface CommandPaletteProps {
+export interface PaletteProps {
     readonly isOpen: boolean
     readonly setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 
@@ -17,14 +16,8 @@ export interface CommandPaletteProps {
     readonly setSearch: React.Dispatch<React.SetStateAction<string>>
 }
 
-export default function CommandPalette({
-    isOpen,
-    setIsOpen,
-    search,
-    setSearch,
-}: CommandPaletteProps) {
+export default function Palette({ isOpen, setIsOpen, search, setSearch }: PaletteProps) {
     const inputs = useCommandInputs()
-    const commands = useCommands({ search })
 
     const handleChange = useCallback(
         (command: Command | null) => {
@@ -46,7 +39,7 @@ export default function CommandPalette({
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    key="command-palette-backdrop"
+                    key="paletteBackdrop"
                     className="fixed inset-0 overlay-material-soft"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -57,7 +50,7 @@ export default function CommandPalette({
             )}
             {isOpen && (
                 <motion.div
-                    key="command-palette"
+                    key="palette"
                     className="fixed top-1/4 left-1/2 -translate-x-1/2 w-full max-w-xl px-outside"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -81,19 +74,7 @@ export default function CommandPalette({
                                 />
                             </div>
                             <ComboboxOptions static className="max-h-80 overflow-y-auto">
-                                {commands.length === 0 ? (
-                                    <p className="px-4 py-8 text-center text-sm text-on-secondary">
-                                        No commands found
-                                    </p>
-                                ) : (
-                                    commands.map((command) => (
-                                        <CommandPaletteOption
-                                            key={command.id}
-                                            inputs={inputs}
-                                            command={command}
-                                        />
-                                    ))
-                                )}
+                                <PaletteCommandResults search={search} />
                             </ComboboxOptions>
                         </div>
                     </Combobox>

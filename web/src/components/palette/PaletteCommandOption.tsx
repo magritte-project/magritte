@@ -5,12 +5,12 @@ import type { Command } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
 import { getErrorMessage } from "@/utilities/errors"
 
-export interface CommandPaletteOptionProps {
+export interface PaletteCommandOptionProps {
     readonly inputs: CommandInputs
     readonly command: Command
 }
 
-export default function CommandPaletteOption({ inputs, command }: CommandPaletteOptionProps) {
+export default function PaletteCommandOption({ inputs, command }: PaletteCommandOptionProps) {
     const presentationQuery = useQuery({
         queryKey: ["commands", command.id],
         queryFn: () => command.present(inputs),

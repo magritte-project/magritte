@@ -3,9 +3,9 @@ import { AnimatePresence, motion, type Variants } from "motion/react"
 import { useCallback, useEffect, useState } from "react"
 
 import type { Command } from "@/commands/base"
-import HighlightedCommandButton from "@/components/commands/HighlightedCommandButton"
+import PaletteShortcut from "@/components/palette/PaletteShortcut"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import useAppCommandPaletteContext from "@/hooks/appCommandPaletteContext"
+import useAppPaletteContext from "@/hooks/appPaletteContext"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommandRegistry from "@/hooks/commandRegistryHook"
 import useHotKeys from "@/hooks/hotKeysHook"
@@ -20,12 +20,12 @@ const highlightedCommandItemVariants: Variants = {
     visible: { opacity: 1, y: 0 },
 }
 
-export default function CommandsButton() {
+export default function PaletteButton() {
     const { modifierKey } = useHotKeys()
-    const { setIsOpen: setCommandPaletteIsOpen } = useAppCommandPaletteContext()
-    const handleToggleCommandPalette = useCallback(() => {
-        setCommandPaletteIsOpen((oldValue) => !oldValue)
-    }, [setCommandPaletteIsOpen])
+    const { setIsOpen: setPaletteIsOpen } = useAppPaletteContext()
+    const handleTogglePalette = useCallback(() => {
+        setPaletteIsOpen((oldValue) => !oldValue)
+    }, [setPaletteIsOpen])
 
     const registry = useCommandRegistry()
     const inputs = useCommandInputs()
@@ -56,7 +56,7 @@ export default function CommandsButton() {
 
     return (
         <div className="relative">
-            <ThemedSubtleButton onClick={handleToggleCommandPalette}>
+            <ThemedSubtleButton onClick={handleTogglePalette}>
                 {modifierKey === "meta" ? <CommandIcon /> : <ControlIcon />} K
             </ThemedSubtleButton>
             <AnimatePresence mode="wait">
@@ -75,7 +75,7 @@ export default function CommandsButton() {
                                 layout
                                 variants={highlightedCommandItemVariants}
                             >
-                                <HighlightedCommandButton
+                                <PaletteShortcut
                                     inputs={inputs}
                                     command={command}
                                     onWillExecute={handleWillExecute}

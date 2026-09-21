@@ -9,7 +9,7 @@ import { CommandRegistry } from "@/commands/registry"
 import { libraryCommands } from "@/commands/suites/library"
 import { playerCommands, wirePlayerCommandInputs } from "@/commands/suites/player"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
-import AppCommandPaletteContextProvider from "@/contexts/providers/AppCommandPaletteContextProvider"
+import AppPaletteContextProvider from "@/contexts/providers/AppPaletteContextProvider"
 import { ExtensionRuntime } from "@/extensions/runtime"
 import { createMagritteRouter } from "@/integrations/tanstack-router/context"
 import { NotificationCenter } from "@/notifications/center"
@@ -96,9 +96,9 @@ try {
         root.render(
             <StrictMode>
                 <QueryClientProvider client={queryClient}>
-                    <AppCommandPaletteContextProvider>
+                    <AppPaletteContextProvider>
                         <RouterProvider router={router} />
-                    </AppCommandPaletteContextProvider>
+                    </AppPaletteContextProvider>
                 </QueryClientProvider>
             </StrictMode>,
         )
