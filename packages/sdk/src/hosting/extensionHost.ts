@@ -20,19 +20,44 @@ export interface ExtensionExportsOptions {
     readonly broadcaster: RPCBroadcaster
 }
 
-export interface ExtensionExportsObject {
-    readonly commandResponder?: CommandResponder
-    readonly searchCommandResponder?: SearchCommandResponder
-    readonly playbackEngine?: PlaybackEngine
+export interface ExtensionExportsObject<
+    TCommandResponder extends CommandResponder = CommandResponder,
+    TSearchCommandResponder extends SearchCommandResponder = SearchCommandResponder,
+    TPlaybackEngine extends PlaybackEngine = PlaybackEngine,
+> {
+    readonly commandResponder?: TCommandResponder
+    readonly searchCommandResponder?: TSearchCommandResponder
+    readonly playbackEngine?: TPlaybackEngine
 }
 
-export type ExtensionExports =
-    | ExtensionExportsObject
-    | ((options: ExtensionExportsOptions) => Promise<ExtensionExportsObject>)
+export type ExtensionExports<
+    TCommandResponder extends CommandResponder = CommandResponder,
+    TSearchCommandResponder extends SearchCommandResponder = SearchCommandResponder,
+    TPlaybackEngine extends PlaybackEngine = PlaybackEngine,
+> =
+    | ExtensionExportsObject<TCommandResponder, TSearchCommandResponder, TPlaybackEngine>
+    | ((
+          options: ExtensionExportsOptions,
+      ) => Promise<
+          ExtensionExportsObject<TCommandResponder, TSearchCommandResponder, TPlaybackEngine>
+      >)
 
-async function implementExports(options: ExtensionExportsOptions, exports: ExtensionExports) {
-    const { commandResponder, searchCommandResponder, playbackEngine } =
-        typeof exports === "function" ? await exports(options) : exports
+async function resolveExports<
+    TCommandResponder extends CommandResponder = CommandResponder,
+    TSearchCommandResponder extends SearchCommandResponder = SearchCommandResponder,
+    TPlaybackEngine extends PlaybackEngine = PlaybackEngine,
+>(
+    exports: ExtensionExports<TCommandResponder, TSearchCommandResponder, TPlaybackEngine>,
+    options: ExtensionExportsOptions,
+): Promise<ExtensionExportsObject<TCommandResponder, TSearchCommandResponder, TPlaybackEngine>> {
+    return typeof exports === "function" ? await exports(options) : exports
+}
+
+async function implementExports({
+    commandResponder,
+    searchCommandResponder,
+    playbackEngine,
+}: ExtensionExportsObject) {
     const implementations: ProtocolImplementation[] = []
     if (commandResponder) {
         implementations.push(implement(CommandResponderProtocol, commandResponder))
@@ -46,7 +71,11 @@ async function implementExports(options: ExtensionExportsOptions, exports: Exten
     return implementations
 }
 
-export interface ExtensionHostConnectOptions {
+export interface ExtensionHostConnectOptions<
+    TCommandResponder extends CommandResponder = CommandResponder,
+    TSearchCommandResponder extends SearchCommandResponder = SearchCommandResponder,
+    TPlaybackEngine extends PlaybackEngine = PlaybackEngine,
+> {
     /** The ID of the current extension */
     readonly extensionId: string
 
@@ -54,19 +83,38 @@ export interface ExtensionHostConnectOptions {
     readonly broadcaster?: RPCBroadcaster
 
     /** The exports to make available to the extension host */
-    readonly exports?: ExtensionExports
+    readonly exports?: ExtensionExports<TCommandResponder, TSearchCommandResponder, TPlaybackEngine>
+
+    /** Optional callback allowing exports to be wired to a connected extension host */
+    readonly awaken?: (
+        host: ExtensionHost,
+        exports: ExtensionExportsObject<
+            TCommandResponder,
+            TSearchCommandResponder,
+            TPlaybackEngine
+        >,
+    ) => Promise<void>
 
     /** How long to wait for the extension host to connect, in milliseconds */
     readonly timeout?: number
 }
 
 export class ExtensionHost {
-    static async connect({
+    static async connect<
+        TCommandResponder extends CommandResponder = CommandResponder,
+        TSearchCommandResponder extends SearchCommandResponder = SearchCommandResponder,
+        TPlaybackEngine extends PlaybackEngine = PlaybackEngine,
+    >({
         extensionId,
         broadcaster = new RPCBroadcaster(),
         exports = {},
+        awaken,
         timeout = 10_000,
-    }: ExtensionHostConnectOptions): Promise<ExtensionHost> {
+    }: ExtensionHostConnectOptions<
+        TCommandResponder,
+        TSearchCommandResponder,
+        TPlaybackEngine
+    >): Promise<ExtensionHost> {
         if (!window.top || window.top === window) {
             return Promise.reject(new Error("No extension host found"))
         }
@@ -87,13 +135,16 @@ export class ExtensionHost {
             identity: extensionId,
             timeout,
         })
-        const exportedObject = await implementExports({ broadcaster }, exports)
+        const resolvedExports = await resolveExports(exports, { broadcaster })
+        const exportedObject = await implementExports(resolvedExports)
         const connection = new RPCConnection({
             transport,
             broadcaster,
             exportedObject,
         })
-        return new ExtensionHost(connection)
+        const host = new ExtensionHost(connection)
+        await awaken?.(host, resolvedExports)
+        return host
     }
 
     /**
