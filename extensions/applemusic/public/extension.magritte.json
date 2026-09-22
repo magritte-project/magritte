@@ -22,5 +22,8 @@
             "searchTerms": "authorize deauthorize",
             "requiredInputKinds": []
         }
-    ]
+    ],
+    "searchCommand": {
+        "requiredInputKinds": ["library"]
+    }
 }

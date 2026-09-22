@@ -48,6 +48,7 @@ async function getExtensionSearchCommand(extension: Extension): Promise<SearchCo
                                     : undefined,
                                 reveal: extensionItem.supportedEffects?.includes("reveal")
                                     ? () =>
+                                          // TODO: Also show the extension in the app
                                           responder.executeReveal({
                                               id: extensionItem.id,
                                               inputs: inputs.allMatching(requiredInputKinds),

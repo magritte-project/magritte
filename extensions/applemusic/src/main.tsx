@@ -12,6 +12,7 @@ import { ExtensionHostContext } from "@/contexts/extensionHostContext"
 import { MusicKitContext } from "@/contexts/musicKitContext"
 import AppleMusicPlaybackEngine from "@/extension/engine"
 import AppleMusicCommandResponder from "@/extension/responder"
+import AppleMusicSearchResponder from "@/extension/searchResponder"
 import { initializeMusicKit } from "@/musickit/initialization"
 import { createDefaultClientTokenFactory } from "@/musickit/tokens/default"
 
@@ -32,6 +33,7 @@ try {
         exports: async ({ broadcaster }) => {
             return {
                 commandResponder: new AppleMusicCommandResponder(musicKit),
+                searchCommandResponder: new AppleMusicSearchResponder(musicKit),
                 playbackEngine: new AppleMusicPlaybackEngine(broadcaster, musicKit),
             }
         },
