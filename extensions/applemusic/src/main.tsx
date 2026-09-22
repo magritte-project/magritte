@@ -37,6 +37,9 @@ try {
                 playbackEngine: new AppleMusicPlaybackEngine(broadcaster, musicKit),
             }
         },
+        awaken: async (host, { searchCommandResponder }) => {
+            searchCommandResponder?.awaken(host)
+        },
     })
 
     // Set up tanstack query
