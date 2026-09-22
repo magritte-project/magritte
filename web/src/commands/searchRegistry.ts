@@ -33,13 +33,25 @@ async function getExtensionSearchCommand(extension: Extension): Promise<SearchCo
                                 addToLibrary: extensionItem.supportedEffects?.includes(
                                     "addToLibrary",
                                 )
-                                    ? () => responder.executeAddToLibrary({ id: extensionItem.id })
+                                    ? () =>
+                                          responder.executeAddToLibrary({
+                                              id: extensionItem.id,
+                                              inputs: inputs.allMatching(requiredInputKinds),
+                                          })
                                     : undefined,
                                 play: extensionItem.supportedEffects?.includes("play")
-                                    ? () => responder.executePlay({ id: extensionItem.id })
+                                    ? () =>
+                                          responder.executePlay({
+                                              id: extensionItem.id,
+                                              inputs: inputs.allMatching(requiredInputKinds),
+                                          })
                                     : undefined,
                                 reveal: extensionItem.supportedEffects?.includes("reveal")
-                                    ? () => responder.executeReveal({ id: extensionItem.id })
+                                    ? () =>
+                                          responder.executeReveal({
+                                              id: extensionItem.id,
+                                              inputs: inputs.allMatching(requiredInputKinds),
+                                          })
                                     : undefined,
                             }
                         }),

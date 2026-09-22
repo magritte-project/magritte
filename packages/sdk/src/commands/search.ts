@@ -52,6 +52,9 @@ export type SearchCommandResponderSearchContext = z4.infer<
 export const SearchCommandResponderEffectContextSchema = z4.object({
     /** The ID of the item to execute the effect on */
     id: z4.string().readonly(),
+
+    /** The required inputs for the command */
+    inputs: z4.array(CommandInputSchema).readonly(),
 })
 export type SearchCommandResponderEffectContext = z4.infer<
     typeof SearchCommandResponderEffectContextSchema
