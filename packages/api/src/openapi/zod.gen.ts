@@ -133,6 +133,13 @@ export const ExtensionPermissionsSchema = z.enum([
 ])
 
 /**
+ * ExtensionSearchCommand
+ */
+export const ExtensionSearchCommandSchema = z.object({
+    requiredInputKinds: z.array(z.string()),
+})
+
+/**
  * ExtensionManifest
  */
 export const ExtensionManifestSchema = z.object({
@@ -147,6 +154,7 @@ export const ExtensionManifestSchema = z.object({
     permissions: z.array(ExtensionPermissionsSchema).nullish(),
     sourceSchemes: z.array(z.string()).nullish(),
     commands: z.array(ExtensionCommandSchema).nullish(),
+    searchCommand: ExtensionSearchCommandSchema.nullish(),
 })
 
 /**

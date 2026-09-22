@@ -138,6 +138,7 @@ export type {
     ExtensionManifest,
     ExtensionPermissions,
     ExtensionRead,
+    ExtensionSearchCommand,
     HttpValidationError,
     ImportExtensionExtensionsAvailableImportPostData,
     ImportExtensionExtensionsAvailableImportPostError,

@@ -5,24 +5,15 @@ import z4 from "zod/v4"
 import { CommandIconSchema } from "./icons"
 import { CommandInputSchema } from "./inputs"
 
-export const SearchCommandQuerySchema = z4.object({
-    /** Text query to provide results for */
-    query: z4.string().max(255).readonly(),
+export const SearchCommandIDSchema = z4.string().max(TAG_MAX_LENGTH)
+export type SearchCommandID = z4.infer<typeof SearchCommandIDSchema>
 
-    /** The required inputs for the command */
-    inputs: z4.array(CommandInputSchema).readonly(),
-})
-export type SearchCommandQuery = z4.infer<typeof SearchCommandQuerySchema>
+export const SearchCommandEffectSchema = z4.enum(["reveal", "play", "addToLibrary"])
+export type SearchCommandEffect = z4.infer<typeof SearchCommandEffectSchema>
 
-export const SearchCommandResultIDSchema = z4.string().max(TAG_MAX_LENGTH)
-export type SearchCommandResultID = z4.infer<typeof SearchCommandResultIDSchema>
-
-export const SearchCommandResultEffectSchema = z4.enum(["reveal", "play", "add"])
-export type SearchCommandResultEffect = z4.infer<typeof SearchCommandResultEffectSchema>
-
-export const SearchCommandResultSchema = z4.object({
+export const SearchCommandResponderItemSchema = z4.object({
     /** A unique identifier for the search result */
-    id: SearchCommandResultIDSchema.readonly(),
+    id: SearchCommandIDSchema.readonly(),
 
     /** Optional icon for the search result */
     icon: CommandIconSchema.optional().readonly(),
@@ -34,29 +25,56 @@ export const SearchCommandResultSchema = z4.object({
     subtitle: z4.string().optional().readonly(),
 
     /** Optional list of supported effects for the search result */
-    supportedEffects: z4.array(SearchCommandResultEffectSchema).optional().readonly(),
+    supportedEffects: z4.array(SearchCommandEffectSchema).optional().readonly(),
 })
-export type SearchCommandResult = z4.infer<typeof SearchCommandResultSchema>
+export type SearchCommandResponderItem = z4.infer<typeof SearchCommandResponderItemSchema>
 
-export const SearchCommandResultEffectRequestSchema = z4.object({
-    id: SearchCommandResultIDSchema.readonly(),
-    effect: SearchCommandResultEffectSchema.readonly(),
+export const SearchCommandResponderSectionSchema = z4.object({
+    /** Human readable name for this section */
+    displayName: z4.string().readonly(),
+
+    /** The items in this section */
+    items: z4.array(SearchCommandResponderItemSchema).readonly(),
 })
-export type SearchCommandResultEffectRequest = z4.infer<
-    typeof SearchCommandResultEffectRequestSchema
+export type SearchCommandResponderSection = z4.infer<typeof SearchCommandResponderSectionSchema>
+
+export const SearchCommandResponderSearchContextSchema = z4.object({
+    /** Text query to provide results for */
+    query: z4.string().max(255).readonly(),
+
+    /** The required inputs for the command */
+    inputs: z4.array(CommandInputSchema).readonly(),
+})
+export type SearchCommandResponderSearchContext = z4.infer<
+    typeof SearchCommandResponderSearchContextSchema
+>
+
+export const SearchCommandResponderEffectContextSchema = z4.object({
+    /** The ID of the item to execute the effect on */
+    id: z4.string().readonly(),
+})
+export type SearchCommandResponderEffectContext = z4.infer<
+    typeof SearchCommandResponderEffectContextSchema
 >
 
 export const SearchCommandResponderProtocol = protocol(
     "Magritte.Extension.SearchCommandResponder",
     {
-        /** Search for results matching the given query */
+        /** Search for items matching the given query and inputs */
         search: {
-            input: SearchCommandQuerySchema,
-            output: z4.array(SearchCommandResultSchema),
+            input: SearchCommandResponderSearchContextSchema,
+            output: z4.array(SearchCommandResponderSectionSchema),
         },
-        /** Execute the given effect on a search result */
-        executeEffect: {
-            input: SearchCommandResultEffectRequestSchema,
+        executeReveal: {
+            input: SearchCommandResponderEffectContextSchema,
+            output: z4.void(),
+        },
+        executePlay: {
+            input: SearchCommandResponderEffectContextSchema,
+            output: z4.void(),
+        },
+        executeAddToLibrary: {
+            input: SearchCommandResponderEffectContextSchema,
             output: z4.void(),
         },
     },

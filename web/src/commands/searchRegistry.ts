@@ -1,32 +1,85 @@
+import type { Extension } from "@magritte/sdk"
+
+import type { SearchCommand, SearchCommandItem, SearchCommandSection } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
-import type { SearchSource, SearchSourceResult } from "@/commands/searchSources/base"
-import { ExtensionSearchSource } from "@/commands/searchSources/extension"
 import type { ExtensionRuntime } from "@/extensions/runtime"
 import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 
-export type SearchRegistryEvent = { type: "registeredSourcesChanged" }
+async function getExtensionSearchCommand(extension: Extension): Promise<SearchCommand | undefined> {
+    try {
+        if (!extension.manifest.searchCommand) {
+            return undefined
+        }
+        const id = extension.manifest.id
+        const requiredInputKinds = extension.manifest.searchCommand.requiredInputKinds
+        const responder = await extension.searchCommandResponder()
+        return {
+            id,
+            requiredInputKinds,
+            async search(query: string, inputs: CommandInputs): Promise<SearchCommandSection[]> {
+                const sections = await responder.search({
+                    query,
+                    inputs: inputs.allMatching(requiredInputKinds),
+                })
+                return sections.map((extensionSection) => {
+                    return {
+                        displayName: extensionSection.displayName,
+                        items: extensionSection.items.map((extensionItem) => {
+                            return {
+                                id: extensionItem.id,
+                                icon: extensionItem.icon,
+                                title: extensionItem.title,
+                                subtitle: extensionItem.subtitle,
+                                addToLibrary: extensionItem.supportedEffects?.includes(
+                                    "addToLibrary",
+                                )
+                                    ? () => responder.executeAddToLibrary({ id: extensionItem.id })
+                                    : undefined,
+                                play: extensionItem.supportedEffects?.includes("play")
+                                    ? () => responder.executePlay({ id: extensionItem.id })
+                                    : undefined,
+                                reveal: extensionItem.supportedEffects?.includes("reveal")
+                                    ? () => responder.executeReveal({ id: extensionItem.id })
+                                    : undefined,
+                            }
+                        }),
+                    }
+                })
+            },
+        }
+    } catch (error) {
+        console.error(
+            "*** Extension declares search command in manifest but does not export a responder",
+            extension.manifest.id,
+            error,
+        )
+        return undefined
+    }
+}
+
+export type SearchRegistryEvent = { type: "registeredCommandsDidChange" }
 
 export class SearchRegistry {
     private readonly _dispatch: EventDispatch<SearchRegistryEvent>
-    private _sources: readonly SearchSource[]
+    private _commands: readonly SearchCommand[]
 
     constructor() {
         ;[this._dispatch, this.subscribe] = createEvent<SearchRegistryEvent>()
-        this._sources = []
+        this._commands = []
     }
 
     readonly subscribe: EventSubscribe<SearchRegistryEvent>
 
-    add(source: SearchSource): () => void {
-        this._sources = [...this._sources, source]
-        this._dispatch({ type: "registeredSourcesChanged" })
+    add(command: SearchCommand): () => void {
+        this._commands = [...this._commands, command]
+        this._dispatch({ type: "registeredCommandsDidChange" })
         return () => {
-            const toRemove = this._sources.indexOf(source)
+            const toRemove = this._commands.indexOf(command)
             if (toRemove !== -1) {
-                const sources = [...this._sources]
-                sources.splice(toRemove, 1)
-                this._sources = sources
-                this._dispatch({ type: "registeredSourcesChanged" })
+                const commands = [...this._commands]
+                commands.splice(toRemove, 1)
+                this._commands = commands
+                this._dispatch({ type: "registeredCommandsDidChange" })
             }
         }
     }
@@ -36,27 +89,23 @@ export class SearchRegistry {
 
         Promise.allSettled(
             extensionRuntime.running.map(async (extension) => {
-                const searchSource = await ExtensionSearchSource.from(extension)
-                const remove = this.add(searchSource)
-                removes.set(extension.manifest.id, remove)
+                const searchCommand = await getExtensionSearchCommand(extension)
+                if (searchCommand) {
+                    const remove = this.add(searchCommand)
+                    removes.set(extension.manifest.id, remove)
+                }
             }),
         )
         extensionRuntime.subscribe(async (event) => {
             switch (event.type) {
                 case "extensionLoaded": {
-                    try {
-                        const searchSource = await ExtensionSearchSource.from(event.extension)
-                        const remove = this.add(searchSource)
+                    const searchCommand = await getExtensionSearchCommand(event.extension)
+                    if (searchCommand) {
+                        const remove = this.add(searchCommand)
                         removes.set(event.extension.manifest.id, remove)
                         console.debug(
                             "Registered search command for extension",
                             event.extension.manifest.id,
-                        )
-                    } catch (error) {
-                        console.error(
-                            "Could not register search command for extension",
-                            event.extension.manifest.id,
-                            error,
                         )
                     }
                     break
@@ -80,24 +129,26 @@ export class SearchRegistry {
         })
     }
 
-    async search(
-        query: string,
-        inputs: CommandInputs,
-    ): Promise<ReadonlyMap<string, readonly SearchSourceResult[]>> {
+    async search(query: string, inputs: CommandInputs): Promise<SearchCommandSection[]> {
         if (!query) {
-            return new Map()
+            return []
         }
-        const pending = this._sources.map(
-            (source) => [source.id, source.search(query, inputs)] as const,
+        const sectionsByCommand = await Promise.all(
+            this._commands.map((command) => command.search(query, inputs)),
         )
-        const results = new Map<string, SearchSourceResult[]>()
-        for (const [id, promise] of pending) {
-            try {
-                results.set(id, await promise)
-            } catch (error) {
-                console.error(`*** Search source ${id} failed`, error)
+
+        const itemsByDisplayName = new Map<string, SearchCommandItem[]>()
+        for (const section of sectionsByCommand.flat()) {
+            const items = itemsByDisplayName.get(section.displayName)
+            if (items) {
+                items.push(...section.items)
+            } else {
+                itemsByDisplayName.set(section.displayName, [...section.items])
             }
         }
-        return results
+
+        return [...itemsByDisplayName.entries()]
+            .map(([displayName, items]) => ({ displayName, items }))
+            .filter((section) => section.items.length > 0)
     }
 }

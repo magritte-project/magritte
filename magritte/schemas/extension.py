@@ -46,6 +46,16 @@ class ExtensionCommand(BaseModel):
     ] = False
 
 
+class ExtensionSearchCommand(BaseModel):
+    required_input_kinds: Annotated[
+        list[str],
+        Field(
+            alias="requiredInputKinds",
+            description="The kinds of the inputs the search command requires to execute",
+        ),
+    ]
+
+
 class ExtensionManifest(BaseModel):
     name: Annotated[
         str,
@@ -103,6 +113,13 @@ class ExtensionManifest(BaseModel):
         list[ExtensionCommand] | None,
         Field(
             description="An optional array of commands supported by the extension",
+        ),
+    ] = None
+    search_command: Annotated[
+        ExtensionSearchCommand | None,
+        Field(
+            alias="searchCommand",
+            description="An optional search command supported by the extension",
         ),
     ] = None
 

@@ -2639,6 +2639,13 @@
                         ],
                         "title": "Commands",
                         "description": "An optional array of commands supported by the extension"
+                    },
+                    "searchCommand": {
+                        "anyOf": [
+                            { "$ref": "#/components/schemas/ExtensionSearchCommand" },
+                            { "type": "null" }
+                        ],
+                        "description": "An optional search command supported by the extension"
                     }
                 },
                 "type": "object",
@@ -2669,6 +2676,19 @@
                 "type": "object",
                 "required": ["id", "manifest"],
                 "title": "ExtensionRead"
+            },
+            "ExtensionSearchCommand": {
+                "properties": {
+                    "requiredInputKinds": {
+                        "items": { "type": "string" },
+                        "type": "array",
+                        "title": "Requiredinputkinds",
+                        "description": "The kinds of the inputs the search command requires to execute"
+                    }
+                },
+                "type": "object",
+                "required": ["requiredInputKinds"],
+                "title": "ExtensionSearchCommand"
             },
             "HTTPValidationError": {
                 "properties": {

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useDebounce } from "@uidotdev/usehooks"
 import { Fragment } from "react/jsx-runtime"
 
-import type { SearchSourceResult } from "@/commands/searchSources/base"
 import PaletteSearchOption from "@/components/palette/PaletteSearchOption"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useSearchRegistry from "@/hooks/searchRegistryHook"
@@ -13,31 +13,31 @@ export interface PaletteSearchResultsProps {
 export default function PaletteSearchResults({ search }: PaletteSearchResultsProps) {
     const searchRegistry = useSearchRegistry()
     const inputs = useCommandInputs()
-    const [results, setResults] = useState<ReadonlyMap<string, readonly SearchSourceResult[]>>(
-        () => new Map(),
-    )
-    useEffect(() => {
-        const controller = new AbortController()
-        ;(async () => {
-            const searchResults = await searchRegistry.search(search, inputs)
-            if (controller.signal.aborted) {
-                return
-            }
-            setResults(searchResults)
-        })()
-        return () => controller.abort()
-    }, [searchRegistry, inputs, search])
+    const debouncedSearch = useDebounce(search, 300)
+    const { data: sections = [] } = useQuery({
+        queryKey: ["commands", "search", debouncedSearch],
+        queryFn: () => searchRegistry.search(debouncedSearch, inputs),
+        placeholderData: keepPreviousData,
+    })
 
     return (
-        <Fragment key="paletteResultsResults">
-            {results.size === 0 ? (
+        <Fragment key="paletteSearchResults">
+            {sections.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-on-secondary">No results found</p>
             ) : (
-                Array.from(results.entries()).flatMap(([sourceId, results]) =>
-                    results.map((result) => (
-                        <PaletteSearchOption key={`${sourceId}-${result.id}`} result={result} />
-                    )),
-                )
+                sections.map((section, index) => (
+                    <Fragment key={`sections[${index}, name: ${section.displayName}]`}>
+                        <h3 className="px-4 py-2 text-sm text-on-secondary">
+                            {section.displayName}
+                        </h3>
+                        {section.items.map((item, itemIndex) => (
+                            <PaletteSearchOption
+                                key={`items[${itemIndex}, id: ${item.id}]`}
+                                item={item}
+                            />
+                        ))}
+                    </Fragment>
+                ))
             )}
         </Fragment>
     )

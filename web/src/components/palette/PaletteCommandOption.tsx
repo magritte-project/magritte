@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 
 import type { Command } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
+import PaletteOptionIcon from "@/components/palette/PaletteOptionIcon"
 import { getErrorMessage } from "@/utilities/errors"
 
 export interface PaletteCommandOptionProps {
@@ -12,7 +13,7 @@ export interface PaletteCommandOptionProps {
 
 export default function PaletteCommandOption({ inputs, command }: PaletteCommandOptionProps) {
     const presentationQuery = useQuery({
-        queryKey: ["commands", command.id],
+        queryKey: ["commands", "presentation", command.id],
         queryFn: () => command.present(inputs),
     })
 
@@ -26,11 +27,16 @@ export default function PaletteCommandOption({ inputs, command }: PaletteCommand
                 presentationQuery.data.disabled
             }
         >
-            {presentationQuery.isSuccess
-                ? presentationQuery.data.displayName
-                : presentationQuery.isError
-                  ? getErrorMessage(presentationQuery.error)
-                  : "…"}
+            <div className="flex items-center gap-between">
+                <PaletteOptionIcon className="w-8 h-8" />
+                <div className="text-medium">
+                    {presentationQuery.isSuccess
+                        ? presentationQuery.data.displayName
+                        : presentationQuery.isError
+                          ? getErrorMessage(presentationQuery.error)
+                          : "…"}
+                </div>
+            </div>
         </ComboboxOption>
     )
 }

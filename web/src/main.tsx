@@ -6,8 +6,8 @@ import ReactDOM from "react-dom/client"
 
 import { CommandInputs } from "@/commands/inputs/base"
 import { CommandRegistry } from "@/commands/registry"
+import { LibrarySongsSearchResponder } from "@/commands/searchCommands/librarySongs"
 import { SearchRegistry } from "@/commands/searchRegistry"
-import { LibrarySongsSearchResponder } from "@/commands/searchSources/librarySongs"
 import { libraryCommands } from "@/commands/suites/library"
 import { playerCommands, wirePlayerCommandInputs } from "@/commands/suites/player"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
@@ -85,7 +85,7 @@ try {
     connectMediaSession(api, player)
 
     // Hook up search
-    searchRegistry.add(new LibrarySongsSearchResponder({ api }))
+    searchRegistry.add(new LibrarySongsSearchResponder({ api, router }))
     searchRegistry.wireUpExtensions(extensionRuntime)
 
     // Render the app

@@ -5,6 +5,7 @@ export type CommandIconAppearance = z4.infer<typeof CommandIconAppearanceSchema>
 
 export const CommandIconSchema = z4.object({
     url: z4.string().readonly(),
+    alt: z4.string().optional().readonly(),
     appearance: CommandIconAppearanceSchema.readonly(),
 })
 export type CommandIcon = z4.infer<typeof CommandIconSchema>

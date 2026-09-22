@@ -316,6 +316,10 @@ export type ExtensionManifest = {
      * An optional array of commands supported by the extension
      */
     commands?: Array<ExtensionCommand> | null
+    /**
+     * An optional search command supported by the extension
+     */
+    searchCommand?: ExtensionSearchCommand | null
 }
 
 /**
@@ -342,6 +346,18 @@ export type ExtensionRead = {
      */
     id: number
     manifest: ExtensionManifest
+}
+
+/**
+ * ExtensionSearchCommand
+ */
+export type ExtensionSearchCommand = {
+    /**
+     * Requiredinputkinds
+     *
+     * The kinds of the inputs the search command requires to execute
+     */
+    requiredInputKinds: Array<string>
 }
 
 /**

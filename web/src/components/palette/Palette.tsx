@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useState } from "react"
 import { createPortal } from "react-dom"
 
-import type { Command } from "@/commands/base"
+import type { Command, SearchCommandItem } from "@/commands/base"
 import PaletteCommandResults from "@/components/palette/PaletteCommandResults"
 import PaletteSearchResults from "@/components/palette/PaletteSearchResults"
 import useCommandInputs from "@/hooks/commandInputsHook"
@@ -28,14 +28,25 @@ export default function Palette({ isOpen, setIsOpen, search, setSearch }: Palett
         setIsOpen(false)
     }, [setSearch, setIsOpen])
 
-    const handleCommandChange = useCallback(
-        (command: Command | null) => {
-            if (command !== null) {
-                command.execute(inputs)
+    const handleChange = useCallback(
+        (value: object | null) => {
+            if (value !== null) {
+                switch (view) {
+                    case "command": {
+                        const command = value as Command
+                        command.execute(inputs)
+                        break
+                    }
+                    case "search": {
+                        const item = value as SearchCommandItem
+                        item.reveal?.()
+                        break
+                    }
+                }
                 handleClose()
             }
         },
-        [inputs, handleClose],
+        [view, inputs, handleClose],
     )
 
     const handleInputChange = useCallback(
@@ -89,10 +100,7 @@ export default function Palette({ isOpen, setIsOpen, search, setSearch }: Palett
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.15 }}
                 >
-                    <Combobox
-                        immediate
-                        onChange={view === "command" ? handleCommandChange : undefined}
-                    >
+                    <Combobox immediate onChange={handleChange}>
                         <div className="overflow-hidden rounded-xl border border-outline bg-primary shadow-2xl">
                             <div className="flex items-center gap-2 border-b border-outline px-outside">
                                 <MagnifyingGlassIcon

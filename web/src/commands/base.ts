@@ -1,4 +1,4 @@
-import type { CommandPresentation } from "@magritte/sdk"
+import type { CommandIcon, CommandPresentation } from "@magritte/sdk"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 
@@ -20,4 +20,46 @@ export interface Command {
 
     /** Executes the command with the given inputs */
     readonly execute: (inputs: CommandInputs) => Promise<unknown>
+}
+
+export interface SearchCommand {
+    /** Unique identifier for the search command */
+    readonly id: string
+
+    /** The kinds of the inputs this source requires for searching */
+    readonly requiredInputKinds: readonly string[]
+
+    /** Search for items matching the given query and inputs */
+    readonly search: (query: string, inputs: CommandInputs) => Promise<SearchCommandSection[]>
+}
+
+export interface SearchCommandSection {
+    /** Human readalbe name for this section */
+    readonly displayName: string
+
+    /** The items in this section */
+    readonly items: readonly SearchCommandItem[]
+}
+
+export interface SearchCommandItem {
+    /** Unique identifier for this item */
+    readonly id: string
+
+    /** Icon for this item, if any */
+    readonly icon?: CommandIcon
+
+    /** Title of this item */
+    readonly title: string
+
+    /** Subtitle of this item, if any */
+    readonly subtitle?: string
+
+    /** Action to add this item to the library, if any */
+    readonly addToLibrary?: () => Promise<void>
+
+    /** Action to play this item, if any */
+    readonly play?: () => Promise<void>
+
+    /** Action to reveal this item, if any */
+    readonly reveal?: () => Promise<void>
 }

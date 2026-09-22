@@ -35,6 +35,7 @@ export default function ArtworkImage({
                     className="object-fit w-full h-full"
                     src={resolveResourceUrl(artworks[0].image_url, tokenQuery.data)}
                     alt={`Cover for ${itemTitle}`}
+                    referrerPolicy="no-referrer"
                 />
             )}
             <div
