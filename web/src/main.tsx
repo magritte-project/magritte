@@ -6,7 +6,9 @@ import ReactDOM from "react-dom/client"
 
 import { CommandInputs } from "@/commands/inputs/base"
 import { CommandRegistry } from "@/commands/registry"
-import { LibrarySongsSearchResponder } from "@/commands/searchCommands/librarySongs"
+import { LibraryAlbumsSearchCommand } from "@/commands/searchCommands/libraryAlbums"
+import { LibraryArtistsSearchCommand } from "@/commands/searchCommands/libraryArtists"
+import { LibrarySongsSearchCommand } from "@/commands/searchCommands/librarySongs"
 import { SearchRegistry } from "@/commands/searchRegistry"
 import { libraryCommands } from "@/commands/suites/library"
 import { playerCommands, wirePlayerCommandInputs } from "@/commands/suites/player"
@@ -85,7 +87,9 @@ try {
     connectMediaSession(api, player)
 
     // Hook up search
-    searchRegistry.add(new LibrarySongsSearchResponder({ api, player, router }))
+    searchRegistry.add(new LibrarySongsSearchCommand({ api, player, router }))
+    searchRegistry.add(new LibraryAlbumsSearchCommand({ api, router }))
+    searchRegistry.add(new LibraryArtistsSearchCommand({ api, router }))
     searchRegistry.wireUpExtensions(extensionRuntime)
 
     // Render the app

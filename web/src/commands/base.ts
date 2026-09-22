@@ -1,4 +1,5 @@
 import type { CommandIcon, CommandPresentation } from "@magritte/sdk"
+import type { Icon } from "@phosphor-icons/react"
 
 import type { CommandInputs } from "@/commands/inputs/base"
 
@@ -46,7 +47,7 @@ export interface SearchCommandItem {
     readonly id: string
 
     /** Icon for this item, if any */
-    readonly icon?: CommandIcon
+    readonly icon?: CommandIcon | Icon
 
     /** Title of this item */
     readonly title: string

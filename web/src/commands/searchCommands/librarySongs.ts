@@ -1,5 +1,6 @@
 import type { API } from "@magritte/api"
 import { LibraryInputSchema } from "@magritte/sdk"
+import { DiscIcon } from "@phosphor-icons/react"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
 import type { SearchCommand, SearchCommandSection } from "@/commands/base"
@@ -7,18 +8,18 @@ import type { CommandInputs } from "@/commands/inputs/base"
 import type { Player } from "@/playback/player"
 import ArrayQueue from "@/playback/queue/array"
 
-export interface LibrarySongsSearchResponderOptions {
+export interface LibrarySongsSearchCommandOptions {
     readonly api: API
     readonly player: Player
     readonly router: RegisteredRouter
 }
 
-export class LibrarySongsSearchResponder implements SearchCommand {
+export class LibrarySongsSearchCommand implements SearchCommand {
     private readonly _api: API
     private readonly _player: Player
     private readonly _router: RegisteredRouter
 
-    constructor({ api, player, router }: LibrarySongsSearchResponderOptions) {
+    constructor({ api, player, router }: LibrarySongsSearchCommandOptions) {
         this._api = api
         this._player = player
         this._router = router
@@ -50,7 +51,7 @@ export class LibrarySongsSearchResponder implements SearchCommand {
                               alt: "Album Artwork",
                               appearance: "square",
                           }
-                        : undefined,
+                        : DiscIcon,
                     title: song.title ?? "--",
                     subtitle: `${song.album_title ?? "--"} by ${song.artist_name ?? "--"}`,
                     reveal: async () => {
