@@ -85,7 +85,7 @@ try {
     connectMediaSession(api, player)
 
     // Hook up search
-    searchRegistry.add(new LibrarySongsSearchResponder({ api, router }))
+    searchRegistry.add(new LibrarySongsSearchResponder({ api, player, router }))
     searchRegistry.wireUpExtensions(extensionRuntime)
 
     // Render the app

@@ -1,13 +1,15 @@
 import { Combobox, ComboboxInput, ComboboxOptions } from "@headlessui/react"
-import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr"
+import { MagnifyingGlassIcon } from "@phosphor-icons/react"
 import { AnimatePresence, motion } from "motion/react"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 
 import type { Command, SearchCommandItem } from "@/commands/base"
 import PaletteCommandResults from "@/components/palette/PaletteCommandResults"
 import PaletteSearchResults from "@/components/palette/PaletteSearchResults"
 import useCommandInputs from "@/hooks/commandInputsHook"
+import useNotificationCenter from "@/hooks/notificationCenterHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export type PaletteView = "command" | "search"
 
@@ -22,6 +24,20 @@ export interface PaletteProps {
 export default function Palette({ isOpen, setIsOpen, search, setSearch }: PaletteProps) {
     const [view, setView] = useState<PaletteView>("command")
     const inputs = useCommandInputs()
+    const notificationCenter = useNotificationCenter()
+
+    const keyModifiersRef = useRef({ shift: false, ctrl: false })
+    useEffect(() => {
+        const trackModifiers = (event: KeyboardEvent) => {
+            keyModifiersRef.current = { shift: event.shiftKey, ctrl: event.ctrlKey }
+        }
+        document.addEventListener("keydown", trackModifiers)
+        document.addEventListener("keyup", trackModifiers)
+        return () => {
+            document.removeEventListener("keydown", trackModifiers)
+            document.removeEventListener("keyup", trackModifiers)
+        }
+    }, [])
 
     const handleClose = useCallback(() => {
         setSearch("")
@@ -38,15 +54,31 @@ export default function Palette({ isOpen, setIsOpen, search, setSearch }: Palett
                         break
                     }
                     case "search": {
+                        const { shift, ctrl } = keyModifiersRef.current
                         const item = value as SearchCommandItem
-                        item.reveal?.()
+                        ;(async () => {
+                            try {
+                                if (shift) {
+                                    await item.play?.()
+                                } else if (ctrl) {
+                                    await item.addToLibrary?.()
+                                } else {
+                                    await item.reveal?.()
+                                }
+                            } catch (error) {
+                                notificationCenter.showToast({
+                                    message: getErrorMessage(error),
+                                    type: "error",
+                                })
+                            }
+                        })()
                         break
                     }
                 }
                 handleClose()
             }
         },
-        [view, inputs, handleClose],
+        [view, inputs, notificationCenter, handleClose],
     )
 
     const handleInputChange = useCallback(
@@ -136,9 +168,25 @@ export default function Palette({ isOpen, setIsOpen, search, setSearch }: Palett
                                     </button>
                                 </div>
                             </div>
-                            <ComboboxOptions static className="max-h-80 overflow-y-auto">
+                            <ComboboxOptions static className="relative max-h-80 overflow-y-auto">
                                 {view === "command" && <PaletteCommandResults search={search} />}
                                 {view === "search" && <PaletteSearchResults search={search} />}
+                                <div className="sticky bottom-0 border-t border-separator bg-secondary text-xs flex items-center justify-end gap-between px-outside py-[calc(var(--spacing-outside)/2)]">
+                                    {view === "command" && (
+                                        <>
+                                            <span>↵ Run</span>
+                                        </>
+                                    )}
+                                    {view === "search" && (
+                                        <>
+                                            <span>↵ Reveal</span>
+                                            <span>⇧↵ Play</span>
+                                            <span>⌃↵ Add to Library</span>
+                                        </>
+                                    )}
+                                    <span>↹ Next View</span>
+                                    <span>⎋ Close</span>
+                                </div>
                             </ComboboxOptions>
                         </div>
                     </Combobox>

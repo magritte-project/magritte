@@ -4,18 +4,23 @@ import type { RegisteredRouter } from "@tanstack/react-router"
 
 import type { SearchCommand, SearchCommandSection } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
+import type { Player } from "@/playback/player"
+import ArrayQueue from "@/playback/queue/array"
 
 export interface LibrarySongsSearchResponderOptions {
     readonly api: API
+    readonly player: Player
     readonly router: RegisteredRouter
 }
 
 export class LibrarySongsSearchResponder implements SearchCommand {
     private readonly _api: API
+    private readonly _player: Player
     private readonly _router: RegisteredRouter
 
-    constructor({ api, router }: LibrarySongsSearchResponderOptions) {
+    constructor({ api, player, router }: LibrarySongsSearchResponderOptions) {
         this._api = api
+        this._player = player
         this._router = router
     }
 
@@ -33,7 +38,7 @@ export class LibrarySongsSearchResponder implements SearchCommand {
             return []
         }
         const libraryId = libraryInputs[0].id
-        const librarySongs = await this._api.client.readLibrarySongs(libraryId, { query })
+        const librarySongs = await this._api.client.readLibrarySongs(libraryId, { query, limit: 5 })
         return [
             {
                 displayName: "Songs",
@@ -57,6 +62,16 @@ export class LibrarySongsSearchResponder implements SearchCommand {
                                 album_id: song.album_id ?? undefined,
                             },
                         })
+                    },
+                    play: async () => {
+                        await this._player.replaceQueue({
+                            newQueue: new ArrayQueue(librarySongs.items),
+                            startingItem: song,
+                            playNow: true,
+                        })
+                    },
+                    addToLibrary: async () => {
+                        throw new Error("Already in library")
                     },
                 })),
             },
