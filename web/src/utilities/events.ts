@@ -127,15 +127,15 @@ export function createEvent<TEvent>(
 export function justEventsMatching<
     TEvent extends {},
     TDiscriminator extends keyof TEvent,
-    TType extends TEvent[TDiscriminator],
+    const TType extends TEvent[TDiscriminator],
 >(
     discriminator: TDiscriminator,
     type: TType,
-    subscriber: EventSubscriber<Extract<TEvent, { [discriminator]: TType }>>,
+    subscriber: EventSubscriber<Extract<TEvent, Record<TDiscriminator, TType>>>,
 ): EventSubscriber<TEvent> {
     return async (event: TEvent) => {
         if (event[discriminator] === type) {
-            await subscriber(event as Extract<TEvent, { [discriminator]: TType }>)
+            await subscriber(event as Extract<TEvent, Record<TDiscriminator, TType>>)
         }
     }
 }

@@ -61,6 +61,9 @@ export const RPCTransportMessage = z4.union([
         what: z4.string(),
         data: z4.unknown(),
     }),
+    z4.object({
+        type: z4.literal("invalidate"),
+    }),
 ])
 export type RPCTransportMessage = z4.infer<typeof RPCTransportMessage>
 

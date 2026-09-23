@@ -142,6 +142,13 @@ export class ExtensionHost {
             broadcaster,
             exportedObject,
         })
+        const beforeUnload = () => connection.invalidate()
+        window.addEventListener("beforeunload", beforeUnload)
+        connection.subscribe((event) => {
+            if (event.type === "invalidated") {
+                window.removeEventListener("beforeunload", beforeUnload)
+            }
+        })
         const host = new ExtensionHost(connection)
         await awaken?.(host, resolvedExports)
         return host

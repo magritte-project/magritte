@@ -324,6 +324,13 @@ export class ExtensionRuntime {
                     player: exportPlayer(manifest, broadcaster, this._player),
                 }),
             })
+            extension.connection.subscribe(
+                justEventsMatching("type", "invalidated", ({ fromRemoteSide }) => {
+                    if (fromRemoteSide) {
+                        this._unload(id)
+                    }
+                }),
+            )
 
             const oldState = this._extensions.get(id) ?? { status: "unloaded" }
             if (oldState.status !== "loading") {

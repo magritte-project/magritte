@@ -67,7 +67,9 @@ export interface RPCConnectionOptions {
     readonly timeout?: number
 }
 
-export type RPCConnectionEvent = { type: "timeout" } | { type: "invalidated" }
+export type RPCConnectionEvent =
+    | { type: "timeout" }
+    | { type: "invalidated"; fromRemoteSide: boolean }
 
 export class RPCConnection {
     /**
@@ -181,6 +183,10 @@ export class RPCConnection {
                     )
                     break
                 }
+                case "invalidate": {
+                    this._invalidateLocalOnly({ fromRemoteSide: true })
+                    break
+                }
                 default: {
                     assertNever(message)
                 }
@@ -223,7 +229,7 @@ export class RPCConnection {
     /**
      * Invalidate the connection, rejecting all pending commands and clearing the transport.
      */
-    invalidate(): void {
+    private _invalidateLocalOnly({ fromRemoteSide }: { fromRemoteSide: boolean }): void {
         if (!this._isValid) {
             return
         }
@@ -238,7 +244,17 @@ export class RPCConnection {
 
         this._isValid = false
 
-        this._dispatch({ type: "invalidated" })
+        this._dispatch({ type: "invalidated", fromRemoteSide })
+        this.subscribers.length = 0
+    }
+
+    /**
+     * Invalidate the connection, notifying the remote side and
+     * rejecting all pending commands and clearing the transport.
+     */
+    invalidate(): void {
+        this.transport.postMessage({ type: "invalidate" })
+        this._invalidateLocalOnly({ fromRemoteSide: false })
     }
 
     private _dispatch(event: RPCConnectionEvent) {
@@ -252,6 +268,9 @@ export class RPCConnection {
     }
 
     subscribe(subscriber: (event: RPCConnectionEvent) => void): () => void {
+        if (!this._isValid) {
+            return () => {}
+        }
         this.subscribers.push(subscriber)
         return () => {
             const toRemove = this.subscribers.indexOf(subscriber)
