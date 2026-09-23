@@ -1,7 +1,7 @@
 import {
     allCommandInputsOf,
     getCommandInputKind,
-    LibraryInput,
+    LibraryInputSchema,
     type ExtensionHost,
 } from "@magritte/sdk"
 import { queryOptions } from "@tanstack/react-query"
@@ -10,7 +10,7 @@ import { commandInputs } from "@/api/keys/commandInputs"
 
 /** Read the IDs of the libraries the host currently has on screen */
 export function readOnScreenLibraryIds(extensionHost: ExtensionHost) {
-    const kinds = [getCommandInputKind(LibraryInput)]
+    const kinds = [getCommandInputKind(LibraryInputSchema)]
     return queryOptions({
         queryKey: commandInputs(kinds),
         // Reading on screen context is a permission, so retrying a refusal is pointless
@@ -18,7 +18,7 @@ export function readOnScreenLibraryIds(extensionHost: ExtensionHost) {
         queryFn: async () => {
             const commandCoordinator = await extensionHost.commandCoordinator()
             const inputs = await commandCoordinator.allMatching({ kinds })
-            return allCommandInputsOf(inputs, LibraryInput).map((input) => input.id)
+            return allCommandInputsOf(inputs, LibraryInputSchema).map((input) => input.id)
         },
     })
 }
