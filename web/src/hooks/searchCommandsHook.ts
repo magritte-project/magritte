@@ -1,11 +1,12 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 
 import type { SearchCommandItem, SearchCommandSection } from "@/commands/base"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useSearchRegistry from "@/hooks/searchRegistryHook"
 import { getErrorMessage } from "@/utilities/errors"
+import { justEventsMatching } from "@/utilities/events"
 
 export interface UseSearchCommandsOptions {
     readonly search?: string
@@ -23,11 +24,19 @@ export default function useSearchCommands({
 }: UseSearchCommandsOptions = {}): UseSearchCommandsResult {
     const searchRegistry = useSearchRegistry()
     const inputs = useCommandInputs()
-    const { data: resultSections = [] } = useQuery({
+    const resultQuery = useQuery({
         queryKey: ["commands", "search", search],
         queryFn: () => searchRegistry.search(search, inputs),
         placeholderData: keepPreviousData,
     })
+    useEffect(() => {
+        return inputs.subscribe(
+            justEventsMatching("type", "commandInputsDidChange", () => {
+                resultQuery.refetch()
+            }),
+        )
+    }, [inputs, resultQuery])
+    const resultSections = resultQuery.data ?? []
 
     const notificationCenter = useNotificationCenter()
     const playItem = useCallback(

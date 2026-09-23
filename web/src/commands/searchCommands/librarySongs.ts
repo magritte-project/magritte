@@ -71,9 +71,6 @@ export class LibrarySongsSearchCommand implements SearchCommand {
                             playNow: true,
                         })
                     },
-                    addToLibrary: async () => {
-                        throw new Error("Already in library")
-                    },
                 })),
             },
         ]

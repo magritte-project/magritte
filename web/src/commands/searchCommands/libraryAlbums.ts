@@ -64,9 +64,6 @@ export class LibraryAlbumsSearchCommand implements SearchCommand {
                     play: async () => {
                         throw new Error("Choose song from album to play")
                     },
-                    addToLibrary: async () => {
-                        throw new Error("Already in library")
-                    },
                 })),
             },
         ]

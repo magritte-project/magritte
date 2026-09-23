@@ -57,9 +57,6 @@ export class LibraryArtistsSearchCommand implements SearchCommand {
                     play: async () => {
                         throw new Error("Choose song from artist to play")
                     },
-                    addToLibrary: async () => {
-                        throw new Error("Already in library")
-                    },
                 })),
             },
         ]
