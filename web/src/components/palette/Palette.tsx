@@ -10,8 +10,7 @@ import PaletteCommandsView from "@/components/palette/PaletteCommandsView"
 import PaletteSearchCommandView from "@/components/palette/PaletteSearchCommandView"
 import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 import useCommandInputs from "@/hooks/commandInputsHook"
-import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
+import useSearchCommands from "@/hooks/searchCommandsHook"
 
 export type PaletteView = "command" | "search"
 
@@ -35,7 +34,7 @@ export default function Palette({
     setSearch,
 }: PaletteProps) {
     const inputs = useCommandInputs()
-    const notificationCenter = useNotificationCenter()
+    const { playItem, addItemToLibrary, revealItem } = useSearchCommands()
 
     const keyModifiersRef = useRef({ shift: false, ctrl: false })
     useEffect(() => {
@@ -69,29 +68,20 @@ export default function Palette({
                     case "search": {
                         const { shift, ctrl } = keyModifiersRef.current
                         const item = value as SearchCommandItem
-                        ;(async () => {
-                            try {
-                                if (shift) {
-                                    await item.play?.()
-                                } else if (ctrl) {
-                                    await item.addToLibrary?.()
-                                } else {
-                                    await item.reveal?.()
-                                }
-                            } catch (error) {
-                                notificationCenter.showToast({
-                                    message: getErrorMessage(error),
-                                    type: "error",
-                                })
-                            }
-                        })()
+                        if (shift) {
+                            playItem(item)
+                        } else if (ctrl) {
+                            addItemToLibrary(item)
+                        } else {
+                            revealItem(item)
+                        }
                         break
                     }
                 }
                 handleClose()
             }
         },
-        [view, inputs, notificationCenter, handleClose],
+        [view, inputs, playItem, addItemToLibrary, revealItem, handleClose],
     )
 
     const handleInputChange = useCallback(
