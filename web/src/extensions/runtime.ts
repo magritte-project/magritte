@@ -34,6 +34,13 @@ export type ExtensionRuntimeEvent =
           manifest: ExtensionManifest
       }
     | {
+          /** An extension has started loading */
+          type: "extensionLoadStart"
+
+          /** The manifest of the extension */
+          manifest: ExtensionManifest
+      }
+    | {
           /* An extension failed to load */
           type: "extensionLoadFailed"
 
@@ -67,7 +74,7 @@ export type ExtensionRuntimeEvent =
 
 type ExtensionState =
     | { status: "unloaded" }
-    | { status: "loading" }
+    | { status: "loading"; abortController: AbortController }
     | { status: "loaded"; iframe: HTMLIFrameElement; extension: Extension }
 
 export class ExtensionRuntime {
@@ -131,6 +138,23 @@ export class ExtensionRuntime {
         return this._available.values()
     }
 
+    /** The currently loading extensions, if any */
+    get loading(): Iterable<ExtensionManifest> {
+        function* iterateLoading(runtime: ExtensionRuntime) {
+            for (const [id, state] of runtime._extensions.entries()) {
+                if (state.status !== "loading") {
+                    continue
+                }
+                const manifest = runtime._available.get(id)
+                if (!manifest) {
+                    continue
+                }
+                yield manifest
+            }
+        }
+        return iterateLoading(this)
+    }
+
     /** The currently running extensions */
     get running(): Extension[] {
         return Array.from(this._extensions.values())
@@ -138,10 +162,27 @@ export class ExtensionRuntime {
             .map((s) => s.extension)
     }
 
+    isLoading(id: string): boolean {
+        const state = this._extensions.get(id)
+        return state?.status === "loading"
+    }
+
     /** Get a currently running extension */
     getRunning(id: string): Extension | null {
         const state = this._extensions.get(id)
         return state?.status === "loaded" ? state.extension : null
+    }
+
+    /**
+     * Terminate a loading or running extension.
+     *
+     * @param id The manifest ID of the extension.
+     * @throws {Error} If the extension is not found or not loaded.
+     */
+    terminate(id: string) {
+        if (!this._unload(id)) {
+            throw new Error(`Extension not loaded: ${id}`)
+        }
     }
 
     add(manifest: ExtensionManifest) {
@@ -234,7 +275,23 @@ export class ExtensionRuntime {
         }
 
         console.debug("Begin loading extension", id)
-        this._extensions.set(id, { status: "loading" })
+        const abortController = new AbortController()
+        abortController.signal.addEventListener("abort", () => {
+            const state = this._extensions.get(id)
+            if (!state || state.status !== "loading" || state.abortController !== abortController) {
+                return
+            }
+            iframe.remove()
+            console.debug("*** Aborted loading extension", id)
+            this._extensions.set(id, { status: "unloaded" })
+            this._dispatch({
+                type: "extensionLoadFailed",
+                manifest,
+                error: new Error("Aborted extension load"),
+            })
+        })
+        this._extensions.set(id, { status: "loading", abortController })
+        this._dispatch({ type: "extensionLoadStart", manifest })
 
         const iframe = document.createElement("iframe")
         try {
@@ -254,6 +311,7 @@ export class ExtensionRuntime {
             const extension = await Extension.waitForConnection({
                 iframe,
                 manifest,
+                signal: abortController.signal,
                 exports: async ({ manifest, broadcaster }) => ({
                     commandCoordinator: exportCommandCoordinator(
                         manifest,
@@ -282,6 +340,10 @@ export class ExtensionRuntime {
             this._extensions.set(id, { status: "loaded", iframe, extension })
             this._dispatch({ type: "extensionLoaded", extension })
         } catch (error) {
+            if (!iframe.parentElement) {
+                // ^^ <iframe> was removed before load could complete, ignore
+                return
+            }
             iframe.remove()
             console.error("*** Could not load extension", manifest.id, error)
             this._extensions.set(id, { status: "unloaded" })
@@ -299,11 +361,17 @@ export class ExtensionRuntime {
     private _unload(id: string): boolean {
         const state = this._extensions.get(id)
         if (state !== undefined) {
-            if (state.status === "loaded") {
-                state.iframe.remove()
-                state.extension.disconnect()
-
-                this._dispatch({ type: "extensionUnloaded", extension: state.extension })
+            switch (state.status) {
+                case "unloaded":
+                    return false
+                case "loading":
+                    state.abortController.abort()
+                    break
+                case "loaded":
+                    state.iframe.remove()
+                    state.extension.disconnect()
+                    this._dispatch({ type: "extensionUnloaded", extension: state.extension })
+                    break
             }
             this._extensions.delete(id)
             return true

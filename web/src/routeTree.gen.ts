@@ -32,6 +32,7 @@ import { Route as LibrariesManageLibraryIdIndexRouteImport } from './routes/libr
 import { Route as LibrariesManageLibraryIdIgnoredRouteImport } from './routes/libraries.manage.$libraryId/ignored'
 import { Route as LibrariesManageLibraryIdPermissionsRouteImport } from './routes/libraries.manage.$libraryId/permissions'
 import { Route as UserMeExtensionsAddRouteImport } from './routes/user.me.extensions.add'
+import { Route as UserMeExtensionsManagerRouteImport } from './routes/user.me.extensions.manager'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -154,6 +155,11 @@ const UserMeExtensionsAddRoute = UserMeExtensionsAddRouteImport.update({
   path: '/add',
   getParentRoute: () => UserMeExtensionsRoute,
 } as any)
+const UserMeExtensionsManagerRoute = UserMeExtensionsManagerRouteImport.update({
+  id: '/manager',
+  path: '/manager',
+  getParentRoute: () => UserMeExtensionsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
   '/user/me/extensions/add': typeof UserMeExtensionsAddRoute
+  '/user/me/extensions/manager': typeof UserMeExtensionsManagerRoute
   '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -199,6 +206,7 @@ export interface FileRoutesByTo {
   '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
   '/user/me/extensions/add': typeof UserMeExtensionsAddRoute
+  '/user/me/extensions/manager': typeof UserMeExtensionsManagerRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdIndexRoute
 }
 export interface FileRoutesById {
@@ -225,6 +233,7 @@ export interface FileRoutesById {
   '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
   '/user/me/extensions/add': typeof UserMeExtensionsAddRoute
+  '/user/me/extensions/manager': typeof UserMeExtensionsManagerRoute
   '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -252,6 +261,7 @@ export interface FileRouteTypes {
     | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
     | '/user/me/extensions/add'
+    | '/user/me/extensions/manager'
     | '/libraries/manage/$libraryId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -273,6 +283,7 @@ export interface FileRouteTypes {
     | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
     | '/user/me/extensions/add'
+    | '/user/me/extensions/manager'
     | '/libraries/manage/$libraryId'
   id:
     | '__root__'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
     | '/user/me/extensions/add'
+    | '/user/me/extensions/manager'
     | '/libraries/manage/$libraryId/'
   fileRoutesById: FileRoutesById
 }
@@ -474,6 +486,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserMeExtensionsAddRouteImport
       parentRoute: typeof UserMeExtensionsRoute
     }
+    '/user/me/extensions/manager': {
+      id: '/user/me/extensions/manager'
+      path: '/manager'
+      fullPath: '/user/me/extensions/manager'
+      preLoaderRoute: typeof UserMeExtensionsManagerRouteImport
+      parentRoute: typeof UserMeExtensionsRoute
+    }
   }
 }
 
@@ -537,10 +556,12 @@ const LibrariesRouteWithChildren = LibrariesRoute._addFileChildren(
 
 interface UserMeExtensionsRouteChildren {
   UserMeExtensionsAddRoute: typeof UserMeExtensionsAddRoute
+  UserMeExtensionsManagerRoute: typeof UserMeExtensionsManagerRoute
 }
 
 const UserMeExtensionsRouteChildren: UserMeExtensionsRouteChildren = {
   UserMeExtensionsAddRoute: UserMeExtensionsAddRoute,
+  UserMeExtensionsManagerRoute: UserMeExtensionsManagerRoute,
 }
 
 const UserMeExtensionsRouteWithChildren =

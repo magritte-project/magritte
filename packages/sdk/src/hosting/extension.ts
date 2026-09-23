@@ -48,6 +48,9 @@ export interface ExtensionWaitForConnectionOptions {
     /** The manifest of the extension */
     readonly manifest: ExtensionManifest
 
+    /** The abort signal to use for the connection */
+    readonly signal?: AbortSignal
+
     /** The broadcaster to use for communication with the extension */
     readonly broadcaster?: RPCBroadcaster
 
@@ -62,12 +65,14 @@ export class Extension {
     static async waitForConnection({
         iframe,
         manifest,
+        signal,
         broadcaster = new RPCBroadcaster(),
         exports,
         timeout = 30_000,
     }: ExtensionWaitForConnectionOptions): Promise<Extension> {
         const origin = getExtensionOrigin(manifest)
         const identity = manifest.id
+        signal?.throwIfAborted()
         const transport = await MessageChannelTransport.handshake({
             role: "responder",
             iframe,
@@ -75,12 +80,14 @@ export class Extension {
             identity,
             timeout,
         })
+        signal?.throwIfAborted()
         const exportedObject = await implementExports({ manifest, broadcaster }, exports)
         const connection = new RPCConnection({
             transport,
             broadcaster,
             exportedObject,
         })
+        signal?.throwIfAborted()
         return new Extension(connection, manifest)
     }
 

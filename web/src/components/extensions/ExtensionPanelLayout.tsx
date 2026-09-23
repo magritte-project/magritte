@@ -1,5 +1,6 @@
 import type { ExtensionManifest } from "@magritte/api"
 import { XIcon } from "@phosphor-icons/react"
+import { useNavigate } from "@tanstack/react-router"
 import { useMediaQuery } from "@uidotdev/usehooks"
 import classNames from "classnames"
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
@@ -20,6 +21,7 @@ export interface ExtensionPanelLayoutProps {
 }
 
 export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutProps) {
+    const navigate = useNavigate()
     const preferVerticalOrientation = useMediaQuery("(max-width: 768px)")
 
     const extensionRuntime = useExtensionRuntime()
@@ -72,7 +74,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 }),
             ),
             {
-                id: `extensions.close`,
+                id: "extensions.close",
                 searchTerms: "close extension",
                 requiredInputKinds: [],
                 highlightAvailability: false,
@@ -81,8 +83,28 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 }),
                 execute: async () => setSelectedId(null),
             } satisfies Command,
+            {
+                id: "extensions.manage",
+                searchTerms: "extensions manage",
+                requiredInputKinds: [],
+                highlightAvailability: false,
+                present: async () => ({
+                    displayName: `extensions: manage`,
+                }),
+                execute: async () => navigate({ to: "/user/me/extensions" }),
+            } satisfies Command,
+            {
+                id: "extensions.taskManager",
+                searchTerms: "extensions task manager",
+                requiredInputKinds: [],
+                highlightAvailability: false,
+                present: async () => ({
+                    displayName: `extensions: task manager`,
+                }),
+                execute: async () => navigate({ to: "/user/me/extensions/manager" }),
+            } satisfies Command,
         ]
-    }, [available, setSelectedId])
+    }, [available, setSelectedId, navigate])
 
     return (
         <CommandsProvider commands={commands}>

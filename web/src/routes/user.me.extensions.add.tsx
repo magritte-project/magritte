@@ -25,7 +25,7 @@ export const Route = createFileRoute("/user/me/extensions/add")({
     }) => {
         await queryClient.ensureQueryData(readAvailableExtensions(api, offset, limit))
     },
-    component: function AdminExtensionsImport() {
+    component: function UserExtensionsAdd() {
         const { offset, limit } = Route.useSearch()
         const navigate = Route.useNavigate()
         const api = useAPI()
