@@ -1,5 +1,10 @@
 import type { API, ExtensionManifest } from "@magritte/api"
-import { Extension, getExtensionAllow, getExtensionSrc } from "@magritte/sdk"
+import {
+    Extension,
+    getExtensionAllow,
+    getExtensionSrc,
+    type ExtensionListener,
+} from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 
 import type { CommandInputs } from "@/commands/inputs/base"
@@ -83,7 +88,18 @@ export type ExtensionRuntimeEvent =
 type ExtensionState =
     | { status: "unloaded" }
     | { status: "loading"; abortController: AbortController }
-    | { status: "loaded"; iframe: HTMLIFrameElement; extension: Extension }
+    | {
+          status: "loaded"
+          iframe: HTMLIFrameElement
+          extension: Extension
+          /** Answers the iframe when it connects again, such as after a reload */
+          listener: ExtensionListener
+          /**
+           * Whether `extensionUnloaded` has already been announced for `extension`,
+           * which happens as soon as its document goes away, before any reconnect
+           */
+          announcedUnloaded: boolean
+      }
 
 export class ExtensionRuntime {
     /** The container the extension iframes are hosted in */
@@ -319,6 +335,7 @@ export class ExtensionRuntime {
         this._dispatch({ type: "extensionLoadStart", manifest })
 
         const iframe = document.createElement("iframe")
+        let listener: ExtensionListener | null = null
         try {
             // Transparent so extensions can use translucent backgrounds over the blur
             iframe.style.background = "transparent"
@@ -333,7 +350,9 @@ export class ExtensionRuntime {
             // TODO: this is a hack
             this._container.insertBefore(iframe, this._container.querySelector("#app-modals"))
 
-            const extension = await Extension.waitForConnection({
+            // The listener outlives this first connection: the iframe connects
+            // again whenever its document reloads, and each time gets a fresh extension
+            listener = Extension.listen({
                 iframe,
                 manifest,
                 signal: abortController.signal,
@@ -350,18 +369,16 @@ export class ExtensionRuntime {
                     panel: exportPanel(manifest, this),
                 }),
             })
-            extension.connection.subscribe(
-                justEventsMatching("type", "invalidated", ({ fromRemoteSide }) => {
-                    if (fromRemoteSide) {
-                        this._unload(id)
-                    }
-                }),
-            )
+            const extension = await listener.next({ timeout: 30_000 })
+            if (extension === null) {
+                throw new Error("Stopped listening before the extension connected")
+            }
 
             const oldState = this._extensions.get(id) ?? { status: "unloaded" }
             if (oldState.status !== "loading") {
                 console.debug("Cancelled loading extension", id)
                 extension.disconnect()
+                listener.stop()
                 iframe.remove()
                 return
             }
@@ -370,9 +387,19 @@ export class ExtensionRuntime {
             attachment.didLoad(iframe)
 
             console.debug("Loaded extension", id)
-            this._extensions.set(id, { status: "loaded", iframe, extension })
+            this._extensions.set(id, {
+                status: "loaded",
+                iframe,
+                extension,
+                listener,
+                announcedUnloaded: false,
+            })
             this._dispatch({ type: "extensionLoaded", extension })
+
+            this._watchForDisconnect(id, iframe, extension)
+            this._watchForReconnects(id, iframe, listener)
         } catch (error) {
+            listener?.stop()
             if (!iframe.parentElement) {
                 // ^^ <iframe> was removed before load could complete, ignore
                 return
@@ -382,6 +409,82 @@ export class ExtensionRuntime {
             this._extensions.set(id, { status: "unloaded" })
             this._dispatch({ type: "extensionLoadFailed", manifest, error })
         }
+    }
+
+    /**
+     * Swap in a new connection each time a loaded extension's iframe connects again.
+     *
+     * A reload discards the document the old connection lived in, so the old
+     * extension is torn down and announced as unloaded before the new one is
+     * announced as loaded. That lets registries drop the stale responders and
+     * pick up the new ones the same way they would for any other load.
+     */
+    private async _watchForReconnects(
+        id: string,
+        iframe: HTMLIFrameElement,
+        listener: ExtensionListener,
+    ) {
+        for (;;) {
+            let extension: Extension | null
+            try {
+                extension = await listener.next()
+            } catch (error) {
+                console.error("*** Could not reconnect extension", id, error)
+                continue
+            }
+            if (extension === null) {
+                // The listener was stopped, which only happens on unload
+                return
+            }
+
+            const state = this._extensions.get(id)
+            if (state?.status !== "loaded" || state.iframe !== iframe) {
+                console.debug("Ignoring connection from a stale extension iframe", id)
+                extension.disconnect()
+                return
+            }
+
+            console.debug("Reconnected extension", id)
+            state.extension.disconnect()
+            if (!state.announcedUnloaded) {
+                this._dispatch({ type: "extensionUnloaded", extension: state.extension })
+            }
+            this._extensions.set(id, { ...state, extension, announcedUnloaded: false })
+            this._dispatch({ type: "extensionLoaded", extension })
+
+            this._watchForDisconnect(id, iframe, extension)
+        }
+    }
+
+    /**
+     * Announce an extension as unloaded as soon as its document goes away.
+     *
+     * The extension invalidates its connection when its document unloads, which
+     * precedes a reload just as much as a crash or navigation. Announcing right
+     * away lets registries drop the stale responders without waiting for a
+     * reconnect that may never come. The iframe and listener stay in place so a
+     * reload can still connect again and be swapped in by `_watchForReconnects`.
+     */
+    private _watchForDisconnect(id: string, iframe: HTMLIFrameElement, extension: Extension) {
+        extension.connection.subscribe(
+            justEventsMatching("type", "invalidated", ({ fromRemoteSide }) => {
+                if (!fromRemoteSide) {
+                    return
+                }
+                const state = this._extensions.get(id)
+                if (
+                    state?.status !== "loaded" ||
+                    state.iframe !== iframe ||
+                    state.extension !== extension ||
+                    state.announcedUnloaded
+                ) {
+                    return
+                }
+                console.debug("Extension disconnected, awaiting reconnect", id)
+                this._extensions.set(id, { ...state, announcedUnloaded: true })
+                this._dispatch({ type: "extensionUnloaded", extension })
+            }),
+        )
     }
 
     private async _loadIfNeeded(id: string) {
@@ -401,9 +504,12 @@ export class ExtensionRuntime {
                     state.abortController.abort()
                     break
                 case "loaded":
+                    state.listener.stop()
                     state.iframe.remove()
                     state.extension.disconnect()
-                    this._dispatch({ type: "extensionUnloaded", extension: state.extension })
+                    if (!state.announcedUnloaded) {
+                        this._dispatch({ type: "extensionUnloaded", extension: state.extension })
+                    }
                     break
             }
             this._extensions.delete(id)

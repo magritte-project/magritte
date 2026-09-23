@@ -48,60 +48,91 @@ async function implementExports(options: HostExportsOptions, exports: HostExport
     ]
 }
 
-export interface ExtensionWaitForConnectionOptions {
+export interface ExtensionListenOptions {
     /** The iframe element pointed at the extension */
     readonly iframe: HTMLIFrameElement
 
     /** The manifest of the extension */
     readonly manifest: ExtensionManifest
 
-    /** The abort signal to use for the connection */
+    /** Stops the listener when aborted, as if `stop()` had been called */
     readonly signal?: AbortSignal
 
-    /** The broadcaster to use for communication with the extension */
-    readonly broadcaster?: RPCBroadcaster
-
-    /** The exports to make available to the extension */
+    /** The exports to make available to the extension, resolved once per connection */
     readonly exports: HostExports
+}
 
-    /** How long to wait for the extension's connection */
+export interface ExtensionListenerNextOptions {
+    /**
+     * How long to wait for the extension to connect, in milliseconds.
+     * Waits indefinitely when omitted.
+     */
     readonly timeout?: number
 }
 
+/**
+ * Answers connections from an extension's iframe for as long as it is open.
+ *
+ * An extension connects every time its document starts, which includes
+ * reloads during development, so the listener stays open for the lifetime
+ * of the iframe and produces a new `Extension` for each connection.
+ */
+export interface ExtensionListener {
+    /**
+     * Wait for the next connection from the extension.
+     *
+     * @returns The connected extension, or `null` once the listener is stopped.
+     */
+    next(options?: ExtensionListenerNextOptions): Promise<Extension | null>
+
+    /** Stop answering connections from the extension. */
+    stop(): void
+}
+
 export class Extension {
-    static async waitForConnection({
-        iframe,
-        manifest,
-        signal,
-        broadcaster = new RPCBroadcaster(),
-        exports,
-        timeout = 30_000,
-    }: ExtensionWaitForConnectionOptions): Promise<Extension> {
-        const origin = getExtensionOrigin(manifest)
-        const identity = manifest.id
+    /**
+     * Start answering connections from an extension's iframe.
+     *
+     * The caller is responsible for stopping the listener once the iframe goes away,
+     * either by calling `stop()` or by aborting the `signal` it was created with.
+     */
+    static listen({ iframe, manifest, signal, exports }: ExtensionListenOptions): ExtensionListener {
         signal?.throwIfAborted()
-        const transport = await MessageChannelTransport.handshake({
-            role: "responder",
+        const responder = MessageChannelTransport.listen({
             iframe,
-            origin,
-            identity,
-            timeout,
+            origin: getExtensionOrigin(manifest),
+            identity: manifest.id,
         })
-        signal?.throwIfAborted()
-        const extensionForExports = createDeferred<Extension>()
-        const exportedObject = await implementExports(
-            { manifest, broadcaster, extension: extensionForExports.deferred },
-            exports,
-        )
-        const connection = new RPCConnection({
-            transport,
-            broadcaster,
-            exportedObject,
-        })
-        signal?.throwIfAborted()
-        const extension = new Extension(connection, manifest)
-        extensionForExports.resolve(extension)
-        return extension
+        const abort = () => responder.close()
+        signal?.addEventListener("abort", abort, { once: true })
+        return {
+            async next({ timeout }: ExtensionListenerNextOptions = {}) {
+                const transport = await responder.next({ timeout })
+                if (transport === null) {
+                    return null
+                }
+                // A broadcaster is invalidated along with its connection, so each gets its own
+                const broadcaster = new RPCBroadcaster()
+                const extensionForExports = createDeferred<Extension>()
+                const exportedObject = await implementExports(
+                    { manifest, broadcaster, extension: extensionForExports.deferred },
+                    exports,
+                )
+                signal?.throwIfAborted()
+                const connection = new RPCConnection({
+                    transport,
+                    broadcaster,
+                    exportedObject,
+                })
+                const extension = new Extension(connection, manifest)
+                extensionForExports.resolve(extension)
+                return extension
+            },
+            stop() {
+                signal?.removeEventListener("abort", abort)
+                responder.close()
+            },
+        }
     }
 
     /** @private */

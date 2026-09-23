@@ -95,7 +95,6 @@ export class ExtensionHost {
         }
 
         const transport = await MessageChannelTransport.handshake({
-            role: "requester",
             parentWindow: window.top,
             origin: originParam,
             identity: extensionId,
