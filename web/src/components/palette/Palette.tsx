@@ -1,7 +1,8 @@
 import { Combobox, ComboboxInput, ComboboxOptions } from "@headlessui/react"
 import { BooksIcon, GearIcon, MagnifyingGlassIcon } from "@phosphor-icons/react"
+import { useDebounce } from "@uidotdev/usehooks"
 import { AnimatePresence, motion } from "motion/react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 
 import type { Command, SearchCommandItem } from "@/commands/base"
@@ -18,12 +19,21 @@ export interface PaletteProps {
     readonly isOpen: boolean
     readonly setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 
+    readonly view: string
+    readonly setView: React.Dispatch<React.SetStateAction<PaletteView>>
+
     readonly search: string
     readonly setSearch: React.Dispatch<React.SetStateAction<string>>
 }
 
-export default function Palette({ isOpen, setIsOpen, search, setSearch }: PaletteProps) {
-    const [view, setView] = useState<PaletteView>("command")
+export default function Palette({
+    isOpen,
+    setIsOpen,
+    view,
+    setView,
+    search,
+    setSearch,
+}: PaletteProps) {
     const inputs = useCommandInputs()
     const notificationCenter = useNotificationCenter()
 
@@ -39,6 +49,8 @@ export default function Palette({ isOpen, setIsOpen, search, setSearch }: Palett
             document.removeEventListener("keyup", trackModifiers)
         }
     }, [])
+
+    const showLegend = useDebounce(search.length === 0, 1_000)
 
     const handleClose = useCallback(() => {
         setSearch("")
@@ -94,7 +106,11 @@ export default function Palette({ isOpen, setIsOpen, search, setSearch }: Palett
             if (event.key === "Escape") {
                 event.stopPropagation()
                 event.preventDefault()
-                handleClose()
+                if (event.currentTarget.value.length > 0) {
+                    setSearch("")
+                } else {
+                    handleClose()
+                }
             } else if (event.key === "Tab") {
                 event.stopPropagation()
                 event.preventDefault()
@@ -108,7 +124,7 @@ export default function Palette({ isOpen, setIsOpen, search, setSearch }: Palett
                 })
             }
         },
-        [handleClose],
+        [handleClose, setSearch, setView],
     )
 
     return createPortal(
@@ -184,22 +200,33 @@ export default function Palette({ isOpen, setIsOpen, search, setSearch }: Palett
                             <ComboboxOptions static className="relative max-h-80 overflow-y-auto">
                                 {view === "command" && <PaletteCommandsView search={search} />}
                                 {view === "search" && <PaletteSearchCommandView search={search} />}
-                                <div className="sticky bottom-0 border-t border-separator bg-secondary text-xs flex items-center justify-end gap-between px-outside py-[calc(var(--spacing-outside)/2)]">
-                                    {view === "command" && (
-                                        <>
-                                            <span>↵ Run</span>
-                                        </>
+                                <AnimatePresence mode="wait">
+                                    {showLegend && (
+                                        <motion.div
+                                            key="paletteCommandLegend"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.15 }}
+                                            className="sticky bottom-0 border-t border-separator bg-secondary text-xs flex items-center justify-end gap-between px-outside py-[calc(var(--spacing-outside)/2)]"
+                                        >
+                                            {view === "command" && (
+                                                <>
+                                                    <span>↵ Run</span>
+                                                </>
+                                            )}
+                                            {view === "search" && (
+                                                <>
+                                                    <span>↵ Reveal</span>
+                                                    <span>⇧↵ Play</span>
+                                                    <span>⌃↵ Add to Library</span>
+                                                </>
+                                            )}
+                                            <span>↹ Next View</span>
+                                            <span>⎋ Close</span>
+                                        </motion.div>
                                     )}
-                                    {view === "search" && (
-                                        <>
-                                            <span>↵ Reveal</span>
-                                            <span>⇧↵ Play</span>
-                                            <span>⌃↵ Add to Library</span>
-                                        </>
-                                    )}
-                                    <span>↹ Next View</span>
-                                    <span>⎋ Close</span>
-                                </div>
+                                </AnimatePresence>
                             </ComboboxOptions>
                         </div>
                     </Combobox>

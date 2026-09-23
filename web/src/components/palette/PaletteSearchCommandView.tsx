@@ -24,7 +24,7 @@ export default function PaletteSearchCommandView({ search }: PaletteSearchComman
         <Fragment key="paletteSearchResults">
             {search.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-on-secondary">
-                    Type to search your library and extensions
+                    Search in the current library and your extensions
                 </p>
             ) : sections.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-on-secondary">No results found</p>
