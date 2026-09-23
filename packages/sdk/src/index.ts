@@ -1,5 +1,4 @@
 export * from "./commands/coordinator"
-export * from "./commands/icons"
 export * from "./commands/inputs"
 export * from "./commands/libraryInputs"
 export * from "./commands/playbackInputs"

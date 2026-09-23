@@ -12,7 +12,20 @@ export const CommandContextSchema = z4.object({
 })
 export type CommandContext = z4.infer<typeof CommandContextSchema>
 
+export const CommandIconAppearanceSchema = z4.enum(["plain", "square", "circle"])
+export type CommandIconAppearance = z4.infer<typeof CommandIconAppearanceSchema>
+
+export const CommandIconSchema = z4.object({
+    url: z4.string().readonly(),
+    alt: z4.string().optional().readonly(),
+    appearance: CommandIconAppearanceSchema.readonly(),
+})
+export type CommandIcon = z4.infer<typeof CommandIconSchema>
+
 export const CommandPresentationSchema = z4.object({
+    /** Optional icon for the command */
+    icon: CommandIconSchema.optional().readonly(),
+
     /** Current display name for the command */
     displayName: z4.string().readonly(),
 

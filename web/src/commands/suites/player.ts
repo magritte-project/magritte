@@ -8,6 +8,16 @@ import {
     type PlayingItemInput,
     PlayingItemInputSchema,
 } from "@magritte/sdk"
+import {
+    PauseIcon,
+    PlayIcon,
+    ProhibitIcon,
+    RepeatIcon,
+    RepeatOnceIcon,
+    ShuffleIcon,
+    SkipBackIcon,
+    SkipForwardIcon,
+} from "@phosphor-icons/react"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
 import type { Command } from "@/commands/base"
@@ -22,7 +32,11 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             searchTerms: "playback skip previous",
             requiredInputKinds: [getCommandInputKind(PlaybackStateInputSchema)],
             highlightAvailability: false,
-            present: async () => ({ displayName: "playback: Skip Previous", disabled: false }),
+            present: async () => ({
+                icon: SkipBackIcon,
+                displayName: "playback: Skip Previous",
+                disabled: false,
+            }),
             execute: async () => {
                 const { player } = getMagritteRouterContext(router)
                 await player.skipPrevious()
@@ -36,6 +50,7 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             present: async (inputs) => {
                 const { current } = inputs.only(PlaybackStateInputSchema)
                 return {
+                    icon: current === "playing" ? PauseIcon : PlayIcon,
                     displayName: current === "playing" ? "playback: Pause" : "playback: Play",
                     disabled: current === "stopped",
                 }
@@ -54,7 +69,11 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             searchTerms: "playback skip next",
             requiredInputKinds: [getCommandInputKind(PlaybackStateInputSchema)],
             highlightAvailability: false,
-            present: async () => ({ displayName: "playback: Skip Next", disabled: false }),
+            present: async () => ({
+                icon: SkipForwardIcon,
+                displayName: "playback: Skip Next",
+                disabled: false,
+            }),
             execute: async () => {
                 const { player } = getMagritteRouterContext(router)
                 await player.skipNext()
@@ -68,6 +87,7 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             present: async (inputs) => {
                 const { current } = inputs.only(PlaybackModesInputSchema)
                 return {
+                    icon: ProhibitIcon,
                     displayName: "playback: Repeat Off",
                     disabled: current.repeat === "off",
                 }
@@ -85,6 +105,7 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             present: async (inputs) => {
                 const { current } = inputs.only(PlaybackModesInputSchema)
                 return {
+                    icon: RepeatIcon,
                     displayName: "playback: Repeat All",
                     disabled: current.repeat === "all",
                 }
@@ -102,6 +123,7 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             present: async (inputs) => {
                 const { current } = inputs.only(PlaybackModesInputSchema)
                 return {
+                    icon: RepeatOnceIcon,
                     displayName: "playback: Repeat One",
                     disabled: current.repeat === "one",
                 }
@@ -119,6 +141,7 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             present: async (inputs) => {
                 const { current } = inputs.only(PlaybackModesInputSchema)
                 return {
+                    icon: ShuffleIcon,
                     displayName:
                         current.shuffle === "on" ? "playback: Shuffle Off" : "playback: Shuffle On",
                 }

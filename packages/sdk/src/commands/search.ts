@@ -2,8 +2,8 @@ import { TAG_MAX_LENGTH } from "@magritte/api"
 import { protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
-import { CommandIconSchema } from "./icons"
 import { CommandInputSchema } from "./inputs"
+import { CommandIconSchema } from "./responder"
 
 export const SearchCommandIDSchema = z4.string().max(TAG_MAX_LENGTH)
 export type SearchCommandID = z4.infer<typeof SearchCommandIDSchema>

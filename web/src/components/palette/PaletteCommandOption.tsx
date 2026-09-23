@@ -28,7 +28,7 @@ export default function PaletteCommandOption({ inputs, command }: PaletteCommand
             }
         >
             <div className="flex items-center gap-between">
-                <PaletteOptionIcon className="w-8 h-8" />
+                <PaletteOptionIcon className="w-8 h-8" icon={presentationQuery.data?.icon} />
                 <div className="text-medium">
                     {presentationQuery.isSuccess
                         ? presentationQuery.data.displayName

@@ -1,7 +1,15 @@
-import type { CommandIcon, CommandPresentation } from "@magritte/sdk"
+import type {
+    CommandIcon,
+    CommandPresentation as ExtensionCommandPresentation,
+} from "@magritte/sdk"
 import type { Icon } from "@phosphor-icons/react"
 
 import type { CommandInputs } from "@/commands/inputs/base"
+
+interface CommandPresentation extends Omit<ExtensionCommandPresentation, "icon"> {
+    /** Optional icon for the command */
+    readonly icon?: Icon | ExtensionCommandPresentation["icon"]
+}
 
 export interface Command {
     /** Unique identifier for the command */

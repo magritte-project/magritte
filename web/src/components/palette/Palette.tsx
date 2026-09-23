@@ -1,12 +1,13 @@
 import { Combobox, ComboboxInput, ComboboxOptions } from "@headlessui/react"
-import { MagnifyingGlassIcon } from "@phosphor-icons/react"
+import { BooksIcon, GearIcon, MagnifyingGlassIcon } from "@phosphor-icons/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 
 import type { Command, SearchCommandItem } from "@/commands/base"
-import PaletteCommandResults from "@/components/palette/PaletteCommandResults"
-import PaletteSearchResults from "@/components/palette/PaletteSearchResults"
+import PaletteCommandsView from "@/components/palette/PaletteCommandsView"
+import PaletteSearchCommandView from "@/components/palette/PaletteSearchCommandView"
+import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import { getErrorMessage } from "@/utilities/errors"
@@ -142,35 +143,47 @@ export default function Palette({ isOpen, setIsOpen, search, setSearch }: Palett
                                 <ComboboxInput
                                     className="flex-1 bg-transparent py-between text-sm outline-none"
                                     autoFocus
-                                    placeholder="Search commands..."
+                                    placeholder={
+                                        view === "command"
+                                            ? "Type a command..."
+                                            : "Type a song, album, artist..."
+                                    }
                                     value={search}
                                     onChange={handleInputChange}
                                     onKeyDown={handleInputKeyDown}
                                 />
-                                <div role="radiogroup" className="flex gap-between">
+                                <div role="radiogroup" className="flex items-center">
                                     <button
                                         type="button"
-                                        className="text-xs font-bold aria-checked:text-key cursor-pointer"
+                                        className="group text-xs cursor-pointer"
                                         role="radio"
                                         aria-checked={view === "command"}
                                         onClick={() => setView("command")}
                                     >
-                                        Commands
+                                        <ThemedTabItemLabel
+                                            isActive={view === "command"}
+                                            icon={GearIcon}
+                                            label="Commands"
+                                        />
                                     </button>
                                     <button
                                         type="button"
-                                        className="text-xs font-bold aria-checked:text-key cursor-pointer"
+                                        className="group text-xs cursor-pointer"
                                         role="radio"
                                         aria-checked={view === "search"}
                                         onClick={() => setView("search")}
                                     >
-                                        Search
+                                        <ThemedTabItemLabel
+                                            isActive={view === "search"}
+                                            icon={BooksIcon}
+                                            label="Library"
+                                        />
                                     </button>
                                 </div>
                             </div>
                             <ComboboxOptions static className="relative max-h-80 overflow-y-auto">
-                                {view === "command" && <PaletteCommandResults search={search} />}
-                                {view === "search" && <PaletteSearchResults search={search} />}
+                                {view === "command" && <PaletteCommandsView search={search} />}
+                                {view === "search" && <PaletteSearchCommandView search={search} />}
                                 <div className="sticky bottom-0 border-t border-separator bg-secondary text-xs flex items-center justify-end gap-between px-outside py-[calc(var(--spacing-outside)/2)]">
                                     {view === "command" && (
                                         <>

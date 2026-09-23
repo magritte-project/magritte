@@ -4,11 +4,11 @@ import PaletteCommandOption from "@/components/palette/PaletteCommandOption"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommands from "@/hooks/commandsHook"
 
-export interface PaletteCommandResultsProps {
+export interface PaletteCommandsViewProps {
     readonly search: string
 }
 
-export default function PaletteCommandResults({ search }: PaletteCommandResultsProps) {
+export default function PaletteCommandsView({ search }: PaletteCommandsViewProps) {
     const inputs = useCommandInputs()
     const commands = useCommands({ search })
 

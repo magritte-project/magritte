@@ -46,7 +46,7 @@ export default function PaletteOptionIcon({ icon, className, ...rest }: PaletteO
     return (
         <div
             className={classNames(
-                "relative flex items-center justify-center overflow-clip",
+                "relative flex items-center justify-center overflow-clip text-on-primary",
                 containerClassName,
                 className,
             )}
@@ -54,7 +54,7 @@ export default function PaletteOptionIcon({ icon, className, ...rest }: PaletteO
         >
             {tokenQuery.isSuccess && icon ? (
                 isPhosphorIcon(icon) ? (
-                    ((Icon) => <Icon />)(icon)
+                    ((Icon) => <Icon size="60%" />)(icon)
                 ) : (
                     <img
                         className="object-fit w-full h-full"
@@ -64,7 +64,7 @@ export default function PaletteOptionIcon({ icon, className, ...rest }: PaletteO
                     />
                 )
             ) : (
-                <GearIcon size="50%" />
+                <GearIcon size="60%" />
             )}
             <div
                 className={classNames("absolute top-0 left-0 w-full h-full", overlayClassName)}

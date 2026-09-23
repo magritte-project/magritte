@@ -1,4 +1,12 @@
 import { getCommandInputKind, LibraryInputSchema, LibrarySongInputSchema } from "@magritte/sdk"
+import {
+    ArrowsClockwiseIcon,
+    DiscIcon,
+    DownloadIcon,
+    MicrophoneStageIcon,
+    MusicNotesIcon,
+    TrashIcon,
+} from "@phosphor-icons/react"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
@@ -15,6 +23,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             requiredInputKinds: [getCommandInputKind(LibraryInputSchema)],
             highlightAvailability: false,
             present: async () => ({
+                icon: MicrophoneStageIcon,
                 displayName: "library: Artists",
             }),
             execute: async (inputs) => {
@@ -31,6 +40,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             requiredInputKinds: [getCommandInputKind(LibraryInputSchema)],
             highlightAvailability: false,
             present: async () => ({
+                icon: DiscIcon,
                 displayName: "library: Albums",
             }),
             execute: async (inputs) => {
@@ -47,6 +57,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             requiredInputKinds: [getCommandInputKind(LibraryInputSchema)],
             highlightAvailability: false,
             present: async () => ({
+                icon: MusicNotesIcon,
                 displayName: "library: Songs",
             }),
             execute: async (inputs) => {
@@ -66,6 +77,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                 getCommandInputKind(LibrarySongInputSchema),
             ],
             present: async () => ({
+                icon: TrashIcon,
                 displayName: "library: Delete Selected Songs…",
             }),
             execute: async (inputs) => {
@@ -119,6 +131,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             ],
             highlightAvailability: true,
             present: async () => ({
+                icon: DownloadIcon,
                 displayName: "library: Download Selected Songs…",
             }),
             execute: async (inputs) => {
@@ -176,6 +189,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
             requiredInputKinds: [getCommandInputKind(LibraryInputSchema)],
             highlightAvailability: false,
             present: async () => ({
+                icon: ArrowsClockwiseIcon,
                 displayName: "library: Request Sync",
             }),
             execute: async (inputs) => {

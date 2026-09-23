@@ -1,5 +1,5 @@
 import type { LibraryInput } from "@magritte/sdk"
-import { DiscIcon, MicrophoneIcon, MusicNotesIcon } from "@phosphor-icons/react"
+import { DiscIcon, MicrophoneStageIcon, MusicNotesIcon } from "@phosphor-icons/react"
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useCallback, useMemo } from "react"
 import { z } from "zod"
@@ -76,7 +76,7 @@ export const Route = createFileRoute("/libraries_/$libraryId")({
                                 <ThemedTabItemLink
                                     to="/libraries/$libraryId/artists"
                                     params={params}
-                                    icon={MicrophoneIcon}
+                                    icon={MicrophoneStageIcon}
                                     label="Artists"
                                 />
                                 <ThemedTabItemLink
