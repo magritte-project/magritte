@@ -37,6 +37,8 @@ import {
     readMeUsersMeGet,
     readNotificationsUsersNotificationsGet,
     readNotificationUsersNotificationsNotificationIdGet,
+    readUserAdminUsersAdminAllIdOrUsernameGet,
+    readUsersAdminUsersAdminAllGet,
     readUsersUsersAllGet,
     readUserUsersAllIdOrUsernameGet,
     requestSyncLibraryLibrariesLibraryIdSyncPost,
@@ -53,6 +55,7 @@ import {
     updateMeUsersMePost,
     updateNotificationUsersNotificationsNotificationIdPatch,
     updateSourceSourcesSourceIdPatch,
+    updateUserAdminUsersAdminAllUserIdPatch,
     type AlbumRead,
     type AlbumUpdate,
     type ArtistRead,
@@ -93,12 +96,16 @@ import {
     type ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetData,
     type ReadLibrarySongsLibrariesLibraryIdSongsGetData,
     type ReadNotificationsUsersNotificationsGetData,
+    type ReadUsersAdminUsersAdminAllGetData,
     type ReadUsersUsersAllGetData,
     type SongRead,
     type SongUpdate,
     type SourceCreate,
     type SourceRead,
     type SourceUpdate,
+    type UserAdminRead,
+    type UserAdminsRead,
+    type UserAdminUpdate,
     type UserEventPreflight,
     type UserFileAccessPreflight,
     type UserProfileRead,
@@ -264,6 +271,27 @@ export class APIClient {
 
     async readAllUsers(query?: ReadUsersUsersAllGetData["query"]): Promise<UserProfilesRead> {
         return await readUsersUsersAllGet({ ...this.options, query })
+    }
+
+    async readUserAdmin(id_or_username: number | string): Promise<UserAdminRead> {
+        return await readUserAdminUsersAdminAllIdOrUsernameGet({
+            ...this.options,
+            path: { id_or_username: String(id_or_username) },
+        })
+    }
+
+    async readAllUsersAdmin(
+        query?: ReadUsersAdminUsersAdminAllGetData["query"],
+    ): Promise<UserAdminsRead> {
+        return await readUsersAdminUsersAdminAllGet({ ...this.options, query })
+    }
+
+    async updateUserAdmin(user_id: number, body: UserAdminUpdate): Promise<UserAdminRead> {
+        return await updateUserAdminUsersAdminAllUserIdPatch({
+            ...this.options,
+            path: { user_id },
+            body,
+        })
     }
 
     async readFilesPreflight(): Promise<UserFileAccessPreflight> {

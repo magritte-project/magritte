@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conftest import SignIn
 from magritte.model.notification import Notification
 from magritte.model.user import User
+from magritte.schemas.auth import OAuth2Scope
 
 
 class NotificationsFixture:
@@ -474,6 +475,310 @@ class TestReadUser:
     ):
         response = client.get(
             "/users/all/1",
+        )
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not authenticated"
+
+
+class TestReadUsersAdmin:
+    @pytest.mark.asyncio
+    async def test_read(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/users/admin/all",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("total") >= 4
+        assert all(
+            user.get("id") is not None
+            and user.get("username") is not None
+            and len(user.get("scopes")) > 0
+            for user in response_json.get("users")
+        )
+
+        users_by_name = {
+            user.get("username"): user for user in response_json.get("users")
+        }
+        assert users_by_name["restricted"].get("scopes") == [
+            "library:read",
+            "profile",
+        ]
+
+    @pytest.mark.asyncio
+    async def test_query(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/users/admin/all",
+            params={"query": "restricted"},
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("total") == 1
+        assert [user.get("username") for user in response_json.get("users")] == [
+            "restricted"
+        ]
+
+    @pytest.mark.asyncio
+    async def test_requires_admin(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("restricted", "password")
+
+        response = client.get(
+            "/users/admin/all",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_requires_user(
+        self,
+        client: TestClient,
+    ):
+        response = client.get(
+            "/users/admin/all",
+        )
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not authenticated"
+
+
+class TestReadUserAdmin:
+    @pytest.mark.asyncio
+    async def test_read_by_id(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/users/admin/all/1",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("id") == 1
+        assert response_json.get("username") == "test"
+
+    @pytest.mark.asyncio
+    async def test_read_by_username(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.get(
+            "/users/admin/all/unlucky",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("id") == 2
+        assert response_json.get("username") == "unlucky"
+
+    @pytest.mark.asyncio
+    async def test_requires_admin(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("restricted", "password")
+
+        response = client.get(
+            "/users/admin/all/3",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_requires_user(
+        self,
+        client: TestClient,
+    ):
+        response = client.get(
+            "/users/admin/all/1",
+        )
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not authenticated"
+
+
+class TestUpdateUserAdmin:
+    @pytest.mark.asyncio
+    async def test_update(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.patch(
+            "/users/admin/all/2",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+            json={
+                "preferred_name": "Lucky",
+                "enable_playback_events": False,
+                "scopes": ["profile", "library:read"],
+            },
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("id") == 2
+        assert response_json.get("preferred_name") == "Lucky"
+        assert response_json.get("enable_playback_events") is False
+        assert sorted(response_json.get("scopes")) == ["library:read", "profile"]
+
+        updated_session = sign_in("unlucky", "password")
+        assert sorted(updated_session.scopes) == [
+            OAuth2Scope.LIBRARIES_READ,
+            OAuth2Scope.PROFILE,
+        ]
+
+    @pytest.mark.asyncio
+    async def test_partial_update(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.patch(
+            "/users/admin/all/2",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+            json={"preferred_name": "Lucky"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("username") == "unlucky"
+        assert response_json.get("preferred_name") == "Lucky"
+        assert sorted(response_json.get("scopes")) == sorted(OAuth2Scope)
+
+    @pytest.mark.asyncio
+    async def test_can_update_own_scopes_keeping_admin(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.patch(
+            "/users/admin/all/1",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+            json={"scopes": ["profile", "admin"]},
+        )
+        assert response.status_code == 200
+        assert sorted(response.json().get("scopes")) == ["admin", "profile"]
+
+    @pytest.mark.asyncio
+    async def test_cannot_remove_own_admin_scope(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.patch(
+            "/users/admin/all/1",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+            json={"scopes": ["profile", "library:read"]},
+        )
+        assert response.status_code == 400
+        assert (
+            response.json().get("detail")
+            == "Cannot remove admin scope from the signed in user"
+        )
+
+        updated_session = sign_in("test", "password")
+        assert OAuth2Scope.ADMIN in updated_session.scopes
+
+    @pytest.mark.asyncio
+    async def test_can_remove_admin_scope_from_other_user(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.patch(
+            "/users/admin/all/2",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+            json={"scopes": ["profile"]},
+        )
+        assert response.status_code == 200
+        assert response.json().get("scopes") == ["profile"]
+
+    @pytest.mark.asyncio
+    async def test_rejects_empty_scopes(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.patch(
+            "/users/admin/all/2",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+            json={"scopes": []},
+        )
+        assert response.status_code == 422
+
+        updated_session = sign_in("unlucky", "password")
+        assert sorted(updated_session.scopes) == sorted(OAuth2Scope)
+
+    @pytest.mark.asyncio
+    async def test_requires_user_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.patch(
+            "/users/admin/all/9999",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+            json={"preferred_name": "Nobody"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "User not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_admin(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("restricted", "password")
+
+        response = client.patch(
+            "/users/admin/all/3",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+            json={"scopes": [*OAuth2Scope]},
+        )
+        assert response.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_requires_user(
+        self,
+        client: TestClient,
+    ):
+        response = client.patch(
+            "/users/admin/all/1",
+            json={"preferred_name": "Nobody"},
         )
         assert response.status_code == 401
         assert response.json().get("detail") == "Not authenticated"

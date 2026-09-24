@@ -126,6 +126,12 @@ import type {
     ReadSourceSourcesSourceIdGetData,
     ReadSourceSourcesSourceIdGetErrors,
     ReadSourceSourcesSourceIdGetResponses,
+    ReadUserAdminUsersAdminAllIdOrUsernameGetData,
+    ReadUserAdminUsersAdminAllIdOrUsernameGetErrors,
+    ReadUserAdminUsersAdminAllIdOrUsernameGetResponses,
+    ReadUsersAdminUsersAdminAllGetData,
+    ReadUsersAdminUsersAdminAllGetErrors,
+    ReadUsersAdminUsersAdminAllGetResponses,
     ReadUsersUsersAllGetData,
     ReadUsersUsersAllGetErrors,
     ReadUsersUsersAllGetResponses,
@@ -176,6 +182,9 @@ import type {
     UpdateSourceSourcesSourceIdPatchData,
     UpdateSourceSourcesSourceIdPatchErrors,
     UpdateSourceSourcesSourceIdPatchResponses,
+    UpdateUserAdminUsersAdminAllUserIdPatchData,
+    UpdateUserAdminUsersAdminAllUserIdPatchErrors,
+    UpdateUserAdminUsersAdminAllUserIdPatchResponses,
 } from "./types.gen"
 
 export type Options<
@@ -1577,6 +1586,79 @@ export const readUserUsersAllIdOrUsernameGet = <ThrowOnError extends boolean = f
         security: [{ scheme: "bearer", type: "http" }],
         url: "/users/all/{id_or_username}",
         ...options,
+    })
+
+/**
+ * Read details about users on this instance, including their scopes
+ */
+export const readUsersAdminUsersAdminAllGet = <ThrowOnError extends boolean = false>(
+    options?: Options<ReadUsersAdminUsersAdminAllGetData, ThrowOnError>,
+): RequestResult<
+    ReadUsersAdminUsersAdminAllGetResponses,
+    ReadUsersAdminUsersAdminAllGetErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options?.client ?? client).get<
+        ReadUsersAdminUsersAdminAllGetResponses,
+        ReadUsersAdminUsersAdminAllGetErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/users/admin/all",
+        ...options,
+    })
+
+/**
+ * Read details a users on this instance, including their scopes
+ */
+export const readUserAdminUsersAdminAllIdOrUsernameGet = <ThrowOnError extends boolean = false>(
+    options: Options<ReadUserAdminUsersAdminAllIdOrUsernameGetData, ThrowOnError>,
+): RequestResult<
+    ReadUserAdminUsersAdminAllIdOrUsernameGetResponses,
+    ReadUserAdminUsersAdminAllIdOrUsernameGetErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).get<
+        ReadUserAdminUsersAdminAllIdOrUsernameGetResponses,
+        ReadUserAdminUsersAdminAllIdOrUsernameGetErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/users/admin/all/{id_or_username}",
+        ...options,
+    })
+
+/**
+ * Update a user on this instance, including their granted scopes
+ */
+export const updateUserAdminUsersAdminAllUserIdPatch = <ThrowOnError extends boolean = false>(
+    options: Options<UpdateUserAdminUsersAdminAllUserIdPatchData, ThrowOnError>,
+): RequestResult<
+    UpdateUserAdminUsersAdminAllUserIdPatchResponses,
+    UpdateUserAdminUsersAdminAllUserIdPatchErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).patch<
+        UpdateUserAdminUsersAdminAllUserIdPatchResponses,
+        UpdateUserAdminUsersAdminAllUserIdPatchErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/users/admin/all/{user_id}",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
     })
 
 /**

@@ -22,6 +22,18 @@ export function usersAll<Rest extends any[]>(...rest: Rest) {
     return [...users(), "all", ...rest] as const
 }
 
+export function usersAdmin() {
+    return [...users(), "admin"] as const
+}
+
+export function usersAdminProfile(idOrUsername: string) {
+    return [...usersAdmin(), idOrUsername] as const
+}
+
+export function usersAdminAll<Rest extends any[]>(...rest: Rest) {
+    return [...usersAdmin(), "all", ...rest] as const
+}
+
 export function userMeFileAccessToken() {
     return [...me(), "fileAccessToken"] as const
 }

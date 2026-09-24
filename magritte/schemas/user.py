@@ -47,6 +47,29 @@ class UserProfileUpdate(BaseModel):
     enable_playback_events: bool
 
 
+class UserAdminRead(UserProfileRead):
+    scopes: list[OAuth2Scope]
+
+
+class UserAdminsRead(BaseModel):
+    users: list[UserAdminRead]
+    offset: int
+    limit: int
+    total: int
+
+
+class UserAdminUpdate(BaseModel):
+    preferred_name: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
+    enable_playback_events: bool | None = None
+    scopes: Annotated[
+        set[OAuth2Scope] | None,
+        Field(
+            min_length=1,
+            description="The complete set of scopes to grant the user",
+        ),
+    ] = None
+
+
 class UserEventPreflight(BaseModel):
     token: str
 

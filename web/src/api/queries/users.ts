@@ -2,10 +2,12 @@ import type { API } from "@magritte/api"
 import { queryOptions } from "@tanstack/react-query"
 
 import {
+    usersAdminProfile,
     userMeFileAccessToken,
     userMeNotification,
     userMeNotifications,
     userMeProfile,
+    usersAdminAll,
     usersAll,
 } from "@/api/keys/users"
 
@@ -43,6 +45,28 @@ export function readAllUsers(
     return queryOptions({
         queryKey: usersAll(query, offset, limit),
         queryFn: () => api.client.readAllUsers({ query, offset, limit }),
+        enabled,
+    })
+}
+
+export function readAllUsersAdmin(
+    api: API,
+    query?: string,
+    offset?: number,
+    limit?: number,
+    enabled = true,
+) {
+    return queryOptions({
+        queryKey: usersAdminAll(query, offset, limit),
+        queryFn: () => api.client.readAllUsersAdmin({ query, offset, limit }),
+        enabled,
+    })
+}
+
+export function readUserProfileAdmin(api: API, idOrUsername: string, enabled = true) {
+    return queryOptions({
+        queryKey: usersAdminProfile(idOrUsername),
+        queryFn: () => api.client.readUserAdmin(idOrUsername),
         enabled,
     })
 }

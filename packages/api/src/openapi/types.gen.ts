@@ -1315,6 +1315,74 @@ export type Token = {
 }
 
 /**
+ * UserAdminRead
+ */
+export type UserAdminRead = {
+    /**
+     * Id
+     */
+    id: number
+    /**
+     * Username
+     */
+    username: string
+    /**
+     * Preferred Name
+     */
+    preferred_name: string | null
+    /**
+     * Enable Playback Events
+     */
+    enable_playback_events: boolean
+    /**
+     * Scopes
+     */
+    scopes: Array<OAuth2Scope>
+}
+
+/**
+ * UserAdminUpdate
+ */
+export type UserAdminUpdate = {
+    /**
+     * Preferred Name
+     */
+    preferred_name?: string | null
+    /**
+     * Enable Playback Events
+     */
+    enable_playback_events?: boolean | null
+    /**
+     * Scopes
+     *
+     * The complete set of scopes to grant the user
+     */
+    scopes?: Array<OAuth2Scope> | null
+}
+
+/**
+ * UserAdminsRead
+ */
+export type UserAdminsRead = {
+    /**
+     * Users
+     */
+    users: Array<UserAdminRead>
+    /**
+     * Offset
+     */
+    offset: number
+    /**
+     * Limit
+     */
+    limit: number
+    /**
+     * Total
+     */
+    total: number
+}
+
+/**
  * UserEventPreflight
  */
 export type UserEventPreflight = {
@@ -3342,6 +3410,116 @@ export type ReadUserUsersAllIdOrUsernameGetResponses = {
 
 export type ReadUserUsersAllIdOrUsernameGetResponse =
     ReadUserUsersAllIdOrUsernameGetResponses[keyof ReadUserUsersAllIdOrUsernameGetResponses]
+
+export type ReadUsersAdminUsersAdminAllGetData = {
+    body?: never
+    path?: never
+    query?: {
+        /**
+         * Offset
+         *
+         * The page offset to read from
+         */
+        offset?: number
+        /**
+         * Limit
+         *
+         * How many items to read per page
+         */
+        limit?: number
+        /**
+         * Query
+         *
+         * Query string to filter the users by
+         */
+        query?: string | null
+    }
+    url: "/users/admin/all"
+}
+
+export type ReadUsersAdminUsersAdminAllGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type ReadUsersAdminUsersAdminAllGetError =
+    ReadUsersAdminUsersAdminAllGetErrors[keyof ReadUsersAdminUsersAdminAllGetErrors]
+
+export type ReadUsersAdminUsersAdminAllGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserAdminsRead
+}
+
+export type ReadUsersAdminUsersAdminAllGetResponse =
+    ReadUsersAdminUsersAdminAllGetResponses[keyof ReadUsersAdminUsersAdminAllGetResponses]
+
+export type ReadUserAdminUsersAdminAllIdOrUsernameGetData = {
+    body?: never
+    path: {
+        /**
+         * Id Or Username
+         */
+        id_or_username: string
+    }
+    query?: never
+    url: "/users/admin/all/{id_or_username}"
+}
+
+export type ReadUserAdminUsersAdminAllIdOrUsernameGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type ReadUserAdminUsersAdminAllIdOrUsernameGetError =
+    ReadUserAdminUsersAdminAllIdOrUsernameGetErrors[keyof ReadUserAdminUsersAdminAllIdOrUsernameGetErrors]
+
+export type ReadUserAdminUsersAdminAllIdOrUsernameGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserAdminRead
+}
+
+export type ReadUserAdminUsersAdminAllIdOrUsernameGetResponse =
+    ReadUserAdminUsersAdminAllIdOrUsernameGetResponses[keyof ReadUserAdminUsersAdminAllIdOrUsernameGetResponses]
+
+export type UpdateUserAdminUsersAdminAllUserIdPatchData = {
+    body: UserAdminUpdate
+    path: {
+        /**
+         * User Id
+         */
+        user_id: number
+    }
+    query?: never
+    url: "/users/admin/all/{user_id}"
+}
+
+export type UpdateUserAdminUsersAdminAllUserIdPatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type UpdateUserAdminUsersAdminAllUserIdPatchError =
+    UpdateUserAdminUsersAdminAllUserIdPatchErrors[keyof UpdateUserAdminUsersAdminAllUserIdPatchErrors]
+
+export type UpdateUserAdminUsersAdminAllUserIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserAdminRead
+}
+
+export type UpdateUserAdminUsersAdminAllUserIdPatchResponse =
+    UpdateUserAdminUsersAdminAllUserIdPatchResponses[keyof UpdateUserAdminUsersAdminAllUserIdPatchResponses]
 
 export type ReadFilesPreflightUsersFilesPreflightPostData = {
     body?: never

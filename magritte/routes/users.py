@@ -32,6 +32,9 @@ from magritte.schemas.notification import (
     NotificationUpdate,
 )
 from magritte.schemas.user import (
+    UserAdminRead,
+    UserAdminsRead,
+    UserAdminUpdate,
     UserEventPreflight,
     UserFileAccessPreflight,
     UserProfileRead,
@@ -329,9 +332,111 @@ async def read_user(
         )
 
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
 
     return UserProfileRead(**user.model_dump())
+
+
+@router.get(
+    "/admin/all",
+    response_model=UserAdminsRead,
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.ADMIN])],
+    summary="Read details about users on this instance, including their scopes",
+)
+async def read_users_admin(
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    query: Annotated[UserProfilesQuery, Query()],
+):
+    where_criteria = list[ColumnExpressionArgument]()
+    if query.query is not None:
+        where_criteria.append(User.strs_ilike(query.query))
+
+    total, users = await User.read_many_with_total(
+        where=[
+            *where_criteria,
+        ],
+        joins=[],
+        order_by=[col(User.last_updated).desc(), col(User.username).asc()],
+        offset=query.offset,
+        limit=query.limit,
+        session=session,
+    )
+    return UserAdminsRead(
+        users=[
+            UserAdminRead(**user.model_dump(), scopes=sorted(user.scopes))
+            for user in users
+        ],
+        offset=query.offset,
+        limit=query.limit,
+        total=total,
+    )
+
+
+@router.get(
+    "/admin/all/{id_or_username}",
+    response_model=UserAdminRead,
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.ADMIN])],
+    summary="Read details a users on this instance, including their scopes",
+)
+async def read_user_admin(
+    id_or_username: str,
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    try:
+        user = await session.get(User, int(id_or_username))
+    except ValueError:
+        user = await session.scalar(
+            select(User).where(
+                col(User.username) == id_or_username,
+            )
+        )
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    return UserAdminRead(**user.model_dump(), scopes=sorted(user.scopes))
+
+
+@router.patch(
+    "/admin/all/{user_id}",
+    response_model=UserAdminRead,
+    summary="Update a user on this instance, including their granted scopes",
+)
+async def update_user_admin(
+    user_id: int,
+    user_update: UserAdminUpdate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.ADMIN])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    user = await session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    if (
+        user.id == current_user.id
+        and user_update.scopes is not None
+        and OAuth2Scope.ADMIN not in user_update.scopes
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot remove admin scope from the signed in user",
+        )
+
+    updates = user_update.model_dump(exclude_unset=True)
+    for name, value in updates.items():
+        setattr(user, name, value)
+
+    await session.flush()
+
+    return UserAdminRead(**user.model_dump(), scopes=sorted(user.scopes))
 
 
 @router.post(

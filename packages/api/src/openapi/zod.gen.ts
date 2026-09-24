@@ -541,6 +541,36 @@ export const TokenSchema = z.object({
 })
 
 /**
+ * UserAdminRead
+ */
+export const UserAdminReadSchema = z.object({
+    id: z.int(),
+    username: z.string(),
+    preferred_name: z.string().nullable(),
+    enable_playback_events: z.boolean(),
+    scopes: z.array(OAuth2ScopeSchema),
+})
+
+/**
+ * UserAdminUpdate
+ */
+export const UserAdminUpdateSchema = z.object({
+    preferred_name: z.string().max(1000).nullish(),
+    enable_playback_events: z.boolean().nullish(),
+    scopes: z.array(OAuth2ScopeSchema).min(1).nullish(),
+})
+
+/**
+ * UserAdminsRead
+ */
+export const UserAdminsReadSchema = z.object({
+    users: z.array(UserAdminReadSchema),
+    offset: z.int(),
+    limit: z.int(),
+    total: z.int(),
+})
+
+/**
  * UserEventPreflight
  */
 export const UserEventPreflightSchema = z.object({

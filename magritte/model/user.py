@@ -131,7 +131,7 @@ class User(LibraryModel, table=True):
         return OAuth2Scope.from_str(self.scope)
 
     @scopes.setter
-    def set_scopes(self, scopes: set[OAuth2Scope]):
+    def scopes(self, scopes: set[OAuth2Scope]):
         self.scope = OAuth2Scope.to_str(scopes)
 
     @override

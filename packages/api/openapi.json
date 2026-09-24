@@ -2297,6 +2297,145 @@
                 }
             }
         },
+        "/users/admin/all": {
+            "get": {
+                "summary": "Read details about users on this instance, including their scopes",
+                "operationId": "read_users_admin_users_admin_all_get",
+                "security": [{ "OAuth2PasswordBearer": ["admin"] }],
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "The page offset to read from",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "The page offset to read from"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "description": "How many items to read per page",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "How many items to read per page"
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [{ "type": "string", "maxLength": 255 }, { "type": "null" }],
+                            "description": "Query string to filter the users by",
+                            "title": "Query"
+                        },
+                        "description": "Query string to filter the users by"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserAdminsRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/admin/all/{id_or_username}": {
+            "get": {
+                "summary": "Read details a users on this instance, including their scopes",
+                "operationId": "read_user_admin_users_admin_all__id_or_username__get",
+                "security": [{ "OAuth2PasswordBearer": ["admin"] }],
+                "parameters": [
+                    {
+                        "name": "id_or_username",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Id Or Username" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserAdminRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/admin/all/{user_id}": {
+            "patch": {
+                "summary": "Update a user on this instance, including their granted scopes",
+                "operationId": "update_user_admin_users_admin_all__user_id__patch",
+                "security": [{ "OAuth2PasswordBearer": ["admin"] }],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "User Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/UserAdminUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserAdminRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/files/preflight": {
             "post": {
                 "summary": "Prepare to read files as the current user",
@@ -3542,6 +3681,76 @@
                 "type": "object",
                 "required": ["scopes", "access_token", "token_type"],
                 "title": "Token"
+            },
+            "UserAdminRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "username": { "type": "string", "title": "Username" },
+                    "preferred_name": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Preferred Name"
+                    },
+                    "enable_playback_events": {
+                        "type": "boolean",
+                        "title": "Enable Playback Events"
+                    },
+                    "scopes": {
+                        "items": { "$ref": "#/components/schemas/OAuth2Scope" },
+                        "type": "array",
+                        "title": "Scopes"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "username",
+                    "preferred_name",
+                    "enable_playback_events",
+                    "scopes"
+                ],
+                "title": "UserAdminRead"
+            },
+            "UserAdminUpdate": {
+                "properties": {
+                    "preferred_name": {
+                        "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
+                        "title": "Preferred Name"
+                    },
+                    "enable_playback_events": {
+                        "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+                        "title": "Enable Playback Events"
+                    },
+                    "scopes": {
+                        "anyOf": [
+                            {
+                                "items": { "$ref": "#/components/schemas/OAuth2Scope" },
+                                "type": "array",
+                                "minItems": 1,
+                                "uniqueItems": true
+                            },
+                            { "type": "null" }
+                        ],
+                        "title": "Scopes",
+                        "description": "The complete set of scopes to grant the user"
+                    }
+                },
+                "type": "object",
+                "title": "UserAdminUpdate"
+            },
+            "UserAdminsRead": {
+                "properties": {
+                    "users": {
+                        "items": { "$ref": "#/components/schemas/UserAdminRead" },
+                        "type": "array",
+                        "title": "Users"
+                    },
+                    "offset": { "type": "integer", "title": "Offset" },
+                    "limit": { "type": "integer", "title": "Limit" },
+                    "total": { "type": "integer", "title": "Total" }
+                },
+                "type": "object",
+                "required": ["users", "offset", "limit", "total"],
+                "title": "UserAdminsRead"
             },
             "UserEventPreflight": {
                 "properties": { "token": { "type": "string", "title": "Token" } },
