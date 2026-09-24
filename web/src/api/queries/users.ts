@@ -11,7 +11,7 @@ import {
     usersAll,
 } from "@/api/keys/users"
 
-export function userProfile(api: API, enabled = true) {
+export function readUserProfile(api: API, enabled = true) {
     return queryOptions({
         queryKey: userMeProfile(),
         queryFn: () => api.client.readMe(),

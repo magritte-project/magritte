@@ -17,10 +17,12 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as UserRouteImport } from './routes/user'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminExtensionsRouteImport } from './routes/admin.extensions'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as LibrariesAddRouteImport } from './routes/libraries.add'
 import { Route as LibrariesLibraryIdRouteRouteImport } from './routes/libraries_.$libraryId/route'
 import { Route as UserMeRouteImport } from './routes/user.me'
 import { Route as AdminExtensionsImportRouteImport } from './routes/admin.extensions.import'
+import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
 import { Route as LibrariesManageLibraryIdRouteRouteImport } from './routes/libraries.manage.$libraryId/route'
 import { Route as LibrariesLibraryIdIndexRouteImport } from './routes/libraries_.$libraryId/index'
 import { Route as LibrariesLibraryIdAlbumsRouteImport } from './routes/libraries_.$libraryId/albums'
@@ -74,6 +76,11 @@ const AdminExtensionsRoute = AdminExtensionsRouteImport.update({
   path: '/extensions',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
 const LibrariesAddRoute = LibrariesAddRouteImport.update({
   id: '/add',
   path: '/add',
@@ -93,6 +100,11 @@ const AdminExtensionsImportRoute = AdminExtensionsImportRouteImport.update({
   id: '/import',
   path: '/import',
   getParentRoute: () => AdminExtensionsRoute,
+} as any)
+const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
+  id: '/$userId',
+  path: '/$userId',
+  getParentRoute: () => AdminUsersRoute,
 } as any)
 const LibrariesManageLibraryIdRouteRoute =
   LibrariesManageLibraryIdRouteRouteImport.update({
@@ -170,11 +182,13 @@ export interface FileRoutesByFullPath {
   '/user': typeof UserRouteWithChildren
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/admin/extensions': typeof AdminExtensionsRouteWithChildren
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
   '/user/me': typeof UserMeRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
   '/admin/extensions/import': typeof AdminExtensionsImportRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
@@ -194,9 +208,11 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/user': typeof UserRouteWithChildren
   '/admin/extensions': typeof AdminExtensionsRouteWithChildren
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
   '/admin': typeof AdminIndexRoute
   '/admin/extensions/import': typeof AdminExtensionsImportRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
@@ -219,11 +235,13 @@ export interface FileRoutesById {
   '/user': typeof UserRouteWithChildren
   '/libraries_/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/admin/extensions': typeof AdminExtensionsRouteWithChildren
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
   '/user/me': typeof UserMeRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
   '/admin/extensions/import': typeof AdminExtensionsImportRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/libraries_/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries_/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries_/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
@@ -247,11 +265,13 @@ export interface FileRouteTypes {
     | '/user'
     | '/libraries/$libraryId'
     | '/admin/extensions'
+    | '/admin/users'
     | '/libraries/add'
     | '/user/me'
     | '/admin/'
     | '/libraries/manage/$libraryId'
     | '/admin/extensions/import'
+    | '/admin/users/$userId'
     | '/libraries/$libraryId/albums'
     | '/libraries/$libraryId/artists'
     | '/libraries/$libraryId/songs'
@@ -271,9 +291,11 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/user'
     | '/admin/extensions'
+    | '/admin/users'
     | '/libraries/add'
     | '/admin'
     | '/admin/extensions/import'
+    | '/admin/users/$userId'
     | '/libraries/$libraryId/albums'
     | '/libraries/$libraryId/artists'
     | '/libraries/$libraryId/songs'
@@ -295,11 +317,13 @@ export interface FileRouteTypes {
     | '/user'
     | '/libraries_/$libraryId'
     | '/admin/extensions'
+    | '/admin/users'
     | '/libraries/add'
     | '/user/me'
     | '/admin/'
     | '/libraries/manage/$libraryId'
     | '/admin/extensions/import'
+    | '/admin/users/$userId'
     | '/libraries_/$libraryId/albums'
     | '/libraries_/$libraryId/artists'
     | '/libraries_/$libraryId/songs'
@@ -381,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminExtensionsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/libraries/add': {
       id: '/libraries/add'
       path: '/add'
@@ -408,6 +439,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/extensions/import'
       preLoaderRoute: typeof AdminExtensionsImportRouteImport
       parentRoute: typeof AdminExtensionsRoute
+    }
+    '/admin/users/$userId': {
+      id: '/admin/users/$userId'
+      path: '/$userId'
+      fullPath: '/admin/users/$userId'
+      preLoaderRoute: typeof AdminUsersUserIdRouteImport
+      parentRoute: typeof AdminUsersRoute
     }
     '/libraries/manage/$libraryId': {
       id: '/libraries/manage/$libraryId'
@@ -508,13 +546,27 @@ const AdminExtensionsRouteWithChildren = AdminExtensionsRoute._addFileChildren(
   AdminExtensionsRouteChildren,
 )
 
+interface AdminUsersRouteChildren {
+  AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
+}
+
+const AdminUsersRouteChildren: AdminUsersRouteChildren = {
+  AdminUsersUserIdRoute: AdminUsersUserIdRoute,
+}
+
+const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
+  AdminUsersRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminExtensionsRoute: typeof AdminExtensionsRouteWithChildren
+  AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminExtensionsRoute: AdminExtensionsRouteWithChildren,
+  AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }
 

@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 
 import { useUpdateUserProfile } from "@/api/mutations/users"
-import { userProfile } from "@/api/queries/users"
+import { readUserProfile } from "@/api/queries/users"
 import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
@@ -16,11 +16,11 @@ import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/user/me/")({
     loader: async ({ context: { queryClient, api } }) => {
-        await queryClient.ensureQueryData(userProfile(api))
+        await queryClient.ensureQueryData(readUserProfile(api))
     },
     component: function UserGeneral() {
         const api = useAPI()
-        const { data: me } = useSuspenseQuery(userProfile(api))
+        const { data: me } = useSuspenseQuery(readUserProfile(api))
 
         const notificationCenter = useNotificationCenter()
         const updateProfile = useUpdateUserProfile()
@@ -49,13 +49,7 @@ export const Route = createFileRoute("/user/me/")({
                     <form.AppField
                         name="preferred_name"
                         validators={{
-                            onChange: z
-                                .string()
-                                .min(1, {
-                                    error: "Name is too short",
-                                })
-                                .max(255, { error: "Name is too long" })
-                                .nullable(),
+                            onChange: z.string().max(255, { error: "Name is too long" }).nullable(),
                         }}
                     >
                         {(field) => (

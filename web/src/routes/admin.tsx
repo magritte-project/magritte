@@ -1,4 +1,4 @@
-import { GearIcon } from "@phosphor-icons/react"
+import { GearIcon, UserListIcon } from "@phosphor-icons/react"
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
 import PageHeader from "@/components/chrome/PageHeader"
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/admin")({
                             icon={GearIcon}
                             label="Extensions"
                         />
+                        <ThemedTabItemLink to="/admin/users" icon={UserListIcon} label="Users" />
                     </div>
                 </PageHeader>
                 <main className="p-4 min-h-0 h-screen">

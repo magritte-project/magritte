@@ -4,7 +4,7 @@ import { BooksIcon } from "@phosphor-icons/react/dist/ssr"
 import { useQuery } from "@tanstack/react-query"
 import { Link, useNavigate } from "@tanstack/react-router"
 
-import { userProfile } from "@/api/queries/users"
+import { readUserProfile } from "@/api/queries/users"
 import ThemedPopUpMenu from "@/components/theme/ThemedPopUpMenu"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
@@ -14,7 +14,7 @@ export default function UserButton() {
     const { isSignedIn, signOut } = useUserSession()
     const navigate = useNavigate()
     const api = useAPI()
-    const meQuery = useQuery(userProfile(api, isSignedIn))
+    const meQuery = useQuery(readUserProfile(api, isSignedIn))
     return !isSignedIn ? (
         <Link
             to="/sign-in"
