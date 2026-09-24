@@ -16,3 +16,5 @@ export * from "./playback/state"
 export * from "./library"
 export * from "./manifest"
 export * from "./notificationCenter"
+
+export * from "./utilities"

@@ -1,9 +1,8 @@
 import {
     allCommandInputsOf,
     LibraryInputSchema,
+    type Deferred,
     type ExtensionHost,
-    type Library,
-    type Player,
     type SearchCommandResponder,
     type SearchCommandResponderEffectContext,
     type SearchCommandResponderSearchContext,
@@ -41,18 +40,10 @@ function parseSongID(id: string): string {
 }
 
 export default class AppleMusicSearchResponder implements SearchCommandResponder {
-    private _library: Library | null
-    private _player: Player | null
-
-    constructor(private readonly musicKit: MusicKit.Instance) {
-        this._library = null
-        this._player = null
-    }
-
-    async awaken(host: ExtensionHost) {
-        this._library = await host.library()
-        this._player = await host.player()
-    }
+    constructor(
+        private readonly musicKit: MusicKit.Instance,
+        private readonly host: Deferred<ExtensionHost>,
+    ) {}
 
     async search({
         query,
@@ -101,12 +92,10 @@ export default class AppleMusicSearchResponder implements SearchCommandResponder
     async executeReveal(_: SearchCommandResponderEffectContext): Promise<void> {}
 
     async executePlay({ id }: SearchCommandResponderEffectContext): Promise<void> {
-        if (!this._player) {
-            throw new Error("Player not available")
-        }
+        const player = await this.host.get().player()
         const song = await this.getSong(id)
         const item = songResourceToPlayableItem(song)
-        await this._player.replaceQueue({
+        await player.replaceQueue({
             newQueueItems: [item],
             startingItem: item,
             playNow: true,
@@ -114,10 +103,7 @@ export default class AppleMusicSearchResponder implements SearchCommandResponder
     }
 
     async executeAddToLibrary({ id, inputs }: SearchCommandResponderEffectContext): Promise<void> {
-        if (!this._library) {
-            throw new Error("Library not available")
-        }
-
+        const library = await this.host.get().library()
         const song = await this.getSong(id)
 
         const [libraryInput] = allCommandInputsOf(inputs, LibraryInputSchema)
@@ -126,7 +112,7 @@ export default class AppleMusicSearchResponder implements SearchCommandResponder
         }
 
         const extensionTag = songResourceToExtensionTag(song)
-        const { items } = await this._library.readExtensionSources({
+        const { items } = await library.readExtensionSources({
             libraryId: libraryInput.id,
             extensionTags: [extensionTag],
             limit: 1,
@@ -136,7 +122,7 @@ export default class AppleMusicSearchResponder implements SearchCommandResponder
             return
         }
 
-        await this._library.bulkIngestSongs({
+        await library.bulkIngestSongs({
             libraryId: libraryInput.id,
             songs: [songResourceToIngestSong(song)],
         })

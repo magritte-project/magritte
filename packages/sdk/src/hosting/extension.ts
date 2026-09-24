@@ -10,6 +10,7 @@ import { getExtensionOrigin } from "../manifest"
 import { type NotificationCenter, NotificationCenterProtocol } from "../notificationCenter"
 import { type PlaybackEngine, PlaybackEngineProtocol } from "../playback/playbackEngine"
 import { type Player, PlayerProtocol } from "../playback/player"
+import { createDeferred, type Deferred } from "../utilities"
 
 export interface HostExportsOptions {
     /** The manifest of the extension */
@@ -17,6 +18,9 @@ export interface HostExportsOptions {
 
     /** The broadcaster to use for communication with the extension */
     readonly broadcaster: RPCBroadcaster
+
+    /** The extension. Available after handshake has completed */
+    readonly extension: Deferred<Extension>
 }
 
 export interface HostExportsObject {
@@ -81,14 +85,20 @@ export class Extension {
             timeout,
         })
         signal?.throwIfAborted()
-        const exportedObject = await implementExports({ manifest, broadcaster }, exports)
+        const extensionForExports = createDeferred<Extension>()
+        const exportedObject = await implementExports(
+            { manifest, broadcaster, extension: extensionForExports.deferred },
+            exports,
+        )
         const connection = new RPCConnection({
             transport,
             broadcaster,
             exportedObject,
         })
         signal?.throwIfAborted()
-        return new Extension(connection, manifest)
+        const extension = new Extension(connection, manifest)
+        extensionForExports.resolve(extension)
+        return extension
     }
 
     /** @private */

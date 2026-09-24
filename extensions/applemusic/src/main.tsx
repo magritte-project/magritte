@@ -30,15 +30,12 @@ try {
     // Handshake with the extension host
     const extensionHost = await ExtensionHost.connect({
         extensionId: "magritte.applemusic",
-        exports: async ({ broadcaster }) => {
+        exports: async ({ broadcaster, host }) => {
             return {
                 commandResponder: new AppleMusicCommandResponder(musicKit),
-                searchCommandResponder: new AppleMusicSearchResponder(musicKit),
+                searchCommandResponder: new AppleMusicSearchResponder(musicKit, host),
                 playbackEngine: new AppleMusicPlaybackEngine(broadcaster, musicKit),
             }
-        },
-        awaken: async (host, { searchCommandResponder }) => {
-            searchCommandResponder?.awaken(host)
         },
     })
 
