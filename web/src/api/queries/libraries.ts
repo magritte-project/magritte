@@ -69,6 +69,7 @@ export interface ReadLibraryAlbumsCriteria {
     readonly query?: string
     readonly artistId?: number
     readonly offset?: number
+    readonly limit?: number
 }
 
 export function readLibraryAlbums(api: API, criteria: ReadLibraryAlbumsCriteria) {
@@ -84,6 +85,7 @@ export function readLibraryAlbums(api: API, criteria: ReadLibraryAlbumsCriteria)
                 query: criteria.query,
                 artist_id: criteria.artistId,
                 offset: criteria.offset,
+                limit: criteria.limit,
             }),
     })
 }

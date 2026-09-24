@@ -6,6 +6,7 @@ import { useMemo } from "react"
 import { readLibraries } from "@/api/queries/libraries"
 import type { Command } from "@/commands/base"
 import PageHeader from "@/components/chrome/PageHeader"
+import ArtworkImage from "@/components/reusable/ArtworkImage"
 import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
@@ -57,7 +58,12 @@ export const Route = createFileRoute("/libraries")({
                                         }}
                                         className="flex flex-col items-center gap-3 p-2 rounded-lg hover:bg-key-subtle w-32"
                                     >
-                                        {library.home_path !== null ? (
+                                        {library.cover_artwork ? (
+                                            <ArtworkImage
+                                                artworks={[library.cover_artwork]}
+                                                className="h-16 w-16 rounded-full!"
+                                            />
+                                        ) : library.home_path !== null ? (
                                             <div className="bg-key text-on-key rounded-full w-16 h-16 flex items-center justify-center drop-shadow-xs">
                                                 <FilesIcon size="2.5em" weight="light" />
                                             </div>

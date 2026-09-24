@@ -62,6 +62,14 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/")({
                     )}
                 </form.AppField>
 
+                <form.AppField name="cover_artwork">
+                    {(field) => (
+                        <FieldDecoration field={field} label="Library Cover Artwork">
+                            <field.ArtworkSearchField libraryId={library.id} />
+                        </FieldDecoration>
+                    )}
+                </form.AppField>
+
                 <form.Field name="uploads_enabled">
                     {(field) => (
                         <Field className="flex items-center gap-2">
