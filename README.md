@@ -221,6 +221,33 @@ Magritte is intended to manage multiple libraries. Each library is owned by a si
                                        ╲└──────┘
 ```
 
+## App Architecture
+
+Magritte's architecture is roughly split into five main components:
+
+```
+     ┌────────┐        
+     │Database│        
+     └────────┘        
+          ┼            
+  ┌───────┴────────┐   
+  ┼                ┼   
+┌───┐          ┌──────┐
+│API│┼────────┼│Worker│
+└───┘          └──────┘
+ ╲│╱                   
+  │                    
+  │                    
+  ┼                    
+┌───┐     ╱┌──────────┐
+│App│┼───○─│Extensions│
+└───┘     ╲└──────────┘
+```
+
+The API and its companion worker(s) are responsible for managing users and their libraries.
+The app allows users to sign in, browse their libraries, and listen to audio.
+Extensions are separate embedded apps which add additional functionality to the app.
+
 ## File Management
 
 Songs in a Magritte library can have multiple sources associated with them. This enables several features:
@@ -232,6 +259,8 @@ Songs in a Magritte library can have multiple sources associated with them. This
 Files backing sources may be de-duplicated. This means that e.g. a single file can serve as the source for an identical single and album track.
 
 Files are treated as read only – editing a song's metadata _does not_ modify the underlying files. Use dedicated software for this like mp3tag before importing files into Magritte.
+
+If a song is manually edited, changes made to the underlying file will no longer be reflected the next time the library is synched.
 
 ## Streaming Service Libraries
 
