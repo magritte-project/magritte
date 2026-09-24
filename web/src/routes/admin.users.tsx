@@ -32,10 +32,10 @@ export const Route = createFileRoute("/admin/users")({
                     {allUsers.users.map((user) => (
                         <li
                             key={`users[${user.id}]`}
-                            className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-md px-2 py-1 h-9"
+                            className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-md"
                         >
                             <Link
-                                className="w-full flex items-center"
+                                className="w-full flex items-center px-2 py-1 h-9"
                                 to="/admin/users/$userId"
                                 params={{ userId: String(user.id) }}
                             >

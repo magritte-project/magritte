@@ -83,3 +83,17 @@ export function useUpdateUserAdmin(userId: number) {
         },
     })
 }
+
+export function useDeleteUserAdmin(userId: number) {
+    const queryClient = useQueryClient()
+    const { client } = useAPI()
+    return useMutation({
+        mutationFn: () => client.deleteUserAdmin(userId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: usersAdminAll(),
+                exact: false,
+            })
+        },
+    })
+}

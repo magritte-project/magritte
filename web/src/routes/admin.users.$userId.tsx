@@ -1,16 +1,20 @@
 import { Field, Label } from "@headlessui/react"
 import { OAuth2ScopeSchema, type UserAdminUpdate } from "@magritte/api"
+import { TrashIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { useCallback } from "react"
 import z from "zod"
 
-import { useUpdateUserAdmin } from "@/api/mutations/users"
+import { useDeleteUserAdmin, useUpdateUserAdmin } from "@/api/mutations/users"
 import { readUserProfileAdmin, readUserProfile } from "@/api/queries/users"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"
+import AsyncButton from "@/components/reusable/AsyncButton"
 import Modal from "@/components/reusable/Modal"
 import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
+import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
@@ -48,9 +52,46 @@ export const Route = createFileRoute("/admin/users/$userId")({
             },
         })
 
+        const deleteMutation = useDeleteUserAdmin(Number(userId))
+        const handleDelete = useCallback(async () => {
+            const confirmed = await notificationCenter.confirm({
+                title: `Are you sure you want to delete ${userProfile.username}?`,
+                message:
+                    "This will also delete any library content not shared with other users. This operation cannot be undone.",
+                destructive: true,
+                confirmButtonLabel: `Delete ${userProfile.username}`,
+            })
+            if (!confirmed) {
+                return
+            }
+            try {
+                await deleteMutation.mutateAsync()
+                navigate({ to: "..", replace: true })
+            } catch (error) {
+                notificationCenter.showToast({
+                    message: `Could not delete user: ${getErrorMessage(error)}`,
+                    type: "error",
+                })
+            }
+        }, [notificationCenter, userProfile.username, deleteMutation, navigate])
+
         return (
             <Modal className="w-100">
-                <ModalHeader>Edit {userProfile.username}</ModalHeader>
+                <ModalHeader
+                    supplementaryEnd={
+                        <ThemedSubtleButton
+                            buttonComponent={AsyncButton}
+                            type="button"
+                            title={`Delete ${userProfile.username}`}
+                            onClick={handleDelete}
+                            disabled={userProfile.id === myUserProfile.id}
+                        >
+                            <TrashIcon />
+                        </ThemedSubtleButton>
+                    }
+                >
+                    Edit {userProfile.username}
+                </ModalHeader>
 
                 <AppForm form={form} className="flex flex-col gap-3 p-3">
                     <form.AppField
