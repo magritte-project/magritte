@@ -12,6 +12,7 @@ import {
     deleteLibrarySongLibrariesLibraryIdSongsSongIdDelete,
     deleteNotificationUsersNotificationsNotificationIdDelete,
     deleteSourceSourcesSourceIdDelete,
+    deleteUserAdminUsersAdminAllUserIdDelete,
     importExtensionExtensionsAvailableImportPost,
     ingestFilesLibrariesLibraryIdIngestFilesPost,
     ingestPlaybackEventsPlaybackEventsIngestPost,
@@ -291,6 +292,13 @@ export class APIClient {
             ...this.options,
             path: { user_id },
             body,
+        })
+    }
+
+    async deleteUserAdmin(user_id: number): Promise<OperationResult> {
+        return await deleteUserAdminUsersAdminAllUserIdDelete({
+            ...this.options,
+            path: { user_id },
         })
     }
 

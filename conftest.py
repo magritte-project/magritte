@@ -4,10 +4,10 @@ import pytest
 import pytest_asyncio
 from faker import Faker
 from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from magritte import app
-from magritte.db import get_db_engine
+from magritte.db import create_db_engine, get_db_engine
 from magritte.model import create_model_tables_if_needed
 from magritte.schemas.user import Token
 from magritte.testseed import seed_test_data
@@ -15,7 +15,7 @@ from magritte.testseed import seed_test_data
 
 @pytest_asyncio.fixture(scope="function")
 async def db_engine():
-    test_engine = create_async_engine("sqlite+aiosqlite://")
+    test_engine = create_db_engine("sqlite+aiosqlite://")
     await create_model_tables_if_needed(test_engine)
     await seed_test_data(test_engine)
     yield test_engine

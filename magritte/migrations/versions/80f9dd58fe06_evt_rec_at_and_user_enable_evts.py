@@ -27,7 +27,7 @@ def upgrade() -> None:
                 "recorded_at",
                 sa.TIMESTAMP(),
                 nullable=False,
-                server_default=sa.text("creation_date"),
+                server_default=sa.text("(CURRENT_TIMESTAMP)"),
             )
         )
 

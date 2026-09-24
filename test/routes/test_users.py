@@ -1,4 +1,5 @@
 from contextlib import nullcontext as no_raise
+from datetime import UTC, datetime
 
 import pytest
 from faker import Faker
@@ -7,9 +8,13 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conftest import SignIn
+from magritte.model.library import Library
 from magritte.model.notification import Notification
-from magritte.model.user import User
+from magritte.model.playback_event import PlaybackEvent
+from magritte.model.song import Song
+from magritte.model.user import User, UserLibraryLink
 from magritte.schemas.auth import OAuth2Scope
+from magritte.schemas.playback_event import PlaybackEventKind
 
 
 class NotificationsFixture:
@@ -779,6 +784,141 @@ class TestUpdateUserAdmin:
         response = client.patch(
             "/users/admin/all/1",
             json={"preferred_name": "Nobody"},
+        )
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not authenticated"
+
+
+class TestDeleteUserAdmin:
+    @pytest.mark.asyncio
+    async def test_delete(
+        self,
+        client: TestClient,
+        db_session: AsyncSession,
+        sign_in: SignIn,
+    ):
+        solo_library = Library(name="Solo", home_path=None)
+        db_session.add(solo_library)
+        await db_session.flush()
+        solo_library_id = solo_library.id
+        db_session.add(UserLibraryLink(user_id=2, library_id=solo_library_id))
+        await db_session.commit()
+
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            "/users/admin/all/2",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+        assert response.json().get("row_count") == 1
+
+        db_session.expire_all()
+        assert await db_session.get(User, 2) is None
+        # Libraries linked only to the deleted user are removed
+        assert await db_session.get(Library, solo_library_id) is None
+        # Libraries shared with other users are kept
+        scratch_library = await db_session.get(Library, 2)
+        assert scratch_library is not None
+        assert [user.id for user in await scratch_library.awaitable_attrs.users] == [1]
+
+        response = client.get(
+            "/users/admin/all/2",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_deletes_playback_events(
+        self,
+        client: TestClient,
+        db_session: AsyncSession,
+        sign_in: SignIn,
+    ):
+        song = Song()
+        db_session.add(song)
+        await db_session.flush()
+        playback_event = PlaybackEvent(
+            recorded_at=datetime.now(UTC),
+            kind=PlaybackEventKind.PLAY,
+            user_id=2,
+            song_id=song.id,
+            start_time=0,
+            end_time=0,
+        )
+        db_session.add(playback_event)
+        await db_session.flush()
+        playback_event_id = playback_event.id
+        await db_session.commit()
+
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            "/users/admin/all/2",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+
+        db_session.expire_all()
+        assert await db_session.get(PlaybackEvent, playback_event_id) is None
+
+    @pytest.mark.asyncio
+    async def test_cannot_delete_self(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            "/users/admin/all/1",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 400
+        assert response.json().get("detail") == "Cannot delete the signed in user"
+
+        response = client.get(
+            "/users/admin/all/1",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_requires_user_to_exist(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.delete(
+            "/users/admin/all/9999",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "User not found"
+
+    @pytest.mark.asyncio
+    async def test_requires_admin(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("restricted", "password")
+
+        response = client.delete(
+            "/users/admin/all/4",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_requires_user(
+        self,
+        client: TestClient,
+    ):
+        response = client.delete(
+            "/users/admin/all/4",
         )
         assert response.status_code == 401
         assert response.json().get("detail") == "Not authenticated"

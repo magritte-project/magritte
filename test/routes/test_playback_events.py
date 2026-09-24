@@ -4,8 +4,11 @@ import pytest
 import pytest_asyncio
 from faker import Faker
 from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import col, func, select
 
 from conftest import SignIn
+from magritte.model.playback_event import PlaybackEvent
 
 
 @pytest_asyncio.fixture
@@ -166,3 +169,44 @@ class TestIngestPlaybackEvents:
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
         assert response.status_code == 422
+
+
+class TestDeleteSongWithPlaybackEvents:
+    @pytest.mark.asyncio
+    async def test_deletes_playback_events(
+        self,
+        client: TestClient,
+        db_session: AsyncSession,
+        sign_in: SignIn,
+        throwaway_song: int,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.post(
+            "/playback-events/ingest",
+            json=[
+                {
+                    "recorded_at": datetime.now(UTC).isoformat(),
+                    "kind": "play",
+                    "song_id": throwaway_song,
+                    "start_time": 0,
+                    "end_time": 0,
+                }
+            ],
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+        assert response.json().get("accepted_count") == 1
+
+        response = client.delete(
+            f"/libraries/2/songs/{throwaway_song}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 200
+
+        playback_event_count = await db_session.scalar(
+            select(func.count())
+            .select_from(PlaybackEvent)
+            .where(col(PlaybackEvent.song_id) == throwaway_song)
+        )
+        assert playback_event_count == 0

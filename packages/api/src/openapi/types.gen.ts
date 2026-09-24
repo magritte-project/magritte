@@ -3489,6 +3489,38 @@ export type ReadUserAdminUsersAdminAllIdOrUsernameGetResponses = {
 export type ReadUserAdminUsersAdminAllIdOrUsernameGetResponse =
     ReadUserAdminUsersAdminAllIdOrUsernameGetResponses[keyof ReadUserAdminUsersAdminAllIdOrUsernameGetResponses]
 
+export type DeleteUserAdminUsersAdminAllUserIdDeleteData = {
+    body?: never
+    path: {
+        /**
+         * User Id
+         */
+        user_id: number
+    }
+    query?: never
+    url: "/users/admin/all/{user_id}"
+}
+
+export type DeleteUserAdminUsersAdminAllUserIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type DeleteUserAdminUsersAdminAllUserIdDeleteError =
+    DeleteUserAdminUsersAdminAllUserIdDeleteErrors[keyof DeleteUserAdminUsersAdminAllUserIdDeleteErrors]
+
+export type DeleteUserAdminUsersAdminAllUserIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: OperationResult
+}
+
+export type DeleteUserAdminUsersAdminAllUserIdDeleteResponse =
+    DeleteUserAdminUsersAdminAllUserIdDeleteResponses[keyof DeleteUserAdminUsersAdminAllUserIdDeleteResponses]
+
 export type UpdateUserAdminUsersAdminAllUserIdPatchData = {
     body: UserAdminUpdate
     path: {

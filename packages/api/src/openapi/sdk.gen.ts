@@ -50,6 +50,9 @@ import type {
     DeleteSourceSourcesSourceIdDeleteData,
     DeleteSourceSourcesSourceIdDeleteErrors,
     DeleteSourceSourcesSourceIdDeleteResponses,
+    DeleteUserAdminUsersAdminAllUserIdDeleteData,
+    DeleteUserAdminUsersAdminAllUserIdDeleteErrors,
+    DeleteUserAdminUsersAdminAllUserIdDeleteResponses,
     ImportExtensionExtensionsAvailableImportPostData,
     ImportExtensionExtensionsAvailableImportPostErrors,
     ImportExtensionExtensionsAvailableImportPostResponses,
@@ -1631,6 +1634,29 @@ export const readUserAdminUsersAdminAllIdOrUsernameGet = <ThrowOnError extends b
         responseStyle: "data",
         security: [{ scheme: "bearer", type: "http" }],
         url: "/users/admin/all/{id_or_username}",
+        ...options,
+    })
+
+/**
+ * Delete a user on this instance, along with any libraries only they belong to
+ */
+export const deleteUserAdminUsersAdminAllUserIdDelete = <ThrowOnError extends boolean = false>(
+    options: Options<DeleteUserAdminUsersAdminAllUserIdDeleteData, ThrowOnError>,
+): RequestResult<
+    DeleteUserAdminUsersAdminAllUserIdDeleteResponses,
+    DeleteUserAdminUsersAdminAllUserIdDeleteErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).delete<
+        DeleteUserAdminUsersAdminAllUserIdDeleteResponses,
+        DeleteUserAdminUsersAdminAllUserIdDeleteErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/users/admin/all/{user_id}",
         ...options,
     })
 

@@ -26,6 +26,7 @@ class PlaybackEvent(LibraryModel, table=True):
     )
     song_id: int = Field(
         foreign_key="songs.id",
+        ondelete="CASCADE",
         description="ID of the song involved in this playback event",
     )
     start_time: int = Field(

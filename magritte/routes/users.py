@@ -22,6 +22,7 @@ from magritte.auth import (
     get_feature_user,
 )
 from magritte.db import get_db_session
+from magritte.model.library import Library
 from magritte.model.notification import Notification
 from magritte.model.user import User, UserNotificationLink
 from magritte.schemas.auth import OAuth2Scope
@@ -437,6 +438,42 @@ async def update_user_admin(
     await session.flush()
 
     return UserAdminRead(**user.model_dump(), scopes=sorted(user.scopes))
+
+
+@router.delete(
+    "/admin/all/{user_id}",
+    response_model=OperationResult,
+    summary="Delete a user on this instance, along with any libraries only they belong to",
+)
+async def delete_user_admin(
+    user_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.ADMIN])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if user_id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete the signed in user",
+        )
+
+    user = await session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    libraries: list[Library] = await user.awaitable_attrs.libraries
+    for library in libraries:
+        library_users: list[User] = await library.awaitable_attrs.users
+        if all(library_user.id == user_id for library_user in library_users):
+            await session.delete(library)
+
+    await session.delete(user)
+    await session.flush()
+
+    return OperationResult(message="User deleted", row_count=1)
 
 
 @router.post(

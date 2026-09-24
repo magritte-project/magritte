@@ -2434,6 +2434,37 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "summary": "Delete a user on this instance, along with any libraries only they belong to",
+                "operationId": "delete_user_admin_users_admin_all__user_id__delete",
+                "security": [{ "OAuth2PasswordBearer": ["admin"] }],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "User Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/users/files/preflight": {
