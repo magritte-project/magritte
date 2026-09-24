@@ -17,7 +17,7 @@ class AlbumRead(BaseModel):
     artist_id: int | None
     artworks: list[ArtworkRead] = Field(
         default_factory=lambda: [],
-        description="The artworks of this song",
+        description="The artworks of this album",
     )
 
 

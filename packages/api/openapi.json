@@ -2329,7 +2329,7 @@
                         "items": { "$ref": "#/components/schemas/ArtworkRead" },
                         "type": "array",
                         "title": "Artworks",
-                        "description": "The artworks of this song"
+                        "description": "The artworks of this album"
                     }
                 },
                 "type": "object",
@@ -2353,7 +2353,13 @@
             "ArtistRead": {
                 "properties": {
                     "id": { "type": "integer", "title": "Id" },
-                    "name": { "type": "string", "title": "Name" }
+                    "name": { "type": "string", "title": "Name" },
+                    "artworks": {
+                        "items": { "$ref": "#/components/schemas/ArtworkRead" },
+                        "type": "array",
+                        "title": "Artworks",
+                        "description": "The artworks of this artist"
+                    }
                 },
                 "type": "object",
                 "required": ["id", "name"],

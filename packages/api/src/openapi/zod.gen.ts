@@ -11,14 +11,6 @@ export const AlbumUpdateSchema = z.object({
 })
 
 /**
- * ArtistRead
- */
-export const ArtistReadSchema = z.object({
-    id: z.int(),
-    name: z.string(),
-})
-
-/**
  * ArtistUpdate
  */
 export const ArtistUpdateSchema = z.object({
@@ -62,6 +54,15 @@ export const AlbumReadSchema = z.object({
     id: z.int(),
     title: z.string(),
     artist_id: z.int().nullable(),
+    artworks: z.array(ArtworkReadSchema).optional(),
+})
+
+/**
+ * ArtistRead
+ */
+export const ArtistReadSchema = z.object({
+    id: z.int(),
+    name: z.string(),
     artworks: z.array(ArtworkReadSchema).optional(),
 })
 

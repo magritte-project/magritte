@@ -2,6 +2,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
+from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.base import TAG_MAX_LENGTH, PaginatedQuery
 
 
@@ -12,6 +13,10 @@ class ArtistUpdate(BaseModel):
 class ArtistRead(BaseModel):
     id: int
     name: str
+    artworks: list[ArtworkRead] = Field(
+        default_factory=lambda: [],
+        description="The artworks of this artist",
+    )
 
 
 class ArtistQuery(PaginatedQuery):

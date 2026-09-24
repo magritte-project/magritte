@@ -43,7 +43,13 @@ export class LibraryArtistsSearchCommand implements SearchCommand {
                 displayName: "Artists",
                 items: libraryArtists.items.map((artist) => ({
                     id: String(artist.id),
-                    icon: MicrophoneStageIcon,
+                    icon: artist.artworks?.length
+                        ? {
+                              url: artist.artworks[0].image_url,
+                              alt: "Album Artwork",
+                              appearance: "circle",
+                          }
+                        : MicrophoneStageIcon,
                     title: artist.name,
                     reveal: async () => {
                         this._router.navigate({

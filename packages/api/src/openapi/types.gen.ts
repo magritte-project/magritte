@@ -23,7 +23,7 @@ export type AlbumRead = {
     /**
      * Artworks
      *
-     * The artworks of this song
+     * The artworks of this album
      */
     artworks?: Array<ArtworkRead>
 }
@@ -54,6 +54,12 @@ export type ArtistRead = {
      * Name
      */
     name: string
+    /**
+     * Artworks
+     *
+     * The artworks of this artist
+     */
+    artworks?: Array<ArtworkRead>
 }
 
 /**

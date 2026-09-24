@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import TYPE_CHECKING, override
 
 import sqlalchemy as sa
@@ -9,6 +10,7 @@ from magritte.model.base import LibraryModel
 
 if TYPE_CHECKING:
     from .album import Album
+    from .artwork import Artwork
     from .library import Library
     from .song import Song
 
@@ -49,6 +51,20 @@ class Artist(LibraryModel, table=True):
         back_populates="artists",
         link_model=ArtistLibraryLink,
     )
+
+    @property
+    async def all_artworks(self) -> Iterable["Artwork"]:
+        """
+        Collects and returns all artworks from this artist's songs. Not cached.
+        """
+        songs = await self.awaitable_attrs.songs
+        all_artworks = dict[int, "Artwork"]()
+        for song in songs:
+            song_artworks = await song.awaitable_attrs.artworks
+            for song_artwork in song_artworks:
+                if song_artwork.id not in all_artworks:
+                    all_artworks[song_artwork.id] = song_artwork
+        return all_artworks.values()
 
     @override
     @classmethod

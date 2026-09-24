@@ -11,6 +11,7 @@ from magritte.model.artist import Artist
 from magritte.model.library import Library
 from magritte.model.user import User
 from magritte.schemas.artist import ArtistQuery, ArtistRead, ArtistUpdate
+from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.library import LibraryMediaRead
 
@@ -47,6 +48,9 @@ async def read_library_artist(
 
     return ArtistRead(
         **artist.model_dump(),
+        artworks=[
+            ArtworkRead(**artwork.model_dump()) for artwork in await artist.all_artworks
+        ],
     )
 
 
@@ -91,6 +95,9 @@ async def update_library_artist(
     await session.flush()
     return ArtistRead(
         **artist.model_dump(),
+        artworks=[
+            ArtworkRead(**artwork.model_dump()) for artwork in await artist.all_artworks
+        ],
     )
 
 
@@ -165,6 +172,10 @@ async def read_library_artists(
         items=[
             ArtistRead(
                 **artist.model_dump(),
+                artworks=[
+                    ArtworkRead(**artwork.model_dump())
+                    for artwork in await artist.all_artworks
+                ],
             )
             for artist in artists
         ],
