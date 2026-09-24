@@ -37,7 +37,7 @@ def upgrade() -> None:
                 "enable_playback_events",
                 sa.Boolean(),
                 nullable=False,
-                server_default=sa.text("FALSE"),
+                server_default=sa.false(),
             )
         )
 

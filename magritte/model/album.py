@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Iterable, Union, override
 
+import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped
 from sqlmodel import (
@@ -47,7 +48,7 @@ class Album(LibraryModel, table=True):
     has_altered_metadata: bool = Field(
         default=False,
         description="Whether the album's metadata has been altered from the source",
-        sa_column_kwargs={"server_default": "false"},
+        sa_column_kwargs={"server_default": sa.false()},
     )
     title: str = Field(
         description="The title of the album",

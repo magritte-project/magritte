@@ -60,7 +60,7 @@ def upgrade() -> None:
             sa.Column(
                 "has_altered_metadata",
                 sa.Boolean(),
-                server_default="false",
+                server_default=sa.false(),
                 nullable=False,
             )
         )
@@ -70,7 +70,7 @@ def upgrade() -> None:
             sa.Column(
                 "has_altered_metadata",
                 sa.Boolean(),
-                server_default="false",
+                server_default=sa.false(),
                 nullable=False,
             )
         )
@@ -80,7 +80,7 @@ def upgrade() -> None:
             sa.Column(
                 "has_altered_metadata",
                 sa.Boolean(),
-                server_default="false",
+                server_default=sa.false(),
                 nullable=False,
             )
         )

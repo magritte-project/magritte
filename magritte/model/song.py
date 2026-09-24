@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any, Union, assert_never, override
 
+import sqlalchemy as sa
 from pydantic import computed_field
 from sqlalchemy import UnaryExpression
 from sqlalchemy.orm import Mapped
@@ -72,7 +73,7 @@ class Song(LibraryModel, table=True):
     has_altered_metadata: bool = Field(
         default=False,
         description="Whether the song's metadata has been altered from the source",
-        sa_column_kwargs={"server_default": "false"},
+        sa_column_kwargs={"server_default": sa.false()},
     )
 
     artist_id: int | None = Field(

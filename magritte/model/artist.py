@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, override
 
+import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel, col, delete, select
@@ -35,7 +36,7 @@ class Artist(LibraryModel, table=True):
     has_altered_metadata: bool = Field(
         default=False,
         description="Whether the song's metadata has been altered from the source",
-        sa_column_kwargs={"server_default": "false"},
+        sa_column_kwargs={"server_default": sa.false()},
     )
     name: str = Field(
         description="The name of the artist",

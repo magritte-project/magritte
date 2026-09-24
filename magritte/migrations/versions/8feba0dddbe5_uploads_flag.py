@@ -27,7 +27,7 @@ def upgrade() -> None:
                 "uploads_enabled",
                 sa.Boolean(),
                 nullable=False,
-                server_default=sa.text("FALSE"),
+                server_default=sa.false(),
             )
         )
 
