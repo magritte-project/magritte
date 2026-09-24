@@ -48,7 +48,9 @@ async def _update_song_metadata(
             ArtworkKind.FRONT_COVER,
             session,
         )
-        (await song.awaitable_attrs.artworks).append(cover_artwork)
+        song.artworks = Library.combine(
+            [cover_artwork], await song.awaitable_attrs.artworks
+        )
 
     song.artist = artist
     song.album = album
@@ -99,20 +101,12 @@ async def _try_ingest_file(
     libraries: list[Library],
     canonizer: Canonizer,
     session: AsyncSession,
-):
+) -> list[Song]:
     mime_type, _encoding = get_mime_types().guess_file_type(path)
     if not mime_type or not mime_type.startswith("audio"):
-        return None
+        return []
 
     file_url = path_as_file_uri(path)
-    existing_source = await Source.read_one(
-        file_url,
-        session,
-    )
-    if existing_source:
-        await ensure_libraries_linked(existing_source, libraries, session)
-        raise FileExistsError("File has already been ingested")
-
     if await IgnoredResource.exists(
         where=[
             col(IgnoredResource.url) == file_url,
@@ -134,24 +128,42 @@ async def _try_ingest_file(
     except UnsupportedFormatError:
         tags = None
 
-    new_song = Song(
-        libraries=libraries,
-        sources=[
-            Source(
-                url=file_url,
-                mime_type=mime_type,
-            )
-        ],
+    existing_source = await Source.read_one(
+        file_url,
+        session,
     )
-    session.add(new_song)
-    await session.flush()
 
-    if tags:
-        await _update_song_metadata(new_song, tags, libraries, canonizer, session)
+    songs = list[Song]()
+    if existing_source:
+        await ensure_libraries_linked(existing_source, libraries, session)
+
+        songs += [
+            song
+            for song in await existing_source.awaitable_attrs.songs
+            if not song.has_altered_metadata
+        ]
     else:
-        new_song.title = path.stem
+        new_song = Song(
+            libraries=libraries,
+            sources=[
+                Source(
+                    url=file_url,
+                    mime_type=mime_type,
+                )
+            ],
+        )
+        session.add(new_song)
+        await session.flush()
 
-    return new_song
+        songs.append(new_song)
+
+    for song in songs:
+        if tags:
+            await _update_song_metadata(song, tags, libraries, canonizer, session)
+        else:
+            song.title = path.stem
+
+    return songs
 
 
 @asynccontextmanager
@@ -209,13 +221,17 @@ async def try_ingest_path(
 
                     file_path = dirpath / filename
                     try:
-                        new_song = await _try_ingest_file(
+                        affected_songs = await _try_ingest_file(
                             file_path, libraries, canonizer, session
                         )
-                        if not new_song:
+                        if not affected_songs:
+                            logger.info(
+                                f"Skipped {file_path}: no songs inserted or updated"
+                            )
                             continue
+                        specimen_song = affected_songs[0]
                         logger.info(
-                            f"Added '{filename}': '{new_song.title}' from '{new_song.album_title}' by '{new_song.artist_name}'"
+                            f"Processed '{filename}': '{specimen_song.title}' from '{specimen_song.album_title}' by '{specimen_song.artist_name}'"
                         )
                     except Exception as e:
                         logger.warning(f"*** Skipping {file_path}: {e}")

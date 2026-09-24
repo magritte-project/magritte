@@ -19,6 +19,7 @@ from magritte.ingestion.canon import Canonizer
 from magritte.ingestion.files import pre_ingest_uploaded_file, try_ingest_path
 from magritte.model import Library
 from magritte.model.source import Source
+from magritte.utilities.gc import garbage_collect
 from magritte.utilities.user_events import UserEvent, UserEventType
 from magritte.worker.events import (
     IngestUploadedFilesLibraryWorkerEvent,
@@ -122,6 +123,8 @@ async def _process_event(
                             canonizer=canonizer,
                             session=session,
                         )
+
+                    await garbage_collect(session)
                 finally:
                     _send_notifications_changed(connection, user_ids_to_notify)
                     _send_libraries_changed(connection, user_ids_to_notify, library_ids)
@@ -190,6 +193,8 @@ async def _process_event(
 
 def worker_main(connection: "Connection"):
     logging.basicConfig(level=config.logging_level)
+    logging.getLogger("sqlalchemy").setLevel(logging.WARNING)
+    logging.getLogger("aiosqlite").setLevel(logging.WARNING)
 
     try:
         logger.debug("Process started")
