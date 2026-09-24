@@ -4,6 +4,7 @@ from sqlmodel import Field, Relationship, and_, col, select
 
 from magritte.model.album import Album, AlbumLibraryLink
 from magritte.model.artist import Artist, ArtistLibraryLink
+from magritte.model.artwork import Artwork
 from magritte.model.base import LibraryModel
 from magritte.model.ignored_resource import IgnoredResource, IgnoredResourceLibraryLink
 from magritte.model.song import Song, SongLibraryLink
@@ -33,23 +34,26 @@ class Library(LibraryModel, table=True):
     songs: list[Song] = Relationship(
         back_populates="libraries",
         link_model=SongLibraryLink,
-        sa_relationship_kwargs={"lazy": "noload"},
     )
     artists: list[Artist] = Relationship(
         back_populates="libraries",
         link_model=ArtistLibraryLink,
-        sa_relationship_kwargs={"lazy": "noload"},
     )
     albums: list[Album] = Relationship(
         back_populates="libraries",
         link_model=AlbumLibraryLink,
-        sa_relationship_kwargs={"lazy": "noload"},
     )
     ignored_resources: list[IgnoredResource] = Relationship(
         back_populates="libraries",
         link_model=IgnoredResourceLibraryLink,
-        sa_relationship_kwargs={"lazy": "noload"},
     )
+    cover_artwork_id: int | None = Field(
+        default=None,
+        foreign_key="artworks.id",
+        ondelete="SET NULL",
+        description="ID of the artwork set as the cover of this library",
+    )
+    cover_artwork: Artwork | None = Relationship()
 
     @classmethod
     def _build_permissions(

@@ -1,9 +1,12 @@
 from enum import Enum
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated, Self
 
 from pydantic import BaseModel, Field, field_serializer, field_validator
 
 from magritte.schemas.base import TAG_MAX_LENGTH, URL_MAX_LENGTH
+
+if TYPE_CHECKING:
+    from magritte.model.artwork import Artwork
 
 
 class ArtworkKind(str, Enum):
@@ -50,6 +53,14 @@ class ArtworkRead(BaseModel):
     primary_color: str | None
     secondary_color: str | None
     tertiary_color: str | None
+
+    @classmethod
+    def from_db(cls, artwork: "Artwork | None") -> Self | None:
+        """Construct an artwork read from an optional model"""
+        if artwork:
+            return cls(**artwork.model_dump())
+        else:
+            return None
 
     @field_serializer("image_url", mode="plain")
     def redact_file_image_url(self, image_url: str):

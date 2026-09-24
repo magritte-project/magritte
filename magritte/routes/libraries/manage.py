@@ -17,9 +17,11 @@ from sqlmodel import col, select
 from magritte.auth import get_current_user
 from magritte.config import config
 from magritte.db import get_db_session
+from magritte.model import Artwork
 from magritte.model.ignored_resource import IgnoredResource
 from magritte.model.library import Library
 from magritte.model.user import User, UserLibraryLink
+from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.base import PATH_MAX_LENGTH, OperationResult, PaginatedQuery
 from magritte.schemas.library import (
@@ -50,7 +52,15 @@ async def read_libraries(
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     libraries = await Library.read_all(current_user.id, session)
-    return [LibraryRead(**library.model_dump()) for library in libraries]
+    return [
+        LibraryRead(
+            **library.model_dump(),
+            cover_artwork=ArtworkRead.from_db(
+                await library.awaitable_attrs.cover_artwork
+            ),
+        )
+        for library in libraries
+    ]
 
 
 @router.get(
@@ -111,6 +121,9 @@ async def create_library(
         name=library_create.name,
         home_path=library_create.home_path,
         uploads_enabled=library_create.uploads_enabled,
+        cover_artwork=await session.get_one(Artwork, library_create.cover_artwork.id)
+        if library_create.cover_artwork
+        else None,
     )
     session.add(new_library)
     await session.flush()  # for id
@@ -128,7 +141,12 @@ async def create_library(
 
     background_tasks.add_task(sync_library, new_library.id)
 
-    return LibraryRead(**new_library.model_dump())
+    return LibraryRead(
+        **new_library.model_dump(),
+        cover_artwork=ArtworkRead.from_db(
+            await new_library.awaitable_attrs.cover_artwork
+        ),
+    )
 
 
 @router.patch(
@@ -156,14 +174,25 @@ async def update_library(
         )
 
     changes = update_library.model_dump(
+        exclude={"cover_artwork"},
         exclude_unset=True,
     )
     for name, value in changes.items():
         setattr(library, name, value)
 
+    if update_library.cover_artwork:
+        library.cover_artwork = await session.get_one(
+            Artwork, update_library.cover_artwork.id
+        )
+    else:
+        library.cover_artwork = None
+
     await session.flush()
 
-    return LibraryRead(**library.model_dump())
+    return LibraryRead(
+        **library.model_dump(),
+        cover_artwork=ArtworkRead.from_db(await library.awaitable_attrs.cover_artwork),
+    )
 
 
 @router.get(
@@ -183,7 +212,10 @@ async def read_library(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
-    return LibraryRead(**library.model_dump())
+    return LibraryRead(
+        **library.model_dump(),
+        cover_artwork=ArtworkRead.from_db(await library.awaitable_attrs.cover_artwork),
+    )
 
 
 @router.get(

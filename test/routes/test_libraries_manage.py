@@ -75,6 +75,7 @@ def test_create_and_read_library(client: TestClient, sign_in: SignIn):
             "name": "test_create_and_read_library",
             "home_path": None,
             "uploads_enabled": False,
+            "cover_artwork": None,
         },
         headers={"Authorization": f"Bearer {session.access_token}"},
     )
@@ -104,6 +105,7 @@ def test_create_rejects_absolute_home_paths(client: TestClient, sign_in: SignIn)
             "name": "test_create_rejects_absolute_home_paths",
             "home_path": "/",
             "uploads_enabled": False,
+            "cover_artwork": None,
         },
         headers={"Authorization": f"Bearer {session.access_token}"},
     )
@@ -130,6 +132,7 @@ def test_read_library_requires_permission(client: TestClient, sign_in: SignIn):
             "name": "test_read_library_requires_permission",
             "home_path": None,
             "uploads_enabled": False,
+            "cover_artwork": None,
         },
         headers={"Authorization": f"Bearer {creator_session.access_token}"},
     )
@@ -181,6 +184,7 @@ class TestUpdateLibrary:
                 "name": "TestUpdateLibrary::test_update",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -221,6 +225,7 @@ class TestUpdateLibrary:
                 "name": "test_read_library_requires_permission",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -286,6 +291,7 @@ class TestReadLibraryPermissions:
                 "name": "TestReadLibraryPermissions::test_requires_permission",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -316,6 +322,7 @@ class TestCreateLibraryPermission:
                 "name": "TestCreateLibraryPermission::test_create",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -356,6 +363,7 @@ class TestCreateLibraryPermission:
                 "name": "TestCreateLibraryPermission::test_requires_user_to_exist",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -404,6 +412,7 @@ class TestCreateLibraryPermission:
                 "name": "TestCreateLibraryPermission::test_requires_permission",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -440,6 +449,7 @@ class TestUpdateLibraryPermission:
                 "name": "TestUpdateLibraryPermissions::test_update",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -488,6 +498,7 @@ class TestUpdateLibraryPermission:
                 "name": "TestUpdateLibraryPermissions::test_update",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -515,6 +526,7 @@ class TestUpdateLibraryPermission:
                 "name": "TestUpdateLibraryPermissions::test_requires_user_to_exist",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -553,6 +565,7 @@ class TestUpdateLibraryPermission:
                 "name": "TestUpdateLibraryPermissions::test_requires_permission",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -584,6 +597,7 @@ class TestDeleteLibraryPermission:
                 "name": "TestUpdateLibraryPermissions::test_update",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -630,6 +644,7 @@ class TestDeleteLibraryPermission:
                 "name": "TestUpdateLibraryPermissions::test_update",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -656,6 +671,7 @@ class TestDeleteLibraryPermission:
                 "name": "TestUpdateLibraryPermissions::test_requires_user_to_exist",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -692,6 +708,7 @@ class TestDeleteLibraryPermission:
                 "name": "TestDeleteLibraryPermissions::test_requires_permission",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -723,6 +740,7 @@ class TestReadLibraryIgnoredResources:
                 "name": "TestReadLibraryIgnoredResources::test_read",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -769,6 +787,7 @@ class TestReadLibraryIgnoredResources:
                 "name": "TestReadLibraryIgnoredResources::test_requires_permission",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
@@ -800,6 +819,7 @@ class TestDeleteLibraryIgnoredResource:
                 "name": "TestDeleteLibraryIgnoredResource::test_delete",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -847,6 +867,7 @@ class TestDeleteLibraryIgnoredResource:
                 "name": "TestDeleteLibraryIgnoredResource::test_requires_resource_to_exist",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -883,6 +904,7 @@ class TestDeleteLibraryIgnoredResource:
                 "name": "TestDeleteLibraryIgnoredResource::test_requires_permission",
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )

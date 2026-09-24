@@ -18,6 +18,7 @@ export function exportLibrary(
                 name: library.name,
                 home_path: null,
                 uploads_enabled: false,
+                cover_artwork: library.cover_artwork,
             }))
         }),
         readExtensionSources: enforcePermissions(

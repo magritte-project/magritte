@@ -241,6 +241,7 @@ export const LibraryCreateSchema = z.object({
     name: z.string().max(1000),
     home_path: z.string().max(2000).nullable(),
     uploads_enabled: z.boolean(),
+    cover_artwork: ArtworkReadSchema.nullable(),
 })
 
 /**
@@ -337,6 +338,7 @@ export const LibraryReadSchema = z.object({
     name: z.string(),
     home_path: z.string().nullable(),
     uploads_enabled: z.boolean(),
+    cover_artwork: ArtworkReadSchema.nullable(),
 })
 
 /**
@@ -345,6 +347,7 @@ export const LibraryReadSchema = z.object({
 export const LibraryUpdateSchema = z.object({
     name: z.string().max(1000).nullish(),
     uploads_enabled: z.boolean().nullish(),
+    cover_artwork: ArtworkReadSchema.nullish(),
 })
 
 /**

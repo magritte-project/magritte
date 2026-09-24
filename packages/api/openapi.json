@@ -2929,10 +2929,16 @@
                         "anyOf": [{ "type": "string", "maxLength": 2000 }, { "type": "null" }],
                         "title": "Home Path"
                     },
-                    "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" }
+                    "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" },
+                    "cover_artwork": {
+                        "anyOf": [
+                            { "$ref": "#/components/schemas/ArtworkRead" },
+                            { "type": "null" }
+                        ]
+                    }
                 },
                 "type": "object",
-                "required": ["name", "home_path", "uploads_enabled"],
+                "required": ["name", "home_path", "uploads_enabled", "cover_artwork"],
                 "title": "LibraryCreate"
             },
             "LibraryHomePathRead": {
@@ -3096,10 +3102,16 @@
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Home Path"
                     },
-                    "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" }
+                    "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" },
+                    "cover_artwork": {
+                        "anyOf": [
+                            { "$ref": "#/components/schemas/ArtworkRead" },
+                            { "type": "null" }
+                        ]
+                    }
                 },
                 "type": "object",
-                "required": ["id", "name", "home_path", "uploads_enabled"],
+                "required": ["id", "name", "home_path", "uploads_enabled", "cover_artwork"],
                 "title": "LibraryRead"
             },
             "LibraryUpdate": {
@@ -3111,6 +3123,12 @@
                     "uploads_enabled": {
                         "anyOf": [{ "type": "boolean" }, { "type": "null" }],
                         "title": "Uploads Enabled"
+                    },
+                    "cover_artwork": {
+                        "anyOf": [
+                            { "$ref": "#/components/schemas/ArtworkRead" },
+                            { "type": "null" }
+                        ]
                     }
                 },
                 "type": "object",

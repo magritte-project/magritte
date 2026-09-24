@@ -232,6 +232,7 @@ class TestReadAllSources:
                 "name": faker.word(),
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )

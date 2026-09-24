@@ -3,6 +3,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field, field_validator
 
+from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.base import PATH_MAX_LENGTH, TAG_MAX_LENGTH
 
 
@@ -10,6 +11,7 @@ class LibraryCreate(BaseModel):
     name: Annotated[str, Field(max_length=TAG_MAX_LENGTH)]
     home_path: Annotated[str | None, Field(max_length=PATH_MAX_LENGTH)]
     uploads_enabled: bool
+    cover_artwork: ArtworkRead | None
 
     @field_validator("home_path", mode="before")
     @classmethod
@@ -22,6 +24,7 @@ class LibraryCreate(BaseModel):
 class LibraryUpdate(BaseModel):
     name: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
     uploads_enabled: bool | None = None
+    cover_artwork: ArtworkRead | None = None
 
 
 class LibraryRead(BaseModel):
@@ -29,6 +32,7 @@ class LibraryRead(BaseModel):
     name: str
     home_path: str | None
     uploads_enabled: bool
+    cover_artwork: ArtworkRead | None
 
 
 class LibraryPermissionCreate(BaseModel):

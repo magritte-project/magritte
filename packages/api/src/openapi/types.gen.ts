@@ -595,6 +595,7 @@ export type LibraryCreate = {
      * Uploads Enabled
      */
     uploads_enabled: boolean
+    cover_artwork: ArtworkRead | null
 }
 
 /**
@@ -843,6 +844,7 @@ export type LibraryRead = {
      * Uploads Enabled
      */
     uploads_enabled: boolean
+    cover_artwork: ArtworkRead | null
 }
 
 /**
@@ -857,6 +859,7 @@ export type LibraryUpdate = {
      * Uploads Enabled
      */
     uploads_enabled?: boolean | null
+    cover_artwork?: ArtworkRead | null
 }
 
 /**

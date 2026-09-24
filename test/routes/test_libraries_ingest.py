@@ -219,6 +219,7 @@ class TestIngestSongs:
                 "name": faker.name(),
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
@@ -232,6 +233,7 @@ class TestIngestSongs:
                 "name": faker.name(),
                 "home_path": None,
                 "uploads_enabled": False,
+                "cover_artwork": None,
             },
             headers={"Authorization": f"Bearer {session.access_token}"},
         )

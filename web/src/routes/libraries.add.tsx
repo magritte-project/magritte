@@ -1,5 +1,10 @@
 import { Field, Label } from "@headlessui/react"
-import { PATH_MAX_LENGTH, TAG_MAX_LENGTH, type LibraryCreate } from "@magritte/api"
+import {
+    PATH_MAX_LENGTH,
+    TAG_MAX_LENGTH,
+    type ArtworkRead,
+    type LibraryCreate,
+} from "@magritte/api"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import z from "zod"
@@ -42,6 +47,7 @@ export const Route = createFileRoute("/libraries/add")({
                 name: "",
                 home_path: null as string | null,
                 uploads_enabled: false as boolean,
+                cover_artwork: null as ArtworkRead | null,
             } satisfies LibraryCreate,
             onSubmit: async ({ value }) => {
                 try {

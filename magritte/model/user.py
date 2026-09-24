@@ -119,6 +119,12 @@ class User(LibraryModel, table=True):
         back_populates="users",
         link_model=UserExtensionLink,
     )
+    cover_artwork_id: int | None = Field(
+        default=None,
+        foreign_key="artworks.id",
+        ondelete="SET NULL",
+        description="ID of the artwork set as the cover of this user",
+    )
 
     @property
     def scopes(self) -> set[OAuth2Scope]:
