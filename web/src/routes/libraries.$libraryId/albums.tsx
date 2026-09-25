@@ -17,7 +17,7 @@ import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useSelection from "@/hooks/selectionHook"
 
-export const Route = createFileRoute("/libraries_/$libraryId/albums")({
+export const Route = createFileRoute("/libraries/$libraryId/albums")({
     validateSearch: z.object({
         query: z.string().optional(),
         artist_id: z.number().optional(),

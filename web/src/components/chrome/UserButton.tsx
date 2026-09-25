@@ -30,7 +30,7 @@ export default function UserButton() {
                     buttonComponent={MenuButton}
                     className="flex items-center gap-1"
                 >
-                    {meQuery?.data?.preferred_name ?? meQuery?.data?.username ?? "Me"}{" "}
+                    {meQuery?.data?.preferred_name || meQuery?.data?.username || "Me"}{" "}
                     <CaretDownIcon />
                 </ThemedSubtleButton>
             }

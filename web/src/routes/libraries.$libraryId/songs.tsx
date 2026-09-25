@@ -22,7 +22,7 @@ import useSelection from "@/hooks/selectionHook"
 import LibraryQueue from "@/playback/queue/library"
 import { resolveNewValue } from "@/utilities/react"
 
-export const Route = createFileRoute("/libraries_/$libraryId/songs")({
+export const Route = createFileRoute("/libraries/$libraryId/songs")({
     validateSearch: z.object({
         query: z.string().optional(),
         album_id: z.number().optional(),

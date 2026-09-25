@@ -60,9 +60,7 @@ export default function PrimaryDetail({ title, navigation, children }: PrimaryDe
                     {navigation}
                 </div>
             </div>
-            <div className="flex-1 p-outside router-scroll-to-top relative overflow-auto pb-32">
-                {children}
-            </div>
+            <div className="flex-1 p-outside router-scroll-to-top relative pb-32">{children}</div>
         </div>
     )
 }
