@@ -25,7 +25,7 @@ export default function ThemedTabItemLabel({
                 "group-first:rounded-l-full group-last:rounded-r-full",
                 "not-group-last:border-r border-separator",
                 "bg-secondary active:bg-secondary-active",
-                "rounded data-[active=true]:text-key disabled:opacity-disabled group-disabled:opacity-disabled",
+                "rounded data-[active=true]:text-key group-aria-disabled:opacity-disabled aria-disabled:opacity-disabled",
                 className,
             )}
             data-active={isActive}
