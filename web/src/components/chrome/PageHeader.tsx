@@ -9,6 +9,7 @@ import UserNotificationsButton from "@/components/chrome/UserNotificationsButton
 import ThemedHeader from "@/components/theme/ThemedHeader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import ThemedTabItemLink from "@/components/theme/ThemedTabItemLink"
+import useHotKey from "@/hooks/hotKeyHook"
 import useIsInstalledApp from "@/hooks/installedAppHook"
 
 export interface PageHeaderProps {
@@ -20,6 +21,41 @@ export default function PageHeader({ children }: PageHeaderProps) {
     const { libraryId } = useParams({ strict: false })
     const { history } = useRouter()
     const canGoBack = useCanGoBack()
+
+    useHotKey({ key: "1" }, () => {
+        if (libraryId !== undefined) {
+            navigate({
+                to: "/libraries/$libraryId/artists",
+                params: { libraryId },
+            })
+            return true
+        } else {
+            return false
+        }
+    })
+    useHotKey({ key: "2" }, () => {
+        if (libraryId !== undefined) {
+            navigate({
+                to: "/libraries/$libraryId/albums",
+                params: { libraryId },
+            })
+            return true
+        } else {
+            return false
+        }
+    })
+    useHotKey({ key: "3" }, () => {
+        if (libraryId !== undefined) {
+            navigate({
+                to: "/libraries/$libraryId/songs",
+                params: { libraryId },
+            })
+            return true
+        } else {
+            return false
+        }
+    })
+
     const isInstalledApp = useIsInstalledApp()
     return (
         <ThemedHeader

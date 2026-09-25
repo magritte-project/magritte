@@ -96,7 +96,12 @@ export class Extension {
      * The caller is responsible for stopping the listener once the iframe goes away,
      * either by calling `stop()` or by aborting the `signal` it was created with.
      */
-    static listen({ iframe, manifest, signal, exports }: ExtensionListenOptions): ExtensionListener {
+    static listen({
+        iframe,
+        manifest,
+        signal,
+        exports,
+    }: ExtensionListenOptions): ExtensionListener {
         signal?.throwIfAborted()
         const responder = MessageChannelTransport.listen({
             iframe,
