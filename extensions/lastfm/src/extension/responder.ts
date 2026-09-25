@@ -2,7 +2,8 @@ import type {
     CommandContext,
     CommandPresentation,
     CommandResponder,
-    NotificationCenter,
+    Deferred,
+    ExtensionHost,
 } from "@magritte/sdk"
 
 import type { LastfmAccount } from "@/lastfm/account"
@@ -12,29 +13,22 @@ import type { LastfmClient } from "@/lastfm/client"
 export interface LastfmCommandResponderOptions {
     readonly client: LastfmClient
     readonly account: LastfmAccount
-
-    /**
-     * Resolves the host's notification center.
-     *
-     * Deferred because the responder has to exist before the connection
-     * carrying the notification center does.
-     */
-    getNotificationCenter(): Promise<NotificationCenter>
+    readonly host: Deferred<ExtensionHost>
 }
 
 export default class LastfmCommandResponder implements CommandResponder {
     private readonly _client: LastfmClient
     private readonly _account: LastfmAccount
-    private readonly _getNotificationCenter: () => Promise<NotificationCenter>
+    private readonly _host: Deferred<ExtensionHost>
 
-    constructor({ client, account, getNotificationCenter }: LastfmCommandResponderOptions) {
+    constructor({ client, account, host }: LastfmCommandResponderOptions) {
         this._client = client
         this._account = account
-        this._getNotificationCenter = getNotificationCenter
+        this._host = host
     }
 
     private async _showToast(type: "info" | "warning" | "error", message: string) {
-        const notificationCenter = await this._getNotificationCenter()
+        const notificationCenter = await this._host.get().notificationCenter()
         await notificationCenter.showToast({ type, message })
     }
 

@@ -30,26 +30,17 @@ try {
     })
     const account = new LastfmAccount()
 
-    // The command responder has to be handed to the host while connecting, but
-    // it only needs the notification center once a command actually runs
-    let provideExtensionHost: (extensionHost: ExtensionHost) => void
-    const connectedExtensionHost = new Promise<ExtensionHost>((resolve) => {
-        provideExtensionHost = resolve
-    })
-
     // Handshake with the extension host
     const extensionHost = await ExtensionHost.connect({
         extensionId: "magritte.lastfm",
-        exports: async () => ({
+        exports: async ({ host }) => ({
             commandResponder: new LastfmCommandResponder({
                 client,
                 account,
-                getNotificationCenter: async () =>
-                    await (await connectedExtensionHost).notificationCenter(),
+                host,
             }),
         }),
     })
-    provideExtensionHost!(extensionHost)
 
     // Scrobbling runs whether or not the extension is on screen, which is why
     // the manifest asks to run eagerly and in the background
