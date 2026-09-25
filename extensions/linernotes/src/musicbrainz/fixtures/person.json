@@ -1,0 +1,28 @@
+{
+    "id": "artist-grohl",
+    "name": "Dave Grohl",
+    "sort-name": "Grohl, Dave",
+    "type": "Person",
+    "country": "US",
+    "life-span": { "begin": "1969-01-14", "ended": false },
+    "relations": [
+        {
+            "type": "member of band",
+            "direction": "forward",
+            "target-type": "artist",
+            "attributes": ["drums (drum set)"],
+            "begin": "1990-09",
+            "end": "1994-04-05",
+            "ended": true,
+            "artist": { "id": "artist-nirvana", "name": "Nirvana" }
+        },
+        {
+            "type": "wikipedia",
+            "direction": "forward",
+            "target-type": "url",
+            "attributes": [],
+            "ended": false,
+            "url": { "id": "url-4", "resource": "https://en.wikipedia.org/wiki/Dave_Grohl" }
+        }
+    ]
+}

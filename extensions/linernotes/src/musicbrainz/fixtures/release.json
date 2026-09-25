@@ -1,0 +1,219 @@
+{
+    "id": "rel-nevermind-us",
+    "title": "Nevermind",
+    "status": "Official",
+    "date": "1991-09-24",
+    "country": "US",
+    "disambiguation": "",
+    "artist-credit": [
+        {
+            "name": "Nirvana",
+            "joinphrase": "",
+            "artist": { "id": "artist-nirvana", "name": "Nirvana" }
+        }
+    ],
+    "release-group": {
+        "id": "rg-nevermind",
+        "title": "Nevermind",
+        "primary-type": "Album",
+        "secondary-types": [],
+        "first-release-date": "1991-09-24"
+    },
+    "label-info": [
+        { "catalog-number": "DGCD-24425", "label": { "id": "label-dgc", "name": "DGC" } }
+    ],
+    "cover-art-archive": { "artwork": true, "front": true, "back": false, "count": 2 },
+    "relations": [
+        {
+            "type": "producer",
+            "direction": "backward",
+            "target-type": "artist",
+            "attributes": [],
+            "attribute-credits": {},
+            "ended": false,
+            "artist": { "id": "artist-vig", "name": "Butch Vig" }
+        },
+        {
+            "type": "producer",
+            "direction": "backward",
+            "target-type": "artist",
+            "attributes": [],
+            "ended": false,
+            "artist": { "id": "artist-nirvana", "name": "Nirvana" }
+        },
+        {
+            "type": "mix",
+            "direction": "backward",
+            "target-type": "artist",
+            "attributes": [],
+            "ended": false,
+            "artist": { "id": "artist-wallace", "name": "Andy Wallace" }
+        },
+        {
+            "type": "engineer",
+            "direction": "backward",
+            "target-type": "artist",
+            "attributes": ["assistant"],
+            "ended": false,
+            "artist": { "id": "artist-assistant", "name": "Jeff Sheehan" }
+        },
+        {
+            "type": "photography",
+            "direction": "backward",
+            "target-type": "artist",
+            "attributes": [],
+            "ended": false,
+            "artist": { "id": "artist-elden", "name": "Kirk Weddle" }
+        },
+        {
+            "type": "discogs",
+            "direction": "forward",
+            "target-type": "url",
+            "attributes": [],
+            "ended": false,
+            "url": { "id": "url-5", "resource": "https://www.discogs.com/release/12345" }
+        }
+    ],
+    "media": [
+        {
+            "position": 1,
+            "format": "CD",
+            "track-count": 2,
+            "tracks": [
+                {
+                    "id": "track-1",
+                    "number": "1",
+                    "position": 1,
+                    "title": "Smells Like Teen Spirit",
+                    "length": 301920,
+                    "recording": {
+                        "id": "rec-album",
+                        "title": "Smells Like Teen Spirit",
+                        "length": 301920,
+                        "video": false,
+                        "artist-credit": [
+                            {
+                                "name": "Nirvana",
+                                "artist": { "id": "artist-nirvana", "name": "Nirvana" }
+                            }
+                        ],
+                        "relations": [
+                            {
+                                "type": "instrument",
+                                "direction": "backward",
+                                "target-type": "artist",
+                                "attributes": ["guitar"],
+                                "attribute-credits": {},
+                                "ended": false,
+                                "artist": { "id": "artist-cobain", "name": "Kurt Cobain" }
+                            },
+                            {
+                                "type": "vocal",
+                                "direction": "backward",
+                                "target-type": "artist",
+                                "attributes": ["lead vocals"],
+                                "ended": false,
+                                "artist": { "id": "artist-cobain", "name": "Kurt Cobain" }
+                            },
+                            {
+                                "type": "instrument",
+                                "direction": "backward",
+                                "target-type": "artist",
+                                "attributes": ["drums (drum set)"],
+                                "attribute-credits": { "drums (drum set)": "drums" },
+                                "ended": false,
+                                "artist": { "id": "artist-grohl", "name": "Dave Grohl" }
+                            },
+                            {
+                                "type": "performance",
+                                "direction": "forward",
+                                "target-type": "work",
+                                "attributes": [],
+                                "ended": false,
+                                "work": {
+                                    "id": "work-slts",
+                                    "title": "Smells Like Teen Spirit",
+                                    "relations": [
+                                        {
+                                            "type": "writer",
+                                            "direction": "backward",
+                                            "target-type": "artist",
+                                            "attributes": [],
+                                            "ended": false,
+                                            "artist": {
+                                                "id": "artist-cobain",
+                                                "name": "Kurt Cobain"
+                                            }
+                                        },
+                                        {
+                                            "type": "writer",
+                                            "direction": "backward",
+                                            "target-type": "artist",
+                                            "attributes": [],
+                                            "ended": false,
+                                            "artist": { "id": "artist-grohl", "name": "Dave Grohl" }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "track-2",
+                    "number": "2",
+                    "position": 2,
+                    "title": "In Bloom",
+                    "length": 254000,
+                    "recording": {
+                        "id": "rec-in-bloom",
+                        "title": "In Bloom",
+                        "length": 254000,
+                        "relations": [
+                            {
+                                "type": "instrument",
+                                "direction": "backward",
+                                "target-type": "artist",
+                                "attributes": ["guitar"],
+                                "ended": false,
+                                "artist": { "id": "artist-cobain", "name": "Kurt Cobain" }
+                            },
+                            {
+                                "type": "instrument",
+                                "direction": "backward",
+                                "target-type": "artist",
+                                "attributes": ["bass guitar"],
+                                "ended": false,
+                                "artist": { "id": "artist-novoselic", "name": "Krist Novoselic" }
+                            },
+                            {
+                                "type": "performance",
+                                "direction": "forward",
+                                "target-type": "work",
+                                "attributes": [],
+                                "ended": false,
+                                "work": {
+                                    "id": "work-in-bloom",
+                                    "title": "In Bloom",
+                                    "relations": [
+                                        {
+                                            "type": "writer",
+                                            "direction": "backward",
+                                            "target-type": "artist",
+                                            "attributes": [],
+                                            "ended": false,
+                                            "artist": {
+                                                "id": "artist-cobain",
+                                                "name": "Kurt Cobain"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

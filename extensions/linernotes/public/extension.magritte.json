@@ -1,0 +1,11 @@
+{
+    "name": "Liner Notes",
+    "description": "Read about the song, album and artist that's playing, with credits from MusicBrainz, Wikipedia and Last.fm",
+    "id": "magritte.linernotes",
+    "version": "0.0.0",
+    "url": "/",
+    "icon_url": "/icon.svg",
+    "preferredWidth": "20rem",
+    "preferredHeight": "32rem",
+    "permissions": ["playback:read"]
+}

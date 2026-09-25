@@ -1,0 +1,169 @@
+{
+    "created": "2026-09-24T00:00:00.000Z",
+    "count": 3,
+    "offset": 0,
+    "recordings": [
+        {
+            "id": "rec-video",
+            "score": 100,
+            "title": "Smells Like Teen Spirit",
+            "disambiguation": "official music video",
+            "first-release-date": "2011-09-27",
+            "length": 279000,
+            "video": true,
+            "artist-credit": [
+                { "name": "Nirvana", "artist": { "id": "artist-nirvana", "name": "Nirvana" } }
+            ],
+            "releases": [
+                {
+                    "id": "rel-dvd",
+                    "title": "Nevermind: Classic Albums",
+                    "status": "Official",
+                    "date": "2005-03-01",
+                    "country": "US",
+                    "release-group": {
+                        "id": "rg-dvd",
+                        "title": "Nevermind: Classic Albums",
+                        "primary-type": "Other"
+                    },
+                    "media": [
+                        {
+                            "format": "DVD-Video",
+                            "track": [{ "number": "1", "title": "Smells Like Teen Spirit" }]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "rec-album",
+            "score": 100,
+            "title": "Smells Like Teen Spirit",
+            "first-release-date": "1991-09-10",
+            "length": 301920,
+            "video": null,
+            "artist-credit": [
+                {
+                    "name": "Nirvana",
+                    "artist": {
+                        "id": "artist-nirvana",
+                        "name": "Nirvana",
+                        "disambiguation": "90s US grunge band"
+                    }
+                }
+            ],
+            "releases": [
+                {
+                    "id": "rel-nevermind-us",
+                    "title": "Nevermind",
+                    "status": "Official",
+                    "date": "1991-09-24",
+                    "country": "US",
+                    "track-count": 12,
+                    "release-group": {
+                        "id": "rg-nevermind",
+                        "title": "Nevermind",
+                        "primary-type": "Album",
+                        "secondary-types": []
+                    },
+                    "media": [
+                        {
+                            "format": "CD",
+                            "track-count": 12,
+                            "track": [
+                                {
+                                    "number": "1",
+                                    "title": "Smells Like Teen Spirit",
+                                    "length": 301920
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "rel-singles-box",
+                    "title": "Singles",
+                    "status": "Official",
+                    "date": "1995-11-01",
+                    "country": "XE",
+                    "release-group": {
+                        "id": "rg-singles",
+                        "title": "Singles",
+                        "primary-type": "Album",
+                        "secondary-types": ["Compilation"]
+                    },
+                    "media": [
+                        {
+                            "format": "CD",
+                            "track": [{ "number": "1", "title": "Smells Like Teen Spirit" }]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "rec-anniversary-live",
+            "score": 100,
+            "title": "Smells Like Teen Spirit",
+            "disambiguation": "live, 1991-11-25: Paradiso, Amsterdam, Netherlands",
+            "first-release-date": "2021-11-11",
+            "length": 289813,
+            "artist-credit": [
+                { "name": "Nirvana", "artist": { "id": "artist-nirvana", "name": "Nirvana" } }
+            ],
+            "releases": [
+                {
+                    "id": "rel-nevermind-30",
+                    "title": "Nevermind",
+                    "status": "Official",
+                    "date": "2021-11-12",
+                    "country": "US",
+                    "disambiguation": "30th Anniversary Super Deluxe",
+                    "release-group": {
+                        "id": "rg-nevermind",
+                        "title": "Nevermind",
+                        "primary-type": "Album",
+                        "secondary-types": []
+                    },
+                    "media": [
+                        {
+                            "format": "CD",
+                            "track": [{ "number": "14", "title": "Smells Like Teen Spirit" }]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "rec-live",
+            "score": 97,
+            "title": "Smells Like Teen Spirit",
+            "disambiguation": "live, 1996-10-01: From the Muddy Banks of the Wishkah",
+            "first-release-date": "1996-10-01",
+            "length": 288000,
+            "artist-credit": [
+                { "name": "Nirvana", "artist": { "id": "artist-nirvana", "name": "Nirvana" } }
+            ],
+            "releases": [
+                {
+                    "id": "rel-live",
+                    "title": "From the Muddy Banks of the Wishkah",
+                    "status": "Official",
+                    "date": "1996-10-01",
+                    "release-group": {
+                        "id": "rg-live",
+                        "title": "From the Muddy Banks of the Wishkah",
+                        "primary-type": "Album",
+                        "secondary-types": ["Live"]
+                    },
+                    "media": [
+                        {
+                            "format": "CD",
+                            "track": [{ "number": "8", "title": "Smells Like Teen Spirit" }]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

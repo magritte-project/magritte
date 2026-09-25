@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Liner Notes">
+    <rect width="128" height="128" rx="28" fill="#3b3b6d" />
+    <g fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round">
+        <path d="M34 40h60" />
+        <path d="M34 60h60" />
+        <path d="M34 80h36" />
+    </g>
+    <circle cx="90" cy="88" r="9" fill="#ffffff" />
+    <path d="M97 88V60l14-4" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

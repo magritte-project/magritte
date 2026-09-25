@@ -1,0 +1,54 @@
+{
+    "id": "rg-nevermind",
+    "title": "Nevermind",
+    "primary-type": "Album",
+    "secondary-types": [],
+    "first-release-date": "1991-09-24",
+    "artist-credit": [
+        { "name": "Nirvana", "artist": { "id": "artist-nirvana", "name": "Nirvana" } }
+    ],
+    "releases": [
+        {
+            "id": "rel-nevermind-us",
+            "title": "Nevermind",
+            "status": "Official",
+            "date": "1991-09-24",
+            "country": "US"
+        },
+        {
+            "id": "rel-nevermind-promo",
+            "title": "Nevermind",
+            "status": "Promotion",
+            "date": "1991-09",
+            "country": "US"
+        },
+        {
+            "id": "rel-nevermind-xw",
+            "title": "Nevermind",
+            "status": "Official",
+            "date": "2011-09-26",
+            "country": "XW",
+            "disambiguation": "remastered"
+        }
+    ],
+    "genres": [{ "name": "grunge", "count": 10 }],
+    "tags": [],
+    "relations": [
+        {
+            "type": "wikidata",
+            "direction": "forward",
+            "target-type": "url",
+            "attributes": [],
+            "ended": false,
+            "url": { "id": "url-6", "resource": "https://www.wikidata.org/wiki/Q201706" }
+        },
+        {
+            "type": "discography entry",
+            "direction": "forward",
+            "target-type": "url",
+            "attributes": [],
+            "ended": false,
+            "url": { "id": "url-7", "resource": "https://www.last.fm/music/Nirvana/Nevermind" }
+        }
+    ]
+}
