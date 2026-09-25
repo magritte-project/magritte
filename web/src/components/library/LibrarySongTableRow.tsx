@@ -1,6 +1,7 @@
 import type { SongRead } from "@magritte/api"
 import classNames from "classnames"
 
+import LibrarySongPlaybackControl from "@/components/library/LibrarySongPlaybackControl"
 import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import { formatDuration } from "@/utilities/duration"
 
@@ -55,13 +56,17 @@ export default function LibrarySongTableRow({
         >
             <TableDataCell showSeparator={false}>
                 <div className="flex items-center justify-center">
-                    <ThemedCheckbox
-                        name={`songs[${song.id}]`}
-                        checked={selected}
-                        onChange={onToggleSelected}
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label={selected ? "Deselect Song" : "Select Song"}
-                    />
+                    {playing ? (
+                        <LibrarySongPlaybackControl />
+                    ) : (
+                        <ThemedCheckbox
+                            name={`songs[${song.id}]`}
+                            checked={selected}
+                            onChange={onToggleSelected}
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label={selected ? "Deselect Song" : "Select Song"}
+                        />
+                    )}
                 </div>
             </TableDataCell>
             <TableDataCell title={song.title ?? undefined}>{song.title}</TableDataCell>

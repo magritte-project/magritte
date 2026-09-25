@@ -84,6 +84,18 @@
     /* Global Defaults */
     --default-font-family: "Comfortaa", sans-serif;
     --default-mono-font-family: "Fira Mono", monospace;
+
+    /* Animations */
+    --animate-now-playing: now-playing 0.9s ease-in-out infinite alternate;
+
+    @keyframes now-playing {
+        from {
+            height: 25%;
+        }
+        to {
+            height: 100%;
+        }
+    }
 }
 
 @layer components {
