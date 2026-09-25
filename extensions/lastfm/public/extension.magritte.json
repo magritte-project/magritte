@@ -1,0 +1,23 @@
+{
+    "name": "Last.fm",
+    "description": "Scrobble what you play and see what you've been listening to",
+    "id": "magritte.lastfm",
+    "version": "0.0.0",
+    "url": "/",
+    "icon_url": "/icon.svg",
+    "preferredWidth": "16rem",
+    "preferredHeight": "16rem",
+    "permissions": ["run:background", "run:eager", "playback:read"],
+    "commands": [
+        {
+            "id": "account.authenticate",
+            "searchTerms": "last.fm lastfm sign in out connect disconnect scrobble account",
+            "requiredInputKinds": []
+        },
+        {
+            "id": "scrobbling.toggle",
+            "searchTerms": "last.fm lastfm scrobbling enable disable pause",
+            "requiredInputKinds": []
+        }
+    ]
+}
