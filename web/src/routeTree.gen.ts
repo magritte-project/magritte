@@ -10,45 +10,44 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as LibrariesRouteImport } from './routes/libraries'
+import { Route as SettingsRouteRouteImport } from './routes/settings/route'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SignUpRouteImport } from './routes/sign-up'
-import { Route as UserRouteImport } from './routes/user'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminExtensionsRouteImport } from './routes/admin.extensions'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as LibrariesAddRouteImport } from './routes/libraries.add'
 import { Route as LibrariesLibraryIdRouteRouteImport } from './routes/libraries_.$libraryId/route'
-import { Route as UserMeRouteImport } from './routes/user.me'
-import { Route as AdminExtensionsImportRouteImport } from './routes/admin.extensions.import'
-import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as SettingsAdminRouteImport } from './routes/settings/admin'
 import { Route as LibrariesManageLibraryIdRouteRouteImport } from './routes/libraries.manage.$libraryId/route'
 import { Route as LibrariesLibraryIdIndexRouteImport } from './routes/libraries_.$libraryId/index'
 import { Route as LibrariesLibraryIdAlbumsRouteImport } from './routes/libraries_.$libraryId/albums'
 import { Route as LibrariesLibraryIdArtistsRouteImport } from './routes/libraries_.$libraryId/artists'
 import { Route as LibrariesLibraryIdSongsRouteImport } from './routes/libraries_.$libraryId/songs'
-import { Route as UserMeIndexRouteImport } from './routes/user.me.index'
-import { Route as UserMeExtensionsRouteImport } from './routes/user.me.extensions'
+import { Route as SettingsAdminExtensionsRouteImport } from './routes/settings/admin.extensions'
+import { Route as SettingsAdminUsersRouteImport } from './routes/settings/admin.users'
+import { Route as SettingsUserExtensionsRouteImport } from './routes/settings/user.extensions'
+import { Route as SettingsUserGeneralRouteImport } from './routes/settings/user.general'
 import { Route as LibrariesManageLibraryIdIndexRouteImport } from './routes/libraries.manage.$libraryId/index'
 import { Route as LibrariesManageLibraryIdIgnoredRouteImport } from './routes/libraries.manage.$libraryId/ignored'
 import { Route as LibrariesManageLibraryIdPermissionsRouteImport } from './routes/libraries.manage.$libraryId/permissions'
-import { Route as UserMeExtensionsAddRouteImport } from './routes/user.me.extensions.add'
-import { Route as UserMeExtensionsManagerRouteImport } from './routes/user.me.extensions.manager'
+import { Route as SettingsAdminExtensionsImportRouteImport } from './routes/settings/admin.extensions.import'
+import { Route as SettingsAdminUsersUserIdRouteImport } from './routes/settings/admin.users.$userId'
+import { Route as SettingsUserExtensionsAddRouteImport } from './routes/settings/user.extensions.add'
+import { Route as SettingsUserExtensionsTasksRouteImport } from './routes/settings/user.extensions.tasks'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LibrariesRoute = LibrariesRouteImport.update({
   id: '/libraries',
   path: '/libraries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRouteRoute = SettingsRouteRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignInRoute = SignInRouteImport.update({
@@ -61,26 +60,6 @@ const SignUpRoute = SignUpRouteImport.update({
   path: '/sign-up',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserRoute = UserRouteImport.update({
-  id: '/user',
-  path: '/user',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminExtensionsRoute = AdminExtensionsRouteImport.update({
-  id: '/extensions',
-  path: '/extensions',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
-} as any)
 const LibrariesAddRoute = LibrariesAddRouteImport.update({
   id: '/add',
   path: '/add',
@@ -91,20 +70,15 @@ const LibrariesLibraryIdRouteRoute = LibrariesLibraryIdRouteRouteImport.update({
   path: '/libraries/$libraryId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserMeRoute = UserMeRouteImport.update({
-  id: '/me',
-  path: '/me',
-  getParentRoute: () => UserRoute,
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
-const AdminExtensionsImportRoute = AdminExtensionsImportRouteImport.update({
-  id: '/import',
-  path: '/import',
-  getParentRoute: () => AdminExtensionsRoute,
-} as any)
-const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
-  id: '/$userId',
-  path: '/$userId',
-  getParentRoute: () => AdminUsersRoute,
+const SettingsAdminRoute = SettingsAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 const LibrariesManageLibraryIdRouteRoute =
   LibrariesManageLibraryIdRouteRouteImport.update({
@@ -134,15 +108,25 @@ const LibrariesLibraryIdSongsRoute = LibrariesLibraryIdSongsRouteImport.update({
   path: '/songs',
   getParentRoute: () => LibrariesLibraryIdRouteRoute,
 } as any)
-const UserMeIndexRoute = UserMeIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => UserMeRoute,
-} as any)
-const UserMeExtensionsRoute = UserMeExtensionsRouteImport.update({
+const SettingsAdminExtensionsRoute = SettingsAdminExtensionsRouteImport.update({
   id: '/extensions',
   path: '/extensions',
-  getParentRoute: () => UserMeRoute,
+  getParentRoute: () => SettingsAdminRoute,
+} as any)
+const SettingsAdminUsersRoute = SettingsAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => SettingsAdminRoute,
+} as any)
+const SettingsUserExtensionsRoute = SettingsUserExtensionsRouteImport.update({
+  id: '/user/extensions',
+  path: '/user/extensions',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+const SettingsUserGeneralRoute = SettingsUserGeneralRouteImport.update({
+  id: '/user/general',
+  path: '/user/general',
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 const LibrariesManageLibraryIdIndexRoute =
   LibrariesManageLibraryIdIndexRouteImport.update({
@@ -162,43 +146,56 @@ const LibrariesManageLibraryIdPermissionsRoute =
     path: '/permissions',
     getParentRoute: () => LibrariesManageLibraryIdRouteRoute,
   } as any)
-const UserMeExtensionsAddRoute = UserMeExtensionsAddRouteImport.update({
-  id: '/add',
-  path: '/add',
-  getParentRoute: () => UserMeExtensionsRoute,
-} as any)
-const UserMeExtensionsManagerRoute = UserMeExtensionsManagerRouteImport.update({
-  id: '/manager',
-  path: '/manager',
-  getParentRoute: () => UserMeExtensionsRoute,
-} as any)
+const SettingsAdminExtensionsImportRoute =
+  SettingsAdminExtensionsImportRouteImport.update({
+    id: '/import',
+    path: '/import',
+    getParentRoute: () => SettingsAdminExtensionsRoute,
+  } as any)
+const SettingsAdminUsersUserIdRoute =
+  SettingsAdminUsersUserIdRouteImport.update({
+    id: '/$userId',
+    path: '/$userId',
+    getParentRoute: () => SettingsAdminUsersRoute,
+  } as any)
+const SettingsUserExtensionsAddRoute =
+  SettingsUserExtensionsAddRouteImport.update({
+    id: '/add',
+    path: '/add',
+    getParentRoute: () => SettingsUserExtensionsRoute,
+  } as any)
+const SettingsUserExtensionsTasksRoute =
+  SettingsUserExtensionsTasksRouteImport.update({
+    id: '/tasks',
+    path: '/tasks',
+    getParentRoute: () => SettingsUserExtensionsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/settings': typeof SettingsRouteRouteWithChildren
   '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/user': typeof UserRouteWithChildren
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
-  '/admin/extensions': typeof AdminExtensionsRouteWithChildren
-  '/admin/users': typeof AdminUsersRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
-  '/user/me': typeof UserMeRouteWithChildren
-  '/admin/': typeof AdminIndexRoute
+  '/settings/admin': typeof SettingsAdminRouteWithChildren
+  '/settings/': typeof SettingsIndexRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
-  '/admin/extensions/import': typeof AdminExtensionsImportRoute
-  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
-  '/user/me/extensions': typeof UserMeExtensionsRouteWithChildren
+  '/settings/admin/extensions': typeof SettingsAdminExtensionsRouteWithChildren
+  '/settings/admin/users': typeof SettingsAdminUsersRouteWithChildren
+  '/settings/user/extensions': typeof SettingsUserExtensionsRouteWithChildren
+  '/settings/user/general': typeof SettingsUserGeneralRoute
   '/libraries/$libraryId/': typeof LibrariesLibraryIdIndexRoute
-  '/user/me/': typeof UserMeIndexRoute
   '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
-  '/user/me/extensions/add': typeof UserMeExtensionsAddRoute
-  '/user/me/extensions/manager': typeof UserMeExtensionsManagerRoute
+  '/settings/admin/extensions/import': typeof SettingsAdminExtensionsImportRoute
+  '/settings/admin/users/$userId': typeof SettingsAdminUsersUserIdRoute
+  '/settings/user/extensions/add': typeof SettingsUserExtensionsAddRoute
+  '/settings/user/extensions/tasks': typeof SettingsUserExtensionsTasksRoute
   '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -206,82 +203,80 @@ export interface FileRoutesByTo {
   '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/user': typeof UserRouteWithChildren
-  '/admin/extensions': typeof AdminExtensionsRouteWithChildren
-  '/admin/users': typeof AdminUsersRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
-  '/admin': typeof AdminIndexRoute
-  '/admin/extensions/import': typeof AdminExtensionsImportRoute
-  '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/settings/admin': typeof SettingsAdminRouteWithChildren
+  '/settings': typeof SettingsIndexRoute
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
-  '/user/me/extensions': typeof UserMeExtensionsRouteWithChildren
+  '/settings/admin/extensions': typeof SettingsAdminExtensionsRouteWithChildren
+  '/settings/admin/users': typeof SettingsAdminUsersRouteWithChildren
+  '/settings/user/extensions': typeof SettingsUserExtensionsRouteWithChildren
+  '/settings/user/general': typeof SettingsUserGeneralRoute
   '/libraries/$libraryId': typeof LibrariesLibraryIdIndexRoute
-  '/user/me': typeof UserMeIndexRoute
   '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
-  '/user/me/extensions/add': typeof UserMeExtensionsAddRoute
-  '/user/me/extensions/manager': typeof UserMeExtensionsManagerRoute
+  '/settings/admin/extensions/import': typeof SettingsAdminExtensionsImportRoute
+  '/settings/admin/users/$userId': typeof SettingsAdminUsersUserIdRoute
+  '/settings/user/extensions/add': typeof SettingsUserExtensionsAddRoute
+  '/settings/user/extensions/tasks': typeof SettingsUserExtensionsTasksRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/settings': typeof SettingsRouteRouteWithChildren
   '/libraries': typeof LibrariesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/user': typeof UserRouteWithChildren
   '/libraries_/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
-  '/admin/extensions': typeof AdminExtensionsRouteWithChildren
-  '/admin/users': typeof AdminUsersRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
-  '/user/me': typeof UserMeRouteWithChildren
-  '/admin/': typeof AdminIndexRoute
+  '/settings/admin': typeof SettingsAdminRouteWithChildren
+  '/settings/': typeof SettingsIndexRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
-  '/admin/extensions/import': typeof AdminExtensionsImportRoute
-  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/libraries_/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
   '/libraries_/$libraryId/artists': typeof LibrariesLibraryIdArtistsRoute
   '/libraries_/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
-  '/user/me/extensions': typeof UserMeExtensionsRouteWithChildren
+  '/settings/admin/extensions': typeof SettingsAdminExtensionsRouteWithChildren
+  '/settings/admin/users': typeof SettingsAdminUsersRouteWithChildren
+  '/settings/user/extensions': typeof SettingsUserExtensionsRouteWithChildren
+  '/settings/user/general': typeof SettingsUserGeneralRoute
   '/libraries_/$libraryId/': typeof LibrariesLibraryIdIndexRoute
-  '/user/me/': typeof UserMeIndexRoute
   '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
-  '/user/me/extensions/add': typeof UserMeExtensionsAddRoute
-  '/user/me/extensions/manager': typeof UserMeExtensionsManagerRoute
+  '/settings/admin/extensions/import': typeof SettingsAdminExtensionsImportRoute
+  '/settings/admin/users/$userId': typeof SettingsAdminUsersUserIdRoute
+  '/settings/user/extensions/add': typeof SettingsUserExtensionsAddRoute
+  '/settings/user/extensions/tasks': typeof SettingsUserExtensionsTasksRoute
   '/libraries/manage/$libraryId/': typeof LibrariesManageLibraryIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
+    | '/settings'
     | '/libraries'
     | '/sign-in'
     | '/sign-up'
-    | '/user'
     | '/libraries/$libraryId'
-    | '/admin/extensions'
-    | '/admin/users'
     | '/libraries/add'
-    | '/user/me'
-    | '/admin/'
+    | '/settings/admin'
+    | '/settings/'
     | '/libraries/manage/$libraryId'
-    | '/admin/extensions/import'
-    | '/admin/users/$userId'
     | '/libraries/$libraryId/albums'
     | '/libraries/$libraryId/artists'
     | '/libraries/$libraryId/songs'
-    | '/user/me/extensions'
+    | '/settings/admin/extensions'
+    | '/settings/admin/users'
+    | '/settings/user/extensions'
+    | '/settings/user/general'
     | '/libraries/$libraryId/'
-    | '/user/me/'
     | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
-    | '/user/me/extensions/add'
-    | '/user/me/extensions/manager'
+    | '/settings/admin/extensions/import'
+    | '/settings/admin/users/$userId'
+    | '/settings/user/extensions/add'
+    | '/settings/user/extensions/tasks'
     | '/libraries/manage/$libraryId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -289,61 +284,59 @@ export interface FileRouteTypes {
     | '/libraries'
     | '/sign-in'
     | '/sign-up'
-    | '/user'
-    | '/admin/extensions'
-    | '/admin/users'
     | '/libraries/add'
-    | '/admin'
-    | '/admin/extensions/import'
-    | '/admin/users/$userId'
+    | '/settings/admin'
+    | '/settings'
     | '/libraries/$libraryId/albums'
     | '/libraries/$libraryId/artists'
     | '/libraries/$libraryId/songs'
-    | '/user/me/extensions'
+    | '/settings/admin/extensions'
+    | '/settings/admin/users'
+    | '/settings/user/extensions'
+    | '/settings/user/general'
     | '/libraries/$libraryId'
-    | '/user/me'
     | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
-    | '/user/me/extensions/add'
-    | '/user/me/extensions/manager'
+    | '/settings/admin/extensions/import'
+    | '/settings/admin/users/$userId'
+    | '/settings/user/extensions/add'
+    | '/settings/user/extensions/tasks'
     | '/libraries/manage/$libraryId'
   id:
     | '__root__'
     | '/'
-    | '/admin'
+    | '/settings'
     | '/libraries'
     | '/sign-in'
     | '/sign-up'
-    | '/user'
     | '/libraries_/$libraryId'
-    | '/admin/extensions'
-    | '/admin/users'
     | '/libraries/add'
-    | '/user/me'
-    | '/admin/'
+    | '/settings/admin'
+    | '/settings/'
     | '/libraries/manage/$libraryId'
-    | '/admin/extensions/import'
-    | '/admin/users/$userId'
     | '/libraries_/$libraryId/albums'
     | '/libraries_/$libraryId/artists'
     | '/libraries_/$libraryId/songs'
-    | '/user/me/extensions'
+    | '/settings/admin/extensions'
+    | '/settings/admin/users'
+    | '/settings/user/extensions'
+    | '/settings/user/general'
     | '/libraries_/$libraryId/'
-    | '/user/me/'
     | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
-    | '/user/me/extensions/add'
-    | '/user/me/extensions/manager'
+    | '/settings/admin/extensions/import'
+    | '/settings/admin/users/$userId'
+    | '/settings/user/extensions/add'
+    | '/settings/user/extensions/tasks'
     | '/libraries/manage/$libraryId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
+  SettingsRouteRoute: typeof SettingsRouteRouteWithChildren
   LibrariesRoute: typeof LibrariesRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
-  UserRoute: typeof UserRouteWithChildren
   LibrariesLibraryIdRouteRoute: typeof LibrariesLibraryIdRouteRouteWithChildren
 }
 
@@ -356,18 +349,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/libraries': {
       id: '/libraries'
       path: '/libraries'
       fullPath: '/libraries'
       preLoaderRoute: typeof LibrariesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sign-in': {
@@ -384,34 +377,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/user': {
-      id: '/user'
-      path: '/user'
-      fullPath: '/user'
-      preLoaderRoute: typeof UserRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/extensions': {
-      id: '/admin/extensions'
-      path: '/extensions'
-      fullPath: '/admin/extensions'
-      preLoaderRoute: typeof AdminExtensionsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/libraries/add': {
       id: '/libraries/add'
       path: '/add'
@@ -426,26 +391,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibrariesLibraryIdRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/user/me': {
-      id: '/user/me'
-      path: '/me'
-      fullPath: '/user/me'
-      preLoaderRoute: typeof UserMeRouteImport
-      parentRoute: typeof UserRoute
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRouteRoute
     }
-    '/admin/extensions/import': {
-      id: '/admin/extensions/import'
-      path: '/import'
-      fullPath: '/admin/extensions/import'
-      preLoaderRoute: typeof AdminExtensionsImportRouteImport
-      parentRoute: typeof AdminExtensionsRoute
-    }
-    '/admin/users/$userId': {
-      id: '/admin/users/$userId'
-      path: '/$userId'
-      fullPath: '/admin/users/$userId'
-      preLoaderRoute: typeof AdminUsersUserIdRouteImport
-      parentRoute: typeof AdminUsersRoute
+    '/settings/admin': {
+      id: '/settings/admin'
+      path: '/admin'
+      fullPath: '/settings/admin'
+      preLoaderRoute: typeof SettingsAdminRouteImport
+      parentRoute: typeof SettingsRouteRoute
     }
     '/libraries/manage/$libraryId': {
       id: '/libraries/manage/$libraryId'
@@ -482,19 +440,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibrariesLibraryIdSongsRouteImport
       parentRoute: typeof LibrariesLibraryIdRouteRoute
     }
-    '/user/me/': {
-      id: '/user/me/'
-      path: '/'
-      fullPath: '/user/me/'
-      preLoaderRoute: typeof UserMeIndexRouteImport
-      parentRoute: typeof UserMeRoute
-    }
-    '/user/me/extensions': {
-      id: '/user/me/extensions'
+    '/settings/admin/extensions': {
+      id: '/settings/admin/extensions'
       path: '/extensions'
-      fullPath: '/user/me/extensions'
-      preLoaderRoute: typeof UserMeExtensionsRouteImport
-      parentRoute: typeof UserMeRoute
+      fullPath: '/settings/admin/extensions'
+      preLoaderRoute: typeof SettingsAdminExtensionsRouteImport
+      parentRoute: typeof SettingsAdminRoute
+    }
+    '/settings/admin/users': {
+      id: '/settings/admin/users'
+      path: '/users'
+      fullPath: '/settings/admin/users'
+      preLoaderRoute: typeof SettingsAdminUsersRouteImport
+      parentRoute: typeof SettingsAdminRoute
+    }
+    '/settings/user/extensions': {
+      id: '/settings/user/extensions'
+      path: '/user/extensions'
+      fullPath: '/settings/user/extensions'
+      preLoaderRoute: typeof SettingsUserExtensionsRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/user/general': {
+      id: '/settings/user/general'
+      path: '/user/general'
+      fullPath: '/settings/user/general'
+      preLoaderRoute: typeof SettingsUserGeneralRouteImport
+      parentRoute: typeof SettingsRouteRoute
     }
     '/libraries/manage/$libraryId/': {
       id: '/libraries/manage/$libraryId/'
@@ -517,60 +489,109 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibrariesManageLibraryIdPermissionsRouteImport
       parentRoute: typeof LibrariesManageLibraryIdRouteRoute
     }
-    '/user/me/extensions/add': {
-      id: '/user/me/extensions/add'
-      path: '/add'
-      fullPath: '/user/me/extensions/add'
-      preLoaderRoute: typeof UserMeExtensionsAddRouteImport
-      parentRoute: typeof UserMeExtensionsRoute
+    '/settings/admin/extensions/import': {
+      id: '/settings/admin/extensions/import'
+      path: '/import'
+      fullPath: '/settings/admin/extensions/import'
+      preLoaderRoute: typeof SettingsAdminExtensionsImportRouteImport
+      parentRoute: typeof SettingsAdminExtensionsRoute
     }
-    '/user/me/extensions/manager': {
-      id: '/user/me/extensions/manager'
-      path: '/manager'
-      fullPath: '/user/me/extensions/manager'
-      preLoaderRoute: typeof UserMeExtensionsManagerRouteImport
-      parentRoute: typeof UserMeExtensionsRoute
+    '/settings/admin/users/$userId': {
+      id: '/settings/admin/users/$userId'
+      path: '/$userId'
+      fullPath: '/settings/admin/users/$userId'
+      preLoaderRoute: typeof SettingsAdminUsersUserIdRouteImport
+      parentRoute: typeof SettingsAdminUsersRoute
+    }
+    '/settings/user/extensions/add': {
+      id: '/settings/user/extensions/add'
+      path: '/add'
+      fullPath: '/settings/user/extensions/add'
+      preLoaderRoute: typeof SettingsUserExtensionsAddRouteImport
+      parentRoute: typeof SettingsUserExtensionsRoute
+    }
+    '/settings/user/extensions/tasks': {
+      id: '/settings/user/extensions/tasks'
+      path: '/tasks'
+      fullPath: '/settings/user/extensions/tasks'
+      preLoaderRoute: typeof SettingsUserExtensionsTasksRouteImport
+      parentRoute: typeof SettingsUserExtensionsRoute
     }
   }
 }
 
-interface AdminExtensionsRouteChildren {
-  AdminExtensionsImportRoute: typeof AdminExtensionsImportRoute
+interface SettingsAdminExtensionsRouteChildren {
+  SettingsAdminExtensionsImportRoute: typeof SettingsAdminExtensionsImportRoute
 }
 
-const AdminExtensionsRouteChildren: AdminExtensionsRouteChildren = {
-  AdminExtensionsImportRoute: AdminExtensionsImportRoute,
+const SettingsAdminExtensionsRouteChildren: SettingsAdminExtensionsRouteChildren =
+  {
+    SettingsAdminExtensionsImportRoute: SettingsAdminExtensionsImportRoute,
+  }
+
+const SettingsAdminExtensionsRouteWithChildren =
+  SettingsAdminExtensionsRoute._addFileChildren(
+    SettingsAdminExtensionsRouteChildren,
+  )
+
+interface SettingsAdminUsersRouteChildren {
+  SettingsAdminUsersUserIdRoute: typeof SettingsAdminUsersUserIdRoute
 }
 
-const AdminExtensionsRouteWithChildren = AdminExtensionsRoute._addFileChildren(
-  AdminExtensionsRouteChildren,
+const SettingsAdminUsersRouteChildren: SettingsAdminUsersRouteChildren = {
+  SettingsAdminUsersUserIdRoute: SettingsAdminUsersUserIdRoute,
+}
+
+const SettingsAdminUsersRouteWithChildren =
+  SettingsAdminUsersRoute._addFileChildren(SettingsAdminUsersRouteChildren)
+
+interface SettingsAdminRouteChildren {
+  SettingsAdminExtensionsRoute: typeof SettingsAdminExtensionsRouteWithChildren
+  SettingsAdminUsersRoute: typeof SettingsAdminUsersRouteWithChildren
+}
+
+const SettingsAdminRouteChildren: SettingsAdminRouteChildren = {
+  SettingsAdminExtensionsRoute: SettingsAdminExtensionsRouteWithChildren,
+  SettingsAdminUsersRoute: SettingsAdminUsersRouteWithChildren,
+}
+
+const SettingsAdminRouteWithChildren = SettingsAdminRoute._addFileChildren(
+  SettingsAdminRouteChildren,
 )
 
-interface AdminUsersRouteChildren {
-  AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
+interface SettingsUserExtensionsRouteChildren {
+  SettingsUserExtensionsAddRoute: typeof SettingsUserExtensionsAddRoute
+  SettingsUserExtensionsTasksRoute: typeof SettingsUserExtensionsTasksRoute
 }
 
-const AdminUsersRouteChildren: AdminUsersRouteChildren = {
-  AdminUsersUserIdRoute: AdminUsersUserIdRoute,
+const SettingsUserExtensionsRouteChildren: SettingsUserExtensionsRouteChildren =
+  {
+    SettingsUserExtensionsAddRoute: SettingsUserExtensionsAddRoute,
+    SettingsUserExtensionsTasksRoute: SettingsUserExtensionsTasksRoute,
+  }
+
+const SettingsUserExtensionsRouteWithChildren =
+  SettingsUserExtensionsRoute._addFileChildren(
+    SettingsUserExtensionsRouteChildren,
+  )
+
+interface SettingsRouteRouteChildren {
+  SettingsAdminRoute: typeof SettingsAdminRouteWithChildren
+  SettingsIndexRoute: typeof SettingsIndexRoute
+  SettingsUserExtensionsRoute: typeof SettingsUserExtensionsRouteWithChildren
+  SettingsUserGeneralRoute: typeof SettingsUserGeneralRoute
 }
 
-const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
-  AdminUsersRouteChildren,
+const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
+  SettingsAdminRoute: SettingsAdminRouteWithChildren,
+  SettingsIndexRoute: SettingsIndexRoute,
+  SettingsUserExtensionsRoute: SettingsUserExtensionsRouteWithChildren,
+  SettingsUserGeneralRoute: SettingsUserGeneralRoute,
+}
+
+const SettingsRouteRouteWithChildren = SettingsRouteRoute._addFileChildren(
+  SettingsRouteRouteChildren,
 )
-
-interface AdminRouteChildren {
-  AdminExtensionsRoute: typeof AdminExtensionsRouteWithChildren
-  AdminUsersRoute: typeof AdminUsersRouteWithChildren
-  AdminIndexRoute: typeof AdminIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminExtensionsRoute: AdminExtensionsRouteWithChildren,
-  AdminUsersRoute: AdminUsersRouteWithChildren,
-  AdminIndexRoute: AdminIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface LibrariesManageLibraryIdRouteRouteChildren {
   LibrariesManageLibraryIdIgnoredRoute: typeof LibrariesManageLibraryIdIgnoredRoute
@@ -606,42 +627,6 @@ const LibrariesRouteWithChildren = LibrariesRoute._addFileChildren(
   LibrariesRouteChildren,
 )
 
-interface UserMeExtensionsRouteChildren {
-  UserMeExtensionsAddRoute: typeof UserMeExtensionsAddRoute
-  UserMeExtensionsManagerRoute: typeof UserMeExtensionsManagerRoute
-}
-
-const UserMeExtensionsRouteChildren: UserMeExtensionsRouteChildren = {
-  UserMeExtensionsAddRoute: UserMeExtensionsAddRoute,
-  UserMeExtensionsManagerRoute: UserMeExtensionsManagerRoute,
-}
-
-const UserMeExtensionsRouteWithChildren =
-  UserMeExtensionsRoute._addFileChildren(UserMeExtensionsRouteChildren)
-
-interface UserMeRouteChildren {
-  UserMeExtensionsRoute: typeof UserMeExtensionsRouteWithChildren
-  UserMeIndexRoute: typeof UserMeIndexRoute
-}
-
-const UserMeRouteChildren: UserMeRouteChildren = {
-  UserMeExtensionsRoute: UserMeExtensionsRouteWithChildren,
-  UserMeIndexRoute: UserMeIndexRoute,
-}
-
-const UserMeRouteWithChildren =
-  UserMeRoute._addFileChildren(UserMeRouteChildren)
-
-interface UserRouteChildren {
-  UserMeRoute: typeof UserMeRouteWithChildren
-}
-
-const UserRouteChildren: UserRouteChildren = {
-  UserMeRoute: UserMeRouteWithChildren,
-}
-
-const UserRouteWithChildren = UserRoute._addFileChildren(UserRouteChildren)
-
 interface LibrariesLibraryIdRouteRouteChildren {
   LibrariesLibraryIdAlbumsRoute: typeof LibrariesLibraryIdAlbumsRoute
   LibrariesLibraryIdArtistsRoute: typeof LibrariesLibraryIdArtistsRoute
@@ -664,11 +649,10 @@ const LibrariesLibraryIdRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
+  SettingsRouteRoute: SettingsRouteRouteWithChildren,
   LibrariesRoute: LibrariesRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
-  UserRoute: UserRouteWithChildren,
   LibrariesLibraryIdRouteRoute: LibrariesLibraryIdRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport

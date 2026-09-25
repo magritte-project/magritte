@@ -1,5 +1,5 @@
 import { MenuButton } from "@headlessui/react"
-import { CaretDownIcon, CrownIcon, SignOutIcon, UserIcon } from "@phosphor-icons/react"
+import { CaretDownIcon, GearIcon, SignOutIcon } from "@phosphor-icons/react"
 import { BooksIcon } from "@phosphor-icons/react/dist/ssr"
 import { useQuery } from "@tanstack/react-query"
 import { Link, useNavigate } from "@tanstack/react-router"
@@ -47,26 +47,14 @@ export default function UserButton() {
                     },
                 },
                 {
-                    key: "admin",
-                    requiresScopes: ["admin"],
+                    key: "settings",
                     label: (
                         <>
-                            <CrownIcon /> Admin
+                            <GearIcon /> Settings
                         </>
                     ),
                     onClick: () => {
-                        navigate({ to: "/admin" })
-                    },
-                },
-                {
-                    key: "me",
-                    label: (
-                        <>
-                            <UserIcon /> My Settings
-                        </>
-                    ),
-                    onClick: () => {
-                        navigate({ to: "/user/me" })
+                        navigate({ to: "/settings" })
                     },
                 },
                 {

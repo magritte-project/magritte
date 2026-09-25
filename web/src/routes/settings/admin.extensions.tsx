@@ -1,18 +1,17 @@
-import { ArrowSquareInIcon, PlusIcon } from "@phosphor-icons/react"
+import { ArrowSquareInIcon } from "@phosphor-icons/react"
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { useCallback, useMemo } from "react"
-import z from "zod"
+import { z } from "zod"
 
-import { useUninstallExtension } from "@/api/mutations/extensions"
-import { readInstalledExtensions } from "@/api/queries/extensions"
+import { useDeleteExtension } from "@/api/mutations/extensions"
+import { readAvailableExtensions } from "@/api/queries/extensions"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import PermissionInfo from "@/components/extensions/PermissionInfo"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import Modal from "@/components/reusable/Modal"
-import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedLink from "@/components/theme/ThemedLink"
@@ -22,7 +21,7 @@ import useNotificationCenter from "@/hooks/notificationCenterHook"
 import usePresentation from "@/hooks/presentationHook"
 import { getErrorMessage } from "@/utilities/errors"
 
-export const Route = createFileRoute("/user/me/extensions")({
+export const Route = createFileRoute("/settings/admin/extensions")({
     validateSearch: z.object({ offset: z.number().optional(), limit: z.number().optional() }),
     loaderDeps: ({ search }) => ({ search }),
     loader: async ({
@@ -31,14 +30,14 @@ export const Route = createFileRoute("/user/me/extensions")({
             search: { offset, limit },
         },
     }) => {
-        await queryClient.ensureQueryData(readInstalledExtensions(api, offset, limit))
+        await queryClient.ensureQueryData(readAvailableExtensions(api, offset, limit))
     },
-    component: function UserExtensions() {
+    component: function AdminExtensions() {
         const { offset, limit } = Route.useSearch()
         const navigate = Route.useNavigate()
         const api = useAPI()
-        const { data: installedExtensions } = useSuspenseQuery(
-            readInstalledExtensions(api, offset, limit),
+        const { data: availableExtensions } = useSuspenseQuery(
+            readAvailableExtensions(api, offset, limit),
         )
 
         const notificationCenter = useNotificationCenter()
@@ -51,53 +50,48 @@ export const Route = createFileRoute("/user/me/extensions")({
         } = usePresentation<void, number>()
         const presentedExtension = useMemo(
             () =>
-                installedExtensions.items.find(
+                availableExtensions.items.find(
                     (extension) => extension.id === presentedExtensionId,
                 ),
-            [installedExtensions, presentedExtensionId],
+            [availableExtensions, presentedExtensionId],
         )
 
-        const uninstallMutation = useUninstallExtension()
-        const handleUninstallClick = useCallback(async () => {
+        const deleteMutation = useDeleteExtension()
+        const handleDeleteClick = useCallback(async () => {
             if (presentedExtensionId === undefined) {
                 return
             }
             const confirmed = await notificationCenter.confirm({
-                title: "Are you sure you want to uninstall this extension?",
+                title: "Are you sure you want to delete this extension?",
                 message:
-                    "You may reinstall this extension later as long as it remains available on this instance.",
+                    "It will be uninstalled for all users on this instance. This cannot be undone.",
+                confirmButtonLabel: "Delete",
                 destructive: true,
-                confirmButtonLabel: "Uninstall",
             })
             if (!confirmed) {
                 return
             }
             dismissPresentedExtension()
             try {
-                await uninstallMutation.mutateAsync(presentedExtensionId)
+                await deleteMutation.mutateAsync(presentedExtensionId)
             } catch (error) {
                 notificationCenter.showToast({
-                    message: `Could not uninstall extension: ${getErrorMessage(error)}`,
+                    message: `Could not delete extension: ${getErrorMessage(error)}`,
                     type: "error",
                 })
             }
-        }, [presentedExtensionId, notificationCenter, dismissPresentedExtension, uninstallMutation])
+        }, [presentedExtensionId, notificationCenter, dismissPresentedExtension, deleteMutation])
 
         return (
             <div className="flex flex-col gap-3">
-                <header className="flex items-center gap-between">
-                    <h1 className="flex-1 text-2xl font-bold">Installed Extensions</h1>
-                    <ScopeRestricted expected={["admin"]}>
-                        <ThemedLink to="/admin/extensions/import" title="Import Extension">
-                            <ArrowSquareInIcon size="1.2rem" weight="bold" />
-                        </ThemedLink>
-                    </ScopeRestricted>
-                    <ThemedLink to="/user/me/extensions/add" title="Add Extension">
-                        <PlusIcon size="1.2rem" weight="bold" />
+                <header className="flex items-center gap-3">
+                    <h1 className="flex-1 text-2xl font-bold">Available Extensions</h1>
+                    <ThemedLink to="/settings/admin/extensions/import" title="Import Extension">
+                        <ArrowSquareInIcon size="1.2rem" weight="bold" />
                     </ThemedLink>
                 </header>
                 <ol className="flex items-start content-start flex-wrap gap-2">
-                    {installedExtensions.items.map((extension) => (
+                    {availableExtensions.items.map((extension) => (
                         <li key={`extensions[${extension.id}]`}>
                             <button
                                 type="button"
@@ -123,9 +117,9 @@ export const Route = createFileRoute("/user/me/extensions")({
                     className="self-center"
                     singularLabel="Extension"
                     pluralLabel="Extensions"
-                    offset={installedExtensions.offset}
-                    limit={installedExtensions.limit}
-                    total={installedExtensions.total}
+                    offset={availableExtensions.offset}
+                    limit={availableExtensions.limit}
+                    total={availableExtensions.total}
                     onChange={(offset, _limit) =>
                         navigate({
                             search: (oldSearch) => ({
@@ -143,15 +137,13 @@ export const Route = createFileRoute("/user/me/extensions")({
                 >
                     <ModalHeader
                         supplementaryEnd={
-                            <div>
-                                <ThemedSubtleButton
-                                    buttonComponent={AsyncButton}
-                                    onClick={handleUninstallClick}
-                                    title="Uninstall"
-                                >
-                                    <TrashIcon />
-                                </ThemedSubtleButton>
-                            </div>
+                            <ThemedSubtleButton
+                                buttonComponent={AsyncButton}
+                                onClick={handleDeleteClick}
+                                title="Delete"
+                            >
+                                <TrashIcon />
+                            </ThemedSubtleButton>
                         }
                     >
                         About Extension
@@ -167,6 +159,9 @@ export const Route = createFileRoute("/user/me/extensions")({
                         </div>
                         <span className="text-sm text-center text-on-secondary">
                             {presentedExtension?.manifest.description}
+                        </span>
+                        <span className="text-xs text-center text-on-tertiary">
+                            {presentedExtension?.manifest.url}
                         </span>
                         <span className="flex flex-col items-start gap-2 text-xs">
                             {presentedExtension?.manifest.permissions?.map((permission) => (

@@ -20,7 +20,7 @@ import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import { getErrorMessage } from "@/utilities/errors"
 
-export const Route = createFileRoute("/admin/users/$userId")({
+export const Route = createFileRoute("/settings/admin/users/$userId")({
     loader: async ({ context: { queryClient, api }, params: { userId } }) => {
         await Promise.all([
             queryClient.ensureQueryData(readUserProfileAdmin(api, userId)),

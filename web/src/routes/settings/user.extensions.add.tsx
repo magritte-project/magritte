@@ -14,7 +14,7 @@ import TableFooter from "@/components/reusable/TableFooter"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
 
-export const Route = createFileRoute("/user/me/extensions/add")({
+export const Route = createFileRoute("/settings/user/extensions/add")({
     validateSearch: z.object({ offset: z.number().optional(), limit: z.number().optional() }),
     loaderDeps: ({ search }) => ({ search }),
     loader: async ({
@@ -43,7 +43,10 @@ export const Route = createFileRoute("/user/me/extensions/add")({
                                 type="button"
                                 title="Import Extension"
                                 onClick={() =>
-                                    navigate({ to: "/admin/extensions/import", replace: true })
+                                    navigate({
+                                        to: "/settings/admin/extensions/import",
+                                        replace: true,
+                                    })
                                 }
                             >
                                 <ArrowSquareInIcon weight="bold" />
@@ -65,7 +68,7 @@ export const Route = createFileRoute("/user/me/extensions/add")({
                                     onClick={async () => {
                                         await installMutation.mutateAsync(extension.id)
                                         navigate({
-                                            to: "/user/me/extensions",
+                                            to: "..",
                                             replace: true,
                                         })
                                     }}

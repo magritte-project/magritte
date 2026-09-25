@@ -7,7 +7,7 @@ import { readAllUsersAdmin } from "@/api/queries/users"
 import TableFooter from "@/components/reusable/TableFooter"
 import useAPI from "@/hooks/apiHook"
 
-export const Route = createFileRoute("/admin/users")({
+export const Route = createFileRoute("/settings/admin/users")({
     validateSearch: z.object({ offset: z.number().optional(), query: z.string().optional() }),
     loaderDeps: ({ search }) => ({ search }),
     loader: async ({
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/admin/users")({
                         >
                             <Link
                                 className="w-full flex items-center px-2 py-1 h-9"
-                                to="/admin/users/$userId"
+                                to="/settings/admin/users/$userId"
                                 params={{ userId: String(user.id) }}
                             >
                                 <div className="flex-1 flex flex-col gap-0.5">

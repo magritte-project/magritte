@@ -9,7 +9,7 @@ import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import { getErrorMessage } from "@/utilities/errors"
 
-export const Route = createFileRoute("/user/me/extensions/manager")({
+export const Route = createFileRoute("/settings/user/extensions/tasks")({
     component: function UserExtensionsManage() {
         const extensionRuntime = useExtensionRuntime()
         const [loading, setLoading] = useState(() => Array.from(extensionRuntime.loading))

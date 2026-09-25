@@ -85,13 +85,13 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
             } satisfies Command,
             {
                 id: "extensions.manage",
-                searchTerms: "extensions manage",
+                searchTerms: "install uninstall extensions",
                 requiredInputKinds: [],
                 highlightAvailability: false,
                 present: async () => ({
-                    displayName: `extensions: manage`,
+                    displayName: `extensions: install/uninstall`,
                 }),
-                execute: async () => navigate({ to: "/user/me/extensions" }),
+                execute: async () => navigate({ to: "/settings/user/extensions" }),
             } satisfies Command,
             {
                 id: "extensions.taskManager",
@@ -101,7 +101,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 present: async () => ({
                     displayName: `extensions: task manager`,
                 }),
-                execute: async () => navigate({ to: "/user/me/extensions/manager" }),
+                execute: async () => navigate({ to: "/settings/user/extensions/tasks" }),
             } satisfies Command,
         ]
     }, [available, setSelectedId, navigate])

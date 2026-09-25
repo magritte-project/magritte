@@ -10,3 +10,7 @@ export function resolveNewValue<TValue>(
         ? (newValue as (prev: TValue) => TValue)(oldValue)
         : newValue
 }
+
+export function dataFlag(flag?: boolean): "" | undefined {
+    return flag ? "" : undefined
+}

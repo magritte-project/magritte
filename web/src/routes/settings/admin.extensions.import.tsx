@@ -12,7 +12,7 @@ import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import { getErrorMessage } from "@/utilities/errors"
 
-export const Route = createFileRoute("/admin/extensions/import")({
+export const Route = createFileRoute("/settings/admin/extensions/import")({
     component: function AdminExtensionsImport() {
         const navigate = Route.useNavigate()
         const importMutation = useImportExtension()
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/admin/extensions/import")({
                         : value.manifest_url
                     await importMutation.mutateAsync({ manifest_url })
                     navigate({
-                        to: "/admin/extensions",
+                        to: "..",
                         replace: true,
                     })
                 } catch (error) {

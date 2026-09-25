@@ -14,7 +14,7 @@ import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import { getErrorMessage } from "@/utilities/errors"
 
-export const Route = createFileRoute("/user/me/")({
+export const Route = createFileRoute("/settings/user/general")({
     loader: async ({ context: { queryClient, api } }) => {
         await queryClient.ensureQueryData(readUserProfile(api))
     },
