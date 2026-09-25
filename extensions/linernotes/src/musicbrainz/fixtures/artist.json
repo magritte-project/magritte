@@ -1,0 +1,67 @@
+{
+    "id": "artist-nirvana",
+    "name": "Nirvana",
+    "sort-name": "Nirvana",
+    "type": "Group",
+    "disambiguation": "90s US grunge band",
+    "country": "US",
+    "area": { "id": "area-us", "name": "United States" },
+    "life-span": { "begin": "1988-01", "end": "1994-04-05", "ended": true },
+    "genres": [
+        { "name": "grunge", "count": 21 },
+        { "name": "alternative rock", "count": 14 }
+    ],
+    "tags": [
+        { "name": "grunge", "count": 21 },
+        { "name": "seattle", "count": 3 },
+        { "name": "zero", "count": 0 }
+    ],
+    "relations": [
+        {
+            "type": "member of band",
+            "direction": "backward",
+            "target-type": "artist",
+            "attributes": ["lead vocals", "guitar"],
+            "attribute-credits": {},
+            "begin": "1988-01",
+            "end": "1994-04-05",
+            "ended": true,
+            "artist": { "id": "artist-cobain", "name": "Kurt Cobain", "sort-name": "Cobain, Kurt" }
+        },
+        {
+            "type": "member of band",
+            "direction": "backward",
+            "target-type": "artist",
+            "attributes": ["drums (drum set)"],
+            "attribute-credits": { "drums (drum set)": "drums" },
+            "begin": "1990-09",
+            "end": "1994-04-05",
+            "ended": true,
+            "artist": { "id": "artist-grohl", "name": "Dave Grohl" }
+        },
+        {
+            "type": "wikidata",
+            "direction": "forward",
+            "target-type": "url",
+            "attributes": [],
+            "ended": false,
+            "url": { "id": "url-1", "resource": "https://www.wikidata.org/wiki/Q11649" }
+        },
+        {
+            "type": "last.fm",
+            "direction": "forward",
+            "target-type": "url",
+            "attributes": [],
+            "ended": false,
+            "url": { "id": "url-2", "resource": "https://www.last.fm/music/Nirvana" }
+        },
+        {
+            "type": "official homepage",
+            "direction": "forward",
+            "target-type": "url",
+            "attributes": [],
+            "ended": false,
+            "url": { "id": "url-3", "resource": "https://www.nirvana.com/" }
+        }
+    ]
+}

@@ -1,0 +1,42 @@
+{
+    "id": "rec-album",
+    "title": "Smells Like Teen Spirit",
+    "length": 301920,
+    "video": false,
+    "first-release-date": "1991-09-10",
+    "isrcs": ["USGF19142501"],
+    "artist-credit": [
+        { "name": "Nirvana", "artist": { "id": "artist-nirvana", "name": "Nirvana" } }
+    ],
+    "relations": [
+        {
+            "type": "producer",
+            "direction": "backward",
+            "target-type": "artist",
+            "attributes": [],
+            "ended": false,
+            "artist": { "id": "artist-vig", "name": "Butch Vig" }
+        },
+        {
+            "type": "performance",
+            "direction": "forward",
+            "target-type": "work",
+            "attributes": [],
+            "ended": false,
+            "work": {
+                "id": "work-slts",
+                "title": "Smells Like Teen Spirit",
+                "relations": [
+                    {
+                        "type": "writer",
+                        "direction": "backward",
+                        "target-type": "artist",
+                        "attributes": [],
+                        "ended": false,
+                        "artist": { "id": "artist-cobain", "name": "Kurt Cobain" }
+                    }
+                ]
+            }
+        }
+    ]
+}

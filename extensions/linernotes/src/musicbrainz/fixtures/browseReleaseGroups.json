@@ -1,0 +1,27 @@
+{
+    "release-group-count": 3,
+    "release-group-offset": 0,
+    "release-groups": [
+        {
+            "id": "rg-bleach",
+            "title": "Bleach",
+            "primary-type": "Album",
+            "secondary-types": [],
+            "first-release-date": "1989-06-15"
+        },
+        {
+            "id": "rg-nevermind",
+            "title": "Nevermind",
+            "primary-type": "Album",
+            "secondary-types": [],
+            "first-release-date": "1991-09-24"
+        },
+        {
+            "id": "rg-unplugged",
+            "title": "MTV Unplugged in New York",
+            "primary-type": "Album",
+            "secondary-types": ["Live"],
+            "first-release-date": "1994-11-01"
+        }
+    ]
+}
