@@ -2,9 +2,9 @@ import { PlayIcon } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 
 import { readCollection } from "@/api/queries/catalog"
-import AddToLibraryMenu from "@/components/AddToLibraryMenu"
+import AddToLibraryButton from "@/components/AddToLibraryButton"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
-import { primaryButtonClassName } from "@/components/reusable/buttonStyles"
+import { buttonLabelClassName, primaryButtonClassName } from "@/components/reusable/buttonStyles"
 import ListSection from "@/components/reusable/ListSection"
 import SongRow from "@/components/SongRow"
 import ContentUnavailable from "@/components/structure/ContentUnavailable"
@@ -59,13 +59,15 @@ export default function Collection({ kind, id }: CollectionProps) {
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
+                        title="Play"
                         className={primaryButtonClassName}
                         disabled={tracks.length === 0}
                         onClick={() => playSongs(tracks)}
                     >
-                        <PlayIcon weight="fill" /> Play
+                        <PlayIcon weight="fill" />
+                        <span className={buttonLabelClassName}>Play</span>
                     </button>
-                    <AddToLibraryMenu variant="button" songs={tracks} />
+                    <AddToLibraryButton variant="button" songs={tracks} />
                 </div>
             </div>
             <ListSection>

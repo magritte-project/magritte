@@ -8,12 +8,17 @@ import {
     readLibrariesContainingTags,
     readTagsMissingFromLibrary,
 } from "@/api/queries/librarySources"
-import { iconButtonClassName, secondaryButtonClassName } from "@/components/reusable/buttonStyles"
+import {
+    buttonLabelClassName,
+    iconButtonClassName,
+    secondaryButtonClassName,
+} from "@/components/reusable/buttonStyles"
 import { songResourceToExtensionTag, songResourceToIngestSong } from "@/conversions/songs"
 import useExtensionHost from "@/hooks/extensionHostHook"
+import useOnScreenLibraryIds from "@/hooks/onScreenLibrariesHook"
 import type { SongResource } from "@/musickit/models/song"
 
-export interface AddToLibraryMenuProps {
+export interface AddToLibraryButtonProps {
     readonly variant?: "icon" | "button"
     /** The songs to add, or undefined while they are still loading */
     readonly songs: readonly SongResource[] | undefined
@@ -21,23 +26,37 @@ export interface AddToLibraryMenuProps {
     readonly getSongs?: () => Promise<readonly SongResource[]>
 }
 
-export default function AddToLibraryMenu({
+export default function AddToLibraryButton({
     variant = "icon",
     songs,
     getSongs,
-}: AddToLibraryMenuProps) {
+}: AddToLibraryButtonProps) {
     const extensionHost = useExtensionHost()
     const librariesQuery = useQuery(readLibraries(extensionHost))
     const ingestMutation = useBulkIngestSongsMutation()
+    const onScreenLibraryIds = useOnScreenLibraryIds()
 
-    const libraryIds = librariesQuery.data?.map((library) => library.id) ?? []
+    const libraries = librariesQuery.data ?? []
+    const libraryIds = libraries.map((library) => library.id)
     const tags = songs?.map(songResourceToExtensionTag) ?? []
     const containingQuery = useQuery({
         ...readLibrariesContainingTags(extensionHost, libraryIds, tags),
         enabled: libraryIds.length > 0 && tags.length > 0,
     })
     const containingLibraryIds = containingQuery.data ?? []
-    const isInLibrary = containingLibraryIds.length > 0
+
+    // Only ask which library to add to when the answer is actually ambiguous: one
+    // library, or one on screen in the host, is answer enough to just add to it
+    const onScreenLibraryId = onScreenLibraryIds.length === 1 ? onScreenLibraryIds[0] : undefined
+    const targetLibrary =
+        libraries.length === 1
+            ? libraries[0]
+            : libraries.find((library) => library.id === onScreenLibraryId)
+
+    const isInLibrary =
+        targetLibrary !== undefined
+            ? containingLibraryIds.includes(targetLibrary.id)
+            : containingLibraryIds.length > 0
 
     const handleAdd = async (libraryId: number) => {
         try {
@@ -64,22 +83,46 @@ export default function AddToLibraryMenu({
         }
     }
 
-    const title = isInLibrary ? "In Library" : "Add to Library"
+    const label = isInLibrary ? "In Library" : "Add to Library"
+    // Naming the library is more use as a tooltip than in the label, which has to stay short
+    const title =
+        targetLibrary !== undefined
+            ? isInLibrary
+                ? `In ${targetLibrary.name}`
+                : `Add to ${targetLibrary.name}`
+            : label
+    const className = variant === "icon" ? iconButtonClassName : secondaryButtonClassName
+    const content = (
+        <>
+            {ingestMutation.isPending ? (
+                <CircleNotchIcon className="animate-spin" />
+            ) : isInLibrary ? (
+                <CheckIcon weight="bold" className="text-red-600" />
+            ) : (
+                <PlusIcon />
+            )}
+            {variant === "button" && <span className={buttonLabelClassName}>{label}</span>}
+        </>
+    )
+
+    if (targetLibrary !== undefined) {
+        return (
+            <button
+                type="button"
+                title={title}
+                className={className}
+                disabled={ingestMutation.isPending || isInLibrary}
+                onClick={() => handleAdd(targetLibrary.id)}
+            >
+                {content}
+            </button>
+        )
+    }
+
     return (
         <Menu>
-            <MenuButton
-                title={title}
-                className={variant === "icon" ? iconButtonClassName : secondaryButtonClassName}
-                disabled={ingestMutation.isPending}
-            >
-                {ingestMutation.isPending ? (
-                    <CircleNotchIcon className="animate-spin" />
-                ) : isInLibrary ? (
-                    <CheckIcon weight="bold" className="text-red-600" />
-                ) : (
-                    <PlusIcon />
-                )}
-                {variant === "button" && title}
+            <MenuButton title={title} className={className} disabled={ingestMutation.isPending}>
+                {content}
             </MenuButton>
             <MenuItems
                 anchor="bottom end"

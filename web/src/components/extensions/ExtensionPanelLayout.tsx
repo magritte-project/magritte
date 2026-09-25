@@ -1,5 +1,4 @@
 import type { ExtensionManifest } from "@magritte/api"
-import { XIcon } from "@phosphor-icons/react"
 import { useNavigate } from "@tanstack/react-router"
 import { useMediaQuery } from "@uidotdev/usehooks"
 import classNames from "classnames"
@@ -10,9 +9,7 @@ import type { Command } from "@/commands/base"
 import ExtensionComponent from "@/components/extensions/ExtensionComponent"
 import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import ThemedHeader from "@/components/theme/ThemedHeader"
-import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import CommandsProvider from "@/contexts/providers/CommandsProvider"
-import DismissContextProvider from "@/contexts/providers/DismissContextProvider"
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import useStorageValue from "@/hooks/storageValueHook"
 
@@ -28,23 +25,44 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
     const [available, setAvailable] = useState<readonly ExtensionManifest[]>(() => [
         ...extensionRuntime.available,
     ])
+    // Extensions open and close one at a time, so closing one leaves the others in the panel
+    const [openIds, setOpenIds] = useStorageValue<readonly string[]>("panels.openIds", [])
     const [selectedId, setSelectedId] = useStorageValue<string | null>("panels.selectedId", null)
+
+    const openExtension = useCallback(
+        (id: string) => {
+            setOpenIds((openIds) => (openIds.includes(id) ? openIds : [...openIds, id]))
+            setSelectedId(id)
+        },
+        [setOpenIds, setSelectedId],
+    )
+    const closeExtension = useCallback(
+        (id: string) => {
+            setOpenIds((openIds) => openIds.filter((openId) => openId !== id))
+            // Clearing the selection hands the panel to whichever extension is still open
+            setSelectedId((selectedId) => (selectedId === id ? null : selectedId))
+        },
+        [setOpenIds, setSelectedId],
+    )
+
     useEffect(() => {
-        extensionRuntime.subscribe((event) => {
+        return extensionRuntime.subscribe((event) => {
             switch (event.type) {
-                case "extensionAdded":
+                case "extensionAdded": {
+                    setAvailable([...extensionRuntime.available])
+                    break
+                }
                 case "extensionRemoved": {
-                    const available = [...extensionRuntime.available]
-                    setAvailable(available)
-                    setSelectedId((oldId) => {
-                        if (available.some((extension) => extension.id === oldId)) {
-                            return oldId
-                        } else if (available.length > 0) {
-                            return available[0].id
-                        } else {
-                            return null
-                        }
-                    })
+                    setAvailable([...extensionRuntime.available])
+                    closeExtension(event.manifest.id)
+                    break
+                }
+                case "extensionOpenRequested": {
+                    openExtension(event.manifest.id)
+                    break
+                }
+                case "extensionCloseRequested": {
+                    closeExtension(event.manifest.id)
                     break
                 }
                 default: {
@@ -52,13 +70,19 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 }
             }
         })
-    }, [extensionRuntime, setSelectedId])
+    }, [extensionRuntime, openExtension, closeExtension])
 
-    const selectedExtension = useMemo(
-        () => available.find((extension) => extension.id === selectedId),
-        [available, selectedId],
+    const openExtensions = useMemo(
+        () => openIds.flatMap((id) => available.find((extension) => extension.id === id) ?? []),
+        [available, openIds],
     )
-    const handleDismiss = useCallback(() => setSelectedId(null), [setSelectedId])
+    const selectedExtension = useMemo(
+        () =>
+            openExtensions.find((extension) => extension.id === selectedId) ??
+            openExtensions[0] ??
+            null,
+        [openExtensions, selectedId],
+    )
     const commands = useMemo(() => {
         return [
             ...available.map(
@@ -70,19 +94,21 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                     present: async () => ({
                         displayName: `extensions: ${extension.name}`,
                     }),
-                    execute: async () => setSelectedId(extension.id),
+                    execute: async () => openExtension(extension.id),
                 }),
             ),
-            {
-                id: "extensions.close",
-                searchTerms: "close extension",
-                requiredInputKinds: [],
-                highlightAvailability: false,
-                present: async () => ({
-                    displayName: `extensions: close`,
+            ...openExtensions.map(
+                (extension): Command => ({
+                    id: `extensions.close[${extension.id}]`,
+                    searchTerms: `close hide ${extension.name} extension`,
+                    requiredInputKinds: [],
+                    highlightAvailability: false,
+                    present: async () => ({
+                        displayName: `extensions: close ${extension.name}`,
+                    }),
+                    execute: async () => closeExtension(extension.id),
                 }),
-                execute: async () => setSelectedId(null),
-            } satisfies Command,
+            ),
             {
                 id: "extensions.manage",
                 searchTerms: "install uninstall extensions",
@@ -104,7 +130,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 execute: async () => navigate({ to: "/settings/user/extensions/tasks" }),
             } satisfies Command,
         ]
-    }, [available, setSelectedId, navigate])
+    }, [available, openExtensions, openExtension, closeExtension, navigate])
 
     return (
         <CommandsProvider commands={commands}>
@@ -122,11 +148,12 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 </Panel>
                 {selectedExtension && (
                     <>
+                        {/* Horizontally the separator is only a drag target; vertically it doubles as a grabber */}
                         <Separator
                             className={classNames({
                                 "rounded-t-full bg-linear-to-b from-separator to-transparent h-2":
                                     preferVerticalOrientation,
-                                "rounded-full bg-separator w-1": !preferVerticalOrientation,
+                                "w-1": !preferVerticalOrientation,
                             })}
                         />
                         <Panel
@@ -141,42 +168,32 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                                     : selectedExtension.preferredWidth) ?? "16rem"
                             }
                         >
-                            <DismissContextProvider value={handleDismiss}>
-                                <ThemedHeader
-                                    supplementaryStart={
-                                        <ThemedSubtleButton
+                            <ThemedHeader>
+                                <div className="flex items-center gap-2 overflow-x-auto">
+                                    {openExtensions.map((extension, index) => (
+                                        <button
+                                            key={`panels[${extension.id}@${index}]`}
                                             type="button"
-                                            onClick={handleDismiss}
-                                            title="Close"
+                                            className="group"
+                                            onClick={() => setSelectedId(extension.id)}
+                                            title={extension.name}
+                                            data-active={
+                                                selectedExtension.id === extension.id
+                                                    ? ""
+                                                    : undefined
+                                            }
                                         >
-                                            <XIcon />
-                                        </ThemedSubtleButton>
-                                    }
-                                >
-                                    <div className="flex items-center gap-2 overflow-x-auto">
-                                        {available.map((extension, index) => (
-                                            <button
-                                                key={`panels[${extension.id}@${index}]`}
-                                                type="button"
-                                                className="group"
-                                                onClick={() => setSelectedId(extension.id)}
-                                                title={extension.name}
-                                                data-active={
-                                                    selectedId === extension.id ? "" : undefined
-                                                }
-                                            >
-                                                <ExtensionIcon
-                                                    iconUrl={extension.icon_url}
-                                                    name={extension.name}
-                                                />
-                                            </button>
-                                        ))}
-                                    </div>
-                                </ThemedHeader>
-                                <main className="flex-1 px-outside pb-outside">
-                                    <ExtensionComponent manifest={selectedExtension} />
-                                </main>
-                            </DismissContextProvider>
+                                            <ExtensionIcon
+                                                iconUrl={extension.icon_url}
+                                                name={extension.name}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                            </ThemedHeader>
+                            <main className="flex-1 px-outside pb-outside">
+                                <ExtensionComponent manifest={selectedExtension} />
+                            </main>
                         </Panel>
                     </>
                 )}

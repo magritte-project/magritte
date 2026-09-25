@@ -15,6 +15,7 @@ import { NotificationCenterProtocol, type NotificationCenter } from "../notifica
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../playback/playbackEngine"
 import { PlayerProtocol, type Player } from "../playback/player"
 import { createDeferred, type Deferred } from "../utilities"
+import { ExtensionRequestClose, ExtensionRequestOpen } from "./common"
 
 export interface ExtensionExportsOptions {
     /** The broadcaster to use for communication with the extension host */
@@ -140,6 +141,14 @@ export class ExtensionHost {
     }
 
     private constructor(readonly connection: RPCConnection) {}
+
+    async requestOpen({ urgent = false }: { urgent?: boolean } = {}): Promise<void> {
+        this.connection.broadcaster.send(ExtensionRequestOpen, { urgent })
+    }
+
+    async requestClose(): Promise<void> {
+        this.connection.broadcaster.send(ExtensionRequestClose, undefined)
+    }
 
     async disconnect(): Promise<void> {
         this.connection.invalidate()

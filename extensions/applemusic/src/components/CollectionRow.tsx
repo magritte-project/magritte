@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { readCollectionTracks } from "@/api/queries/catalog"
-import AddToLibraryMenu from "@/components/AddToLibraryMenu"
+import AddToLibraryButton from "@/components/AddToLibraryButton"
 import ArtworkImage from "@/components/reusable/ArtworkImage"
 import ItemRow from "@/components/reusable/ItemRow"
 import useMusicKit from "@/hooks/musicKitHook"
@@ -48,7 +48,7 @@ export default function CollectionRow({ collection, subtitle }: CollectionRowPro
                 })
             }
             accessory={
-                <AddToLibraryMenu
+                <AddToLibraryButton
                     songs={tracksQuery.data}
                     getSongs={() => queryClient.fetchQuery(tracksOptions)}
                 />

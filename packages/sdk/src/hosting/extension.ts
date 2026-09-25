@@ -1,5 +1,11 @@
 import type { ExtensionManifest } from "@magritte/api"
-import { cast, implement, RPCBroadcaster, RPCConnection } from "@magritte/rpc"
+import {
+    cast,
+    implement,
+    RPCBroadcaster,
+    RPCConnection,
+    type RPCConnectionEvent,
+} from "@magritte/rpc"
 import { MessageChannelTransport } from "@magritte/rpc/transports"
 
 import { type CommandCoordinator, CommandCoordinatorProtocol } from "../commands/coordinator"
@@ -11,6 +17,7 @@ import { type NotificationCenter, NotificationCenterProtocol } from "../notifica
 import { type PlaybackEngine, PlaybackEngineProtocol } from "../playback/playbackEngine"
 import { type Player, PlayerProtocol } from "../playback/player"
 import { createDeferred, type Deferred } from "../utilities"
+import { ExtensionRequestClose, ExtensionRequestOpen } from "./common"
 
 export interface HostExportsOptions {
     /** The manifest of the extension */
@@ -65,6 +72,8 @@ export interface ExtensionWaitForConnectionOptions {
     readonly timeout?: number
 }
 
+export type ExtensionEvent = RPCConnectionEvent | { type: "requestOpen" } | { type: "requestClose" }
+
 export class Extension {
     static async waitForConnection({
         iframe,
@@ -105,7 +114,35 @@ export class Extension {
     private constructor(
         readonly connection: RPCConnection,
         readonly manifest: ExtensionManifest,
-    ) {}
+    ) {
+        this.connection.subscribe((event) => this._dispatchEvent(event))
+        this.connection.broadcaster.subscribe(ExtensionRequestOpen, () =>
+            this._dispatchEvent({ type: "requestOpen" }),
+        )
+        this.connection.broadcaster.subscribe(ExtensionRequestClose, () =>
+            this._dispatchEvent({ type: "requestClose" }),
+        )
+    }
+
+    /** The event subscribers for the connection */
+    private readonly subscribers: ((event: ExtensionEvent) => void)[] = []
+
+    private _dispatchEvent(event: ExtensionEvent): void {
+        for (const subscriber of this.subscribers.slice()) {
+            subscriber(event)
+        }
+    }
+
+    /** Subscribes to events from the connection */
+    subscribe(callback: (event: ExtensionEvent) => void): () => void {
+        this.subscribers.push(callback)
+        return () => {
+            const index = this.subscribers.indexOf(callback)
+            if (index !== -1) {
+                this.subscribers.splice(index, 1)
+            }
+        }
+    }
 
     async disconnect(): Promise<void> {
         this.connection.invalidate()

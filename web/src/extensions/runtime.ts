@@ -34,6 +34,13 @@ export type ExtensionRuntimeEvent =
           manifest: ExtensionManifest
       }
     | {
+          /** An extension open request was made */
+          type: "extensionOpenRequested"
+
+          /** The manifest of the extension */
+          manifest: ExtensionManifest
+      }
+    | {
           /** An extension has started loading */
           type: "extensionLoadStart"
 
@@ -56,6 +63,13 @@ export type ExtensionRuntimeEvent =
 
           /** The manifest of the extension */
           extension: Extension
+      }
+    | {
+          /** An extension close request was made */
+          type: "extensionCloseRequested"
+
+          /** The manifest of the extension */
+          manifest: ExtensionManifest
       }
     | {
           /* An extension was unloaded */
@@ -324,13 +338,23 @@ export class ExtensionRuntime {
                     player: exportPlayer(manifest, broadcaster, this._player),
                 }),
             })
-            extension.connection.subscribe(
-                justEventsMatching("type", "invalidated", ({ fromRemoteSide }) => {
-                    if (fromRemoteSide) {
-                        this._unload(id)
-                    }
-                }),
-            )
+            extension.subscribe((event) => {
+                switch (event.type) {
+                    case "invalidated":
+                        if (event.fromRemoteSide) {
+                            this._unload(id)
+                        }
+                        break
+                    case "requestOpen":
+                        this._dispatch({ type: "extensionOpenRequested", manifest })
+                        break
+                    case "requestClose":
+                        this._dispatch({ type: "extensionCloseRequested", manifest })
+                        break
+                    default:
+                        break
+                }
+            })
 
             const oldState = this._extensions.get(id) ?? { status: "unloaded" }
             if (oldState.status !== "loading") {
