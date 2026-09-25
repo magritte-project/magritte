@@ -57,6 +57,10 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                     closeExtension(event.manifest.id)
                     break
                 }
+                case "extensionOpenRequested": {
+                    openExtension(event.manifest.id)
+                    break
+                }
                 case "extensionCloseRequested": {
                     closeExtension(event.manifest.id)
                     break
@@ -66,7 +70,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 }
             }
         })
-    }, [extensionRuntime, closeExtension])
+    }, [extensionRuntime, openExtension, closeExtension])
 
     const openExtensions = useMemo(
         () => openIds.flatMap((id) => available.find((extension) => extension.id === id) ?? []),

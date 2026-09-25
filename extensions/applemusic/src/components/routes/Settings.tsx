@@ -11,8 +11,7 @@ export default function Settings() {
     const extensionHost = useExtensionHost()
     // Closing only dismisses this extension, any others stay in the panel
     const handleClose = useCallback(async () => {
-        const panel = await extensionHost.panel()
-        await panel.close()
+        await extensionHost.requestClose()
     }, [extensionHost])
     return (
         <>
