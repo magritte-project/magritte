@@ -1,0 +1,35 @@
+.content-unavailable {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.content-unavailable--full-screen {
+    min-height: 0;
+    height: 100vh;
+}
+
+.content-unavailable__title {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+}
+
+.content-unavailable__message {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.content-unavailable__spinner {
+    animation: content-unavailable-spin 1s linear infinite;
+}
+
+@keyframes content-unavailable-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

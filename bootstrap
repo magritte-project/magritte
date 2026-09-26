@@ -19,9 +19,13 @@ asdf install
 # Set up the environment files
 [ ! -e .env ] && cp "$PWD/.env.example" "$PWD/.env"
 [ ! -e web/.env ] && ln -s "$PWD/.env" "$PWD/web/.env"
-[ ! -e extensions/applemusic/.env ] && cp "$PWD/extensions/applemusic/.env.example" "$PWD/extensions/applemusic/.env"
-[ ! -e extensions/lastfm/.env ] && cp "$PWD/extensions/lastfm/.env.example" "$PWD/extensions/lastfm/.env"
-[ ! -e extensions/linernotes/.env ] && cp "$PWD/extensions/linernotes/.env.example" "$PWD/extensions/linernotes/.env"
+for example in "$PWD"/extensions/*/.env.example; do
+    [ -e "$example" ] || continue
+    env_file="$(dirname "$example")/.env"
+    if [ ! -e "$env_file" ]; then
+        cp "$example" "$env_file"
+    fi
+done
 
 # Set up dependencies
 just sync-deps

@@ -1,0 +1,5 @@
+.song-lyrics--text {
+    font-family: var(--sans);
+    font-size: 1.2rem;
+    text-wrap: wrap;
+}

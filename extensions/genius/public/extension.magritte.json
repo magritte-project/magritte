@@ -1,0 +1,11 @@
+{
+    "name": "Genius",
+    "description": "Get lyrics for the currently playing song from genius.com",
+    "id": "magritte.genius",
+    "version": "0.0.0",
+    "url": "/",
+    "icon_url": "/favicon.svg",
+    "preferredWidth": "20rem",
+    "preferredHeight": "32rem",
+    "permissions": ["playback:read"]
+}
