@@ -1,4 +1,5 @@
 import classNames from "classnames"
+import { useEffect, useRef, useState } from "react"
 
 const COLOR_CLASSES = [
     "bg-red-500 group-disabled:bg-red-300",
@@ -33,7 +34,14 @@ export interface ExtensionIconProps {
 }
 
 export default function ExtensionIcon({ iconUrl, name, size = "2rem" }: ExtensionIconProps) {
-    if (iconUrl) {
+    const [imageLoadFailed, setImageLoadFailed] = useState(false)
+    useEffect(() => {
+        return () => {
+            setImageLoadFailed(false)
+        }
+    }, [])
+
+    if (iconUrl && !imageLoadFailed) {
         return (
             <img
                 src={iconUrl}
@@ -41,6 +49,7 @@ export default function ExtensionIcon({ iconUrl, name, size = "2rem" }: Extensio
                 alt={name}
                 className="aspect-square"
                 style={{ width: size }}
+                onError={() => setImageLoadFailed(true)}
             />
         )
     } else {
