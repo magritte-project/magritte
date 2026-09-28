@@ -1,7 +1,6 @@
 import { GearIcon, PuzzlePieceIcon, UsersThreeIcon } from "@phosphor-icons/react"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
-import PageHeader from "@/components/chrome/PageHeader"
 import PrimaryDetail from "@/components/chrome/PrimaryDetail"
 import ThemedSidebarItemLink from "@/components/theme/ThemedSidebarItemLabelThemedSidebarItemLink"
 import ThemedSidebarSectionHeader from "@/components/theme/ThemedSidebarSectionHeader"
@@ -12,7 +11,6 @@ export const Route = createFileRoute("/settings")({
         const userSession = useUserSession()
         return (
             <>
-                <PageHeader />
                 <PrimaryDetail
                     title="Settings"
                     navigation={

@@ -1,5 +1,6 @@
 import { Outlet, useRouterState } from "@tanstack/react-router"
 
+import PageHeader from "@/components/chrome/PageHeader"
 import PlayerFooter from "@/components/chrome/PlayerFooter"
 import ExtensionPanelLayout from "@/components/extensions/ExtensionPanelLayout"
 import NotificationCenterLayout from "@/components/structure/NotificationCenterLayout"
@@ -20,6 +21,7 @@ export default function RootLayout() {
                     <Outlet />
                 ) : (
                     <ExtensionPanelLayout>
+                        <PageHeader />
                         <Outlet />
                         {!hideTransportControls && <PlayerFooter />}
                     </ExtensionPanelLayout>

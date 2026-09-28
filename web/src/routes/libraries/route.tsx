@@ -4,7 +4,6 @@ import { useMemo } from "react"
 
 import { readLibraries } from "@/api/queries/libraries"
 import type { Command } from "@/commands/base"
-import PageHeader from "@/components/chrome/PageHeader"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import CommandsProvider from "@/contexts/providers/CommandsProvider"
 import useAPI from "@/hooks/apiHook"
@@ -33,7 +32,6 @@ export const Route = createFileRoute("/libraries")({
         }, [navigate, libraries])
         return (
             <CommandsProvider commands={libraryCommands}>
-                <PageHeader />
                 <Outlet />
             </CommandsProvider>
         )
