@@ -8,6 +8,7 @@ import { Fragment, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibraryArtists } from "@/api/queries/libraries"
+import FindBar from "@/components/chrome/FindBar"
 import LibraryArtistList from "@/components/library/LibraryArtistList"
 import LibraryArtistListItem from "@/components/library/LibraryArtistListItem"
 import AppForm from "@/components/reusable/AppForm"
@@ -58,24 +59,25 @@ export const Route = createFileRoute("/libraries/$libraryId/artists")({
         return (
             <CommandInputProvider value={commandInputs}>
                 <div className="m-2 flex flex-col gap-2">
-                    <AppForm form={facetForm}>
-                        <facetForm.AppField
-                            name="query"
-                            validators={{
-                                onChange: z
-                                    .string()
-                                    .max(TAG_MAX_LENGTH, { error: "Query is too long" }),
-                            }}
-                        >
-                            {(field) => (
-                                <field.SearchInputField
-                                    className="w-full"
-                                    placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} artists...`}
-                                />
-                            )}
-                        </facetForm.AppField>
-                    </AppForm>
-
+                    <FindBar>
+                        <AppForm form={facetForm} className="flex-1">
+                            <facetForm.AppField
+                                name="query"
+                                validators={{
+                                    onChange: z
+                                        .string()
+                                        .max(TAG_MAX_LENGTH, { error: "Query is too long" }),
+                                }}
+                            >
+                                {(field) => (
+                                    <field.SearchInputField
+                                        className="w-full"
+                                        placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} artists...`}
+                                    />
+                                )}
+                            </facetForm.AppField>
+                        </AppForm>
+                    </FindBar>
                     <LibraryArtistList>
                         {firstPage.items.map((artist) => (
                             <LibraryArtistListItem

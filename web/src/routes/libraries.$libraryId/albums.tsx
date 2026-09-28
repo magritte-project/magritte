@@ -8,6 +8,7 @@ import { Fragment, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibraryAlbums } from "@/api/queries/libraries"
+import FindBar from "@/components/chrome/FindBar"
 import LibraryAlbumList from "@/components/library/LibraryAlbumList"
 import LibraryAlbumListAllSongsItem from "@/components/library/LibraryAlbumListAllSongsItem"
 import LibraryAlbumListItem from "@/components/library/LibraryAlbumListItem"
@@ -61,23 +62,25 @@ export const Route = createFileRoute("/libraries/$libraryId/albums")({
         return (
             <CommandInputProvider value={commandInputs}>
                 <div className="m-2 flex flex-col gap-2">
-                    <AppForm form={facetForm}>
-                        <facetForm.AppField
-                            name="query"
-                            validators={{
-                                onChange: z
-                                    .string()
-                                    .max(TAG_MAX_LENGTH, { error: "Query is too long" }),
-                            }}
-                        >
-                            {(field) => (
-                                <field.SearchInputField
-                                    className="w-full"
-                                    placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} albums...`}
-                                />
-                            )}
-                        </facetForm.AppField>
-                    </AppForm>
+                    <FindBar>
+                        <AppForm form={facetForm} className="flex-1">
+                            <facetForm.AppField
+                                name="query"
+                                validators={{
+                                    onChange: z
+                                        .string()
+                                        .max(TAG_MAX_LENGTH, { error: "Query is too long" }),
+                                }}
+                            >
+                                {(field) => (
+                                    <field.SearchInputField
+                                        className="w-full"
+                                        placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} albums...`}
+                                    />
+                                )}
+                            </facetForm.AppField>
+                        </AppForm>
+                    </FindBar>
 
                     {artistId !== undefined && (
                         <LibraryAlbumListAllSongsItem libraryId={libraryId} artistId={artistId} />

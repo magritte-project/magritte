@@ -14,3 +14,7 @@ export function resolveNewValue<TValue>(
 export function dataFlag(flag?: boolean): "" | undefined {
     return flag ? "" : undefined
 }
+
+export function toggle(flag: boolean): boolean {
+    return !flag
+}

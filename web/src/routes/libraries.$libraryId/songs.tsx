@@ -8,6 +8,7 @@ import { Fragment, useCallback, useMemo, useRef } from "react"
 import { z } from "zod"
 
 import { readLibrarySongs } from "@/api/queries/libraries"
+import FindBar from "@/components/chrome/FindBar"
 import LibraryAlbumHeader from "@/components/library/LibraryAlbumHeader"
 import LibrarySongTable from "@/components/library/LibrarySongTable"
 import LibrarySongTableRow from "@/components/library/LibrarySongTableRow"
@@ -122,23 +123,26 @@ export const Route = createFileRoute("/libraries/$libraryId/songs")({
                     {albumId && (
                         <LibraryAlbumHeader libraryId={Number(libraryId)} albumId={albumId} />
                     )}
-                    <AppForm form={facetForm}>
-                        <facetForm.AppField
-                            name="query"
-                            validators={{
-                                onChange: z
-                                    .string()
-                                    .max(TAG_MAX_LENGTH, { error: "Query is too long" }),
-                            }}
-                        >
-                            {(field) => (
-                                <field.SearchInputField
-                                    className="w-full"
-                                    placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} songs...`}
-                                />
-                            )}
-                        </facetForm.AppField>
-                    </AppForm>
+                    <FindBar>
+                        <AppForm form={facetForm} className="flex-1">
+                            <facetForm.AppField
+                                name="query"
+                                validators={{
+                                    onChange: z
+                                        .string()
+                                        .max(TAG_MAX_LENGTH, { error: "Query is too long" }),
+                                }}
+                            >
+                                {(field) => (
+                                    <field.SearchInputField
+                                        autoFocus={true}
+                                        className="w-full"
+                                        placeholder={`Find in ${Intl.NumberFormat().format(firstPage.total)} songs...`}
+                                    />
+                                )}
+                            </facetForm.AppField>
+                        </AppForm>
+                    </FindBar>
                     <LibrarySongTable sortBy={sortBy} onChangeSortBy={handleChangeSortBy}>
                         {firstPage.items.map((song) => (
                             <LibrarySongTableRow

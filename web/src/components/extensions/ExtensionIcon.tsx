@@ -1,5 +1,5 @@
 import classNames from "classnames"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 const COLOR_CLASSES = [
     "bg-red-500 group-disabled:bg-red-300",
