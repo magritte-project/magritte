@@ -6,13 +6,16 @@ import type { ReactNode } from "react"
 import AsyncButton from "@/components/reusable/AsyncButton"
 import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 
-export interface ThemedPopUpMenuItem {
-    readonly key: string
-    readonly label: ReactNode
-    readonly disabled?: boolean
-    readonly onClick?: () => void | Promise<unknown>
-    readonly requiresScopes?: readonly OAuth2Scope[]
-}
+export type ThemedPopUpMenuItem =
+    | {
+          readonly isSeparator?: false
+          readonly key: string
+          readonly label: ReactNode
+          readonly disabled?: boolean
+          readonly onClick?: () => void | Promise<unknown>
+          readonly requiresScopes?: readonly OAuth2Scope[]
+      }
+    | { readonly isSeparator: true }
 
 export interface ThemedPopUpMenuProps {
     readonly button: ReactNode
@@ -33,26 +36,36 @@ export default function ThemedPopUpMenu({
                 className="bg-secondary rounded-md shadow-sm text-sm flex flex-col z-100"
                 onClick={(e) => e.stopPropagation()}
             >
-                {items.map((item) => (
-                    <ScopeRestricted key={item.key} expected={item.requiresScopes ?? []}>
-                        <MenuItem>
-                            <AsyncButton
-                                type="button"
-                                className={classNames(
-                                    "min-w-32 p-outside text-left whitespace-nowrap",
-                                    "flex items-center gap-between",
-                                    "hover:bg-key disabled:hover:bg-inherit",
-                                    "hover:text-on-key disabled:hover:text-inherit",
-                                    "disabled:opacity-disabled",
-                                )}
-                                onClick={item.onClick}
-                                disabled={item.disabled}
-                            >
-                                {item.label}
-                            </AsyncButton>
-                        </MenuItem>
-                    </ScopeRestricted>
-                ))}
+                {items.map((item, index) =>
+                    item.isSeparator ? (
+                        <div
+                            key={`menuItem.separator[${index}]`}
+                            className="border-b border-separator"
+                        />
+                    ) : (
+                        <ScopeRestricted
+                            key={`menuItem[${item.key}@${index}]`}
+                            expected={item.requiresScopes ?? []}
+                        >
+                            <MenuItem>
+                                <AsyncButton
+                                    type="button"
+                                    className={classNames(
+                                        "min-w-32 p-outside text-left whitespace-nowrap",
+                                        "flex items-center gap-between",
+                                        "hover:bg-key disabled:hover:bg-inherit",
+                                        "hover:text-on-key disabled:hover:text-inherit",
+                                        "disabled:opacity-disabled",
+                                    )}
+                                    onClick={item.onClick}
+                                    disabled={item.disabled}
+                                >
+                                    {item.label}
+                                </AsyncButton>
+                            </MenuItem>
+                        </ScopeRestricted>
+                    ),
+                )}
             </MenuItems>
         </Menu>
     )
