@@ -1,4 +1,5 @@
-import { ThemeSchema, type Theme } from "@/themes/base"
+import { ThemeSchema, type Theme, type ThemeSection, type ThemeSectionKey } from "@/themes/base"
+import { getPropertyName } from "@/utilities/strings"
 
 /** The default theme calculated from the page's stylesheet before any changes */
 export const defaultTheme = buildThemeFromStyle(document.documentElement)
@@ -12,55 +13,48 @@ export const defaultTheme = buildThemeFromStyle(document.documentElement)
 function buildThemeFromStyle(element: HTMLElement): Theme {
     const computedStyle = getComputedStyle(element)
     return ThemeSchema.parse({
-        semanticColors: getThemeSection({
+        semanticColors: getThemeSectionObject({
             style: computedStyle,
             varPrefix: "color",
-            themeSection: "semanticColors",
+            section: "semanticColors",
         }),
-        semanticOpacities: getThemeSection({
+        semanticOpacities: getThemeSectionObject({
             style: computedStyle,
             varPrefix: "opacity",
-            themeSection: "semanticOpacities",
+            section: "semanticOpacities",
         }),
-        semanticSpacings: getThemeSection({
+        semanticSpacings: getThemeSectionObject({
             style: computedStyle,
             varPrefix: "spacing",
-            themeSection: "semanticSpacings",
+            section: "semanticSpacings",
         }),
-        defaults: getThemeSection({
+        defaults: getThemeSectionObject({
             style: computedStyle,
             varPrefix: "default",
-            themeSection: "defaults",
+            section: "defaults",
         }),
     } satisfies Theme)
 }
 
-interface GetThemeSectionOptions {
+interface GetThemeSectionOptions<SectionKey extends ThemeSectionKey> {
     readonly style: CSSStyleDeclaration
     readonly varPrefix: string
-    readonly themeSection: keyof typeof ThemeSchema.shape
+    readonly section: SectionKey
 }
 
-function getThemeSection({
+function getThemeSectionObject<const SectionKey extends ThemeSectionKey>({
     style,
-    varPrefix: prefix,
-    themeSection,
-}: GetThemeSectionOptions): Record<string, string> {
-    const section: Record<string, string> = {}
-    const keys = Object.keys(ThemeSchema.shape[themeSection].shape)
+    varPrefix,
+    section,
+}: GetThemeSectionOptions<SectionKey>) {
+    const sectionObject: Partial<Record<SectionKey, string>> = {}
+    const keys = Object.keys(ThemeSchema.shape[section].shape) as SectionKey[]
     for (const key of keys) {
-        const property = `--${prefix}-${camelToKebab(key)}`
+        const property = getPropertyName(key, varPrefix)
         const value = style.getPropertyValue(property)
         if (value) {
-            section[key] = value
+            sectionObject[key] = value
         }
     }
-    return section
-}
-
-function camelToKebab(value: string): string {
-    return value
-        .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-        .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-        .toLowerCase()
+    return sectionObject as ThemeSection<SectionKey>
 }

@@ -54,3 +54,7 @@ export const ThemeSchema = z.object({
 })
 
 export type Theme = z.infer<typeof ThemeSchema>
+
+export type ThemeSectionKey = keyof Theme
+
+export type ThemeSection<Key extends ThemeSectionKey> = Theme[Key]
