@@ -28,6 +28,7 @@ import { Route as SettingsAdminExtensionsRouteImport } from './routes/settings/a
 import { Route as SettingsAdminUsersRouteImport } from './routes/settings/admin.users'
 import { Route as SettingsUserExtensionsRouteImport } from './routes/settings/user.extensions'
 import { Route as SettingsUserGeneralRouteImport } from './routes/settings/user.general'
+import { Route as SettingsUserThemeRouteImport } from './routes/settings/user.theme'
 import { Route as LibrariesManageLibraryIdIndexRouteImport } from './routes/libraries.manage.$libraryId/index'
 import { Route as LibrariesManageLibraryIdIgnoredRouteImport } from './routes/libraries.manage.$libraryId/ignored'
 import { Route as LibrariesManageLibraryIdPermissionsRouteImport } from './routes/libraries.manage.$libraryId/permissions'
@@ -134,6 +135,11 @@ const SettingsUserGeneralRoute = SettingsUserGeneralRouteImport.update({
   path: '/user/general',
   getParentRoute: () => SettingsRouteRoute,
 } as any)
+const SettingsUserThemeRoute = SettingsUserThemeRouteImport.update({
+  id: '/user/theme',
+  path: '/user/theme',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
 const LibrariesManageLibraryIdIndexRoute =
   LibrariesManageLibraryIdIndexRouteImport.update({
     id: '/',
@@ -196,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/settings/admin/users': typeof SettingsAdminUsersRouteWithChildren
   '/settings/user/extensions': typeof SettingsUserExtensionsRouteWithChildren
   '/settings/user/general': typeof SettingsUserGeneralRoute
+  '/settings/user/theme': typeof SettingsUserThemeRoute
   '/libraries/$libraryId/': typeof LibrariesLibraryIdIndexRoute
   '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
@@ -220,6 +227,7 @@ export interface FileRoutesByTo {
   '/settings/admin/users': typeof SettingsAdminUsersRouteWithChildren
   '/settings/user/extensions': typeof SettingsUserExtensionsRouteWithChildren
   '/settings/user/general': typeof SettingsUserGeneralRoute
+  '/settings/user/theme': typeof SettingsUserThemeRoute
   '/libraries/$libraryId': typeof LibrariesLibraryIdIndexRoute
   '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
@@ -249,6 +257,7 @@ export interface FileRoutesById {
   '/settings/admin/users': typeof SettingsAdminUsersRouteWithChildren
   '/settings/user/extensions': typeof SettingsUserExtensionsRouteWithChildren
   '/settings/user/general': typeof SettingsUserGeneralRoute
+  '/settings/user/theme': typeof SettingsUserThemeRoute
   '/libraries/$libraryId/': typeof LibrariesLibraryIdIndexRoute
   '/libraries/manage/$libraryId/ignored': typeof LibrariesManageLibraryIdIgnoredRoute
   '/libraries/manage/$libraryId/permissions': typeof LibrariesManageLibraryIdPermissionsRoute
@@ -279,6 +288,7 @@ export interface FileRouteTypes {
     | '/settings/admin/users'
     | '/settings/user/extensions'
     | '/settings/user/general'
+    | '/settings/user/theme'
     | '/libraries/$libraryId/'
     | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/settings/admin/users'
     | '/settings/user/extensions'
     | '/settings/user/general'
+    | '/settings/user/theme'
     | '/libraries/$libraryId'
     | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
@@ -331,6 +342,7 @@ export interface FileRouteTypes {
     | '/settings/admin/users'
     | '/settings/user/extensions'
     | '/settings/user/general'
+    | '/settings/user/theme'
     | '/libraries/$libraryId/'
     | '/libraries/manage/$libraryId/ignored'
     | '/libraries/manage/$libraryId/permissions'
@@ -482,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/user/general'
       fullPath: '/settings/user/general'
       preLoaderRoute: typeof SettingsUserGeneralRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/user/theme': {
+      id: '/settings/user/theme'
+      path: '/user/theme'
+      fullPath: '/settings/user/theme'
+      preLoaderRoute: typeof SettingsUserThemeRouteImport
       parentRoute: typeof SettingsRouteRoute
     }
     '/libraries/manage/$libraryId/': {
@@ -654,6 +673,7 @@ interface SettingsRouteRouteChildren {
   SettingsIndexRoute: typeof SettingsIndexRoute
   SettingsUserExtensionsRoute: typeof SettingsUserExtensionsRouteWithChildren
   SettingsUserGeneralRoute: typeof SettingsUserGeneralRoute
+  SettingsUserThemeRoute: typeof SettingsUserThemeRoute
 }
 
 const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
@@ -661,6 +681,7 @@ const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
   SettingsIndexRoute: SettingsIndexRoute,
   SettingsUserExtensionsRoute: SettingsUserExtensionsRouteWithChildren,
   SettingsUserGeneralRoute: SettingsUserGeneralRoute,
+  SettingsUserThemeRoute: SettingsUserThemeRoute,
 }
 
 const SettingsRouteRouteWithChildren = SettingsRouteRoute._addFileChildren(

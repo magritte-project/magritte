@@ -580,6 +580,9 @@ importers:
       '@uidotdev/usehooks':
         specifier: 'catalog:'
         version: 2.4.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      chromakit-react:
+        specifier: ^0.7.1
+        version: 0.7.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       classnames:
         specifier: 'catalog:'
         version: 2.5.1
@@ -2591,6 +2594,13 @@ packages:
   chokidar@5.0.0:
     resolution: {integrity: sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==}
     engines: {node: '>= 20.19.0'}
+
+  chromakit-react@0.7.1:
+    resolution: {integrity: sha512-mcY3J4ucKToiJd6xqv5oKvk7uwAR/FFnutcx7mrNfDeieAUCXG8QW6M8QvnzjHocKZ0i+IMp6RHOAEvCzz3XdA==}
+    engines: {node: '>=20.0.0', npm: '>=9.0.0'}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
 
   citty@0.2.2:
     resolution: {integrity: sha512-+6vJA3L98yv+IdfKGZHBNiGW5KHn22e/JwID0Strsz8h4S/csAu/OuICwxrg44k5MRiZHWIo8XXuJgQTriRP4w==}
@@ -5479,6 +5489,11 @@ snapshots:
   chokidar@5.0.0:
     dependencies:
       readdirp: 5.0.0
+
+  chromakit-react@0.7.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+    dependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
 
   citty@0.2.2: {}
 

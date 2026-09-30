@@ -1,4 +1,4 @@
-import { GearIcon, PuzzlePieceIcon, UsersThreeIcon } from "@phosphor-icons/react"
+import { GearIcon, PaletteIcon, PuzzlePieceIcon, UsersThreeIcon } from "@phosphor-icons/react"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 import PrimaryDetail from "@/components/chrome/PrimaryDetail"
@@ -25,6 +25,11 @@ export const Route = createFileRoute("/settings")({
                                 icon={PuzzlePieceIcon}
                                 label="Extensions"
                                 to="/settings/user/extensions"
+                            />
+                            <ThemedSidebarItemLink
+                                icon={PaletteIcon}
+                                label="Theme"
+                                to="/settings/user/theme"
                             />
                             {userSession.current?.scopes.includes("admin") && (
                                 <>

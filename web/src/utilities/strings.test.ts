@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { camelCaseToKebabCase, getPropertyName } from "./strings"
+import { camelCaseToKebabCase, camelCaseToTitleCase, getPropertyName } from "./strings"
 
 describe("strings", () => {
     describe("#getPropertyName", () => {
@@ -12,6 +12,21 @@ describe("strings", () => {
             expect(getPropertyName("primary", "magritte", "semanticColor")).toStrictEqual(
                 "--magritte-semantic-color-primary",
             )
+        })
+    })
+
+    describe("#camelCaseToTitleCase", () => {
+        it("works with single word", () => {
+            expect(camelCaseToTitleCase("hello")).toStrictEqual("Hello")
+            expect(camelCaseToTitleCase("Goodbye")).toStrictEqual("Goodbye")
+        })
+
+        it("works with multiple words", () => {
+            expect(camelCaseToTitleCase("fontFamily")).toStrictEqual("Font Family")
+            expect(camelCaseToTitleCase("onKeyActive")).toStrictEqual("On Key Active")
+            expect(camelCaseToTitleCase("XMLHttpRequest")).toStrictEqual("XML Http Request")
+            expect(camelCaseToTitleCase("parseHTML")).toStrictEqual("Parse HTML")
+            expect(camelCaseToTitleCase("h1Title")).toStrictEqual("H1 Title")
         })
     })
 

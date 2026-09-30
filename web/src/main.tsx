@@ -26,6 +26,7 @@ import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
 
 import "@/styles.css"
+import "@/themes/default"
 
 try {
     // Set up API client

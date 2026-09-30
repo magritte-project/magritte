@@ -44,6 +44,7 @@
         "@tanstack/react-router-devtools": "1.167.0",
         "@tanstack/router-plugin": "catalog:",
         "@uidotdev/usehooks": "catalog:",
+        "chromakit-react": "^0.7.1",
         "classnames": "catalog:",
         "fuse.js": "7.5.0",
         "idb": "8.0.3",
