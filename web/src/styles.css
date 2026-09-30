@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+@theme static {
     /* Brand Colors */
     --color-mg-midnight-50: oklch(98.4% 0.0656 238.47);
     --color-mg-midnight-100: oklch(96.8% 0.0656 238.47);
