@@ -133,7 +133,7 @@ export default function Palette({
             {isOpen && (
                 <motion.div
                     key="palette"
-                    className="fixed top-1/4 left-1/2 -translate-x-1/2 w-full max-w-xl px-lg"
+                    className="fixed top-1/4 left-1/2 -translate-x-1/2 w-full max-w-160 px-lg"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
