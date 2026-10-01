@@ -1,5 +1,5 @@
 import { ThemeSchema, type Theme, type ThemeSection, type ThemeSectionKey } from "@/themes/base"
-import { getPropertyName } from "@/utilities/strings"
+import { getPropertyName } from "@/utilities/css"
 
 export interface GetThemeOptions {
     readonly element: HTMLElement

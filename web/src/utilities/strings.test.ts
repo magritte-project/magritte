@@ -1,20 +1,8 @@
 import { describe, expect, it } from "vitest"
 
-import { camelCaseToKebabCase, camelCaseToTitleCase, getPropertyName } from "./strings"
+import { camelCaseToKebabCase, camelCaseToTitleCase } from "./strings"
 
 describe("strings", () => {
-    describe("#getPropertyName", () => {
-        it("converts to kebab case", () => {
-            expect(getPropertyName("colorPrimary")).toStrictEqual("--color-primary")
-        })
-
-        it("inserts prefixes when included", () => {
-            expect(getPropertyName("primary", "magritte", "semanticColor")).toStrictEqual(
-                "--magritte-semantic-color-primary",
-            )
-        })
-    })
-
     describe("#camelCaseToTitleCase", () => {
         it("works with single word", () => {
             expect(camelCaseToTitleCase("hello")).toStrictEqual("Hello")
