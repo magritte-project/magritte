@@ -13,7 +13,7 @@ import usePlaybackState from "@/hooks/playbackStateHook"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
 
-export default function PlayerFooter() {
+export default function PageFooter() {
     const player = usePlayer()
     const playbackState = usePlaybackState()
     const playingItem = usePlayingItem()
