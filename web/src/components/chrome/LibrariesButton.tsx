@@ -2,7 +2,7 @@ import { MenuButton } from "@headlessui/react"
 import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react"
 import { BooksIcon } from "@phosphor-icons/react/dist/ssr"
 import { useQuery } from "@tanstack/react-query"
-import { useNavigate, useParams } from "@tanstack/react-router"
+import { useMatchRoute, useNavigate, useParams } from "@tanstack/react-router"
 import { useCallback, useMemo, type ReactNode } from "react"
 
 import { readLibraries } from "@/api/queries/libraries"
@@ -14,6 +14,7 @@ import useUserSession from "@/hooks/userSessionHook"
 export default function LibrariesButton() {
     const navigate = useNavigate()
     const { libraryId } = useParams({ strict: false })
+    const matchRoute = useMatchRoute()
 
     const { isSignedIn } = useUserSession()
     const api = useAPI()
@@ -66,7 +67,12 @@ export default function LibrariesButton() {
             items={[
                 {
                     key: "libraries.all",
-                    label: <LibraryLabel name="All" selected={libraryId === undefined} />,
+                    label: (
+                        <LibraryLabel
+                            name="All"
+                            selected={libraryId === undefined && !!matchRoute({ to: "/libraries" })}
+                        />
+                    ),
                     onClick: navigateToAll,
                 },
                 { isSeparator: true },
