@@ -6,6 +6,7 @@ export const SANS_SERIF: readonly SelectFieldOption<string>[] = [
     { label: "Comfortaa", value: '"Comfortaa", sans-serif' },
     { label: "FiraGO", value: '"FiraGO", sans-serif' },
     { label: "IBM Plex Sans", value: '"IBM Plex Sans", sans-serif' },
+    { label: "Inter", value: '"Inter", sans-serif' },
     { label: "System", value: "system-ui" },
 ]
 
