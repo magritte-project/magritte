@@ -33,7 +33,7 @@ export default function PaletteShortcut({ inputs, command, onWillExecute }: Pale
             className={classNames(
                 "px-3 py-2 flex items-center gap-0.5",
                 "whitespace-nowrap font-bold text-xs",
-                "rounded-full bg-tertiary active:bg-tertiary-active",
+                "rounded-button bg-tertiary active:bg-tertiary-active",
                 "disabled:opacity-disabled drop-shadow-xs",
             )}
             disabled={

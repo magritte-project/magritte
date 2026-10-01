@@ -28,7 +28,7 @@ export default function Modal({ className, isPresented = true, onDismiss, childr
                     >
                         <motion.div
                             className={classNames(
-                                "relative bg-primary rounded-lg drop-shadow-2xl max-h-full md:max-h-2/3 overflow-auto",
+                                "relative bg-primary rounded-panel drop-shadow-2xl max-h-full md:max-h-2/3 overflow-auto",
                                 className,
                             )}
                             initial={{ opacity: 0, scale: 0.95, y: 16 }}

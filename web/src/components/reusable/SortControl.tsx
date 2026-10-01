@@ -109,7 +109,7 @@ export default function SortControl<Key extends string>({
                             <SortableListItem
                                 key={key}
                                 id={key}
-                                className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-md flex items-center gap-2 px-2 py-1 cursor-default"
+                                className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-list-element flex items-center gap-2 px-2 py-1 cursor-default"
                             >
                                 <DotsSixVerticalIcon
                                     className="text-placeholder"
@@ -144,7 +144,7 @@ export default function SortControl<Key extends string>({
                     {availableKeys.map((key) => (
                         <li
                             key={key}
-                            className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-md flex items-center gap-2 px-2 py-1 cursor-default"
+                            className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-list-element flex items-center gap-2 px-2 py-1 cursor-default"
                         >
                             <span className="flex-1 text-sm truncate">{labels[key]}</span>
                             <ThemedSubtleButton

@@ -55,7 +55,7 @@ export default function UserNotificationsButton() {
                                 "absolute top-0 right-0 -translate-y-1/3 translate-x-1/3",
                                 "bg-key group-active:bg-key-active text-on-key group-active:text-on-key-active",
                                 "text-xs font-semibold",
-                                "p-0.5 min-w-6 rounded-full",
+                                "p-0.5 min-w-6 rounded-button",
                             )}
                             aria-hidden
                         >
@@ -65,7 +65,7 @@ export default function UserNotificationsButton() {
                 </ThemedSubtleButton>
                 <PopoverPanel
                     anchor="bottom end"
-                    className="w-2xs bg-primary rounded-md shadow-sm flex flex-col items-center"
+                    className="w-2xs bg-primary rounded-panel shadow-sm flex flex-col items-center"
                 >
                     {notifications.length === 0 ? (
                         <div className="p-outside flex flex-col items-center text-on-secondary text-sm font-medium">

@@ -18,7 +18,7 @@ export default function UserButton() {
     return !isSignedIn ? (
         <Link
             to="/sign-in"
-            className="px-3 py-2 font-bold rounded-full bg-secondary active:bg-secondary-active"
+            className="px-3 py-2 font-bold rounded-button bg-secondary active:bg-secondary-active"
         >
             Sign In
         </Link>

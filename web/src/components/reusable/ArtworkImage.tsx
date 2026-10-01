@@ -25,7 +25,7 @@ export default function ArtworkImage({
     return (
         <div
             className={classNames(
-                "relative flex items-center justify-center rounded-md overflow-clip bg-key-subtle",
+                "relative flex items-center justify-center rounded-artwork overflow-clip bg-key-subtle",
                 className,
             )}
             {...rest}
@@ -39,7 +39,7 @@ export default function ArtworkImage({
                 />
             )}
             <div
-                className="absolute top-0 left-0 w-full h-full rounded-md border border-black/10"
+                className="absolute top-0 left-0 w-full h-full rounded-artwork border border-black/10"
                 aria-hidden
             />
             {accessory}

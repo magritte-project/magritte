@@ -81,6 +81,13 @@
     --spacing-outside: calc(var(--spacing) * 3);
     --spacing-between: calc(var(--spacing) * 3);
 
+    /* Semantic Radii */
+    --radius-panel: var(--radius-md);
+    --radius-artwork: var(--radius-md);
+    --radius-list-element: var(--radius-md);
+    --radius-input: var(--radius-lg);
+    --radius-button: calc(infinity * 1px);
+
     /* Global Defaults */
     --default-font-family: "Comfortaa", sans-serif;
     --default-mono-font-family: "Fira Mono", monospace;

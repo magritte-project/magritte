@@ -22,7 +22,7 @@ export default function ThemedSidebarItemLabel({
         <div
             className={classNames(
                 "flex items-center gap-between p-1",
-                "hover:bg-tertiary active:bg-tertiary-active rounded-md",
+                "hover:bg-tertiary active:bg-tertiary-active rounded-list-element",
                 "data-[active=true]:text-key group-aria-disabled:opacity-disabled aria-disabled:opacity-disabled",
                 className,
             )}

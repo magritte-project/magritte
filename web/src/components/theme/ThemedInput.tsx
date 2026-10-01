@@ -8,8 +8,8 @@ export default function ThemedInput({ type = "text", className, ...rest }: Theme
         <input
             type={type}
             className={classNames(
-                "bg-primary rounded-lg p-2 min-w-0 w-auto",
-                "text-on-primary placeholder:text-placeholder",
+                "bg-secondary rounded-input p-2 min-w-0 w-auto",
+                "text-on-secondary placeholder:text-placeholder",
                 "border border-outline focus:border-outline-focus outline-0",
                 className,
             )}

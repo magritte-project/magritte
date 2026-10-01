@@ -77,7 +77,7 @@ export default function LibrarySongTableSort({
             </ThemedSubtleButton>
             <PopoverPanel
                 anchor="bottom end"
-                className="w-2xs bg-primary rounded-md shadow-sm flex flex-col p-outside"
+                className="w-2xs bg-primary rounded-panel shadow-sm flex flex-col p-outside"
             >
                 <SortControl<SongKey>
                     keys={KEYS}

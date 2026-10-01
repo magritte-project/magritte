@@ -121,7 +121,7 @@ export default function PlayerFooter() {
                             >
                                 <AsyncButton
                                     className={classNames(
-                                        "p-2 rounded-full active:bg-on-primary/10",
+                                        "p-2 rounded-button active:bg-on-primary/10",
                                         "font-bold text-on-primary disabled:opacity-disabled",
                                     )}
                                     title="Skip Previous"
@@ -131,7 +131,7 @@ export default function PlayerFooter() {
                                 </AsyncButton>
                                 <AsyncButton
                                     className={classNames(
-                                        "p-2 rounded-full active:bg-on-primary/10",
+                                        "p-2 rounded-button active:bg-on-primary/10",
                                         "font-bold text-on-primary disabled:opacity-disabled",
                                     )}
                                     title={playbackState === "playing" ? "Pause" : "Play"}
@@ -149,7 +149,7 @@ export default function PlayerFooter() {
                                 </AsyncButton>
                                 <AsyncButton
                                     className={classNames(
-                                        "p-2 rounded-full active:bg-on-primary/10",
+                                        "p-2 rounded-button active:bg-on-primary/10",
                                         "font-bold text-on-primary disabled:opacity-disabled",
                                     )}
                                     title="Skip Next"

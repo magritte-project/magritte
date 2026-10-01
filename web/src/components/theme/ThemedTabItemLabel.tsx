@@ -22,7 +22,7 @@ export default function ThemedTabItemLabel({
         <div
             className={classNames(
                 "flex items-center gap-1 px-3 py-1",
-                "group-first:rounded-l-full group-last:rounded-r-full",
+                "group-first:rounded-l-button group-last:rounded-r-button",
                 "not-group-last:border-r border-separator",
                 "bg-secondary active:bg-secondary-active",
                 "rounded data-[active=true]:text-key group-aria-disabled:opacity-disabled aria-disabled:opacity-disabled",

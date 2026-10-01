@@ -21,7 +21,7 @@ export default function ThemedButton({
             className={classNames(
                 "disabled:opacity-disabled",
                 "text-on-key active:text-on-key-active font-bold",
-                "px-4 py-2 rounded-full drop-shadow-xs",
+                "px-4 py-2 rounded-button drop-shadow-xs",
                 {
                     "bg-key active:bg-key-active": !destructive,
                     "bg-destructive active:bg-destructive-active": destructive,

@@ -29,14 +29,14 @@ export const Route = createFileRoute("/libraries/")({
                                 {library.cover_artwork ? (
                                     <ArtworkImage
                                         artworks={[library.cover_artwork]}
-                                        className="h-16 w-16 rounded-full!"
+                                        className="h-16 w-16 rounded-button!"
                                     />
                                 ) : library.home_path !== null ? (
-                                    <div className="bg-key text-on-key rounded-full w-16 h-16 flex items-center justify-center drop-shadow-xs">
+                                    <div className="bg-key text-on-key rounded-button w-16 h-16 flex items-center justify-center drop-shadow-xs">
                                         <FilesIcon size="2.5em" weight="light" />
                                     </div>
                                 ) : (
-                                    <div className="bg-key text-on-key rounded-full w-16 h-16 flex items-center justify-center drop-shadow-xs">
+                                    <div className="bg-key text-on-key rounded-button w-16 h-16 flex items-center justify-center drop-shadow-xs">
                                         <WavesIcon size="2.5em" weight="light" />
                                     </div>
                                 )}
