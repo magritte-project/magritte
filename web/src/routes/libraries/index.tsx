@@ -15,8 +15,8 @@ export const Route = createFileRoute("/libraries/")({
         const { data: libraries } = useSuspenseQuery(readLibraries(api))
 
         return (
-            <main className="flex flex-col text-center items-center justify-center gap-2 p-4 min-h-0 h-screen">
-                <ol className="flex items-start gap-2 flex-wrap">
+            <main className="flex flex-col text-center items-center justify-center gap-md p-xl min-h-0 h-screen">
+                <ol className="flex items-start gap-md flex-wrap">
                     {libraries.map((library) => (
                         <li key={`library-${library.id}`} data-testid={`libraries[${library.id}]`}>
                             <Link
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/libraries/")({
                                 params={{
                                     libraryId: String(library.id),
                                 }}
-                                className="flex flex-col items-center gap-3 p-2 rounded-lg hover:bg-key-subtle w-32"
+                                className="flex flex-col items-center gap-lg p-md rounded-lg hover:bg-key-subtle w-32"
                             >
                                 {library.cover_artwork ? (
                                     <ArtworkImage
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/libraries/")({
                                     </div>
                                 )}
 
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-sm">
                                     <div className="text-lg font-semibold">{library.name}</div>
                                     <button
                                         type="button"
@@ -65,7 +65,7 @@ export const Route = createFileRoute("/libraries/")({
                     ))}
                 </ol>
                 <ScopeRestricted expected={["library:write"]}>
-                    <ThemedLink to="/libraries/add" className="flex items-center gap-1">
+                    <ThemedLink to="/libraries/add" className="flex items-center gap-sm">
                         <PlusIcon weight="bold" />
                         Add
                     </ThemedLink>

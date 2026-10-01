@@ -31,7 +31,7 @@ export default function PaletteShortcut({ inputs, command, onWillExecute }: Pale
         <button
             type="button"
             className={classNames(
-                "px-3 py-2 flex items-center gap-0.5",
+                "px-lg py-md flex items-center gap-xs",
                 "whitespace-nowrap font-bold text-xs",
                 "rounded-button bg-tertiary active:bg-tertiary-active",
                 "disabled:opacity-disabled drop-shadow-xs",

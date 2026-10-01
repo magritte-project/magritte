@@ -34,18 +34,18 @@ export default function PrimaryDetail({ title, navigation, children }: PrimaryDe
     }, [setIsRevealed])
 
     return (
-        <div className="flex flex-col md:flex-row md:items-stretch md:h-screen">
+        <div className="flex flex-col lg:flex-row lg:items-stretch lg:h-screen">
             <div
                 className={classNames(
-                    "bg-secondary p-outside",
+                    "bg-tertiary p-lg",
                     "router-scroll-to-top overflow-auto",
-                    "md:w-64 md:pb-32",
+                    "lg:fixed inset-y-0 l-0 lg:w-64 lg:pt-header lg:pb-footer",
                 )}
             >
-                <h2 className="text-xl font-bold flex items-center gap-between">
+                <h2 className="text-xl font-bold flex items-center gap-lg">
                     <ThemedSubtleButton
                         type="button"
-                        className="block md:hidden"
+                        className="block lg:hidden"
                         onClick={handleRevealClick}
                         title={isRevealed ? "Hide" : "Show"}
                     >
@@ -54,13 +54,13 @@ export default function PrimaryDetail({ title, navigation, children }: PrimaryDe
                     {title}
                 </h2>
                 <div
-                    className="hidden data-revealed:flex md:flex flex-col gap-1 mt-between"
+                    className="hidden data-revealed:flex lg:flex flex-col gap-sm mt-lg"
                     data-revealed={dataFlag(isRevealed)}
                 >
                     {navigation}
                 </div>
             </div>
-            <div className="flex-1 p-outside router-scroll-to-top relative pb-32">{children}</div>
+            <div className="flex-1 p-lg lg:ml-64">{children}</div>
         </div>
     )
 }

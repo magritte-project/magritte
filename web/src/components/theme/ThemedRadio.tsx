@@ -11,7 +11,7 @@ export default function ThemedRadio<TType = string>({
     return (
         <Radio
             className={classNames(
-                "group flex items-center justify-center p-1",
+                "group flex items-center justify-center p-sm",
                 "bg-primary data-checked:bg-key data-checked:text-on-key",
                 "border border-outline data-checked:border-key focus:border-outline-focus rounded-full",
                 "aria-disabled:opacity-disabled",

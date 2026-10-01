@@ -15,7 +15,9 @@ export default function PaletteCommandsView({ search }: PaletteCommandsViewProps
     return (
         <Fragment key="paletteCommandResults">
             {commands.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-on-secondary">No commands found</p>
+                <p className="px-xl py-8 text-center text-sm text-on-secondary">
+                    No commands found
+                </p>
             ) : (
                 commands.map((command) => (
                     <PaletteCommandOption key={command.id} inputs={inputs} command={command} />

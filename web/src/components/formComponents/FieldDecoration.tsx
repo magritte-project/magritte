@@ -19,7 +19,7 @@ export default function FieldDecoration({
     ...rest
 }: FieldDecorationProps) {
     return (
-        <section className={classNames("flex flex-col gap-1", className)} {...rest}>
+        <section className={classNames("flex flex-col gap-sm", className)} {...rest}>
             <label
                 htmlFor={field.name}
                 className={classNames("text-sm font-medium", labelClassName)}

@@ -41,7 +41,7 @@ export default function PlayerOverlay() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 overlay-material-hard z-100 flex items-center justify-center p-outside"
+                    className="fixed inset-0 overlay-material-hard z-100 flex items-center justify-center p-lg"
                 >
                     <PlayerOverlayContent />
                 </motion.div>
@@ -54,7 +54,7 @@ function PlayerOverlayContent() {
     const playingItem = usePlayingItem()
 
     return (
-        <div className="flex flex-col items-center gap-between text-center">
+        <div className="flex flex-col items-center gap-lg text-center">
             <ArtworkImage
                 className="aspect-square w-[33vw] shadow-lg shadow-high-contrast"
                 artworks={playingItem?.artworks}

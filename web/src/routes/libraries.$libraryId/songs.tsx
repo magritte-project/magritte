@@ -119,7 +119,7 @@ export const Route = createFileRoute("/libraries/$libraryId/songs")({
 
         return (
             <CommandInputProvider value={commandInputs}>
-                <div className="m-2 flex flex-col gap-2 cursor-default">
+                <div className="m-2 flex flex-col gap-md cursor-default">
                     {albumId && (
                         <LibraryAlbumHeader libraryId={Number(libraryId)} albumId={albumId} />
                     )}

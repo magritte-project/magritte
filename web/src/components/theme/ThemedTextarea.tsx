@@ -7,7 +7,7 @@ export default function ThemedTextarea({ className, ...rest }: ThemedTextareaPro
     return (
         <textarea
             className={classNames(
-                "bg-secondary rounded-input p-2 min-w-0 w-auto",
+                "bg-secondary rounded-input p-md min-w-0 w-auto",
                 "text-on-secondary placeholder:text-placeholder",
                 "border border-outline focus:border-outline-focus outline-0",
                 className,

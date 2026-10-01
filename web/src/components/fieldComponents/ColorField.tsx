@@ -27,7 +27,7 @@ export default function ColorField({ label, ...rest }: ColorFieldProps) {
         <Popover className="relative">
             <ThemedSubtleButton
                 buttonComponent={PopoverButton}
-                className="flex items-center gap-2 relative group"
+                className="flex items-center gap-md relative group"
             >
                 <div
                     className="w-4 h-4 rounded-full border border-white/20"

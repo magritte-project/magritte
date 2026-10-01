@@ -22,11 +22,11 @@ export default function LibrarySongTable({
                     <th className="w-8">
                         <LibrarySongTableSort order={sortBy} setOrder={onChangeSortBy} />
                     </th>
-                    <th className="p-2 border-r border-separator">Title</th>
-                    <th className="w-14 p-2 border-r border-separator">Time</th>
-                    <th className="p-2 border-r border-separator">Artist</th>
-                    <th className="p-2 border-r border-separator">Album</th>
-                    <th className="p-2">Genre</th>
+                    <th className=" p-md border-r border-separator">Title</th>
+                    <th className="w-14 p-md border-r border-separator">Time</th>
+                    <th className=" p-md border-r border-separator">Artist</th>
+                    <th className=" p-md border-r border-separator">Album</th>
+                    <th className=" p-md">Genre</th>
                 </tr>
             </thead>
             <tbody>{children}</tbody>

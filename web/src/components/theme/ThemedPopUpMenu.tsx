@@ -51,8 +51,8 @@ export default function ThemedPopUpMenu({
                                 <AsyncButton
                                     type="button"
                                     className={classNames(
-                                        "min-w-32 p-outside text-left whitespace-nowrap",
-                                        "flex items-center gap-between",
+                                        "min-w-32 p-lg text-left whitespace-nowrap",
+                                        "flex items-center gap-lg",
                                         "hover:bg-key disabled:hover:bg-inherit",
                                         "hover:text-on-key disabled:hover:text-inherit",
                                         "disabled:opacity-disabled",

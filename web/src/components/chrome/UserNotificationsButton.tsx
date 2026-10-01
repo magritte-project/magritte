@@ -37,7 +37,7 @@ export default function UserNotificationsButton() {
             <Popover className="relative">
                 <ThemedSubtleButton
                     buttonComponent={PopoverButton}
-                    className="flex items-center gap-1 relative group"
+                    className="flex items-center gap-sm relative group"
                     title={
                         unreadCount > 0
                             ? `${formattedUnreadCount} unread notifications`
@@ -55,7 +55,7 @@ export default function UserNotificationsButton() {
                                 "absolute top-0 right-0 -translate-y-1/3 translate-x-1/3",
                                 "bg-key group-active:bg-key-active text-on-key group-active:text-on-key-active",
                                 "text-xs font-semibold",
-                                "p-0.5 min-w-6 rounded-button",
+                                "p-xs min-w-6 rounded-button",
                             )}
                             aria-hidden
                         >
@@ -68,12 +68,12 @@ export default function UserNotificationsButton() {
                     className="w-2xs bg-primary rounded-panel shadow-sm flex flex-col items-center"
                 >
                     {notifications.length === 0 ? (
-                        <div className="p-outside flex flex-col items-center text-on-secondary text-sm font-medium">
+                        <div className="p-lg flex flex-col items-center text-on-secondary text-sm font-medium">
                             No notifications
                         </div>
                     ) : (
                         <>
-                            <ol className="px-outside flex flex-col w-full">
+                            <ol className="px-lg flex flex-col w-full">
                                 {notifications.map((notification) => (
                                     <NotificationListItem
                                         key={notification.id}
@@ -82,7 +82,7 @@ export default function UserNotificationsButton() {
                                 ))}
                             </ol>
                             <ThemedButton
-                                className="text-xs font-semibold mx-outside mt-0 mb-2"
+                                className="text-xs font-semibold mx-lg mt-0 mb-md"
                                 disabled={unreadCount === 0}
                             >
                                 Mark All As Read
@@ -114,7 +114,7 @@ function NotificationListItem({ className, notification, ...rest }: Notification
     return (
         <li
             className={classNames(
-                "py-2 my-2 not-last:border-b border-separator flex items-center gap-2",
+                "px-md my-2 not-last:border-b border-separator flex items-center gap-md",
                 className,
             )}
             {...rest}
@@ -125,7 +125,7 @@ function NotificationListItem({ className, notification, ...rest }: Notification
                 aria-label={notification.is_read ? "Read" : "Unread"}
             />
             <div
-                className={classNames("flex-1 flex flex-col gap-0.5", {
+                className={classNames("flex-1 flex flex-col gap-xs", {
                     "opacity-disabled": notification.is_read,
                 })}
             >

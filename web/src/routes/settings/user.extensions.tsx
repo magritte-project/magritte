@@ -84,8 +84,8 @@ export const Route = createFileRoute("/settings/user/extensions")({
         }, [presentedExtensionId, notificationCenter, dismissPresentedExtension, uninstallMutation])
 
         return (
-            <div className="flex flex-col gap-3">
-                <header className="flex items-center gap-between">
+            <div className="flex flex-col gap-lg">
+                <header className="flex items-center gap-lg">
                     <h1 className="flex-1 text-2xl font-bold">Installed Extensions</h1>
                     <ScopeRestricted expected={["admin"]}>
                         <ThemedLink to="/settings/admin/extensions/import" title="Import Extension">
@@ -96,12 +96,12 @@ export const Route = createFileRoute("/settings/user/extensions")({
                         <PlusIcon size="1.2rem" weight="bold" />
                     </ThemedLink>
                 </header>
-                <ol className="flex items-start content-start flex-wrap gap-2">
+                <ol className="flex items-start content-start flex-wrap gap-md">
                     {installedExtensions.items.map((extension) => (
                         <li key={`extensions[${extension.id}]`}>
                             <button
                                 type="button"
-                                className="flex flex-col items-center justify-center gap-2 p-2 w-24 h-24 rounded-list-element hover:bg-secondary active:bg-secondary-active"
+                                className="flex flex-col items-center justify-center gap-md p-md w-24 h-24 rounded-list-element hover:bg-secondary active:bg-secondary-active"
                                 onClick={() => presentExtension(extension.id)}
                             >
                                 <ExtensionIcon
@@ -156,7 +156,7 @@ export const Route = createFileRoute("/settings/user/extensions")({
                     >
                         About Extension
                     </ModalHeader>
-                    <div className="flex flex-col items-center gap-between p-outside">
+                    <div className="flex flex-col items-center gap-lg p-lg">
                         <ExtensionIcon
                             iconUrl={presentedExtension?.manifest.icon_url}
                             name={presentedExtension?.manifest.name ?? ""}
@@ -168,7 +168,7 @@ export const Route = createFileRoute("/settings/user/extensions")({
                         <span className="text-sm text-center text-on-secondary">
                             {presentedExtension?.manifest.description}
                         </span>
-                        <span className="flex flex-col items-start gap-2 text-xs">
+                        <span className="flex flex-col items-start gap-md text-xs">
                             {presentedExtension?.manifest.permissions?.map((permission) => (
                                 <PermissionInfo
                                     key={permission}

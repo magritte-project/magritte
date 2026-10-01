@@ -75,16 +75,13 @@ export default function ExtensionComponent({ manifest }: ExtensionComponentProps
     }, [extensionRuntime, manifest])
 
     return (
-        <div
-            ref={containerRef}
-            className="h-full flex flex-col gap-between items-center justify-center"
-        >
+        <div ref={containerRef} className="h-full flex flex-col gap-lg items-center justify-center">
             {/* Extensions may have translucent backgrounds, so the placeholder must not show through */}
             {!isLoaded && (
                 <ExtensionIcon iconUrl={manifest.icon_url} name={manifest.name} size="4rem" />
             )}
             {error !== null && (
-                <div className="px-outside text-center text-sm font-medium text-on-secondary">
+                <div className="px-lg text-center text-sm font-medium text-on-secondary">
                     {getErrorMessage(error)}
                 </div>
             )}

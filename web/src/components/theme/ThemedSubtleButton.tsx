@@ -17,7 +17,7 @@ export default function ThemedSubtleButton({
         <Button
             type={type}
             className={classNames(
-                "px-3 py-2 flex items-center gap-0.5",
+                "px-lg py-md flex items-center gap-xs",
                 "rounded-button bg-secondary active:bg-secondary-active data-open:bg-secondary-active",
                 "font-bold disabled:opacity-disabled drop-shadow-xs",
                 className,

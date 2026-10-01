@@ -78,13 +78,18 @@
     --opacity-disabled: 0.6;
 
     /* Semantic Spacings */
-    --spacing-outside: calc(var(--spacing) * 3);
-    --spacing-between: calc(var(--spacing) * 3);
+    --spacing-xs: calc(var(--spacing) * 0.5);
+    --spacing-sm: calc(var(--spacing) * 1);
+    --spacing-md: calc(var(--spacing) * 2);
+    --spacing-lg: calc(var(--spacing) * 3);
+    --spacing-xl: calc(var(--spacing) * 4);
+    --spacing-header: calc(var(--spacing) * 17);
+    --spacing-footer: calc(var(--spacing) * 26);
 
     /* Semantic Radii */
     --radius-panel: var(--radius-md);
     --radius-artwork: var(--radius-md);
-    --radius-list-element: var(--radius-md);
+    --radius-li: var(--radius-md);
     --radius-input: var(--radius-lg);
     --radius-button: calc(infinity * 1px);
 

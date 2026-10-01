@@ -139,7 +139,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 className="h-screen!"
             >
                 <Panel
-                    className={classNames("router-scroll-to-top relative overflow-auto pb-32", {
+                    className={classNames("router-scroll-to-top relative overflow-auto pb-footer", {
                         "h-screen": !preferVerticalOrientation,
                     })}
                     minSize="16rem"
@@ -169,7 +169,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                             }
                         >
                             <ThemedHeader>
-                                <div className="flex items-center gap-2 overflow-x-auto">
+                                <div className="flex items-center gap-md overflow-x-auto">
                                     {openExtensions.map((extension, index) => (
                                         <button
                                             key={`panels[${extension.id}@${index}]`}
@@ -191,7 +191,7 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                                     ))}
                                 </div>
                             </ThemedHeader>
-                            <main className="flex-1 px-outside pb-outside">
+                            <main className="flex-1 px-lg pb-lg">
                                 <ExtensionComponent manifest={selectedExtension} />
                             </main>
                         </Panel>

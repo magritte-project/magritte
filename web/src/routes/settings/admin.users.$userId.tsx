@@ -93,7 +93,7 @@ export const Route = createFileRoute("/settings/admin/users/$userId")({
                     Edit {userProfile.username}
                 </ModalHeader>
 
-                <AppForm form={form} className="flex flex-col gap-3 p-3">
+                <AppForm form={form} className="flex flex-col gap-lg p-3">
                     <form.AppField
                         name="preferred_name"
                         validators={{
@@ -101,7 +101,7 @@ export const Route = createFileRoute("/settings/admin/users/$userId")({
                         }}
                     >
                         {(field) => (
-                            <section className="flex flex-col gap-0.5">
+                            <section className="flex flex-col gap-xs">
                                 <label htmlFor={field.name} className="text-sm font-semibold">
                                     Preferred Name
                                 </label>
@@ -113,8 +113,8 @@ export const Route = createFileRoute("/settings/admin/users/$userId")({
 
                     <form.Field name="enable_playback_events">
                         {(field) => (
-                            <section className="flex flex-col gap-1">
-                                <Field className="flex items-center gap-between">
+                            <section className="flex flex-col gap-sm">
+                                <Field className="flex items-center gap-lg">
                                     <ThemedCheckbox
                                         id={field.name}
                                         name={field.name}
@@ -139,14 +139,14 @@ export const Route = createFileRoute("/settings/admin/users/$userId")({
                         }}
                     >
                         {(field) => (
-                            <section className="flex flex-col gap-0.5">
+                            <section className="flex flex-col gap-xs">
                                 <label htmlFor={field.name} className="text-sm font-semibold">
                                     Scopes
                                 </label>
-                                <ol className="bg-secondary rounded-list-element p-outside flex flex-col gap-between">
+                                <ol className="bg-secondary rounded-list-element p-lg flex flex-col gap-lg">
                                     {OAuth2ScopeSchema.options.map((scope) => (
                                         <li key={scope}>
-                                            <Field className="flex items-center gap-between">
+                                            <Field className="flex items-center gap-lg">
                                                 <ThemedCheckbox
                                                     id={`${field.name}.${scope}`}
                                                     name={`${field.name}.${scope}`}

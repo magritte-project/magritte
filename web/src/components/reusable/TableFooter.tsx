@@ -40,7 +40,7 @@ export default function TableFooter({
     }, [onChange, offset, limit])
 
     return (
-        <footer className={classNames("flex items-center gap-1", className)} {...rest}>
+        <footer className={classNames("flex items-center gap-sm", className)} {...rest}>
             {total > limit && (
                 <button
                     type="button"

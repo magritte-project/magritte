@@ -45,7 +45,7 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/")({
             },
         })
         return (
-            <AppForm form={form} className="p-4 flex flex-col gap-4">
+            <AppForm form={form} className="p-xl flex flex-col gap-xl">
                 <form.AppField
                     name="name"
                     validators={{
@@ -72,7 +72,7 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/")({
 
                 <form.Field name="uploads_enabled">
                     {(field) => (
-                        <Field className="flex items-center gap-2">
+                        <Field className="flex items-center gap-md">
                             <ThemedCheckbox
                                 className="peer"
                                 id={field.name}

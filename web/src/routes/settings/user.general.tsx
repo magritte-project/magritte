@@ -41,11 +41,11 @@ export const Route = createFileRoute("/settings/user/general")({
         })
 
         return (
-            <div className="flex flex-col gap-between">
-                <header className="flex items-center gap-between">
+            <div className="flex flex-col gap-lg">
+                <header className="flex items-center gap-lg">
                     <h1 className="flex-1 text-2xl font-bold">{me.username}</h1>
                 </header>
-                <AppForm form={form} className="flex flex-col gap-between">
+                <AppForm form={form} className="flex flex-col gap-lg">
                     <form.AppField
                         name="preferred_name"
                         validators={{
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/settings/user/general")({
                         }}
                     >
                         {(field) => (
-                            <section className="flex flex-col gap-0.5">
+                            <section className="flex flex-col gap-xs">
                                 <label htmlFor={field.name} className="text-sm font-semibold">
                                     Preferred Name
                                 </label>
@@ -65,8 +65,8 @@ export const Route = createFileRoute("/settings/user/general")({
 
                     <form.Field name="enable_playback_events">
                         {(field) => (
-                            <section className="flex flex-col gap-1">
-                                <Field className="flex items-center gap-between">
+                            <section className="flex flex-col gap-sm">
+                                <Field className="flex items-center gap-lg">
                                     <ThemedCheckbox
                                         id={field.name}
                                         name={field.name}

@@ -6,10 +6,10 @@ import ThemedButton from "@/components/theme/ThemedButton"
 
 const variants = {
     fullScreen: {
-        containerClassName: "p-4 min-h-0 h-screen",
+        containerClassName: "p-xl min-h-0 h-screen",
     },
     inline: {
-        containerClassName: "p-4",
+        containerClassName: "p-xl",
     },
 } as const
 
@@ -38,7 +38,7 @@ export default function ThemedContentUnavailable({
     return (
         <div
             className={classNames(
-                "flex flex-col text-center items-center justify-center gap-between",
+                "flex flex-col text-center items-center justify-center gap-lg",
                 containerClassName,
                 className,
             )}

@@ -19,7 +19,7 @@ export default function PaletteCommandOption({ inputs, command }: PaletteCommand
 
     return (
         <ComboboxOption
-            className="px-4 py-2 text-sm not-last:border-b border-separator data-focus:bg-key data-focus:text-on-key data-disabled:opacity-disabled"
+            className="px-xl py-md text-sm not-last:border-b border-separator data-focus:bg-key data-focus:text-on-key data-disabled:opacity-disabled"
             value={command}
             disabled={
                 !inputs.hasAllOf(...command.requiredInputKinds) ||
@@ -27,7 +27,7 @@ export default function PaletteCommandOption({ inputs, command }: PaletteCommand
                 presentationQuery.data.disabled
             }
         >
-            <div className="flex items-center gap-between">
+            <div className="flex items-center gap-lg">
                 <PaletteOptionIcon className="w-8 h-8" icon={presentationQuery.data?.icon} />
                 <div className="text-medium">
                     {presentationQuery.isSuccess

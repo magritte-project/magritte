@@ -66,13 +66,13 @@ export default function PlayerFooter() {
 
     return (
         <div
-            className="fixed bottom-0 inset-x-0"
+            className="fixed bottom-0 inset-x-0 h-footer"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
             <div className="relative isolate bg-linear-to-t from-primary/50 to-transparent">
                 <div className="absolute inset-x-0 -top-full bottom-0 backdrop-blur-lg mask-[linear-gradient(to_top,black,transparent)] pointer-events-none -z-10" />
-                <div className="p-outside flex items-center gap-6 max-w-2xl mx-auto">
+                <div className="p-lg flex items-center gap-6 max-w-2xl mx-auto">
                     <ArtworkImage
                         className="aspect-square w-20 shadow-lg shadow-high-contrast"
                         artworks={playingItem?.artworks}
@@ -80,7 +80,7 @@ export default function PlayerFooter() {
                     />
                     <motion.div
                         layout
-                        className="min-w-0 flex-1 flex flex-col gap-0.5 text-shadow-lg text-shadow-high-contrast"
+                        className="min-w-0 flex-1 flex flex-col gap-xs text-shadow-lg text-shadow-high-contrast"
                     >
                         <AnimatePresence initial={false}>
                             <motion.div
@@ -117,11 +117,11 @@ export default function PlayerFooter() {
                         <AnimatePresence initial={false}>
                             <motion.div
                                 layout
-                                className="flex items-center gap-between drop-shadow-lg drop-shadow-high-contrast"
+                                className="flex items-center gap-lg drop-shadow-lg drop-shadow-high-contrast"
                             >
                                 <AsyncButton
                                     className={classNames(
-                                        "p-2 rounded-button active:bg-on-primary/10",
+                                        " p-md rounded-button active:bg-on-primary/10",
                                         "font-bold text-on-primary disabled:opacity-disabled",
                                     )}
                                     title="Skip Previous"
@@ -131,7 +131,7 @@ export default function PlayerFooter() {
                                 </AsyncButton>
                                 <AsyncButton
                                     className={classNames(
-                                        "p-2 rounded-button active:bg-on-primary/10",
+                                        " p-md rounded-button active:bg-on-primary/10",
                                         "font-bold text-on-primary disabled:opacity-disabled",
                                     )}
                                     title={playbackState === "playing" ? "Pause" : "Play"}
@@ -149,7 +149,7 @@ export default function PlayerFooter() {
                                 </AsyncButton>
                                 <AsyncButton
                                     className={classNames(
-                                        "p-2 rounded-button active:bg-on-primary/10",
+                                        " p-md rounded-button active:bg-on-primary/10",
                                         "font-bold text-on-primary disabled:opacity-disabled",
                                     )}
                                     title="Skip Next"

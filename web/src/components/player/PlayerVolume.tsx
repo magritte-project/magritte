@@ -13,7 +13,7 @@ export default function PlayerVolume() {
         [setVolume],
     )
     return (
-        <div className="flex items-center gap-between">
+        <div className="flex items-center gap-lg">
             <Slider
                 value={volume}
                 min={0}

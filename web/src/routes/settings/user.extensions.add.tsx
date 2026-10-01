@@ -56,7 +56,7 @@ export const Route = createFileRoute("/settings/user/extensions/add")({
                 >
                     Available Extensions
                 </ModalHeader>
-                <div className="flex flex-col gap-between">
+                <div className="flex flex-col gap-lg">
                     <ol>
                         {availableExtensions.items.map((extension) => (
                             <li
@@ -64,7 +64,7 @@ export const Route = createFileRoute("/settings/user/extensions/add")({
                                 className="bg-secondary odd:bg-inherit"
                             >
                                 <AsyncButton
-                                    className="p-outside w-full text-left flex items-center gap-between"
+                                    className="p-lg w-full text-left flex items-center gap-lg"
                                     onClick={async () => {
                                         await installMutation.mutateAsync(extension.id)
                                         navigate({
@@ -92,7 +92,7 @@ export const Route = createFileRoute("/settings/user/extensions/add")({
                         ))}
                     </ol>
                     <TableFooter
-                        className="self-center p-outside pt-0"
+                        className="self-center p-lg pt-0"
                         singularLabel="Extension"
                         pluralLabel="Extensions"
                         offset={availableExtensions.offset}

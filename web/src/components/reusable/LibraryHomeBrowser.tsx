@@ -23,8 +23,8 @@ export default function LibraryHomeBrowser({ relativeTo, onNavigateTo }: Library
         )
     }
     return (
-        <ol className="flex flex-col gap-1 h-64 text-sm overflow-x-clip overflow-y-auto">
-            <li className="flex items-center gap-2">
+        <ol className="flex flex-col gap-sm h-64 text-sm overflow-x-clip overflow-y-auto">
+            <li className="flex items-center gap-md">
                 <ThemedSubtleButton
                     type="button"
                     disabled={!relativeTo || relativeTo === "."}
@@ -45,7 +45,7 @@ export default function LibraryHomeBrowser({ relativeTo, onNavigateTo }: Library
                 <li key={`${subpath}-${index}`}>
                     <button
                         type="button"
-                        className="text-start text-nowrap truncate flex items-center gap-1 p-1 w-full hover:bg-blue-100 rounded-list-element"
+                        className="text-start text-nowrap truncate flex items-center gap-sm p-sm w-full hover:bg-blue-100 rounded-list-element"
                         onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()

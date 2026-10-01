@@ -55,10 +55,10 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/ignored")({
         )
 
         return (
-            <div className="p-4 flex flex-col gap-2">
-                <ol className="flex flex-col gap-2">
+            <div className="p-xl flex flex-col gap-md">
+                <ol className="flex flex-col gap-md">
                     {ignoredResources.items.map((ignoredResource) => (
-                        <li key={ignoredResource.id} className="flex items-center gap-between">
+                        <li key={ignoredResource.id} className="flex items-center gap-lg">
                             <div className="flex-1 text-sm font-mono">
                                 <div className="truncate max-w-lg">{ignoredResource.url}</div>
                             </div>

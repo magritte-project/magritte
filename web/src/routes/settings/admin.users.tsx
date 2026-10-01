@@ -24,8 +24,8 @@ export const Route = createFileRoute("/settings/admin/users")({
         const api = useAPI()
         const { data: allUsers } = useSuspenseQuery(readAllUsersAdmin(api, query, offset))
         return (
-            <div className="flex flex-col gap-3">
-                <header className="flex items-center gap-3">
+            <div className="flex flex-col gap-lg">
+                <header className="flex items-center gap-lg">
                     <h1 className="flex-1 text-2xl font-bold">Users</h1>
                 </header>
                 <ol className="flex flex-col">
@@ -35,11 +35,11 @@ export const Route = createFileRoute("/settings/admin/users")({
                             className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-list-element"
                         >
                             <Link
-                                className="w-full flex items-center px-2 py-1 h-9"
+                                className="w-full flex items-center px-md py-1 h-9"
                                 to="/settings/admin/users/$userId"
                                 params={{ userId: String(user.id) }}
                             >
-                                <div className="flex-1 flex flex-col gap-0.5">
+                                <div className="flex-1 flex flex-col gap-xs">
                                     <div className="text-sm font-bold">{user.username}</div>
                                     {user.preferred_name && (
                                         <div className="text-xs text-on-secondary">

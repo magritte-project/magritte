@@ -44,15 +44,15 @@ export default function DialogModal({ options, onDismiss }: DialogModalProps) {
                 className="fixed inset-0 bg-black/30 backdrop-blur-xs"
             />
 
-            <div className="fixed inset-0 flex w-screen items-center justify-center p-outside">
+            <div className="fixed inset-0 flex w-screen items-center justify-center p-lg">
                 <DialogPanel
                     as={motion.div}
                     initial={{ opacity: 0, scale: 0.95, y: 16 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 16 }}
-                    className="max-w-lg space-y-2 p-outside drop-shadow-2xl shadow-black bg-primary/90 rounded-panel"
+                    className="max-w-lg space-y-2 p-lg drop-shadow-2xl shadow-black bg-primary/90 rounded-panel"
                 >
-                    <div className="flex items-start gap-between">
+                    <div className="flex items-start gap-lg">
                         <DialogIcon
                             type={options.type}
                             className="text-key"
@@ -66,7 +66,7 @@ export default function DialogModal({ options, onDismiss }: DialogModalProps) {
                             </Description>
                         </div>
                     </div>
-                    <div className="flex items-center justify-end gap-between text-sm">
+                    <div className="flex items-center justify-end gap-lg text-sm">
                         {(options.buttons ?? defaultDialogButtons).map((button, index) => {
                             switch (button.role) {
                                 case "primary":

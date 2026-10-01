@@ -63,7 +63,7 @@ export default function PaletteButton() {
                 {highlightedCommands.length > 0 && (
                     <motion.ol
                         key="highlightedCommands"
-                        className="absolute top-full right-0 flex flex-col items-end gap-between pt-outside"
+                        className="absolute top-full right-0 flex flex-col items-end gap-lg pt-lg"
                         variants={highlightedCommandListVariants}
                         initial="hidden"
                         animate="visible"

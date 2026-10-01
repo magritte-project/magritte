@@ -26,15 +26,15 @@ export const Route = createFileRoute("/settings/user/theme")({
         })
 
         return (
-            <AppForm form={form} className="flex flex-col gap-between">
-                <h2 className="flex items-center gap-between">
+            <AppForm form={form} className="flex flex-col gap-lg">
+                <h2 className="flex items-center gap-lg">
                     <div className="flex-1 text-lg font-bold">Semantic Colors</div>
                     <ThemedSubtleButton type="button" onClick={() => form.reset()}>
                         Reset
                     </ThemedSubtleButton>
                     <form.SubmitButton>Apply</form.SubmitButton>
                 </h2>
-                <ol className="flex flex-col gap-between">
+                <ol className="flex flex-col gap-lg">
                     {SEMANTIC_COLOR_KEYS.map((key, index) => (
                         <li key={`semanticColors[${key}@${index}]`}>
                             <form.AppField name={`semanticColors.${key}`}>

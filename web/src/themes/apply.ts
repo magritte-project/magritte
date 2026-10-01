@@ -29,6 +29,11 @@ export function getTheme({ element }: GetThemeOptions): Theme {
             varPrefix: "spacing",
             section: "semanticSpacings",
         }),
+        semanticRadii: getThemeSectionValues({
+            style: computedStyle,
+            varPrefix: "radius",
+            section: "semanticRadii",
+        }),
         defaults: getThemeSectionValues({
             style: computedStyle,
             varPrefix: "default",
@@ -87,6 +92,13 @@ export function setTheme({ element, theme, fallback }: SetThemeOptions) {
         fallback,
         varPrefix: "spacing",
         section: "semanticSpacings",
+    })
+    setThemeSectionValues({
+        style: element.style,
+        theme,
+        fallback,
+        varPrefix: "radius",
+        section: "semanticRadii",
     })
     setThemeSectionValues({
         style: element.style,

@@ -14,10 +14,10 @@ export default function PaletteSearchOption({ item }: PaletteSearchOptionProps) 
     const { playItem, addItemToLibrary } = useSearchCommands()
     return (
         <ComboboxOption
-            className="group px-4 py-2 text-sm not-last:border-b border-separator data-focus:bg-key data-focus:text-on-key data-disabled:opacity-disabled"
+            className="group px-xl yx-md text-sm not-last:border-b border-separator data-focus:bg-key data-focus:text-on-key data-disabled:opacity-disabled"
             value={item}
         >
-            <div className="flex items-center gap-between">
+            <div className="flex items-center gap-lg">
                 <PaletteOptionIcon className="w-8 h-8" icon={item.icon} />
                 <div className="flex-1 flex flex-col">
                     <div className="text-medium">{item.title}</div>

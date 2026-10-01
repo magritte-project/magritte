@@ -52,7 +52,7 @@ export default function ArtworkSearchField({
     }, [])
 
     return (
-        <div className="flex flex-col gap-between">
+        <div className="flex flex-col gap-lg">
             <ThemedSearchInput
                 className="w-full"
                 id={`${field.name}.input`}
@@ -62,7 +62,7 @@ export default function ArtworkSearchField({
                 onChange={handleChange}
             />
             <RadioGroup
-                className="flex items-start flex-wrap gap-between"
+                className="flex items-start flex-wrap gap-lg"
                 value={field.state.value}
                 onChange={field.handleChange}
             >

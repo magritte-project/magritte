@@ -43,8 +43,21 @@ export const ThemeSchema = z.object({
     }),
 
     semanticSpacings: z.object({
-        outside: z.string().optional(),
-        between: z.string().optional(),
+        xs: z.string().optional(),
+        sm: z.string().optional(),
+        md: z.string().optional(),
+        lg: z.string().optional(),
+        xl: z.string().optional(),
+        header: z.string().optional(),
+        footer: z.string().optional(),
+    }),
+
+    semanticRadii: z.object({
+        panel: z.string().optional(),
+        artwork: z.string().optional(),
+        li: z.string().optional(),
+        input: z.string().optional(),
+        button: z.string().optional(),
     }),
 
     defaults: z.object({

@@ -54,7 +54,7 @@ export default function FindBar({ className, onKeyDown, children, ...rest }: Fin
             <DismissContextProvider value={handleDismiss}>
                 {isVisible && (
                     <div
-                        className={classNames("flex items-center gap-between", className)}
+                        className={classNames("flex items-center gap-lg", className)}
                         onKeyDown={handleKeyDown}
                         {...rest}
                     >

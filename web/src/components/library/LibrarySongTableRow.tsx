@@ -22,7 +22,7 @@ function TableDataCell({ className, showSeparator = true, ...rest }: TableDataCe
     return (
         <td
             className={classNames(
-                "px-2 py-1 truncate",
+                "px-md py-1 truncate",
                 "bg-secondary group-odd:bg-inherit group-hover:bg-key-subtle",
                 "first:rounded-l-md last:rounded-r-md",
                 { "border-r border-separator": showSeparator },

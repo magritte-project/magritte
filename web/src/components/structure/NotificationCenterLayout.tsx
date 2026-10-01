@@ -48,7 +48,7 @@ export default function NotificationCenterLayout({ children }: NotificationCente
                 <AnimatePresence mode="wait" key="NotificationCenterLayout.toast">
                     {presentedToast && (
                         <ToastNotification
-                            className="fixed bottom-outside left-1/2 -translate-1/2 max-w-lg"
+                            className="fixed bottom-lg left-1/2 -translate-1/2 max-w-lg"
                             {...presentedToast}
                         />
                     )}

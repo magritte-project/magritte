@@ -83,19 +83,19 @@ export const Route = createFileRoute("/settings/admin/extensions")({
         }, [presentedExtensionId, notificationCenter, dismissPresentedExtension, deleteMutation])
 
         return (
-            <div className="flex flex-col gap-3">
-                <header className="flex items-center gap-3">
+            <div className="flex flex-col gap-lg">
+                <header className="flex items-center gap-lg">
                     <h1 className="flex-1 text-2xl font-bold">Available Extensions</h1>
                     <ThemedLink to="/settings/admin/extensions/import" title="Import Extension">
                         <ArrowSquareInIcon size="1.2rem" weight="bold" />
                     </ThemedLink>
                 </header>
-                <ol className="flex items-start content-start flex-wrap gap-2">
+                <ol className="flex items-start content-start flex-wrap gap-md">
                     {availableExtensions.items.map((extension) => (
                         <li key={`extensions[${extension.id}]`}>
                             <button
                                 type="button"
-                                className="flex flex-col items-center justify-center gap-2 p-2 w-24 h-24 rounded-list-element hover:bg-secondary active:bg-secondary-active"
+                                className="flex flex-col items-center justify-center gap-md p-md w-24 h-24 rounded-list-element hover:bg-secondary active:bg-secondary-active"
                                 onClick={() => presentExtension(extension.id)}
                             >
                                 <ExtensionIcon
@@ -148,7 +148,7 @@ export const Route = createFileRoute("/settings/admin/extensions")({
                     >
                         About Extension
                     </ModalHeader>
-                    <div className="flex flex-col items-center gap-between p-outside">
+                    <div className="flex flex-col items-center gap-lg p-lg">
                         <ExtensionIcon
                             iconUrl={presentedExtension?.manifest.icon_url}
                             name={presentedExtension?.manifest.name ?? ""}
@@ -163,7 +163,7 @@ export const Route = createFileRoute("/settings/admin/extensions")({
                         <span className="text-xs text-center text-on-tertiary">
                             {presentedExtension?.manifest.url}
                         </span>
-                        <span className="flex flex-col items-start gap-2 text-xs">
+                        <span className="flex flex-col items-start gap-md text-xs">
                             {presentedExtension?.manifest.permissions?.map((permission) => (
                                 <PermissionInfo
                                     key={permission}

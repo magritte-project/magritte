@@ -17,7 +17,7 @@ export default function PlayerScrubber() {
         [seekToTime],
     )
     return (
-        <div className="flex items-center gap-between">
+        <div className="flex items-center gap-lg">
             <Slider
                 value={elapsedTime ?? 0}
                 max={totalTime ?? 0}

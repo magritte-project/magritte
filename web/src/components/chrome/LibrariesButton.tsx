@@ -55,7 +55,7 @@ export default function LibrariesButton() {
             button={
                 <ThemedSubtleButton
                     buttonComponent={MenuButton}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-sm"
                     title="Libraries"
                 >
                     <BooksIcon size="2em" weight="light" />
@@ -95,7 +95,7 @@ interface LibraryLabelProps {
 
 function LibraryLabel({ name, selected }: LibraryLabelProps) {
     return (
-        <div className="flex items-center gap-between w-full">
+        <div className="flex items-center gap-lg w-full">
             <div className="flex-1">{name}</div>
             {selected && <CheckIcon aria-label="Selected" />}
         </div>

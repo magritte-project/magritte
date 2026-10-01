@@ -18,7 +18,7 @@ export default function UserButton() {
     return !isSignedIn ? (
         <Link
             to="/sign-in"
-            className="px-3 py-2 font-bold rounded-button bg-secondary active:bg-secondary-active"
+            className="px-lg py-md font-bold rounded-button bg-secondary active:bg-secondary-active"
         >
             Sign In
         </Link>
@@ -28,7 +28,7 @@ export default function UserButton() {
             button={
                 <ThemedSubtleButton
                     buttonComponent={MenuButton}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-sm"
                 >
                     {meQuery?.data?.preferred_name || meQuery?.data?.username || "Me"}{" "}
                     <CaretDownIcon />

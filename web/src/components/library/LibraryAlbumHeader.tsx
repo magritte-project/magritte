@@ -18,13 +18,13 @@ export default function LibraryAlbumHeader({ libraryId, albumId }: LibraryAlbumH
     })
 
     return (
-        <div className="flex items-center gap-between">
+        <div className="flex items-center gap-lg">
             <ArtworkImage
                 className="h-36 w-36"
                 artworks={albumQuery.data?.artworks}
                 itemTitle={albumQuery.data?.title}
             />
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-sm">
                 <div className="font-bold text-lg">{albumQuery.data?.title ?? "--"}</div>
                 <div className="text-sm">{artistQuery.data?.name ?? "--"}</div>
             </div>

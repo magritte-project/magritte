@@ -8,7 +8,7 @@ export default function ThemedCheckbox({ className, ...rest }: ThemedCheckboxPro
     return (
         <Checkbox
             className={classNames(
-                "group flex items-center justify-center p-0.5",
+                "group flex items-center justify-center p-xs",
                 "bg-primary data-checked:bg-key data-checked:text-on-key",
                 "border border-outline data-checked:border-key focus:border-outline-focus rounded-md",
                 "aria-disabled:opacity-disabled",

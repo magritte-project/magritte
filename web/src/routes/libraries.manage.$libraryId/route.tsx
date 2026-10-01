@@ -29,11 +29,11 @@ export const Route = createFileRoute("/libraries/manage/$libraryId")({
         return (
             <PrimaryDetail
                 title={
-                    <div className="flex items-center gap-between w-full">
+                    <div className="flex items-center gap-lg w-full">
                         <div className="flex-1">Edit</div>
                         <div className="text-base">
                             <ThemedSubtleButton
-                                className="flex items-center gap-1 px-3! py-1!"
+                                className="flex items-center gap-sm px-lg! py-1!"
                                 onClick={handleSyncLibrary}
                                 disabled={syncLibraryMutation.isPending}
                             >

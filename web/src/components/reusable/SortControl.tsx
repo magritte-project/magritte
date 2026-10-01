@@ -96,7 +96,7 @@ export default function SortControl<Key extends string>({
     }, [keys, order])
 
     return (
-        <div className="flex flex-col gap-between">
+        <div className="flex flex-col gap-lg">
             <header className="text-xs font-bold">Sorting By</header>
             <DndContext
                 sensors={sensors}
@@ -104,12 +104,12 @@ export default function SortControl<Key extends string>({
                 onDragEnd={handleDragEnd}
             >
                 <SortableContext items={order} strategy={verticalListSortingStrategy}>
-                    <ol className="flex flex-col gap-3">
+                    <ol className="flex flex-col gap-lg">
                         {order.map((key) => (
                             <SortableListItem
                                 key={key}
                                 id={key}
-                                className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-list-element flex items-center gap-2 px-2 py-1 cursor-default"
+                                className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-list-element flex items-center gap-md px-md py-1 cursor-default"
                             >
                                 <DotsSixVerticalIcon
                                     className="text-placeholder"
@@ -139,12 +139,12 @@ export default function SortControl<Key extends string>({
                         ))}
                     </ol>
                 </SortableContext>
-                <header className="text-xs font-bold mt-between">Available</header>
-                <ol className="flex flex-col gap-3">
+                <header className="text-xs font-bold mt-lg">Available</header>
+                <ol className="flex flex-col gap-lg">
                     {availableKeys.map((key) => (
                         <li
                             key={key}
-                            className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-list-element flex items-center gap-2 px-2 py-1 cursor-default"
+                            className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-list-element flex items-center gap-md px-md py-1 cursor-default"
                         >
                             <span className="flex-1 text-sm truncate">{labels[key]}</span>
                             <ThemedSubtleButton

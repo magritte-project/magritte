@@ -68,7 +68,7 @@ export const Route = createFileRoute("/libraries/add")({
         return (
             <Modal className="w-72">
                 <ModalHeader>Add Library</ModalHeader>
-                <AppForm form={form} className="flex flex-col gap-3 p-3">
+                <AppForm form={form} className="flex flex-col gap-lg p-3">
                     <form.AppField
                         name="name"
                         validators={{
@@ -103,8 +103,8 @@ export const Route = createFileRoute("/libraries/add")({
                         {(field) => (
                             <>
                                 <h2 className="font-bold">Will the library have files?</h2>
-                                <fieldset className="flex flex-col gap-1 text-sm">
-                                    <div className="flex items-center gap-1">
+                                <fieldset className="flex flex-col gap-sm text-sm">
+                                    <div className="flex items-center gap-sm">
                                         <input
                                             type="radio"
                                             id="home_path-streaming_only"
@@ -118,7 +118,7 @@ export const Route = createFileRoute("/libraries/add")({
                                         </label>
                                     </div>
 
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-sm">
                                         <input
                                             type="radio"
                                             id="home_path-has_files"
@@ -152,7 +152,7 @@ export const Route = createFileRoute("/libraries/add")({
                         {(field) => (
                             <form.Subscribe selector={(state) => !!state.values.home_path}>
                                 {(hasHomePath) => (
-                                    <Field className="flex items-center gap-2">
+                                    <Field className="flex items-center gap-md">
                                         <ThemedCheckbox
                                             className="peer"
                                             id={field.name}

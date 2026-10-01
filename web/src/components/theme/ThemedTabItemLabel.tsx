@@ -21,7 +21,7 @@ export default function ThemedTabItemLabel({
     return (
         <div
             className={classNames(
-                "flex items-center gap-1 px-3 py-1",
+                "flex items-center gap-sm px-lg py-1",
                 "group-first:rounded-l-button group-last:rounded-r-button",
                 "not-group-last:border-r border-separator",
                 "bg-secondary active:bg-secondary-active",

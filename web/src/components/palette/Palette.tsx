@@ -133,7 +133,7 @@ export default function Palette({
             {isOpen && (
                 <motion.div
                     key="palette"
-                    className="fixed top-1/4 left-1/2 -translate-x-1/2 w-full max-w-xl px-outside"
+                    className="fixed top-1/4 left-1/2 -translate-x-1/2 w-full max-w-xl px-lg"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
@@ -141,13 +141,13 @@ export default function Palette({
                 >
                     <Combobox immediate onChange={handleChange}>
                         <div className="overflow-hidden rounded-xl border border-outline bg-primary shadow-2xl">
-                            <div className="flex items-center gap-2 border-b border-outline px-outside">
+                            <div className="flex items-center gap-md border-b border-outline px-lg">
                                 <MagnifyingGlassIcon
                                     className="shrink-0 text-placeholder"
                                     size={16}
                                 />
                                 <ComboboxInput
-                                    className="flex-1 bg-transparent py-between text-sm outline-none"
+                                    className="flex-1 bg-transparent py-lg text-sm outline-none"
                                     autoFocus
                                     placeholder={
                                         view === "command"
@@ -198,7 +198,7 @@ export default function Palette({
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
                                             transition={{ duration: 0.15 }}
-                                            className="sticky bottom-0 border-t border-separator bg-secondary text-xs flex items-center justify-end gap-between px-outside py-[calc(var(--spacing-outside)/2)]"
+                                            className="sticky bottom-0 border-t border-separator bg-secondary text-xs flex items-center justify-end gap-lg px-lg py-md"
                                         >
                                             {view === "command" && (
                                                 <>

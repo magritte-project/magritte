@@ -9,7 +9,7 @@ export default function ThemedSearchInput({ className, ...rest }: ThemedInputSea
             <input
                 type="search"
                 className={classNames(
-                    "bg-secondary rounded-input py-2 pl-10 pr-4 min-w-0 w-auto",
+                    "bg-secondary rounded-input px-md pl-10 pr-xl min-w-0 w-auto",
                     "text-on-secondary placeholder:text-placeholder",
                     "border border-outline focus:border-outline-focus outline-0",
                     className,

@@ -57,7 +57,7 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/permissions")
         )
 
         return (
-            <div className="p-4 flex flex-col gap-2">
+            <div className="p-xl flex flex-col gap-md">
                 <ThemedInput
                     type="search"
                     value={query}
@@ -66,7 +66,7 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/permissions")
                 />
                 <ol>
                     {allUsers.users.map((user) => (
-                        <li key={user.id} className="flex items-center gap-2 text-sm">
+                        <li key={user.id} className="flex items-center gap-md text-sm">
                             <span className="flex-1 text-sm">{user.username}</span>
                             <ThemedSubtleButton title="Add" onClick={() => handleAddUser(user.id)}>
                                 <PlusIcon />
@@ -75,7 +75,7 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/permissions")
                     ))}
                 </ol>
                 <h2 className="font-semibold text-lg">Existing Users</h2>
-                <ol className="flex flex-col gap-2">
+                <ol className="flex flex-col gap-md">
                     {permissions.map((permission) => (
                         <li key={permission.user_id}>
                             <UserPermissionItem libraryId={Number(libraryId)} data={permission} />
@@ -137,9 +137,9 @@ function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
     }, [notificationCenter, data.username, deleteMutation])
 
     return (
-        <div className="text-sm flex items-center gap-2">
+        <div className="text-sm flex items-center gap-md">
             <span className="flex-1">{data.username}</span>
-            <Field className="text-xs font-semibold flex items-center gap-1">
+            <Field className="text-xs font-semibold flex items-center gap-sm">
                 <ThemedCheckbox
                     id={`permissions[${data.user_id}].canAdd`}
                     checked={data.can_add}
@@ -154,7 +154,7 @@ function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
                 />
                 <Label htmlFor={`permissions[${data.user_id}].canAdd`}>Can Add</Label>
             </Field>
-            <Field className="text-xs flex items-center gap-1">
+            <Field className="text-xs flex items-center gap-sm">
                 <ThemedCheckbox
                     id={`permissions[${data.user_id}].canEdit`}
                     checked={data.can_edit}
@@ -169,7 +169,7 @@ function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
                 />
                 <Label htmlFor={`permissions[${data.user_id}].canEdit`}>Can Edit</Label>
             </Field>
-            <Field className="text-xs flex items-center gap-1">
+            <Field className="text-xs flex items-center gap-sm">
                 <ThemedCheckbox
                     id={`permissions[${data.user_id}].canRemove`}
                     checked={data.can_remove}

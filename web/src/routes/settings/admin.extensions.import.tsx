@@ -43,7 +43,7 @@ export const Route = createFileRoute("/settings/admin/extensions/import")({
         return (
             <Modal className="w-100">
                 <ModalHeader>Import Extension</ModalHeader>
-                <AppForm form={form} className="flex flex-col gap-3 p-3">
+                <AppForm form={form} className="flex flex-col gap-lg p-3">
                     <form.AppField
                         name="manifest_url"
                         validators={{

@@ -14,7 +14,7 @@ export default function LibraryAlbumListAllSongsItem({
             to="/libraries/$libraryId/songs"
             params={{ libraryId }}
             search={{ artist_id: artistId }}
-            className="px-2 py-1 hover:bg-key-subtle"
+            className="px-md py-1 hover:bg-key-subtle"
         >
             All Songs
         </Link>

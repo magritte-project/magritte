@@ -13,9 +13,9 @@ export default function FieldInfo({ field }: FieldInfoProps) {
         return null
     }
     return (
-        <ol className="flex flex-col gap-0.5 text-xs text-red-600">
+        <ol className="flex flex-col gap-xs text-xs text-red-600">
             {errors.map((error, index) => (
-                <li key={`errors[${index}]`} className="flex items-center gap-1">
+                <li key={`errors[${index}]`} className="flex items-center gap-sm">
                     <WarningCircleIcon size="1.2em" weight="bold" /> {getErrorMessage(error)}
                 </li>
             ))}

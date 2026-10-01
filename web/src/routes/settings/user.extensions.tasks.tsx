@@ -51,9 +51,9 @@ export const Route = createFileRoute("/settings/user/extensions/tasks")({
         return (
             <Modal className="w-120">
                 <ModalHeader>Task Manager</ModalHeader>
-                <div className="flex flex-col gap-between">
+                <div className="flex flex-col gap-lg">
                     {loading.length === 0 && running.length === 0 && (
-                        <p className="px-4 py-8 text-center text-sm text-on-secondary">
+                        <p className="px-xl py-8 text-center text-sm text-on-secondary">
                             No extensions running or loading
                         </p>
                     )}
@@ -65,7 +65,7 @@ export const Route = createFileRoute("/settings/user/extensions/tasks")({
                             >
                                 <button
                                     type="button"
-                                    className="p-outside w-full text-left flex items-center gap-between"
+                                    className="p-lg w-full text-left flex items-center gap-lg"
                                     title="Terminate"
                                     onClick={() => terminate(extensionManifest.id)}
                                 >
@@ -91,7 +91,7 @@ export const Route = createFileRoute("/settings/user/extensions/tasks")({
                             >
                                 <button
                                     type="button"
-                                    className="p-outside w-full text-left flex items-center gap-between"
+                                    className="p-lg w-full text-left flex items-center gap-lg"
                                     title="Terminate"
                                     onClick={() => terminate(extension.manifest.id)}
                                 >

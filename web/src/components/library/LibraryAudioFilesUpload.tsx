@@ -52,7 +52,7 @@ export default function LibraryAudioFilesUpload({ libraryId }: AudioFilesUploadP
         setFiles((oldFiles) => [...oldFiles, ...audioFiles])
     }, [])
     return (
-        <form onSubmit={handleFormSubmit} className="flex flex-col gap-3 p-3">
+        <form onSubmit={handleFormSubmit} className="flex flex-col gap-lg p-3">
             {ingestFiles.isIdle && (
                 <>
                     <div
@@ -76,7 +76,7 @@ export default function LibraryAudioFilesUpload({ libraryId }: AudioFilesUploadP
                                 {files.map((file, index) => (
                                     <li
                                         key={`files[${file.name}@${index}`}
-                                        className="flex items-center gap-3"
+                                        className="flex items-center gap-lg"
                                     >
                                         <FileIcon />
                                         <span className="flex-1 text-sm">{file.name}</span>
@@ -99,7 +99,7 @@ export default function LibraryAudioFilesUpload({ libraryId }: AudioFilesUploadP
                                 ))}
                             </ol>
                         ) : (
-                            <div className="flex flex-col items-center gap-3 p-3 text-center select-none cursor-default">
+                            <div className="flex flex-col items-center gap-lg p-3 text-center select-none cursor-default">
                                 <FilesIcon size="3rem" weight="light" />
                                 <span className="text-sm font-medium">Attach audio files…</span>
                             </div>
@@ -120,7 +120,7 @@ export default function LibraryAudioFilesUpload({ libraryId }: AudioFilesUploadP
                 />
             )}
             {ingestFiles.isSuccess && (
-                <div className="flex flex-col items-center text-center gap-3">
+                <div className="flex flex-col items-center text-center gap-lg">
                     <CheckCircleIcon className="text-green-600" size="8rem" aria-label="Success" />
                     <header className="text-lg font-semibold">Upload Complete</header>
                     <main className="text-sm">

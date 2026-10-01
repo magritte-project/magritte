@@ -15,15 +15,15 @@ export default function PaletteSearchCommandView({ search }: PaletteSearchComman
     return (
         <Fragment key="paletteSearchResults">
             {search.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-on-secondary">
+                <p className="px-xl py-8 text-center text-sm text-on-secondary">
                     Search in the current library and your extensions
                 </p>
             ) : resultSections.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-on-secondary">No results found</p>
+                <p className="px-xl py-8 text-center text-sm text-on-secondary">No results found</p>
             ) : (
                 resultSections.map((section, index) => (
                     <Fragment key={`sections[${index}, name: ${section.displayName}]`}>
-                        <h3 className="px-4 py-2 text-sm text-on-secondary">
+                        <h3 className="px-xl py-md text-sm text-on-secondary">
                             {section.displayName}
                         </h3>
                         {section.items.map((item, itemIndex) => (
