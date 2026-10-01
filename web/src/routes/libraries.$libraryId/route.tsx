@@ -1,5 +1,5 @@
 import type { LibraryInput } from "@magritte/sdk"
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router"
+import { Outlet, createFileRoute } from "@tanstack/react-router"
 import { useCallback, useMemo } from "react"
 import { z } from "zod"
 
@@ -9,16 +9,39 @@ import LibraryAudioFilesUpload from "@/components/library/LibraryAudioFilesUploa
 import Modal from "@/components/reusable/Modal"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 import CommandsProvider from "@/contexts/providers/CommandsProvider"
+import useHotKey from "@/hooks/hotKeyHook"
 
 export const Route = createFileRoute("/libraries/$libraryId")({
     validateSearch: z.object({
         upload: z.boolean().optional(),
     }),
     component: function LibrariesLayoutComponent() {
+        const navigate = Route.useNavigate()
         const params = Route.useParams()
         const { upload: isPresentingUpload = false } = Route.useSearch()
 
-        const navigate = useNavigate()
+        useHotKey({ key: "1" }, () => {
+            navigate({
+                to: "./artists",
+                search: true,
+            })
+            return true
+        })
+        useHotKey({ key: "2" }, () => {
+            navigate({
+                to: "./albums",
+                search: true,
+            })
+            return true
+        })
+        useHotKey({ key: "3" }, () => {
+            navigate({
+                to: "./songs",
+                search: true,
+            })
+            return true
+        })
+
         const presentUpload = useCallback(() => {
             navigate({ to: ".", search: (oldSearch) => ({ ...oldSearch, upload: true }) })
         }, [navigate])

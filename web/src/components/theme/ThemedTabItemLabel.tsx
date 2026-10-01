@@ -21,7 +21,7 @@ export default function ThemedTabItemLabel({
     return (
         <div
             className={classNames(
-                "flex items-center gap-sm px-lg py-1",
+                "flex flex-col md:flex-row items-center gap-sm px-lg py-sm",
                 "group-first:rounded-l-button group-last:rounded-r-button",
                 "not-group-last:border-r border-separator",
                 "bg-secondary active:bg-secondary-active",
@@ -31,8 +31,8 @@ export default function ThemedTabItemLabel({
             data-active={isActive}
             {...rest}
         >
-            <Icon size="2em" weight="light" />
-            <span className="text-nowrap">{label}</span>
+            <Icon className="text-[24px] md:text-[28px]" weight="light" />
+            <span className="text-xs md:text-sm text-nowrap">{label}</span>
         </div>
     )
 }
