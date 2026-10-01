@@ -12,7 +12,16 @@ import { camelCaseToTitleCase } from "@/utilities/strings"
 
 const SEMANTIC_COLOR_KEYS = Object.keys(
     ThemeSchema.shape.semanticColors.shape,
-) as (keyof Theme["semanticColors"])[]
+) as readonly (keyof Theme["semanticColors"])[]
+const SEMANTIC_OPACITIES_KEYS = Object.keys(
+    ThemeSchema.shape.semanticOpacities.shape,
+) as readonly (keyof Theme["semanticOpacities"])[]
+const SEMANTIC_SPACINGS_KEYS = Object.keys(
+    ThemeSchema.shape.semanticSpacings.shape,
+) as readonly (keyof Theme["semanticSpacings"])[]
+const SEMANTIC_RADII_KEYS = Object.keys(
+    ThemeSchema.shape.semanticRadii.shape,
+) as readonly (keyof Theme["semanticRadii"])[]
 
 export const Route = createFileRoute("/settings/user/theme")({
     component: function UserTheme() {
@@ -43,6 +52,60 @@ export const Route = createFileRoute("/settings/user/theme")({
                         <li key={`semanticColors[${key}@${index}]`}>
                             <form.AppField name={`semanticColors.${key}`}>
                                 {(field) => <field.ColorField label={camelCaseToTitleCase(key)} />}
+                            </form.AppField>
+                        </li>
+                    ))}
+                </ol>
+
+                <h2 className="flex-1 mt-xl text-lg font-bold">Semantic Opacities</h2>
+                <ol className="flex flex-col gap-lg">
+                    {SEMANTIC_OPACITIES_KEYS.map((key, index) => (
+                        <li key={`semanticOpacities[${key}@${index}]`}>
+                            <form.AppField name={`semanticOpacities.${key}`}>
+                                {(field) => (
+                                    <FieldDecoration
+                                        field={field}
+                                        label={camelCaseToTitleCase(key)}
+                                    >
+                                        <field.InputField />
+                                    </FieldDecoration>
+                                )}
+                            </form.AppField>
+                        </li>
+                    ))}
+                </ol>
+
+                <h2 className="flex-1 mt-xl text-lg font-bold">Semantic Spacings</h2>
+                <ol className="flex flex-col gap-lg">
+                    {SEMANTIC_SPACINGS_KEYS.map((key, index) => (
+                        <li key={`semanticSpacings[${key}@${index}]`}>
+                            <form.AppField name={`semanticSpacings.${key}`}>
+                                {(field) => (
+                                    <FieldDecoration
+                                        field={field}
+                                        label={camelCaseToTitleCase(key)}
+                                    >
+                                        <field.InputField />
+                                    </FieldDecoration>
+                                )}
+                            </form.AppField>
+                        </li>
+                    ))}
+                </ol>
+
+                <h2 className="flex-1 mt-xl text-lg font-bold">Semantic Radii</h2>
+                <ol className="flex flex-col gap-lg">
+                    {SEMANTIC_RADII_KEYS.map((key, index) => (
+                        <li key={`semanticRadii[${key}@${index}]`}>
+                            <form.AppField name={`semanticRadii.${key}`}>
+                                {(field) => (
+                                    <FieldDecoration
+                                        field={field}
+                                        label={camelCaseToTitleCase(key)}
+                                    >
+                                        <field.InputField />
+                                    </FieldDecoration>
+                                )}
                             </form.AppField>
                         </li>
                     ))}
