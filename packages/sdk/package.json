@@ -61,5 +61,5 @@
         "@magritte/rpc": "workspace:^",
         "zod": "catalog:"
     },
-    "packageManager": "pnpm@10.24.0"
+    "packageManager": "pnpm@12.8.1"
 }

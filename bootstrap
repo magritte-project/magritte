@@ -13,6 +13,12 @@ asdf plugin add nodejs
 asdf plugin add pnpm
 asdf plugin add uv
 
+# Ensure all asdf plugins are up to date
+asdf plugin update just
+asdf plugin update nodejs
+asdf plugin update pnpm
+asdf plugin update uv
+
 # Install project tooling
 asdf install
 
