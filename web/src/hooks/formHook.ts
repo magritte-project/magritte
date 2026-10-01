@@ -4,6 +4,7 @@ import ArtworkSearchField from "@/components/fieldComponents/ArtworkSearchField"
 import ColorField from "@/components/fieldComponents/ColorField"
 import InputField from "@/components/fieldComponents/InputField"
 import SearchInputField from "@/components/fieldComponents/SearchInputField"
+import SelectField from "@/components/fieldComponents/SelectField"
 import TextareaField from "@/components/fieldComponents/TextareaField"
 import SubmitButton from "@/components/formComponents/SubmitButton"
 import { fieldContext, formContext } from "@/contexts/formContext"
@@ -14,6 +15,7 @@ export const { withFieldGroup, withForm, useAppForm } = createFormHook({
         ColorField,
         InputField,
         SearchInputField,
+        SelectField,
         TextareaField,
     },
     fieldContext,

@@ -25,16 +25,16 @@ export default function ColorField({ label, ...rest }: ColorFieldProps) {
 
     return (
         <Popover className="relative">
-            <ThemedSubtleButton
-                buttonComponent={PopoverButton}
-                className="flex items-center gap-md relative group"
-            >
-                <div
-                    className="w-4 h-4 rounded-full border border-white/20"
-                    style={{ backgroundColor: field.state.value ?? undefined }}
-                    aria-label={`Color: ${field.state.value ?? "none"}`}
-                />{" "}
-                {label} <CaretDownIcon />
+            <ThemedSubtleButton buttonComponent={PopoverButton} className="relative group">
+                <div className="flex items-center gap-md">
+                    <div
+                        className="w-4 h-4 rounded-full border border-white/20"
+                        style={{ backgroundColor: field.state.value ?? undefined }}
+                        aria-label={`Color: ${field.state.value ?? "none"}`}
+                    />
+                    <span>{label}</span>
+                    <CaretDownIcon />
+                </div>
             </ThemedSubtleButton>
             <PopoverPanel anchor="bottom start" className="shadow-sm">
                 <ColorPicker

@@ -1,26 +1,23 @@
-export interface Typeface {
-    /** A friendly label for the font */
-    readonly label: string
-
-    /** The font family */
-    readonly fontFamily: string
-}
+import type { SelectFieldOption } from "@/components/fieldComponents/SelectField"
 
 /** The available sans serif typefaces */
-export const SANS_SERIF: readonly Typeface[] = [
-    { label: "Bitstream Vera Sans", fontFamily: "Bitstream Vera Sans" },
-    { label: "Comfortaa", fontFamily: "Comfortaa" },
-    { label: "FiraGO", fontFamily: "FiraGO" },
-    { label: "IBM Plex Sans", fontFamily: "IBM Plex Sans" },
+export const SANS_SERIF: readonly SelectFieldOption<string>[] = [
+    { label: "Bitstream Vera Sans", value: '"Bitstream Vera Sans", sans-serif' },
+    { label: "Comfortaa", value: '"Comfortaa", sans-serif' },
+    { label: "FiraGO", value: '"FiraGO", sans-serif' },
+    { label: "IBM Plex Sans", value: '"IBM Plex Sans", sans-serif' },
+    { label: "System", value: "system-ui" },
 ]
 
 /** The available serif typefaces */
-export const SERIF: readonly Typeface[] = [
-    { label: "Bitstream Vera Serif", fontFamily: "Bitstream Vera Serif" },
+export const SERIF: readonly SelectFieldOption<string>[] = [
+    { label: "Bitstream Vera Serif", value: '"Bitstream Vera Serif", serif' },
 ]
 
+export const DISPLAY: readonly SelectFieldOption<string>[] = [...SANS_SERIF, ...SERIF]
+
 /** The available monospace typefaces */
-export const MONOSPACE: readonly Typeface[] = [
-    { label: "Fira Mono", fontFamily: "Fira Mono" },
-    { label: "Bitstream Vera Sans Mono", fontFamily: "Bitstream Vera Sans Mono" },
+export const MONOSPACE: readonly SelectFieldOption<string>[] = [
+    { label: "Bitstream Vera Sans Mono", value: '"Bitstream Vera Sans Mono", monospace' },
+    { label: "Fira Mono", value: '"Fira Mono", monospace' },
 ]

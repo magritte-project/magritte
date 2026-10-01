@@ -34,7 +34,7 @@ export default function PrimaryDetail({ title, navigation, children }: PrimaryDe
     }, [setIsRevealed])
 
     return (
-        <div className="flex flex-col lg:flex-row lg:items-stretch lg:h-screen">
+        <div className="flex flex-col lg:flex-row lg:items-stretch lg:min-h-screen">
             <div
                 className={classNames(
                     "bg-tertiary p-lg",
