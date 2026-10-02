@@ -1,6 +1,12 @@
 import z from "zod"
 
 export const ThemeSchema = z.object({
+    defaults: z.object({
+        fontFamily: z.string().optional(),
+        monoFontFamily: z.string().optional(),
+        colorScheme: z.string().optional(),
+    }),
+
     semanticColors: z.object({
         primary: z.string().optional(),
         primaryActive: z.string().optional(),
@@ -59,11 +65,6 @@ export const ThemeSchema = z.object({
         input: z.string().optional(),
         button: z.string().optional(),
     }),
-
-    defaults: z.object({
-        fontFamily: z.string().optional(),
-        monoFontFamily: z.string().optional(),
-    }),
 })
 
 export type Theme = z.infer<typeof ThemeSchema>
@@ -71,3 +72,9 @@ export type Theme = z.infer<typeof ThemeSchema>
 export type ThemeSectionKey = keyof Theme
 
 export type ThemeSection<Key extends ThemeSectionKey> = Theme[Key]
+
+export function getThemeSectionKeys<Key extends ThemeSectionKey>(
+    key: Key,
+): readonly (keyof Theme[Key])[] {
+    return Object.keys(ThemeSchema.shape[key].shape) as (keyof Theme[Key])[]
+}

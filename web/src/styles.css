@@ -38,6 +38,11 @@
     --color-mg-red-900: oklch(20.8% 0.2084 27.06);
     --color-mg-red-950: oklch(12.9% 0.2084 27.06);
 
+    /* Global Defaults */
+    --default-font-family: "Comfortaa", sans-serif;
+    --default-mono-font-family: "Fira Mono", monospace;
+    --default-color-scheme: dark;
+
     /* Semantic Colors */
     --color-primary: var(--color-mg-midnight-950);
     --color-primary-active: var(--color-gray-950);
@@ -92,10 +97,6 @@
     --radius-li: var(--radius-md);
     --radius-input: var(--radius-lg);
     --radius-button: calc(infinity * 1px);
-
-    /* Global Defaults */
-    --default-font-family: "Comfortaa", sans-serif;
-    --default-mono-font-family: "Fira Mono", monospace;
 }
 
 @layer components {
@@ -111,6 +112,7 @@
 body {
     background-color: var(--color-primary);
     color: var(--color-on-primary);
+    color-scheme: var(--default-color-scheme);
     font-family: var(--default-font-family);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
