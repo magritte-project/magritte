@@ -1,8 +1,8 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react"
 import { CaretDownIcon } from "@phosphor-icons/react"
+import { ColorPicker, formatColor, type ColorPickerProps, type ColorValue } from "chromakit-react"
 
 import "chromakit-react/chromakit.css"
-import { ColorPicker, type ColorPickerProps, type ColorValue } from "chromakit-react"
 import { useCallback, type ReactNode } from "react"
 
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
@@ -17,8 +17,7 @@ export default function ColorField({ label, ...rest }: ColorFieldProps) {
 
     const handleChange = useCallback(
         (next: ColorValue) => {
-            const oklch = next.oklch
-            field.handleChange(`oklch(${(oklch.L * 100).toFixed(2)}% ${oklch.C} ${oklch.h})`)
+            field.handleChange(formatColor(next, "oklch"))
         },
         [field],
     )

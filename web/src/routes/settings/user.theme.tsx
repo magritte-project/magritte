@@ -34,10 +34,7 @@ export const Route = createFileRoute("/settings/user/theme")({
                     <form.SubmitButton>Apply</form.SubmitButton>
                 </h1>
 
-                <ThemedSection
-                    containerClassName="w-full"
-                    header={<h2 className="flex-1 mt-xl text-lg font-bold">Defaults</h2>}
-                >
+                <ThemedSection containerClassName="w-full" header="Defaults">
                     <form.AppField name="defaults.fontFamily">
                         {(field) => (
                             <FieldDecoration field={field} label="Display Font">
@@ -66,9 +63,7 @@ export const Route = createFileRoute("/settings/user/theme")({
                     </form.AppField>
                 </ThemedSection>
 
-                <ThemedSection
-                    header={<h2 className="flex-1 mt-xl text-lg font-bold">Semantic Colors</h2>}
-                >
+                <ThemedSection header="Semantic Colors">
                     <ol className="flex flex-col gap-lg">
                         {getThemeSectionKeys("semanticColors").map((key, index) => (
                             <li key={`semanticColors[${key}@${index}]`}>
@@ -82,9 +77,7 @@ export const Route = createFileRoute("/settings/user/theme")({
                     </ol>
                 </ThemedSection>
 
-                <ThemedSection
-                    header={<h2 className="flex-1 mt-xl text-lg font-bold">Semantic Opacities</h2>}
-                >
+                <ThemedSection header="Semantic Opacities">
                     <ol className="flex flex-col gap-lg">
                         {getThemeSectionKeys("semanticOpacities").map((key, index) => (
                             <li key={`semanticOpacities[${key}@${index}]`}>
@@ -103,9 +96,7 @@ export const Route = createFileRoute("/settings/user/theme")({
                     </ol>
                 </ThemedSection>
 
-                <ThemedSection
-                    header={<h2 className="flex-1 mt-xl text-lg font-bold">Semantic Spacings</h2>}
-                >
+                <ThemedSection header="Semantic Spacings">
                     <ol className="flex flex-col gap-lg">
                         {getThemeSectionKeys("semanticSpacings").map((key, index) => (
                             <li key={`semanticSpacings[${key}@${index}]`}>
@@ -124,9 +115,7 @@ export const Route = createFileRoute("/settings/user/theme")({
                     </ol>
                 </ThemedSection>
 
-                <ThemedSection
-                    header={<h2 className="flex-1 mt-xl text-lg font-bold">Semantic Radii</h2>}
-                >
+                <ThemedSection header="Semantic Radii">
                     <ol className="flex flex-col gap-lg">
                         {getThemeSectionKeys("semanticRadii").map((key, index) => (
                             <li key={`semanticRadii[${key}@${index}]`}>
