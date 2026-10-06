@@ -28,6 +28,9 @@ dependencies = [
 desktop = [
     "keyring>=25.7.0",
 ]
+mailtrap = [
+    "mailtrap>=2.10.0"
+]
 
 [dependency-groups]
 dev = [
