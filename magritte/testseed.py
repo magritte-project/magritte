@@ -1,13 +1,14 @@
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from magritte.auth import password_hash
-from magritte.config import secrets_config
+from magritte.config import get_secrets_config
 from magritte.model.library import Library
 from magritte.model.user import User, UserLibraryLink
 from magritte.schemas.auth import OAuth2Scope
 
 
 async def _seed_users(session: AsyncSession):
+    secrets_config = get_secrets_config()
     session.add(
         User(
             username="test",

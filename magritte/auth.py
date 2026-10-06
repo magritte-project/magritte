@@ -11,7 +11,7 @@ from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import HTTPConnection
 
-from magritte.config import config, secrets_config
+from magritte.config import config, get_secrets_config
 from magritte.db import get_db_session
 from magritte.model.user import User
 from magritte.schemas.auth import OAuth2Scope
@@ -42,13 +42,15 @@ def _create_access_token(
     if expire_after:
         to_encode["exp"] = datetime.now(UTC) + expire_after
     return jwt.encode(
-        to_encode, secrets_config.session_token_secret, config.token_algorithm
+        to_encode, get_secrets_config().session_token_secret, config.token_algorithm
     )
 
 
 def _read_access_token(token: str) -> tuple[str, set[OAuth2Scope]]:
     to_decode = jwt.decode(
-        token, secrets_config.session_token_secret, algorithms=[config.token_algorithm]
+        token,
+        get_secrets_config().session_token_secret,
+        algorithms=[config.token_algorithm],
     )
     subject = to_decode.get("sub")
     if not isinstance(subject, str):
@@ -83,7 +85,7 @@ async def create_user(
         }
     new_user = User(
         username=username,
-        hashed_password=password_hash.hash(password, salt=secrets_config.salt),
+        hashed_password=password_hash.hash(password, salt=get_secrets_config().salt),
         scope=OAuth2Scope.to_str(scopes),
     )
     session.add(new_user)
@@ -183,7 +185,7 @@ def create_feature_token(
     to_encode["scope"] = scope.value
     to_encode["exp"] = expires_at
     token = jwt.encode(
-        to_encode, secrets_config.feature_token_secret, config.token_algorithm
+        to_encode, get_secrets_config().feature_token_secret, config.token_algorithm
     )
     return token, expires_at
 
@@ -199,7 +201,9 @@ def _read_feature_token(token: str) -> tuple[str, FeatureScope]:
     """
 
     to_decode = jwt.decode(
-        token, secrets_config.feature_token_secret, algorithms=[config.token_algorithm]
+        token,
+        get_secrets_config().feature_token_secret,
+        algorithms=[config.token_algorithm],
     )
     subject = to_decode.get("sub")
     if not isinstance(subject, str):

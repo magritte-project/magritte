@@ -3,6 +3,7 @@ import os
 import pathlib
 import secrets
 import sys
+from functools import lru_cache
 from pathlib import Path
 from typing import Literal, Self, assert_never
 
@@ -114,6 +115,16 @@ class Config(BaseModel):
     )
 
 
+config = Config.from_dot_env()
+if not config.data_home_path.exists():
+    config.data_home_path.mkdir(parents=True)
+    logging.debug(f"Created data home directory at {config.data_home_path}")
+
+if not config.artwork_home_path.exists():
+    config.artwork_home_path.mkdir(parents=True)
+    logging.debug(f"Created artwork home directory at {config.artwork_home_path}")
+
+
 class SecretsConfig:
     """
     Encapsulates secrets configuration for the current session.
@@ -122,44 +133,27 @@ class SecretsConfig:
     def __init__(
         self,
         *,
-        session_token_secret: str | None,
-        feature_token_secret: str | None,
-        salt: bytes | None,
+        session_token_secret: str,
+        feature_token_secret: str,
+        salt: bytes,
     ):
-        if session_token_secret is not None and len(session_token_secret) < 128:
+        if len(session_token_secret) < 128:
             raise ValueError("session_token_secret must be at least 128 characters")
 
-        if feature_token_secret is not None and len(feature_token_secret) < 128:
+        if len(feature_token_secret) < 128:
             raise ValueError("feature_token_secret must be at least 128 characters")
 
-        if salt is not None and len(salt) < 64:
+        if len(salt) < 64:
             raise ValueError("salt must be at least 64 characters")
 
-        self._session_token_secret: str | None = session_token_secret
-        self._feature_token_secret: str | None = feature_token_secret
-        self._salt: bytes | None = salt
-
-    @property
-    def session_token_secret(self) -> str:
+        self.session_token_secret: str = session_token_secret
         """The secret used when signing user session access tokens"""
-        if self._session_token_secret is None:
-            raise ValueError("session_token_secret is not set")
-        return self._session_token_secret
 
-    @property
-    def feature_token_secret(self) -> str:
+        self.feature_token_secret: str = feature_token_secret
         """The secret used when signing feature access tokens"""
-        if self._feature_token_secret is None:
-            raise ValueError("feature_token_secret is not set")
-        return self._feature_token_secret
 
-    @property
-    def salt(self) -> bytes:
+        self.salt: bytes = salt
         """The salt added to passwords before storing them in the DB"""
-
-        if self._salt is None:
-            raise ValueError("salt is not set")
-        return self._salt
 
     @classmethod
     def _from_env(cls) -> Self | None:
@@ -252,37 +246,21 @@ class SecretsConfig:
             # NOTE: keyring is a 'desktop' extra dependency
             return None
 
-    @classmethod
-    def from_best_source(cls) -> Self:
-        """
-        Load secrets from the best source available,
-        or raise an error if none could be loaded.
 
-        :returns: Secrets configuration for the current session.
-        :raises: A `ValueError` if no secrets could be loaded.
-        """
+@lru_cache
+def get_secrets_config() -> SecretsConfig:
+    """
+    Load secrets from the best source available,
+    or raise an error if none could be loaded.
 
-        if from_env := cls._from_env():
-            return from_env
+    :returns: Secrets configuration for the current session.
+    :raises: A `ValueError` if no secrets could be loaded.
+    """
 
-        if from_keyring := cls._from_keyring():
-            return from_keyring
+    if from_env := SecretsConfig._from_env():
+        return from_env
 
-        logger.warning("No secrets configured or available")
-        return cls(
-            session_token_secret=None,
-            feature_token_secret=None,
-            salt=None,
-        )
+    if from_keyring := SecretsConfig._from_keyring():
+        return from_keyring
 
-
-config = Config.from_dot_env()
-if not config.data_home_path.exists():
-    config.data_home_path.mkdir(parents=True)
-    logging.debug(f"Created data home directory at {config.data_home_path}")
-
-if not config.artwork_home_path.exists():
-    config.artwork_home_path.mkdir(parents=True)
-    logging.debug(f"Created artwork home directory at {config.artwork_home_path}")
-
-secrets_config = SecretsConfig.from_best_source()
+    raise ValueError("No secrets configured or available")
