@@ -38,10 +38,11 @@ from magritte.schemas.user import (
     UserAdminUpdate,
     UserEventPreflight,
     UserFileAccessPreflight,
+    UserProfileMeRead,
+    UserProfileMeUpdate,
     UserProfileRead,
     UserProfilesQuery,
     UserProfilesRead,
-    UserProfileUpdate,
 )
 from magritte.utilities.db import get_row_count
 from magritte.utilities.user_events import UserEvents, get_user_events
@@ -51,7 +52,7 @@ router = APIRouter(prefix="/users")
 
 @router.get(
     "/me",
-    response_model=UserProfileRead,
+    response_model=UserProfileMeRead,
     summary="Read the signed in user's profile",
 )
 async def read_me(
@@ -59,28 +60,46 @@ async def read_me(
         User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
     ],
 ):
-    return UserProfileRead(**current_user.model_dump())
+    return UserProfileMeRead(**current_user.model_dump())
 
 
 @router.post(
     "/me",
-    response_model=UserProfileRead,
+    response_model=UserProfileMeRead,
     summary="Update the signed in user's profile",
 )
 async def update_me(
-    profile_update: UserProfileUpdate,
+    profile_update: UserProfileMeUpdate,
     current_user: Annotated[
         User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
     ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
-    updates = profile_update.model_dump(exclude_unset=True)
+    updates = profile_update.model_dump(
+        exclude={"email"},
+        exclude_unset=True,
+    )
     for name, value in updates.items():
         setattr(current_user, name, value)
 
+    if (
+        "email" in profile_update.model_fields_set
+        and profile_update.email != current_user.email
+    ):
+        if profile_update.email is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot clear email",
+            )
+
+        current_user.email = (
+            str(profile_update.email) if profile_update.email is not None else None
+        )
+        current_user.is_email_verified = False
+
     await session.flush()
 
-    return UserProfileRead(**current_user.model_dump())
+    return UserProfileMeRead(**current_user.model_dump())
 
 
 @router.get(

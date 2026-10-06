@@ -109,9 +109,10 @@ import {
     type UserAdminUpdate,
     type UserEventPreflight,
     type UserFileAccessPreflight,
+    type UserProfileMeRead,
+    type UserProfileMeUpdate,
     type UserProfileRead,
     type UserProfilesRead,
-    type UserProfileUpdate,
     type UserSignUp,
 } from "./openapi"
 import { createClient, type Client } from "./openapi/client"
@@ -216,11 +217,11 @@ export class APIClient {
 
     // -- User Routes -- //
 
-    async readMe(): Promise<UserProfileRead> {
+    async readMe(): Promise<UserProfileMeRead> {
         return await readMeUsersMeGet(this.options)
     }
 
-    async updateMe(body: UserProfileUpdate): Promise<UserProfileRead> {
+    async updateMe(body: UserProfileMeUpdate): Promise<UserProfileMeRead> {
         return await updateMeUsersMePost({ ...this.options, body })
     }
 

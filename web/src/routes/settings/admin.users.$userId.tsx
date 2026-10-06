@@ -7,7 +7,7 @@ import { useCallback } from "react"
 import z from "zod"
 
 import { useDeleteUserAdmin, useUpdateUserAdmin } from "@/api/mutations/users"
-import { readUserProfileAdmin, readUserProfile } from "@/api/queries/users"
+import { readUserProfile, readUserProfileAdmin } from "@/api/queries/users"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"
@@ -110,25 +110,6 @@ export const Route = createFileRoute("/settings/admin/users/$userId")({
                             </section>
                         )}
                     </form.AppField>
-
-                    <form.Field name="enable_playback_events">
-                        {(field) => (
-                            <section className="flex flex-col gap-sm">
-                                <Field className="flex items-center gap-lg">
-                                    <ThemedCheckbox
-                                        id={field.name}
-                                        name={field.name}
-                                        checked={field.state.value}
-                                        onChange={field.handleChange}
-                                    />
-                                    <Label htmlFor={field.name} className="text-sm font-semibold">
-                                        Enable Playback Events
-                                    </Label>
-                                </Field>
-                                <FieldInfo field={field} />
-                            </section>
-                        )}
-                    </form.Field>
 
                     <form.Field
                         name="scopes"

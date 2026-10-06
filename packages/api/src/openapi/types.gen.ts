@@ -1331,10 +1331,6 @@ export type UserAdminRead = {
      */
     preferred_name: string | null
     /**
-     * Enable Playback Events
-     */
-    enable_playback_events: boolean
-    /**
      * Scopes
      */
     scopes: Array<OAuth2Scope>
@@ -1348,10 +1344,6 @@ export type UserAdminUpdate = {
      * Preferred Name
      */
     preferred_name?: string | null
-    /**
-     * Enable Playback Events
-     */
-    enable_playback_events?: boolean | null
     /**
      * Scopes
      *
@@ -1407,6 +1399,54 @@ export type UserFileAccessPreflight = {
 }
 
 /**
+ * UserProfileMeRead
+ */
+export type UserProfileMeRead = {
+    /**
+     * Id
+     */
+    id: number
+    /**
+     * Username
+     */
+    username: string
+    /**
+     * Preferred Name
+     */
+    preferred_name: string | null
+    /**
+     * Email
+     */
+    email: string | null
+    /**
+     * Is Email Verified
+     */
+    is_email_verified: boolean
+    /**
+     * Enable Playback Events
+     */
+    enable_playback_events: boolean
+}
+
+/**
+ * UserProfileMeUpdate
+ */
+export type UserProfileMeUpdate = {
+    /**
+     * Email
+     */
+    email: string | null
+    /**
+     * Preferred Name
+     */
+    preferred_name: string | null
+    /**
+     * Enable Playback Events
+     */
+    enable_playback_events: boolean
+}
+
+/**
  * UserProfileRead
  */
 export type UserProfileRead = {
@@ -1422,24 +1462,6 @@ export type UserProfileRead = {
      * Preferred Name
      */
     preferred_name: string | null
-    /**
-     * Enable Playback Events
-     */
-    enable_playback_events: boolean
-}
-
-/**
- * UserProfileUpdate
- */
-export type UserProfileUpdate = {
-    /**
-     * Preferred Name
-     */
-    preferred_name: string | null
-    /**
-     * Enable Playback Events
-     */
-    enable_playback_events: boolean
 }
 
 /**
@@ -3133,13 +3155,13 @@ export type ReadMeUsersMeGetResponses = {
     /**
      * Successful Response
      */
-    200: UserProfileRead
+    200: UserProfileMeRead
 }
 
 export type ReadMeUsersMeGetResponse = ReadMeUsersMeGetResponses[keyof ReadMeUsersMeGetResponses]
 
 export type UpdateMeUsersMePostData = {
-    body: UserProfileUpdate
+    body: UserProfileMeUpdate
     path?: never
     query?: never
     url: "/users/me"
@@ -3158,7 +3180,7 @@ export type UpdateMeUsersMePostResponses = {
     /**
      * Successful Response
      */
-    200: UserProfileRead
+    200: UserProfileMeRead
 }
 
 export type UpdateMeUsersMePostResponse =

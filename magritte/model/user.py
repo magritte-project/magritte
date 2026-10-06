@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, override
 
+import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel, col, func, select
@@ -91,6 +92,15 @@ class User(LibraryModel, table=True):
         min_length=1,
         max_length=255,
         description="The user's handle",
+    )
+    email: str | None = Field(
+        default=None,
+        description="The user's email, if any",
+    )
+    is_email_verified: bool = Field(
+        default=False,
+        description="Whether the user's email is verified",
+        sa_column_kwargs={"server_default": sa.false()},
     )
     preferred_name: str | None = Field(
         default=None,

@@ -547,7 +547,6 @@ export const UserAdminReadSchema = z.object({
     id: z.int(),
     username: z.string(),
     preferred_name: z.string().nullable(),
-    enable_playback_events: z.boolean(),
     scopes: z.array(OAuth2ScopeSchema),
 })
 
@@ -556,7 +555,6 @@ export const UserAdminReadSchema = z.object({
  */
 export const UserAdminUpdateSchema = z.object({
     preferred_name: z.string().max(1000).nullish(),
-    enable_playback_events: z.boolean().nullish(),
     scopes: z.array(OAuth2ScopeSchema).min(1).nullish(),
 })
 
@@ -586,21 +584,33 @@ export const UserFileAccessPreflightSchema = z.object({
 })
 
 /**
+ * UserProfileMeRead
+ */
+export const UserProfileMeReadSchema = z.object({
+    id: z.int(),
+    username: z.string(),
+    preferred_name: z.string().nullable(),
+    email: z.string().nullable(),
+    is_email_verified: z.boolean(),
+    enable_playback_events: z.boolean(),
+})
+
+/**
+ * UserProfileMeUpdate
+ */
+export const UserProfileMeUpdateSchema = z.object({
+    email: z.email().nullable(),
+    preferred_name: z.string().max(1000).nullable(),
+    enable_playback_events: z.boolean(),
+})
+
+/**
  * UserProfileRead
  */
 export const UserProfileReadSchema = z.object({
     id: z.int(),
     username: z.string(),
     preferred_name: z.string().nullable(),
-    enable_playback_events: z.boolean(),
-})
-
-/**
- * UserProfileUpdate
- */
-export const UserProfileUpdateSchema = z.object({
-    preferred_name: z.string().max(1000).nullable(),
-    enable_playback_events: z.boolean(),
 })
 
 /**

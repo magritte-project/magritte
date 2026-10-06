@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.base import TAG_MAX_LENGTH, PaginatedQuery
@@ -22,6 +22,11 @@ class UserProfileRead(BaseModel):
     id: int
     username: str
     preferred_name: str | None
+
+
+class UserProfileMeRead(UserProfileRead):
+    email: str | None
+    is_email_verified: bool
     enable_playback_events: bool
 
 
@@ -42,7 +47,8 @@ class UserProfilesRead(BaseModel):
     total: int
 
 
-class UserProfileUpdate(BaseModel):
+class UserProfileMeUpdate(BaseModel):
+    email: EmailStr | None
     preferred_name: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     enable_playback_events: bool
 
@@ -60,7 +66,6 @@ class UserAdminsRead(BaseModel):
 
 class UserAdminUpdate(BaseModel):
     preferred_name: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
-    enable_playback_events: bool | None = None
     scopes: Annotated[
         set[OAuth2Scope] | None,
         Field(

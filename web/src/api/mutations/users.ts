@@ -1,12 +1,12 @@
-import type { NotificationUpdate, UserAdminUpdate, UserProfileUpdate } from "@magritte/api"
+import type { NotificationUpdate, UserAdminUpdate, UserProfileMeUpdate } from "@magritte/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import {
-    usersAdminProfile,
     userMeNotification,
     userMeNotifications,
     userMeProfile,
     usersAdminAll,
+    usersAdminProfile,
 } from "@/api/keys/users"
 import useAPI from "@/hooks/apiHook"
 
@@ -14,7 +14,7 @@ export function useUpdateUserProfile() {
     const queryClient = useQueryClient()
     const { client } = useAPI()
     return useMutation({
-        mutationFn: (data: UserProfileUpdate) => client.updateMe(data),
+        mutationFn: (data: UserProfileMeUpdate) => client.updateMe(data),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: userMeProfile() })
         },

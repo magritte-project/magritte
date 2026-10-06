@@ -1,4 +1,5 @@
 import { Field, Label } from "@headlessui/react"
+import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
@@ -29,7 +30,6 @@ export const Route = createFileRoute("/settings/user/general")({
             defaultValues: me,
             onSubmit: async ({ value }) => {
                 try {
-                    console.log(value)
                     await updateProfile.mutateAsync(value)
                 } catch (error) {
                     notificationCenter.showToast({
@@ -58,6 +58,33 @@ export const Route = createFileRoute("/settings/user/general")({
                                     Preferred Name
                                 </label>
                                 <field.InputField placeholder="Optional. Shown in place of your username." />
+                                <FieldInfo field={field} />
+                            </section>
+                        )}
+                    </form.AppField>
+
+                    <form.AppField
+                        name="email"
+                        validators={{
+                            onChange: z.email().nullable(),
+                        }}
+                    >
+                        {(field) => (
+                            <section className="flex flex-col gap-xs">
+                                <label htmlFor={field.name} className="text-sm font-semibold">
+                                    Email
+                                </label>
+                                <field.InputField placeholder={me.email ?? "None set"} />
+                                {me.email !== null &&
+                                    (me.is_email_verified ? (
+                                        <div className="text-sm flex items-center gap-sm">
+                                            <CheckCircleIcon /> Verified
+                                        </div>
+                                    ) : (
+                                        <div className="text-sm flex items-center gap-sm">
+                                            <XCircleIcon /> Unverified
+                                        </div>
+                                    ))}
                                 <FieldInfo field={field} />
                             </section>
                         )}

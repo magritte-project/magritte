@@ -1969,7 +1969,7 @@
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/UserProfileRead" }
+                                "schema": { "$ref": "#/components/schemas/UserProfileMeRead" }
                             }
                         }
                     }
@@ -1982,7 +1982,7 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
-                            "schema": { "$ref": "#/components/schemas/UserProfileUpdate" }
+                            "schema": { "$ref": "#/components/schemas/UserProfileMeUpdate" }
                         }
                     },
                     "required": true
@@ -1992,7 +1992,7 @@
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/UserProfileRead" }
+                                "schema": { "$ref": "#/components/schemas/UserProfileMeRead" }
                             }
                         }
                     },
@@ -3721,10 +3721,6 @@
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Preferred Name"
                     },
-                    "enable_playback_events": {
-                        "type": "boolean",
-                        "title": "Enable Playback Events"
-                    },
                     "scopes": {
                         "items": { "$ref": "#/components/schemas/OAuth2Scope" },
                         "type": "array",
@@ -3732,13 +3728,7 @@
                     }
                 },
                 "type": "object",
-                "required": [
-                    "id",
-                    "username",
-                    "preferred_name",
-                    "enable_playback_events",
-                    "scopes"
-                ],
+                "required": ["id", "username", "preferred_name", "scopes"],
                 "title": "UserAdminRead"
             },
             "UserAdminUpdate": {
@@ -3746,10 +3736,6 @@
                     "preferred_name": {
                         "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Preferred Name"
-                    },
-                    "enable_playback_events": {
-                        "anyOf": [{ "type": "boolean" }, { "type": "null" }],
-                        "title": "Enable Playback Events"
                     },
                     "scopes": {
                         "anyOf": [
@@ -3798,7 +3784,7 @@
                 "required": ["token", "expires_at"],
                 "title": "UserFileAccessPreflight"
             },
-            "UserProfileRead": {
+            "UserProfileMeRead": {
                 "properties": {
                     "id": { "type": "integer", "title": "Id" },
                     "username": { "type": "string", "title": "Username" },
@@ -3806,17 +3792,33 @@
                         "anyOf": [{ "type": "string" }, { "type": "null" }],
                         "title": "Preferred Name"
                     },
+                    "email": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Email"
+                    },
+                    "is_email_verified": { "type": "boolean", "title": "Is Email Verified" },
                     "enable_playback_events": {
                         "type": "boolean",
                         "title": "Enable Playback Events"
                     }
                 },
                 "type": "object",
-                "required": ["id", "username", "preferred_name", "enable_playback_events"],
-                "title": "UserProfileRead"
+                "required": [
+                    "id",
+                    "username",
+                    "preferred_name",
+                    "email",
+                    "is_email_verified",
+                    "enable_playback_events"
+                ],
+                "title": "UserProfileMeRead"
             },
-            "UserProfileUpdate": {
+            "UserProfileMeUpdate": {
                 "properties": {
+                    "email": {
+                        "anyOf": [{ "type": "string", "format": "email" }, { "type": "null" }],
+                        "title": "Email"
+                    },
                     "preferred_name": {
                         "anyOf": [{ "type": "string", "maxLength": 1000 }, { "type": "null" }],
                         "title": "Preferred Name"
@@ -3827,8 +3829,21 @@
                     }
                 },
                 "type": "object",
-                "required": ["preferred_name", "enable_playback_events"],
-                "title": "UserProfileUpdate"
+                "required": ["email", "preferred_name", "enable_playback_events"],
+                "title": "UserProfileMeUpdate"
+            },
+            "UserProfileRead": {
+                "properties": {
+                    "id": { "type": "integer", "title": "Id" },
+                    "username": { "type": "string", "title": "Username" },
+                    "preferred_name": {
+                        "anyOf": [{ "type": "string" }, { "type": "null" }],
+                        "title": "Preferred Name"
+                    }
+                },
+                "type": "object",
+                "required": ["id", "username", "preferred_name"],
+                "title": "UserProfileRead"
             },
             "UserProfilesRead": {
                 "properties": {

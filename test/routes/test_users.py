@@ -405,6 +405,40 @@ class TestMarkAllNotificationsRead:
         assert response.json().get("detail") == "Not authenticated"
 
 
+class TestUpdateMe:
+    @pytest.mark.asyncio
+    async def test_cannot_unset_email(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+    ):
+        session = sign_in("test", "password")
+
+        set_response = client.post(
+            "/users/me",
+            json={
+                "email": "nobody@example.com",
+                "preferred_name": None,
+                "enable_playback_events": False,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert set_response.status_code == 200
+        assert set_response.json().get("email") == "nobody@example.com"
+
+        clear_response = client.post(
+            "/users/me",
+            json={
+                "email": None,
+                "preferred_name": None,
+                "enable_playback_events": False,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert clear_response.status_code == 400
+        assert clear_response.json().get("detail") == "Cannot clear email"
+
+
 class TestReadUsers:
     @pytest.mark.asyncio
     async def test_read(
@@ -637,7 +671,6 @@ class TestUpdateUserAdmin:
             headers={"Authorization": f"Bearer {session.access_token}"},
             json={
                 "preferred_name": "Lucky",
-                "enable_playback_events": False,
                 "scopes": ["profile", "library:read"],
             },
         )
@@ -645,7 +678,6 @@ class TestUpdateUserAdmin:
         assert response.status_code == 200
         assert response_json.get("id") == 2
         assert response_json.get("preferred_name") == "Lucky"
-        assert response_json.get("enable_playback_events") is False
         assert sorted(response_json.get("scopes")) == ["library:read", "profile"]
 
         updated_session = sign_in("unlucky", "password")

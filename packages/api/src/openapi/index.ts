@@ -407,9 +407,10 @@ export type {
     UserAdminUpdate,
     UserEventPreflight,
     UserFileAccessPreflight,
+    UserProfileMeRead,
+    UserProfileMeUpdate,
     UserProfileRead,
     UserProfilesRead,
-    UserProfileUpdate,
     UserSignUp,
     ValidationError,
 } from "./types.gen"
