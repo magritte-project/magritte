@@ -1,0 +1,14 @@
+{
+    "short_name": "Magritte - YouTube",
+    "name": "Magritte - YouTube",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "any"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#3b3b6d",
+    "background_color": "#ffffff"
+}

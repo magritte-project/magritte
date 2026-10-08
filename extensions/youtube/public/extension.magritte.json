@@ -1,0 +1,11 @@
+{
+    "name": "YouTube",
+    "description": "Browse YouTube, and watch the official music video for the song that's playing",
+    "id": "magritte.youtube",
+    "version": "0.0.0",
+    "url": "/",
+    "icon_url": "/icon.svg",
+    "preferredWidth": "24rem",
+    "preferredHeight": "32rem",
+    "permissions": ["playback:read", "playback:control"]
+}
