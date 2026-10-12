@@ -59,6 +59,18 @@ class Config(BaseModel):
         description="The custom URL to connect to the database. Defaults to sqlite+aiosqlite:////$HOME/.magritte/db.sqlite3",
     )
 
+    email_smtp: str | None = Field(
+        default=None,
+        alias="EMAIL_SMTP",
+        description="The URL of an SMTP server to send emails through including credentials.",
+    )
+
+    email_mailtrap_api_key: str | None = Field(
+        default=None,
+        alias="EMAIL_MAILTRAP_API_KEY",
+        description="The Mailtrap API key to use to send emails.",
+    )
+
     @property
     def db(self) -> str:
         """
@@ -106,7 +118,7 @@ class Config(BaseModel):
                 assert_never(self.env)
 
     @classmethod
-    def from_dot_env(cls):
+    def from_dot_env(cls) -> Self:
         return cls.model_validate(os.environ)
 
     model_config = ConfigDict(

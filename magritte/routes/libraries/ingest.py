@@ -52,7 +52,7 @@ async def ingest_files(
             detail="Too many files",
         )
 
-    if any(file.size > config.upload_max_file_size for file in files):
+    if any(file.size and file.size > config.upload_max_file_size for file in files):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="File size too large",

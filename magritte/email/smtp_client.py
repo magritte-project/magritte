@@ -3,9 +3,15 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 from email.utils import formataddr, make_msgid
-from typing import Literal, assert_never, override
+from enum import Enum
+from typing import assert_never, override
+from urllib.parse import urlparse
 
-from magritte.email.client import EmailClient, EmailRecipient
+from magritte.email.client import (
+    EMAIL_CLIENT_DEFAULT_TIMEOUT,
+    EmailClient,
+    EmailRecipient,
+)
 
 
 def _format_recipient(recipient: EmailRecipient) -> str:
@@ -16,6 +22,31 @@ def _format_recipient(recipient: EmailRecipient) -> str:
     return formataddr((recipient.name, recipient.address))
 
 
+class _SMTPSecurity(str, Enum):
+    """
+    Encapsulates the different security modes of an `SMTPEmailClient`.
+    """
+
+    TLS = "tls"
+    START_TLS = "start_tls"
+    NONE = "none"
+
+    @staticmethod
+    def from_url_scheme(scheme):
+        """
+        Returns the SMTP security value for the given URL scheme.
+        """
+        match scheme:
+            case "smtp":
+                return _SMTPSecurity.NONE
+            case "smtp+tls":
+                return _SMTPSecurity.TLS
+            case "smtp+starttls":
+                return _SMTPSecurity.START_TLS
+            case _:
+                raise ValueError("invalid scheme")
+
+
 class SMTPEmailClient(EmailClient):
     """
     An email client which sends messages through an SMTP server.
@@ -23,20 +54,37 @@ class SMTPEmailClient(EmailClient):
 
     def __init__(
         self,
-        *,
-        host: str,
-        port: int,
-        username: str | None = None,
-        password: str | None = None,
-        security: Literal["tls", "starttls", "none"] = "starttls",
-        timeout: float = 30.0,
-    ) -> None:
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
-        self.security = security
-        self.timeout = timeout
+        url: str,
+    ):
+        """
+        Initialize an SMTP email client object.
+
+        :param url: A URL specifying the SMTP server to use
+        as well as the credentials.
+        """
+        parsed_url = urlparse(url)
+        if not parsed_url.hostname:
+            raise ValueError("missing hostname")
+        self.host: str = parsed_url.hostname
+        """
+        The SMTP server's hostname.
+        """
+        self.port: int = parsed_url.port or 587
+        """
+        The port the SMTP server is listening on.
+        """
+        self.username: str | None = parsed_url.username
+        """
+        The username to authenticate with, if any.
+        """
+        self.password: str | None = parsed_url.password
+        """
+        The password to authenticate with, if any.
+        """
+        self.security: _SMTPSecurity = _SMTPSecurity.from_url_scheme(parsed_url.scheme)
+        """
+        The security policy of the SMTP server.
+        """
 
     @override
     async def send(
@@ -47,6 +95,7 @@ class SMTPEmailClient(EmailClient):
         subject: str,
         text: str,
         html: str | None = None,
+        timeout: int = EMAIL_CLIENT_DEFAULT_TIMEOUT,
     ) -> None:
         message = EmailMessage()
         message["From"] = _format_recipient(sender)
@@ -57,22 +106,22 @@ class SMTPEmailClient(EmailClient):
         if html is not None:
             message.add_alternative(html, subtype="html")
 
-        await asyncio.to_thread(self._send_message, message)
+        await asyncio.to_thread(self._send_message, message, timeout)
 
-    def _send_message(self, message: EmailMessage) -> None:
+    def _send_message(self, message: EmailMessage, timeout: int) -> None:
         context = ssl.create_default_context()
         match self.security:
-            case "tls":
+            case _SMTPSecurity.TLS:
                 smtp = smtplib.SMTP_SSL(
-                    self.host, self.port, timeout=self.timeout, context=context
+                    self.host, self.port, timeout=timeout, context=context
                 )
-            case "starttls" | "none":
-                smtp = smtplib.SMTP(self.host, self.port, timeout=self.timeout)
+            case _SMTPSecurity.START_TLS | _SMTPSecurity.NONE:
+                smtp = smtplib.SMTP(self.host, self.port, timeout=timeout)
             case _:
                 assert_never(self.security)
 
         with smtp:
-            if self.security == "starttls":
+            if self.security == _SMTPSecurity.START_TLS:
                 smtp.starttls(context=context)
             if self.username is not None and self.password is not None:
                 smtp.login(self.username, self.password)

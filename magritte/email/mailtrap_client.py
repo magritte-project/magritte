@@ -3,7 +3,11 @@ from typing import override
 
 import mailtrap
 
-from magritte.email.client import EmailClient, EmailRecipient
+from magritte.email.client import (
+    EMAIL_CLIENT_DEFAULT_TIMEOUT,
+    EmailClient,
+    EmailRecipient,
+)
 
 
 def _recipient_to_address(recipient: EmailRecipient) -> mailtrap.Address:
@@ -22,6 +26,12 @@ class MailtrapEmailClient(EmailClient):
         *,
         sandbox: bool = False,
     ):
+        """
+        Initialize a Mailtrap email client object.
+
+        :param token: The API token to use when communicating with the Mailtrap API.
+        :param sandbox: Whether to use the sandbox.
+        """
         self._client = mailtrap.MailtrapClient(
             token=token,
             sandbox=sandbox,
@@ -39,6 +49,7 @@ class MailtrapEmailClient(EmailClient):
         subject: str,
         text: str,
         html: str | None = None,
+        timeout: int = EMAIL_CLIENT_DEFAULT_TIMEOUT,
     ) -> None:
         mail = mailtrap.Mail(
             sender=_recipient_to_address(sender),
