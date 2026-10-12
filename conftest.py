@@ -1,4 +1,6 @@
-from typing import Callable
+from contextlib import contextmanager
+from typing import Any, Callable
+from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
@@ -8,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from magritte import app
 from magritte.db import create_db_engine, get_db_engine
+from magritte.email import EmailClient, get_email_client
 from magritte.model import create_model_tables_if_needed
 from magritte.schemas.user import Token
 from magritte.testseed import seed_test_data
@@ -33,18 +36,23 @@ async def db_session(db_engine: AsyncEngine):
             await session.commit()
 
 
+@contextmanager
+def override_dependency(original: Callable[..., Any], override: Callable[..., Any]):
+    try:
+        app.dependency_overrides[original] = override
+        yield
+    finally:
+        app.dependency_overrides.pop(original, None)
+
+
 @pytest.fixture
 def client(db_engine: AsyncEngine):
-    try:
+    async def override_get_db_engine():
+        return db_engine
 
-        async def override_get_db_engine():
-            return db_engine
-
-        app.dependency_overrides[get_db_engine] = override_get_db_engine
+    with override_dependency(get_db_engine, override_get_db_engine):
         with TestClient(app) as client:
             yield client
-    finally:
-        app.dependency_overrides.pop(get_db_engine, None)
 
 
 SignIn = Callable[[str, str], Token]
@@ -69,3 +77,14 @@ def sign_in(client: TestClient):
 @pytest.fixture
 def faker():
     return Faker()
+
+
+@pytest.fixture
+def installed_mock_email_client():
+    mock_email_client = AsyncMock(spec=EmailClient)
+
+    def override_get_email_client():
+        return mock_email_client
+
+    with override_dependency(get_email_client, override_get_email_client):
+        yield mock_email_client

@@ -14,6 +14,7 @@ from starlette.requests import HTTPConnection
 from magritte.config import config, get_secrets_config
 from magritte.db import get_db_session
 from magritte.email import EmailClient, EmailRecipient
+from magritte.email.templates import render_email_template
 from magritte.model.user import User
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.user import Token
@@ -297,11 +298,18 @@ async def send_verification_email(
         expire_after=timedelta(hours=1),
     )
 
+    text, html = await render_email_template(
+        "verify_email",
+        {
+            "name": user_username,
+            "verify_link": f"{config.web_url}/verify/{token}",
+            "expiration": expires_at.strftime("%YYYY-%dd-%mm %H:%M:%S"),
+        },
+    )
     await email_client.send(
         sender=EmailRecipient(address=config.email_sender_address, name="Magritte"),
         subject="Verify Your Email",
         to={EmailRecipient(address=user_email, name=user_username)},
-        text=f"Click the link below to verify your email address with this Magritte instance:"
-        f"\n\n<{config.web_url}/verify/{token}>"
-        f"\nExpires on {expires_at.strftime('%YYYY-%dd-%mm %H:%M:%S')}",
+        text=text,
+        html=html,
     )

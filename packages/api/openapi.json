@@ -176,7 +176,7 @@
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/UserProfileRead" }
+                                "schema": { "$ref": "#/components/schemas/UserProfileMeRead" }
                             }
                         }
                     },

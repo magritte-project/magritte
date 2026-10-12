@@ -1697,7 +1697,7 @@ export type SignUpSignUpPostResponses = {
     /**
      * Successful Response
      */
-    200: UserProfileRead
+    200: UserProfileMeRead
 }
 
 export type SignUpSignUpPostResponse = SignUpSignUpPostResponses[keyof SignUpSignUpPostResponses]

@@ -1,18 +1,20 @@
 import type { BodySignInSignInPost } from "@magritte/api"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import z from "zod"
 
 import { useSignIn } from "@/api/mutations/root"
+import { readInstanceStatus } from "@/api/queries/auth"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedLink from "@/components/theme/ThemedLink"
+import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
 
 export const Route = createFileRoute("/sign-in")({
     validateSearch: z.object({ redirect_to: z.string().optional() }),
-
     beforeLoad: async ({
         context: {
             api: { userSessionManager },
@@ -23,11 +25,18 @@ export const Route = createFileRoute("/sign-in")({
             throw redirect({ href: redirectTo })
         }
     },
+    loader: async ({ context: { api, queryClient } }) => {
+        await queryClient.ensureQueryData(readInstanceStatus(api))
+    },
     component: function SignInComponent() {
         const navigate = Route.useNavigate()
         const { redirect_to: redirectTo = "/" } = Route.useSearch()
         const notificationCenter = useNotificationCenter()
         const { signIn } = useUserSession()
+
+        const api = useAPI()
+        const { data: instanceStatus } = useSuspenseQuery(readInstanceStatus(api))
+
         const signInMutation = useSignIn()
         const form = useAppForm({
             defaultValues: {
@@ -60,12 +69,27 @@ export const Route = createFileRoute("/sign-in")({
                     <form.AppField
                         name="username"
                         validators={{
-                            onSubmit: z.string().min(1, { error: "Username is required" }),
+                            onSubmit: z.string().min(1, {
+                                error: instanceStatus.email_enabled
+                                    ? "Username email is required"
+                                    : "Username is required",
+                            }),
                         }}
                     >
                         {(field) => (
-                            <FieldDecoration field={field} label="Username">
-                                <field.InputField placeholder="Enter your username" />
+                            <FieldDecoration
+                                field={field}
+                                label={
+                                    instanceStatus.email_enabled ? "Username or email" : "Username"
+                                }
+                            >
+                                <field.InputField
+                                    placeholder={
+                                        instanceStatus.email_enabled
+                                            ? "Enter your username or email"
+                                            : "Enter your username"
+                                    }
+                                />
                             </FieldDecoration>
                         )}
                     </form.AppField>

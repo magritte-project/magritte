@@ -1,5 +1,6 @@
 from contextlib import nullcontext as no_raise
 from datetime import UTC, datetime
+from unittest.mock import AsyncMock
 
 import pytest
 from faker import Faker
@@ -406,6 +407,82 @@ class TestMarkAllNotificationsRead:
 
 
 class TestUpdateMe:
+    @pytest.mark.asyncio
+    async def test_sends_new_verification_email(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        installed_mock_email_client: AsyncMock,
+    ):
+        session = sign_in("test", "password")
+
+        response = client.post(
+            "/users/me",
+            json={
+                "email": "nobody@example.com",
+                "preferred_name": None,
+                "enable_playback_events": False,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("email") == "nobody@example.com"
+        assert response_json.get("is_email_verified") is False
+
+        installed_mock_email_client.send.assert_called_once()
+
+        # Re-submitting the same email should not send another verification email
+        repeat_response = client.post(
+            "/users/me",
+            json={
+                "email": "nobody@example.com",
+                "preferred_name": None,
+                "enable_playback_events": False,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert repeat_response.status_code == 200
+
+        installed_mock_email_client.send.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_cannot_change_to_taken_email(
+        self,
+        client: TestClient,
+        sign_in: SignIn,
+        installed_mock_email_client: AsyncMock,
+    ):
+        first_session = sign_in("test", "password")
+
+        first_response = client.post(
+            "/users/me",
+            json={
+                "email": "nobody@example.com",
+                "preferred_name": None,
+                "enable_playback_events": False,
+            },
+            headers={"Authorization": f"Bearer {first_session.access_token}"},
+        )
+        assert first_response.status_code == 200
+
+        second_session = sign_in("unlucky", "password")
+
+        second_response = client.post(
+            "/users/me",
+            json={
+                "email": "nobody@example.com",
+                "preferred_name": None,
+                "enable_playback_events": False,
+            },
+            headers={"Authorization": f"Bearer {second_session.access_token}"},
+        )
+        assert second_response.status_code == 409
+        assert second_response.json().get("detail") == "Email already in use"
+
+        # It should only send the email for the successful request
+        installed_mock_email_client.send.assert_called_once()
+
     @pytest.mark.asyncio
     async def test_cannot_unset_email(
         self,

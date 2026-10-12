@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import (
     APIRouter,
+    BackgroundTasks,
     Depends,
     HTTPException,
     Query,
@@ -20,8 +21,10 @@ from magritte.auth import (
     create_feature_token,
     get_current_user,
     get_feature_user,
+    send_verification_email,
 )
 from magritte.db import get_db_session
+from magritte.email import EmailClient, get_email_client
 from magritte.model.library import Library
 from magritte.model.notification import Notification
 from magritte.model.user import User, UserNotificationLink
@@ -70,9 +73,11 @@ async def read_me(
 )
 async def update_me(
     profile_update: UserProfileMeUpdate,
+    background_tasks: BackgroundTasks,
     current_user: Annotated[
         User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
     ],
+    email_client: Annotated[EmailClient | None, Depends(get_email_client)],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     updates = profile_update.model_dump(
@@ -92,10 +97,28 @@ async def update_me(
                 detail="Cannot clear email",
             )
 
-        current_user.email = (
-            str(profile_update.email) if profile_update.email is not None else None
+        email_already_used = await User.exists(
+            where=[
+                col(User.email) == str(profile_update.email),
+            ],
+            joins=[],
+            session=session,
         )
+        if email_already_used:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Email already in use"
+            )
+
+        current_user.email = str(profile_update.email)
         current_user.is_email_verified = False
+
+        if email_client is not None:
+            background_tasks.add_task(
+                send_verification_email,
+                email_client,
+                user_email=current_user.email,
+                user_username=current_user.username,
+            )
 
     await session.flush()
 

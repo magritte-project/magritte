@@ -105,6 +105,7 @@ import {
     type SourceCreate,
     type SourceRead,
     type SourceUpdate,
+    type Token,
     type UserAdminRead,
     type UserAdminsRead,
     type UserAdminUpdate,
@@ -208,11 +209,11 @@ export class APIClient {
 
     // -- Root Routes -- //
 
-    async signUp(body: UserSignUp): Promise<UserProfileRead> {
+    async signUp(body: UserSignUp): Promise<UserProfileMeRead> {
         return await signUpSignUpPost({ ...this.options, body })
     }
 
-    async signIn(body: BodySignInSignInPost) {
+    async signIn(body: BodySignInSignInPost): Promise<Token> {
         return await signInSignInPost({ ...this.options, body })
     }
 

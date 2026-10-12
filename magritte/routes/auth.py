@@ -19,7 +19,7 @@ from magritte.email import EmailClient, get_email_client
 from magritte.model.user import User
 from magritte.schemas.auth import InstanceStatusRead
 from magritte.schemas.base import OperationResult
-from magritte.schemas.user import Token, UserProfileRead, UserSignUp
+from magritte.schemas.user import Token, UserProfileMeRead, UserSignUp
 
 router = APIRouter()
 
@@ -49,7 +49,7 @@ async def read_instance_status(
 
 @router.post(
     "/sign-up",
-    response_model=UserProfileRead,
+    response_model=UserProfileMeRead,
     summary="Sign up a new user",
 )
 async def sign_up(
@@ -72,6 +72,18 @@ async def sign_up(
                     detail="Email required",
                 )
 
+            email_already_used = await User.exists(
+                where=[
+                    col(User.email) == sign_up.email,
+                ],
+                joins=[],
+                session=session,
+            )
+            if email_already_used:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT, detail="Email already in use"
+                )
+
             new_user.email = sign_up.email
             new_user.is_email_verified = False
             background_tasks.add_task(
@@ -82,7 +94,7 @@ async def sign_up(
             )
 
         await session.flush()
-        return UserProfileRead(**new_user.model_dump())
+        return UserProfileMeRead(**new_user.model_dump())
     except IntegrityError as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

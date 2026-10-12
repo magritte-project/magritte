@@ -1,10 +1,13 @@
 import type { UserSignUp } from "@magritte/api"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import z from "zod"
 
 import { useSignIn, useSignUp } from "@/api/mutations/root"
+import { readInstanceStatus } from "@/api/queries/auth"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
+import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
@@ -19,17 +22,25 @@ export const Route = createFileRoute("/sign-up")({
             throw redirect({ to: "/" })
         }
     },
+    loader: async ({ context: { api, queryClient } }) => {
+        await queryClient.ensureQueryData(readInstanceStatus(api))
+    },
     component: function SignUpComponent() {
         const navigate = useNavigate()
         const notificationCenter = useNotificationCenter()
         const { signIn } = useUserSession()
+
+        const api = useAPI()
+        const { data: instanceStatus } = useSuspenseQuery(readInstanceStatus(api))
+
         const signUpMutation = useSignUp()
         const signInMutation = useSignIn()
         const form = useAppForm({
             defaultValues: {
+                email: null,
                 username: "",
                 password: "",
-            } satisfies UserSignUp,
+            } satisfies UserSignUp as UserSignUp,
             onSubmit: async ({ value }) => {
                 try {
                     await signUpMutation.mutateAsync(value)
@@ -57,6 +68,20 @@ export const Route = createFileRoute("/sign-up")({
                         <img src="/icon.svg" alt="Magritte Logo" className="w-8 h-8" />
                         <span className="font-semibold text-xl">Create An Account</span>
                     </header>
+                    {instanceStatus.email_enabled && (
+                        <form.AppField
+                            name="email"
+                            validators={{
+                                onSubmit: z.email({ error: "Valid email is required" }).nullish(),
+                            }}
+                        >
+                            {(field) => (
+                                <FieldDecoration field={field} label="Email">
+                                    <field.InputField placeholder="Enter your email" />
+                                </FieldDecoration>
+                            )}
+                        </form.AppField>
+                    )}
                     <form.AppField
                         name="username"
                         validators={{

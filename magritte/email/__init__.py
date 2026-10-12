@@ -3,6 +3,7 @@ from functools import lru_cache
 from magritte.config import config
 
 from .client import EmailClient, EmailRecipient
+from .templates import render_email_template
 
 
 @lru_cache
@@ -28,4 +29,5 @@ __all__ = [
     "EmailClient",
     "EmailRecipient",
     "get_email_client",
+    "render_email_template",
 ]

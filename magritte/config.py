@@ -6,6 +6,7 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal, Self, assert_never
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field
@@ -65,10 +66,10 @@ class Config(BaseModel):
         description="The custom URL to connect to the database. Defaults to sqlite+aiosqlite:////$HOME/.magritte/db.sqlite3",
     )
 
-    email_sender_address: str = Field(
-        default="noreply@localhost",
+    custom_email_sender_address: str | None = Field(
+        default=None,
         alias="EMAIL_SENDER_ADDRESS",
-        description="The address emails from this instance should come from",
+        description="The custom address emails from this instance come from",
     )
 
     email_smtp: str | None = Field(
@@ -107,6 +108,18 @@ class Config(BaseModel):
                 return "http://localhost:8090"
             else:
                 return "http://localhost:6479"
+
+    @property
+    def email_sender_address(self) -> str:
+        """
+        The custom address emails from this instance come from
+        """
+
+        if self.custom_email_sender_address:
+            return self.custom_email_sender_address
+        else:
+            parsed_web_url = urlparse(self.web_url)
+            return f"noreply@{parsed_web_url.netloc}"
 
     @property
     def data_home_path(self) -> pathlib.Path:

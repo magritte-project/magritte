@@ -1,0 +1,9 @@
+Hello, {{ name }}
+
+Click the link below to verify your email address with this Magritte instance:
+
+<{{ verify_link }}>
+Expires on {{ expiration }}
+
+If you did not sign up for an account on this Magritte instance, you can discard
+this email.

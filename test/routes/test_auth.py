@@ -1,3 +1,5 @@
+from unittest.mock import AsyncMock
+
 from fastapi.testclient import TestClient
 
 
@@ -11,6 +13,7 @@ def test_sign_up(client: TestClient):
     )
     response_json = response.json()
     assert response.status_code == 200
+    assert response_json.get("email") is None
     assert response_json.get("username") == "rene"
     assert response_json.get("preferred_name") is None
 
@@ -25,6 +28,71 @@ def test_sign_up_rejects_already_in_use_usernames(client: TestClient):
     )
     assert response.status_code == 409
     assert response.json().get("detail") == "Username already taken"
+
+
+def test_sign_up_with_email_sends_verification(
+    client: TestClient,
+    installed_mock_email_client: AsyncMock,
+):
+    response = client.post(
+        "/sign-up",
+        json={
+            "email": "anybody@nowhere.com",
+            "username": "anybody",
+            "password": "passpass",
+        },
+    )
+    response_json = response.json()
+    assert response.status_code == 200
+    assert response_json.get("email") == "anybody@nowhere.com"
+
+    installed_mock_email_client.send.assert_called_once()
+
+
+def test_sign_up_with_email_rejects_already_in_use_email(
+    client: TestClient,
+    installed_mock_email_client: AsyncMock,
+):
+    response_1 = client.post(
+        "/sign-up",
+        json={
+            "email": "anybody@nowhere.com",
+            "username": "anybody",
+            "password": "passpass",
+        },
+    )
+    assert response_1.status_code == 200
+
+    response_2 = client.post(
+        "/sign-up",
+        json={
+            "email": "anybody@nowhere.com",
+            "username": "anybody2",
+            "password": "passpass",
+        },
+    )
+    assert response_2.status_code == 409
+    assert response_2.json().get("detail") == "Email already in use"
+
+    # It should only send the email for the successful request
+    installed_mock_email_client.send.assert_called_once()
+
+
+def test_sign_up_requires_email_when_configured(
+    client: TestClient,
+    installed_mock_email_client: AsyncMock,
+):
+    response = client.post(
+        "/sign-up",
+        json={
+            "username": "test",
+            "password": "passpass",
+        },
+    )
+    assert response.status_code == 422
+    assert response.json().get("detail") == "Email required"
+
+    installed_mock_email_client.send.assert_not_called()
 
 
 def test_sign_in(client: TestClient):
