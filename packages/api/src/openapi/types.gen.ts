@@ -574,6 +574,10 @@ export type InstanceStatusRead = {
      */
     uploads_enabled: boolean
     /**
+     * Email Enabled
+     */
+    email_enabled: boolean
+    /**
      * First Setup Complete
      */
     first_setup_complete: boolean
@@ -1491,6 +1495,10 @@ export type UserProfilesRead = {
  */
 export type UserSignUp = {
     /**
+     * Email
+     */
+    email?: string | null
+    /**
      * Username
      */
     username: string
@@ -1718,6 +1726,40 @@ export type SignInSignInPostResponses = {
 }
 
 export type SignInSignInPostResponse = SignInSignInPostResponses[keyof SignInSignInPostResponses]
+
+export type VerifyEmailVerifyEmailPostData = {
+    body?: never
+    path?: never
+    query: {
+        /**
+         * Token
+         *
+         * A feature token
+         */
+        token: string
+    }
+    url: "/verify-email"
+}
+
+export type VerifyEmailVerifyEmailPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type VerifyEmailVerifyEmailPostError =
+    VerifyEmailVerifyEmailPostErrors[keyof VerifyEmailVerifyEmailPostErrors]
+
+export type VerifyEmailVerifyEmailPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: OperationResult
+}
+
+export type VerifyEmailVerifyEmailPostResponse =
+    VerifyEmailVerifyEmailPostResponses[keyof VerifyEmailVerifyEmailPostResponses]
 
 export type ImportExtensionExtensionsAvailableImportPostData = {
     body: ExtensionImportAdmin

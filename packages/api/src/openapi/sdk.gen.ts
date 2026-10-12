@@ -188,6 +188,9 @@ import type {
     UpdateUserAdminUsersAdminAllUserIdPatchData,
     UpdateUserAdminUsersAdminAllUserIdPatchErrors,
     UpdateUserAdminUsersAdminAllUserIdPatchResponses,
+    VerifyEmailVerifyEmailPostData,
+    VerifyEmailVerifyEmailPostErrors,
+    VerifyEmailVerifyEmailPostResponses,
 } from "./types.gen"
 
 export type Options<
@@ -365,6 +368,28 @@ export const signInSignInPost = <ThrowOnError extends boolean = false>(
             "Content-Type": "application/x-www-form-urlencoded",
             ...options.headers,
         },
+    })
+
+/**
+ * Verify a user's email
+ */
+export const verifyEmailVerifyEmailPost = <ThrowOnError extends boolean = false>(
+    options: Options<VerifyEmailVerifyEmailPostData, ThrowOnError>,
+): RequestResult<
+    VerifyEmailVerifyEmailPostResponses,
+    VerifyEmailVerifyEmailPostErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).post<
+        VerifyEmailVerifyEmailPostResponses,
+        VerifyEmailVerifyEmailPostErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        url: "/verify-email",
+        ...options,
     })
 
 /**

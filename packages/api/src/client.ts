@@ -57,6 +57,7 @@ import {
     updateNotificationUsersNotificationsNotificationIdPatch,
     updateSourceSourcesSourceIdPatch,
     updateUserAdminUsersAdminAllUserIdPatch,
+    verifyEmailVerifyEmailPost,
     type AlbumRead,
     type AlbumUpdate,
     type ArtistRead,
@@ -213,6 +214,10 @@ export class APIClient {
 
     async signIn(body: BodySignInSignInPost) {
         return await signInSignInPost({ ...this.options, body })
+    }
+
+    async verifyEmail(token: string): Promise<OperationResult> {
+        return await verifyEmailVerifyEmailPost({ ...this.options, query: { token } })
     }
 
     // -- User Routes -- //

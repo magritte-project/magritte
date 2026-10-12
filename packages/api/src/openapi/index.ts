@@ -63,6 +63,7 @@ export {
     updateNotificationUsersNotificationsNotificationIdPatch,
     updateSourceSourcesSourceIdPatch,
     updateUserAdminUsersAdminAllUserIdPatch,
+    verifyEmailVerifyEmailPost,
 } from "./sdk.gen"
 export type {
     AlbumRead,
@@ -413,4 +414,9 @@ export type {
     UserProfilesRead,
     UserSignUp,
     ValidationError,
+    VerifyEmailVerifyEmailPostData,
+    VerifyEmailVerifyEmailPostError,
+    VerifyEmailVerifyEmailPostErrors,
+    VerifyEmailVerifyEmailPostResponse,
+    VerifyEmailVerifyEmailPostResponses,
 } from "./types.gen"

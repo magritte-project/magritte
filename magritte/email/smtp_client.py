@@ -7,7 +7,7 @@ from enum import Enum
 from typing import assert_never, override
 from urllib.parse import urlparse
 
-from magritte.email.client import (
+from .client import (
     EMAIL_CLIENT_DEFAULT_TIMEOUT,
     EmailClient,
     EmailRecipient,

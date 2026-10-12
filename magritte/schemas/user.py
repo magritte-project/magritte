@@ -14,6 +14,7 @@ class Token(BaseModel):
 
 
 class UserSignUp(BaseModel):
+    email: EmailStr | None = None
     username: Annotated[str, Field(max_length=255)]
     password: Annotated[str, Field(min_length=8, max_length=100)]
 

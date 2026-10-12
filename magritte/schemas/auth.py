@@ -24,4 +24,5 @@ class OAuth2Scope(str, Enum):
 class InstanceStatusRead(BaseModel):
     env: Literal["dev", "ci", "prod"]
     uploads_enabled: bool
+    email_enabled: bool
     first_setup_complete: bool

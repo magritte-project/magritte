@@ -3,7 +3,7 @@ from typing import override
 
 import mailtrap
 
-from magritte.email.client import (
+from .client import (
     EMAIL_CLIENT_DEFAULT_TIMEOUT,
     EmailClient,
     EmailRecipient,

@@ -13,6 +13,7 @@ from starlette.requests import HTTPConnection
 
 from magritte.config import config, get_secrets_config
 from magritte.db import get_db_session
+from magritte.email import EmailClient, EmailRecipient
 from magritte.model.user import User
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.user import Token
@@ -69,7 +70,7 @@ async def create_user(
     username: str,
     password: str,
     session: AsyncSession,
-):
+) -> User:
     is_first_user = await User.count(session) == 0
     if is_first_user:
         scopes = {
@@ -96,8 +97,12 @@ async def authenticate_user(
     username: str,
     password: str,
     session: AsyncSession,
-):
-    user = await User.read_by_username(username, session)
+    accept_email: bool = False,
+) -> Token | None:
+    if accept_email:
+        user = await User.read_by_username_or_email(username, session)
+    else:
+        user = await User.read_by_username(username, session)
     if not user:
         return None
     if not password_hash.verify(password, user.hashed_password):
@@ -160,6 +165,11 @@ class FeatureScope(str, Enum):
     USER_EVENTS_STREAM = "user:events:stream"
     """
     Scope which allows streaming user events.
+    """
+
+    USER_VERIFY_EMAIL = "user:email:verify"
+    """
+    Scope which allows verifying a user's email.
     """
 
 
@@ -273,3 +283,25 @@ def get_feature_user(required_scope: FeatureScope):
         return user
 
     return get_feature_user
+
+
+async def send_verification_email(
+    email_client: EmailClient,
+    *,
+    user_email: str,
+    user_username: str,
+):
+    token, expires_at = create_feature_token(
+        subject=user_username,
+        scope=FeatureScope.USER_VERIFY_EMAIL,
+        expire_after=timedelta(hours=1),
+    )
+
+    await email_client.send(
+        sender=EmailRecipient(address=config.email_sender_address, name="Magritte"),
+        subject="Verify Your Email",
+        to={EmailRecipient(address=user_email, name=user_username)},
+        text=f"Click the link below to verify your email address with this Magritte instance:"
+        f"\n\n<{config.web_url}/verify/{token}>"
+        f"\nExpires on {expires_at.strftime('%YYYY-%dd-%mm %H:%M:%S')}",
+    )

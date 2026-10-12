@@ -223,6 +223,43 @@
                 }
             }
         },
+        "/verify-email": {
+            "post": {
+                "summary": "Verify a user's email",
+                "operationId": "verify_email_verify_email_post",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "A feature token",
+                            "title": "Token"
+                        },
+                        "description": "A feature token"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/extensions/available/import": {
             "post": {
                 "summary": "Import an extension so it can be installed by users",
@@ -3086,10 +3123,11 @@
                 "properties": {
                     "env": { "type": "string", "enum": ["dev", "ci", "prod"], "title": "Env" },
                     "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" },
+                    "email_enabled": { "type": "boolean", "title": "Email Enabled" },
                     "first_setup_complete": { "type": "boolean", "title": "First Setup Complete" }
                 },
                 "type": "object",
-                "required": ["env", "uploads_enabled", "first_setup_complete"],
+                "required": ["env", "uploads_enabled", "email_enabled", "first_setup_complete"],
                 "title": "InstanceStatusRead"
             },
             "LibraryCreate": {
@@ -3862,6 +3900,10 @@
             },
             "UserSignUp": {
                 "properties": {
+                    "email": {
+                        "anyOf": [{ "type": "string", "format": "email" }, { "type": "null" }],
+                        "title": "Email"
+                    },
                     "username": { "type": "string", "maxLength": 255, "title": "Username" },
                     "password": {
                         "type": "string",

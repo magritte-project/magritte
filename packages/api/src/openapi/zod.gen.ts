@@ -231,6 +231,7 @@ export const BulkIngestSongsSchema = z.object({
 export const InstanceStatusReadSchema = z.object({
     env: z.enum(["dev", "ci", "prod"]),
     uploads_enabled: z.boolean(),
+    email_enabled: z.boolean(),
     first_setup_complete: z.boolean(),
 })
 
@@ -627,6 +628,7 @@ export const UserProfilesReadSchema = z.object({
  * UserSignUp
  */
 export const UserSignUpSchema = z.object({
+    email: z.email().nullish(),
     username: z.string().max(255),
     password: z.string().min(8).max(100),
 })

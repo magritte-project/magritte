@@ -52,7 +52,7 @@ export const Route = createFileRoute("/sign-in")({
 
         return (
             <div className="min-h-screen flex items-center justify-center p-xl">
-                <AppForm form={form} className="w-full max-w-sm flex flex-col gap-xl">
+                <AppForm form={form} className="min-w-0 w-100 flex flex-col gap-xl">
                     <header className="flex items-center gap-md">
                         <img src="/icon.svg" alt="Magritte Logo" className="w-8 h-8" />
                         <span className="font-semibold text-xl">Sign In</span>

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, override
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped
-from sqlmodel import Field, Relationship, SQLModel, col, func, select
+from sqlmodel import Field, Relationship, SQLModel, and_, col, func, or_, select
 
 from magritte.model.base import LibraryModel
 from magritte.schemas.auth import OAuth2Scope
@@ -164,5 +164,21 @@ class User(LibraryModel, table=True):
         return await session.scalar(
             select(User).where(
                 col(User.username) == username,
+            ),
+        )
+
+    @classmethod
+    async def read_by_username_or_email(
+        cls, username_or_email: str, session: AsyncSession
+    ):
+        return await session.scalar(
+            select(User).where(
+                or_(
+                    col(User.username) == username_or_email,
+                    and_(
+                        col(User.email).is_not(None),
+                        col(User.email) == username_or_email,
+                    ),
+                ),
             ),
         )

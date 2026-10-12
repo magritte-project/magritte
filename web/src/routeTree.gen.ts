@@ -19,6 +19,7 @@ import { Route as LibrariesLibraryIdRouteRouteImport } from './routes/libraries.
 import { Route as LibrariesAddRouteImport } from './routes/libraries/add'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsAdminRouteImport } from './routes/settings/admin'
+import { Route as VerifyTokenRouteImport } from './routes/verify.$token'
 import { Route as LibrariesLibraryIdIndexRouteImport } from './routes/libraries.$libraryId/index'
 import { Route as LibrariesLibraryIdAlbumsRouteImport } from './routes/libraries.$libraryId/albums'
 import { Route as LibrariesLibraryIdArtistsRouteImport } from './routes/libraries.$libraryId/artists'
@@ -86,6 +87,11 @@ const SettingsAdminRoute = SettingsAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => SettingsRouteRoute,
+} as any)
+const VerifyTokenRoute = VerifyTokenRouteImport.update({
+  id: '/verify/$token',
+  path: '/verify/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LibrariesLibraryIdIndexRoute = LibrariesLibraryIdIndexRouteImport.update({
   id: '/',
@@ -192,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
   '/settings/admin': typeof SettingsAdminRouteWithChildren
+  '/verify/$token': typeof VerifyTokenRoute
   '/libraries/': typeof LibrariesIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
@@ -218,6 +225,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/libraries/add': typeof LibrariesAddRoute
   '/settings/admin': typeof SettingsAdminRouteWithChildren
+  '/verify/$token': typeof VerifyTokenRoute
   '/libraries': typeof LibrariesIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/libraries/$libraryId/albums': typeof LibrariesLibraryIdAlbumsRoute
@@ -247,6 +255,7 @@ export interface FileRoutesById {
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
   '/settings/admin': typeof SettingsAdminRouteWithChildren
+  '/verify/$token': typeof VerifyTokenRoute
   '/libraries/': typeof LibrariesIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/libraries/manage/$libraryId': typeof LibrariesManageLibraryIdRouteRouteWithChildren
@@ -278,6 +287,7 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId'
     | '/libraries/add'
     | '/settings/admin'
+    | '/verify/$token'
     | '/libraries/'
     | '/settings/'
     | '/libraries/manage/$libraryId'
@@ -304,6 +314,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/libraries/add'
     | '/settings/admin'
+    | '/verify/$token'
     | '/libraries'
     | '/settings'
     | '/libraries/$libraryId/albums'
@@ -332,6 +343,7 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId'
     | '/libraries/add'
     | '/settings/admin'
+    | '/verify/$token'
     | '/libraries/'
     | '/settings/'
     | '/libraries/manage/$libraryId'
@@ -359,6 +371,7 @@ export interface RootRouteChildren {
   SettingsRouteRoute: typeof SettingsRouteRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  VerifyTokenRoute: typeof VerifyTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/admin'
       preLoaderRoute: typeof SettingsAdminRouteImport
       parentRoute: typeof SettingsRouteRoute
+    }
+    '/verify/$token': {
+      id: '/verify/$token'
+      path: '/verify/$token'
+      fullPath: '/verify/$token'
+      preLoaderRoute: typeof VerifyTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/libraries/$libraryId/': {
       id: '/libraries/$libraryId/'
@@ -694,6 +714,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRouteRoute: SettingsRouteRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  VerifyTokenRoute: VerifyTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

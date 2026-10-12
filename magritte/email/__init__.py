@@ -1,11 +1,12 @@
 from functools import lru_cache
 
 from magritte.config import config
-from magritte.email.client import EmailClient
+
+from .client import EmailClient, EmailRecipient
 
 
 @lru_cache
-def get_default_email_client() -> EmailClient | None:
+def get_email_client() -> EmailClient | None:
     """
     Inject the default email client based on the config.
     """
@@ -21,3 +22,10 @@ def get_default_email_client() -> EmailClient | None:
         return MailtrapEmailClient(config.email_mailtrap_api_key)
 
     return None
+
+
+__all__ = [
+    "EmailClient",
+    "EmailRecipient",
+    "get_email_client",
+]

@@ -53,10 +53,22 @@ class Config(BaseModel):
         description="The maximum size of a file that can be uploaded to this instance",
     )
 
+    custom_web_url: str | None = Field(
+        default=None,
+        alias="WEB_URL",
+        description="The custom URL where this instance can be accessed on the web",
+    )
+
     custom_db: str | None = Field(
         default=None,
         alias="DB",
         description="The custom URL to connect to the database. Defaults to sqlite+aiosqlite:////$HOME/.magritte/db.sqlite3",
+    )
+
+    email_sender_address: str = Field(
+        default="noreply@localhost",
+        alias="EMAIL_SENDER_ADDRESS",
+        description="The address emails from this instance should come from",
     )
 
     email_smtp: str | None = Field(
@@ -82,6 +94,19 @@ class Config(BaseModel):
             db_file_url = pathlib.Path(self.data_home).joinpath("db.sqlite3").as_uri()
             db_url = db_file_url.replace("file://", "sqlite+aiosqlite:///")
             return db_url
+
+    @property
+    def web_url(self) -> str:
+        """
+        The URL where this instance can be accessed on the web
+        """
+        if self.custom_web_url:
+            return self.custom_web_url
+        else:
+            if self.env == "prod":
+                return "http://localhost:8090"
+            else:
+                return "http://localhost:6479"
 
     @property
     def data_home_path(self) -> pathlib.Path:
