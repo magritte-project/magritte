@@ -14,6 +14,8 @@ async def _seed_users(session: AsyncSession):
         User(
             username="admin",
             hashed_password=password_hash.hash("password", salt=secrets_config.salt),
+            email="admin@localhost",
+            is_email_verified=True,
             scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
     )
@@ -22,6 +24,8 @@ async def _seed_users(session: AsyncSession):
         User(
             username="standard",
             hashed_password=password_hash.hash("password", salt=secrets_config.salt),
+            email="standard@localhost",
+            is_email_verified=True,
             scope=OAuth2Scope.to_str({OAuth2Scope.PROFILE, OAuth2Scope.LIBRARIES_READ}),
         )
     )
@@ -30,6 +34,8 @@ async def _seed_users(session: AsyncSession):
         User(
             username="fresh_admin",
             hashed_password=password_hash.hash("password", salt=secrets_config.salt),
+            email="fresh_admin@localhost",
+            is_email_verified=True,
             scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
     )
