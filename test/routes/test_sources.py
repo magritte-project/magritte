@@ -4,16 +4,16 @@ import pytest_asyncio
 from faker import Faker
 from fastapi.testclient import TestClient
 
-from conftest import SignIn
+from conftest import AuthFixture
 
 
 @pytest_asyncio.fixture
 async def throwaway_source(
     client: TestClient,
-    sign_in: SignIn,
+    admin_auth: AuthFixture,
     faker: Faker,
 ) -> int:
-    session = sign_in("test", "password")
+    session = admin_auth.sign_in()
 
     response = client.post(
         "/sources/create",
@@ -32,9 +32,9 @@ class TestCreateSource:
     def test_create(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.post(
             "/sources/create",
             json={
@@ -57,9 +57,9 @@ class TestCreateSource:
     def test_handles_duplication(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         first_response = client.post(
             "/sources/create",
             json={
@@ -113,10 +113,10 @@ class TestUpdateSource:
     def test_update(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_source: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.patch(
             f"/sources/{throwaway_source}",
             json={"url": "about:blank", "mime_type": None, "is_invalid": True},
@@ -132,9 +132,9 @@ class TestUpdateSource:
     def test_requires_source_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.patch(
             "/sources/99999999",
             json={},
@@ -159,10 +159,10 @@ class TestDeleteSource:
     def test_delete(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_source: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.delete(
             f"/sources/{throwaway_source}",
             headers={"Authorization": f"Bearer {session.access_token}"},
@@ -172,9 +172,9 @@ class TestDeleteSource:
     def test_requires_source_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.delete(
             "/sources/99999999",
             headers={"Authorization": f"Bearer {session.access_token}"},
@@ -205,9 +205,9 @@ class TestReadSource:
     def test_requires_source_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/sources/99999999",
@@ -221,10 +221,10 @@ class TestReadAllSources:
     def test_with_library_id(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         faker: Faker,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         create_library_response = client.post(
             "/libraries/create",
@@ -296,11 +296,11 @@ class TestReadAllSources:
     def test_with_extension_manifest_id(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         faker: Faker,
         throwaway_source: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         create_response = client.post(
             "/sources/create",
@@ -332,11 +332,11 @@ class TestReadAllSources:
     def test_with_extension_tags(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         faker: Faker,
         throwaway_source: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         create_response = client.post(
             "/sources/create",
@@ -402,9 +402,9 @@ class TestStreamSourceFile:
     def test_requires_source_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/users/files/preflight",

@@ -3,7 +3,7 @@ from faker import Faker
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from conftest import SignIn
+from conftest import AuthFixture
 from magritte.model.artwork import Artwork
 from magritte.schemas.artwork import ArtworkKind
 
@@ -11,10 +11,10 @@ from magritte.schemas.artwork import ArtworkKind
 @pytest_asyncio.fixture
 async def throwaway_artwork(
     client: TestClient,
-    sign_in: SignIn,
+    admin_auth: AuthFixture,
     faker: Faker,
 ) -> int:
-    session = sign_in("test", "password")
+    session = admin_auth.sign_in()
 
     response = client.post(
         "/artworks/create",
@@ -58,9 +58,9 @@ class TestCreateArtwork:
     def test_create(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.post(
             "/artworks/create",
             json={
@@ -86,9 +86,9 @@ class TestCreateArtwork:
     def test_handles_duplication(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         first_response = client.post(
             "/artworks/create",
             json={
@@ -131,9 +131,9 @@ class TestCreateArtwork:
     def test_rejects_file_urls(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.post(
             "/artworks/create",
             json={
@@ -171,10 +171,10 @@ class TestUpdateArtwork:
     def test_update(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_artwork: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.patch(
             f"/artworks/{throwaway_artwork}",
             json={
@@ -200,10 +200,10 @@ class TestUpdateArtwork:
     def test_cannot_update_managed_artwork(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         fake_managed_artwork: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.patch(
             f"/artworks/{fake_managed_artwork}",
             json={},
@@ -215,9 +215,9 @@ class TestUpdateArtwork:
     def test_requires_source_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.patch(
             "/artworks/99999999",
             json={},
@@ -229,9 +229,9 @@ class TestUpdateArtwork:
     def test_rejects_file_urls(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.patch(
             "/artworks/1",
             json={
@@ -257,10 +257,10 @@ class TestDeleteSource:
     def test_delete(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_artwork: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.delete(
             f"/artworks/{throwaway_artwork}",
             headers={"Authorization": f"Bearer {session.access_token}"},
@@ -270,10 +270,10 @@ class TestDeleteSource:
     def test_cannot_update_managed_artwork(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         fake_managed_artwork: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.delete(
             f"/artworks/{fake_managed_artwork}",
             headers={"Authorization": f"Bearer {session.access_token}"},
@@ -284,9 +284,9 @@ class TestDeleteSource:
     def test_requires_source_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
         response = client.delete(
             "/artworks/99999999",
             headers={"Authorization": f"Bearer {session.access_token}"},
@@ -317,9 +317,9 @@ class TestReadArtworkImage:
     def test_requires_source_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/users/files/preflight",

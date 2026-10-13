@@ -3,16 +3,16 @@ import pytest_asyncio
 from faker import Faker
 from fastapi.testclient import TestClient
 
-from conftest import SignIn
+from conftest import AuthFixture
 
 
 @pytest_asyncio.fixture
 async def throwaway_album(
     client: TestClient,
-    sign_in: SignIn,
+    admin_auth: AuthFixture,
     faker: Faker,
 ) -> int:
-    session = sign_in("test", "password")
+    session = admin_auth.sign_in()
 
     response = client.post(
         "/libraries/2/ingest/songs",
@@ -57,10 +57,10 @@ class TestReadLibraryAlbum:
     async def test_read(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_album: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             f"/libraries/2/albums/{throwaway_album}",
@@ -74,10 +74,10 @@ class TestReadLibraryAlbum:
     async def test_requires_library_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        fresh_admin_auth: AuthFixture,
         throwaway_album: int,
     ):
-        session = sign_in("orphaned", "password")
+        session = fresh_admin_auth.sign_in()
 
         response = client.get(
             f"/libraries/2/albums/{throwaway_album}",
@@ -90,9 +90,9 @@ class TestReadLibraryAlbum:
     async def test_requires_library_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/libraries/99999999/albums/9999999",
@@ -105,9 +105,9 @@ class TestReadLibraryAlbum:
     async def test_requires_album_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/libraries/2/albums/9999999",
@@ -122,10 +122,10 @@ class TestUpdateLibraryAlbum:
     async def test_update(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_album: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             f"/libraries/2/albums/{throwaway_album}",
@@ -140,10 +140,10 @@ class TestUpdateLibraryAlbum:
     async def test_requires_library_edit_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        fresh_admin_auth: AuthFixture,
         throwaway_album: int,
     ):
-        session = sign_in("unlucky", "password")
+        session = fresh_admin_auth.sign_in()
 
         response = client.patch(
             f"/libraries/2/albums/{throwaway_album}",
@@ -157,9 +157,9 @@ class TestUpdateLibraryAlbum:
     async def test_requires_library_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/libraries/99999999/albums/9999999",
@@ -173,9 +173,9 @@ class TestUpdateLibraryAlbum:
     async def test_requires_album_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/libraries/2/albums/9999999",
@@ -191,10 +191,10 @@ class TestDeleteLibraryAlbum:
     async def test_delete(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_album: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             f"/libraries/2/albums/{throwaway_album}",
@@ -206,10 +206,10 @@ class TestDeleteLibraryAlbum:
     async def test_requires_library_remove_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        fresh_admin_auth: AuthFixture,
         throwaway_album: int,
     ):
-        session = sign_in("unlucky", "password")
+        session = fresh_admin_auth.sign_in()
 
         response = client.delete(
             f"/libraries/2/albums/{throwaway_album}",
@@ -222,9 +222,9 @@ class TestDeleteLibraryAlbum:
     async def test_requires_library_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/libraries/99999999/albums/9999999",
@@ -237,9 +237,9 @@ class TestDeleteLibraryAlbum:
     async def test_requires_album_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/libraries/2/albums/9999999",

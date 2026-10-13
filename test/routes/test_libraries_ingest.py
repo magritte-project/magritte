@@ -4,7 +4,7 @@ import pytest
 from faker import Faker
 from fastapi.testclient import TestClient
 
-from conftest import SignIn
+from conftest import AuthFixture
 
 
 class TestIngestSongs:
@@ -13,9 +13,9 @@ class TestIngestSongs:
         self,
         client: TestClient,
         faker: Faker,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         artist_name = faker.name()
         album_title = faker.word()
@@ -137,9 +137,9 @@ class TestIngestSongs:
         self,
         client: TestClient,
         faker: Faker,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         artist_name = faker.name()
         album_title = faker.word()
@@ -208,9 +208,9 @@ class TestIngestSongs:
         self,
         client: TestClient,
         faker: Faker,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         # Before, create a first library
         create_response_1 = client.post(
@@ -359,9 +359,9 @@ class TestIngestSongs:
     async def test_requires_library_add_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/libraries/1/ingest/songs",
@@ -377,9 +377,9 @@ class TestIngestSongs:
     async def test_requires_library_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/libraries/99999999/ingest/songs",

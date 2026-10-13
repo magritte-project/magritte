@@ -8,7 +8,7 @@ from httpx2 import AsyncClient, Response
 from pydantic import HttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from conftest import SignIn
+from conftest import AuthFixture
 from magritte.model.extension import Extension
 from magritte.schemas.extension import ExtensionManifest
 
@@ -103,10 +103,10 @@ class TestDeleteExtension:
     def test_delete(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_extension: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             f"/extensions/available/{throwaway_extension}",
@@ -118,9 +118,9 @@ class TestDeleteExtension:
     def test_requires_extension_to_be_available(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/extensions/available/9999999",
@@ -132,9 +132,9 @@ class TestDeleteExtension:
     def test_requires_admin(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response = client.delete(
             "/extensions/available/1",
@@ -148,10 +148,10 @@ class TestReadAvailableExtensions:
     def test_read(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_extension: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/extensions/available",
@@ -171,9 +171,9 @@ class TestReadAvailableExtensions:
     def test_does_not_require_admin(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response = client.get(
             "/extensions/available",
@@ -194,10 +194,10 @@ class TestInstallExtension:
     def test_install(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
         throwaway_extension: int,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response = client.post(
             f"/extensions/available/{throwaway_extension}/install",
@@ -209,10 +209,10 @@ class TestInstallExtension:
     def test_rejects_already_installed_extension(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
         throwaway_extension: int,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response_1 = client.post(
             f"/extensions/available/{throwaway_extension}/install",
@@ -232,9 +232,9 @@ class TestInstallExtension:
     def test_requires_extension_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response = client.post(
             "/extensions/available/9999999/install",
@@ -256,10 +256,10 @@ class TestUninstallExtension:
     def test_uninstall(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
         throwaway_extension: int,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         install_response = client.post(
             f"/extensions/available/{throwaway_extension}/install",
@@ -280,10 +280,10 @@ class TestUninstallExtension:
     def test_requires_extension_to_be_installed(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
         throwaway_extension: int,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         uninstall_response = client.delete(
             f"/extensions/installed/{throwaway_extension}",
@@ -298,9 +298,9 @@ class TestUninstallExtension:
     def test_requires_extension_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response = client.delete(
             "/extensions/installed/99999999",
@@ -322,10 +322,10 @@ class TestReadInstalledExtensions:
     def test_read(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_extension: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         install_response = client.post(
             f"/extensions/available/{throwaway_extension}/install",

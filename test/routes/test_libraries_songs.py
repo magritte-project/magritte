@@ -5,17 +5,17 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
 
-from conftest import SignIn
+from conftest import AuthFixture
 from magritte.model.ignored_resource import IgnoredResource
 
 
 @pytest_asyncio.fixture
 async def throwaway_song(
     client: TestClient,
-    sign_in: SignIn,
+    admin_auth: AuthFixture,
     faker: Faker,
 ) -> int:
-    session = sign_in("test", "password")
+    session = admin_auth.sign_in()
 
     response = client.post(
         "/libraries/2/ingest/songs",
@@ -60,10 +60,10 @@ class TestReadLibrarySong:
     async def test_read(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_song: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             f"/libraries/2/songs/{throwaway_song}",
@@ -77,10 +77,10 @@ class TestReadLibrarySong:
     async def test_requires_library_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        fresh_admin_auth: AuthFixture,
         throwaway_song: int,
     ):
-        session = sign_in("orphaned", "password")
+        session = fresh_admin_auth.sign_in()
 
         response = client.get(
             f"/libraries/2/songs/{throwaway_song}",
@@ -93,9 +93,9 @@ class TestReadLibrarySong:
     async def test_requires_library_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/libraries/99999999/songs/9999999",
@@ -108,9 +108,9 @@ class TestReadLibrarySong:
     async def test_requires_song_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/libraries/2/songs/9999999",
@@ -125,10 +125,10 @@ class TestUpdateLibrarySong:
     async def test_update(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_song: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             f"/libraries/2/songs/{throwaway_song}",
@@ -147,10 +147,10 @@ class TestUpdateLibrarySong:
     async def test_requires_library_edit_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        fresh_admin_auth: AuthFixture,
         throwaway_song: int,
     ):
-        session = sign_in("unlucky", "password")
+        session = fresh_admin_auth.sign_in()
 
         response = client.patch(
             f"/libraries/2/songs/{throwaway_song}",
@@ -164,9 +164,9 @@ class TestUpdateLibrarySong:
     async def test_requires_library_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/libraries/99999999/songs/9999999",
@@ -180,9 +180,9 @@ class TestUpdateLibrarySong:
     async def test_requires_song_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/libraries/2/songs/9999999",
@@ -198,10 +198,10 @@ class TestDeleteLibrarySong:
     async def test_delete(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_song: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             f"/libraries/2/songs/{throwaway_song}",
@@ -213,11 +213,11 @@ class TestDeleteLibrarySong:
     async def test_with_suppress_source_file(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         faker: Faker,
         db_session: AsyncSession,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         mock_source_url = faker.url()
         response = client.post(
@@ -280,10 +280,10 @@ class TestDeleteLibrarySong:
     async def test_requires_library_remove_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        fresh_admin_auth: AuthFixture,
         throwaway_song: int,
     ):
-        session = sign_in("unlucky", "password")
+        session = fresh_admin_auth.sign_in()
 
         response = client.patch(
             f"/libraries/2/songs/{throwaway_song}",
@@ -297,9 +297,9 @@ class TestDeleteLibrarySong:
     async def test_requires_library_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/libraries/99999999/songs/9999999",
@@ -312,9 +312,9 @@ class TestDeleteLibrarySong:
     async def test_requires_song_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/libraries/2/songs/9999999",

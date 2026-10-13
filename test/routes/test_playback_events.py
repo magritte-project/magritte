@@ -7,17 +7,17 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, func, select
 
-from conftest import SignIn
+from conftest import AuthFixture
 from magritte.model.playback_event import PlaybackEvent
 
 
 @pytest_asyncio.fixture
 async def throwaway_song(
     client: TestClient,
-    sign_in: SignIn,
+    admin_auth: AuthFixture,
     faker: Faker,
 ) -> int:
-    session = sign_in("test", "password")
+    session = admin_auth.sign_in()
 
     response = client.post(
         "/libraries/2/ingest/songs",
@@ -62,10 +62,10 @@ class TestIngestPlaybackEvents:
     async def test_read(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_song: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/playback-events/ingest",
@@ -89,10 +89,10 @@ class TestIngestPlaybackEvents:
     async def test_requires_library_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        fresh_admin_auth: AuthFixture,
         throwaway_song: int,
     ):
-        session = sign_in("orphaned", "password")
+        session = fresh_admin_auth.sign_in()
 
         response = client.post(
             "/playback-events/ingest",
@@ -120,9 +120,9 @@ class TestIngestPlaybackEvents:
     async def test_requires_song_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/playback-events/ingest",
@@ -150,9 +150,9 @@ class TestIngestPlaybackEvents:
     async def test_rejects_too_long_body(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/playback-events/ingest",
@@ -177,10 +177,10 @@ class TestDeleteSongWithPlaybackEvents:
         self,
         client: TestClient,
         db_session: AsyncSession,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         throwaway_song: int,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/playback-events/ingest",

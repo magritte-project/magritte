@@ -1,7 +1,8 @@
+import pytest
 from faker import Faker
 from fastapi.testclient import TestClient
 
-from conftest import SignIn
+from conftest import AuthFixture
 from magritte.schemas.user import Token
 
 
@@ -66,8 +67,8 @@ def _ingest_song_with_source(
     return song_id, source_url
 
 
-def test_create_and_read_library(client: TestClient, sign_in: SignIn):
-    session = sign_in("test", "password")
+def test_create_and_read_library(client: TestClient, admin_auth: AuthFixture):
+    session = admin_auth.sign_in()
 
     create_response = client.post(
         "/libraries/create",
@@ -96,8 +97,10 @@ def test_create_and_read_library(client: TestClient, sign_in: SignIn):
     assert read_json.get("home_path") is None
 
 
-def test_create_rejects_absolute_home_paths(client: TestClient, sign_in: SignIn):
-    session = sign_in("test", "password")
+def test_create_rejects_absolute_home_paths(
+    client: TestClient, admin_auth: AuthFixture
+):
+    session = admin_auth.sign_in()
 
     create_response = client.post(
         "/libraries/create",
@@ -112,8 +115,10 @@ def test_create_rejects_absolute_home_paths(client: TestClient, sign_in: SignIn)
     assert create_response.status_code == 422
 
 
-def test_read_library_requires_library_to_exist(client: TestClient, sign_in: SignIn):
-    session = sign_in("test", "password")
+def test_read_library_requires_library_to_exist(
+    client: TestClient, admin_auth: AuthFixture
+):
+    session = admin_auth.sign_in()
 
     read_response = client.get(
         "/libraries/999999",
@@ -123,8 +128,12 @@ def test_read_library_requires_library_to_exist(client: TestClient, sign_in: Sig
     assert read_response.json().get("detail") == "Library not found"
 
 
-def test_read_library_requires_permission(client: TestClient, sign_in: SignIn):
-    creator_session = sign_in("test", "password")
+def test_read_library_requires_permission(
+    client: TestClient,
+    admin_auth: AuthFixture,
+    fresh_admin_auth: AuthFixture,
+):
+    creator_session = admin_auth.sign_in()
 
     create_response = client.post(
         "/libraries/create",
@@ -139,7 +148,7 @@ def test_read_library_requires_permission(client: TestClient, sign_in: SignIn):
     assert create_response.status_code == 200
     library_id = create_response.json().get("id")
 
-    forbidden_session = sign_in("unlucky", "password")
+    forbidden_session = fresh_admin_auth.sign_in()
 
     read_response = client.get(
         f"/libraries/{library_id}",
@@ -150,9 +159,9 @@ def test_read_library_requires_permission(client: TestClient, sign_in: SignIn):
 
 
 def test_read_library_home_subpaths_requires_relative_path(
-    client: TestClient, sign_in: SignIn
+    client: TestClient, admin_auth: AuthFixture
 ):
-    session = sign_in("test", "password")
+    session = admin_auth.sign_in()
 
     response = client.get(
         "/libraries/home-subpaths?relative_to=/",
@@ -163,9 +172,9 @@ def test_read_library_home_subpaths_requires_relative_path(
 
 
 def test_read_library_home_subpaths_requires_libraries_write_scope(
-    client: TestClient, sign_in: SignIn
+    client: TestClient, standard_auth: AuthFixture
 ):
-    session = sign_in("restricted", "password")
+    session = standard_auth.sign_in()
 
     response = client.get(
         "/libraries/home-subpaths?relative_to=.",
@@ -175,8 +184,8 @@ def test_read_library_home_subpaths_requires_libraries_write_scope(
 
 
 class TestUpdateLibrary:
-    def test_update(self, client: TestClient, sign_in: SignIn):
-        session = sign_in("test", "password")
+    def test_update(self, client: TestClient, admin_auth: AuthFixture):
+        session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -215,9 +224,12 @@ class TestUpdateLibrary:
         assert read_json.get("uploads_enabled") is True
 
     def test_read_library_requires_permission(
-        self, client: TestClient, sign_in: SignIn
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -232,7 +244,7 @@ class TestUpdateLibrary:
         assert create_response.status_code == 200
         library_id = create_response.json().get("id")
 
-        forbidden_session = sign_in("unlucky", "password")
+        forbidden_session = fresh_admin_auth.sign_in()
 
         update_response = client.patch(
             f"/libraries/{library_id}",
@@ -254,8 +266,8 @@ class TestUpdateLibrary:
 
 
 class TestReadLibraryPermissions:
-    def test_read(self, client: TestClient, sign_in: SignIn):
-        session = sign_in("test", "password")
+    def test_read(self, client: TestClient, admin_auth: AuthFixture):
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/libraries/1/permissions",
@@ -264,7 +276,7 @@ class TestReadLibraryPermissions:
         response_json = response.json()
         assert response.status_code == 200
         assert any(
-            permission.get("user_id") == 1 and permission.get("username") == "test"
+            permission.get("user_id") == 1 and permission.get("username") == "admin"
             for permission in response_json
         )
 
@@ -281,9 +293,10 @@ class TestReadLibraryPermissions:
     def test_requires_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -298,7 +311,7 @@ class TestReadLibraryPermissions:
         assert create_response.status_code == 200
         library_id = create_response.json().get("id")
 
-        forbidden_session = sign_in("unlucky", "password")
+        forbidden_session = fresh_admin_auth.sign_in()
 
         read_response = client.get(
             f"/libraries/{library_id}/permissions",
@@ -309,12 +322,14 @@ class TestReadLibraryPermissions:
 
 
 class TestCreateLibraryPermission:
-    def test_create(
+    @pytest.mark.asyncio
+    async def test_create(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -332,7 +347,7 @@ class TestCreateLibraryPermission:
         create_response = client.post(
             f"/libraries/{library_id}/permission/create",
             json={
-                "user_id": 2,
+                "user_id": await fresh_admin_auth.user_id,
                 "can_add": False,
                 "can_edit": True,
                 "can_remove": False,
@@ -342,7 +357,7 @@ class TestCreateLibraryPermission:
         assert create_response.status_code == 200
         assert create_response.json().get("can_edit") is True
 
-        other_session = sign_in("unlucky", "password")
+        other_session = fresh_admin_auth.sign_in()
 
         read_response = client.get(
             f"/libraries/{library_id}",
@@ -353,9 +368,9 @@ class TestCreateLibraryPermission:
     def test_requires_user_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -402,9 +417,10 @@ class TestCreateLibraryPermission:
     def test_requires_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -419,7 +435,7 @@ class TestCreateLibraryPermission:
         assert create_response.status_code == 200
         library_id = create_response.json().get("id")
 
-        forbidden_session = sign_in("unlucky", "password")
+        forbidden_session = fresh_admin_auth.sign_in()
 
         create_response = client.post(
             f"/libraries/{library_id}/permission/create",
@@ -436,12 +452,14 @@ class TestCreateLibraryPermission:
 
 
 class TestUpdateLibraryPermission:
-    def test_update(
+    @pytest.mark.asyncio
+    async def test_update(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -459,7 +477,7 @@ class TestUpdateLibraryPermission:
         create_response = client.post(
             f"/libraries/{library_id}/permission/create",
             json={
-                "user_id": 2,
+                "user_id": await fresh_admin_auth.user_id,
                 "can_add": False,
                 "can_edit": False,
                 "can_remove": False,
@@ -470,14 +488,14 @@ class TestUpdateLibraryPermission:
         assert create_response.json().get("can_edit") is False
 
         update_response = client.patch(
-            f"/libraries/{library_id}/permission/2",
+            f"/libraries/{library_id}/permission/{await fresh_admin_auth.user_id}",
             json={"can_edit": True},
             headers={"Authorization": f"Bearer {creator_session.access_token}"},
         )
         assert update_response.status_code == 200
         assert update_response.json().get("can_edit") is True
 
-        other_session = sign_in("unlucky", "password")
+        other_session = fresh_admin_auth.sign_in()
 
         read_response = client.get(
             f"/libraries/{library_id}",
@@ -488,9 +506,9 @@ class TestUpdateLibraryPermission:
     def test_rejects_current_user(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -516,9 +534,9 @@ class TestUpdateLibraryPermission:
     def test_requires_user_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -555,9 +573,10 @@ class TestUpdateLibraryPermission:
     def test_requires_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -572,7 +591,7 @@ class TestUpdateLibraryPermission:
         assert create_response.status_code == 200
         library_id = create_response.json().get("id")
 
-        forbidden_session = sign_in("unlucky", "password")
+        forbidden_session = fresh_admin_auth.sign_in()
 
         update_response = client.patch(
             f"/libraries/{library_id}/permission/2",
@@ -587,9 +606,10 @@ class TestDeleteLibraryPermission:
     def test_delete(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -623,7 +643,7 @@ class TestDeleteLibraryPermission:
         )
         assert delete_response.status_code == 200
 
-        other_session = sign_in("unlucky", "password")
+        other_session = fresh_admin_auth.sign_in()
 
         read_response = client.get(
             f"/libraries/{library_id}",
@@ -634,9 +654,9 @@ class TestDeleteLibraryPermission:
     def test_rejects_current_user(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -661,9 +681,9 @@ class TestDeleteLibraryPermission:
     def test_requires_user_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -698,9 +718,10 @@ class TestDeleteLibraryPermission:
     def test_requires_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -715,7 +736,7 @@ class TestDeleteLibraryPermission:
         assert create_response.status_code == 200
         library_id = create_response.json().get("id")
 
-        forbidden_session = sign_in("unlucky", "password")
+        forbidden_session = fresh_admin_auth.sign_in()
 
         delete_response = client.delete(
             f"/libraries/{library_id}/permission/2",
@@ -729,10 +750,10 @@ class TestReadLibraryIgnoredResources:
     def test_read(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         faker: Faker,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -777,9 +798,10 @@ class TestReadLibraryIgnoredResources:
     def test_requires_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -794,7 +816,7 @@ class TestReadLibraryIgnoredResources:
         assert create_response.status_code == 200
         library_id = create_response.json().get("id")
 
-        forbidden_session = sign_in("unlucky", "password")
+        forbidden_session = fresh_admin_auth.sign_in()
 
         read_response = client.get(
             f"/libraries/{library_id}/ignored",
@@ -808,10 +830,10 @@ class TestDeleteLibraryIgnoredResource:
     def test_delete(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         faker: Faker,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -857,9 +879,9 @@ class TestDeleteLibraryIgnoredResource:
     def test_requires_resource_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -894,9 +916,10 @@ class TestDeleteLibraryIgnoredResource:
     def test_requires_permission(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        creator_session = sign_in("test", "password")
+        creator_session = admin_auth.sign_in()
 
         create_response = client.post(
             "/libraries/create",
@@ -911,7 +934,7 @@ class TestDeleteLibraryIgnoredResource:
         assert create_response.status_code == 200
         library_id = create_response.json().get("id")
 
-        forbidden_session = sign_in("unlucky", "password")
+        forbidden_session = fresh_admin_auth.sign_in()
 
         delete_response = client.delete(
             f"/libraries/{library_id}/ignored/1",

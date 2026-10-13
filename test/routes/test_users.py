@@ -8,7 +8,7 @@ from fastapi import WebSocketDisconnect, status
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from conftest import SignIn
+from conftest import AuthFixture
 from magritte.model.library import Library
 from magritte.model.notification import Notification
 from magritte.model.playback_event import PlaybackEvent
@@ -66,13 +66,13 @@ class TestReadNotifications:
         self,
         client: TestClient,
         notifications_fixture: NotificationsFixture,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         notification_ids = [
             await notifications_fixture.throwaway_notification([1]) for _ in range(3)
         ]
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/users/notifications",
@@ -111,11 +111,11 @@ class TestReadNotification:
         notifications_fixture: NotificationsFixture,
         db_session: AsyncSession,
         faker: Faker,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         notification_id = await notifications_fixture.throwaway_notification([1])
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             f"/users/notifications/{notification_id}",
@@ -133,11 +133,11 @@ class TestReadNotification:
         self,
         client: TestClient,
         notifications_fixture: NotificationsFixture,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         notification_id = await notifications_fixture.throwaway_notification([])
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             f"/users/notifications/{notification_id}",
@@ -150,9 +150,9 @@ class TestReadNotification:
     async def test_requires_notification_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/users/notifications/999999",
@@ -179,11 +179,11 @@ class TestUpdateNotification:
         self,
         client: TestClient,
         notifications_fixture: NotificationsFixture,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         notification_id = await notifications_fixture.throwaway_notification([1])
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             f"/users/notifications/{notification_id}",
@@ -202,13 +202,13 @@ class TestUpdateNotification:
         self,
         client: TestClient,
         notifications_fixture: NotificationsFixture,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         notification_id = await notifications_fixture.throwaway_notification(
             [1], is_locked=True
         )
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             f"/users/notifications/{notification_id}",
@@ -224,11 +224,11 @@ class TestUpdateNotification:
         client: TestClient,
         notifications_fixture: NotificationsFixture,
         faker: Faker,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         notification_id = await notifications_fixture.throwaway_notification([])
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             f"/users/notifications/{notification_id}",
@@ -242,9 +242,9 @@ class TestUpdateNotification:
     async def test_requires_notification_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/users/notifications/999999",
@@ -273,11 +273,11 @@ class TestDeleteNotification:
         self,
         client: TestClient,
         notifications_fixture: NotificationsFixture,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         notification_id = await notifications_fixture.throwaway_notification([1])
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             f"/users/notifications/{notification_id}",
@@ -292,13 +292,13 @@ class TestDeleteNotification:
         self,
         client: TestClient,
         notifications_fixture: NotificationsFixture,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         notification_id = await notifications_fixture.throwaway_notification(
             [1], is_locked=True
         )
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             f"/users/notifications/{notification_id}",
@@ -313,11 +313,11 @@ class TestDeleteNotification:
         client: TestClient,
         notifications_fixture: NotificationsFixture,
         faker: Faker,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         notification_id = await notifications_fixture.throwaway_notification([])
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             f"/users/notifications/{notification_id}",
@@ -330,9 +330,9 @@ class TestDeleteNotification:
     async def test_requires_notification_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/users/notifications/999999",
@@ -359,13 +359,13 @@ class TestMarkAllNotificationsRead:
         self,
         client: TestClient,
         notifications_fixture: NotificationsFixture,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         unlocked_notification = await notifications_fixture.throwaway_notification([1])
         locked_notification = await notifications_fixture.throwaway_notification(
             [1], is_locked=True
         )
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         mark_all_response = client.post(
             "/users/notifications/mark-all-read",
@@ -411,10 +411,10 @@ class TestUpdateMe:
     async def test_sends_new_verification_email(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
         installed_mock_email_client: AsyncMock,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/users/me",
@@ -450,10 +450,11 @@ class TestUpdateMe:
     async def test_cannot_change_to_taken_email(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
         installed_mock_email_client: AsyncMock,
     ):
-        first_session = sign_in("test", "password")
+        first_session = admin_auth.sign_in()
 
         first_response = client.post(
             "/users/me",
@@ -466,7 +467,7 @@ class TestUpdateMe:
         )
         assert first_response.status_code == 200
 
-        second_session = sign_in("unlucky", "password")
+        second_session = fresh_admin_auth.sign_in()
 
         second_response = client.post(
             "/users/me",
@@ -487,9 +488,9 @@ class TestUpdateMe:
     async def test_cannot_unset_email(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         set_response = client.post(
             "/users/me",
@@ -521,9 +522,9 @@ class TestReadUsers:
     async def test_read(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/users/all",
@@ -531,7 +532,7 @@ class TestReadUsers:
         )
         response_json = response.json()
         assert response.status_code == 200
-        assert response_json.get("total") >= 4
+        assert response_json.get("total") >= 3
         assert all(
             user.get("id") is not None and user.get("username") is not None
             for user in response_json.get("users")
@@ -554,9 +555,9 @@ class TestReadUser:
     async def test_read_by_id(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/users/all/1",
@@ -565,24 +566,24 @@ class TestReadUser:
         response_json = response.json()
         assert response.status_code == 200
         assert response_json.get("id") == 1
-        assert response_json.get("username") == "test"
+        assert response_json.get("username") == "admin"
 
     @pytest.mark.asyncio
     async def test_read_by_username(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
-            "/users/all/unlucky",
+            "/users/all/admin",
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
         response_json = response.json()
         assert response.status_code == 200
-        assert response_json.get("id") == 2
-        assert response_json.get("username") == "unlucky"
+        assert response_json.get("id") == 1
+        assert response_json.get("username") == "admin"
 
     @pytest.mark.asyncio
     async def test_requires_user(
@@ -601,9 +602,9 @@ class TestReadUsersAdmin:
     async def test_read(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/users/admin/all",
@@ -611,7 +612,7 @@ class TestReadUsersAdmin:
         )
         response_json = response.json()
         assert response.status_code == 200
-        assert response_json.get("total") >= 4
+        assert response_json.get("total") >= 3
         assert all(
             user.get("id") is not None
             and user.get("username") is not None
@@ -622,7 +623,7 @@ class TestReadUsersAdmin:
         users_by_name = {
             user.get("username"): user for user in response_json.get("users")
         }
-        assert users_by_name["restricted"].get("scopes") == [
+        assert users_by_name["standard"].get("scopes") == [
             "library:read",
             "profile",
         ]
@@ -631,29 +632,29 @@ class TestReadUsersAdmin:
     async def test_query(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/users/admin/all",
-            params={"query": "restricted"},
+            params={"query": "standard"},
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
         response_json = response.json()
         assert response.status_code == 200
         assert response_json.get("total") == 1
         assert [user.get("username") for user in response_json.get("users")] == [
-            "restricted"
+            "standard"
         ]
 
     @pytest.mark.asyncio
     async def test_requires_admin(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response = client.get(
             "/users/admin/all",
@@ -678,9 +679,9 @@ class TestReadUserAdmin:
     async def test_read_by_id(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
             "/users/admin/all/1",
@@ -689,35 +690,35 @@ class TestReadUserAdmin:
         response_json = response.json()
         assert response.status_code == 200
         assert response_json.get("id") == 1
-        assert response_json.get("username") == "test"
+        assert response_json.get("username") == "admin"
 
     @pytest.mark.asyncio
     async def test_read_by_username(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.get(
-            "/users/admin/all/unlucky",
+            "/users/admin/all/admin",
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
         response_json = response.json()
         assert response.status_code == 200
-        assert response_json.get("id") == 2
-        assert response_json.get("username") == "unlucky"
+        assert response_json.get("id") == 1
+        assert response_json.get("username") == "admin"
 
     @pytest.mark.asyncio
     async def test_requires_admin(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response = client.get(
-            "/users/admin/all/3",
+            "/users/admin/all/1",
             headers={"Authorization": f"Bearer {session.access_token}"},
         )
         assert response.status_code == 401
@@ -739,12 +740,13 @@ class TestUpdateUserAdmin:
     async def test_update(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
-            "/users/admin/all/2",
+            f"/users/admin/all/{await fresh_admin_auth.user_id}",
             headers={"Authorization": f"Bearer {session.access_token}"},
             json={
                 "preferred_name": "Lucky",
@@ -753,11 +755,11 @@ class TestUpdateUserAdmin:
         )
         response_json = response.json()
         assert response.status_code == 200
-        assert response_json.get("id") == 2
+        assert response_json.get("id") == await fresh_admin_auth.user_id
         assert response_json.get("preferred_name") == "Lucky"
         assert sorted(response_json.get("scopes")) == ["library:read", "profile"]
 
-        updated_session = sign_in("unlucky", "password")
+        updated_session = fresh_admin_auth.sign_in()
         assert sorted(updated_session.scopes) == [
             OAuth2Scope.LIBRARIES_READ,
             OAuth2Scope.PROFILE,
@@ -767,18 +769,19 @@ class TestUpdateUserAdmin:
     async def test_partial_update(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
-            "/users/admin/all/2",
+            f"/users/admin/all/{await fresh_admin_auth.user_id}",
             headers={"Authorization": f"Bearer {session.access_token}"},
             json={"preferred_name": "Lucky"},
         )
         response_json = response.json()
         assert response.status_code == 200
-        assert response_json.get("username") == "unlucky"
+        assert response_json.get("username") == "fresh_admin"
         assert response_json.get("preferred_name") == "Lucky"
         assert sorted(response_json.get("scopes")) == sorted(OAuth2Scope)
 
@@ -786,9 +789,9 @@ class TestUpdateUserAdmin:
     async def test_can_update_own_scopes_keeping_admin(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/users/admin/all/1",
@@ -802,9 +805,9 @@ class TestUpdateUserAdmin:
     async def test_cannot_remove_own_admin_scope(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/users/admin/all/1",
@@ -817,16 +820,16 @@ class TestUpdateUserAdmin:
             == "Cannot remove admin scope from the signed in user"
         )
 
-        updated_session = sign_in("test", "password")
+        updated_session = admin_auth.sign_in()
         assert OAuth2Scope.ADMIN in updated_session.scopes
 
     @pytest.mark.asyncio
     async def test_can_remove_admin_scope_from_other_user(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/users/admin/all/2",
@@ -840,9 +843,10 @@ class TestUpdateUserAdmin:
     async def test_rejects_empty_scopes(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
+        fresh_admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/users/admin/all/2",
@@ -851,16 +855,16 @@ class TestUpdateUserAdmin:
         )
         assert response.status_code == 422
 
-        updated_session = sign_in("unlucky", "password")
+        updated_session = fresh_admin_auth.sign_in()
         assert sorted(updated_session.scopes) == sorted(OAuth2Scope)
 
     @pytest.mark.asyncio
     async def test_requires_user_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.patch(
             "/users/admin/all/9999",
@@ -874,9 +878,9 @@ class TestUpdateUserAdmin:
     async def test_requires_admin(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response = client.patch(
             "/users/admin/all/3",
@@ -904,7 +908,7 @@ class TestDeleteUserAdmin:
         self,
         client: TestClient,
         db_session: AsyncSession,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         solo_library = Library(name="Solo", home_path=None)
         db_session.add(solo_library)
@@ -913,7 +917,7 @@ class TestDeleteUserAdmin:
         db_session.add(UserLibraryLink(user_id=2, library_id=solo_library_id))
         await db_session.commit()
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/users/admin/all/2",
@@ -942,7 +946,7 @@ class TestDeleteUserAdmin:
         self,
         client: TestClient,
         db_session: AsyncSession,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
         song = Song()
         db_session.add(song)
@@ -960,7 +964,7 @@ class TestDeleteUserAdmin:
         playback_event_id = playback_event.id
         await db_session.commit()
 
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/users/admin/all/2",
@@ -975,9 +979,9 @@ class TestDeleteUserAdmin:
     async def test_cannot_delete_self(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/users/admin/all/1",
@@ -996,9 +1000,9 @@ class TestDeleteUserAdmin:
     async def test_requires_user_to_exist(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.delete(
             "/users/admin/all/9999",
@@ -1011,9 +1015,9 @@ class TestDeleteUserAdmin:
     async def test_requires_admin(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        standard_auth: AuthFixture,
     ):
-        session = sign_in("restricted", "password")
+        session = standard_auth.sign_in()
 
         response = client.delete(
             "/users/admin/all/4",
@@ -1038,9 +1042,9 @@ class TestStreamUserEvents:
     async def test_with_valid_token(
         self,
         client: TestClient,
-        sign_in: SignIn,
+        admin_auth: AuthFixture,
     ):
-        session = sign_in("test", "password")
+        session = admin_auth.sign_in()
 
         response = client.post(
             "/users/events/preflight",

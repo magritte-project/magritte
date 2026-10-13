@@ -22,7 +22,7 @@ def test_sign_up_rejects_already_in_use_usernames(client: TestClient):
     response = client.post(
         "/sign-up",
         json={
-            "username": "test",
+            "username": "admin",
             "password": "passpass",
         },
     )
@@ -85,7 +85,7 @@ def test_sign_up_requires_email_when_configured(
     response = client.post(
         "/sign-up",
         json={
-            "username": "test",
+            "username": "admin",
             "password": "passpass",
         },
     )
@@ -99,7 +99,7 @@ def test_sign_in(client: TestClient):
     token_response = client.post(
         "/sign-in",
         data={
-            "username": "test",
+            "username": "admin",
             "password": "password",
         },
     )
@@ -114,7 +114,7 @@ def test_sign_in_requires_right_password(client: TestClient):
     token_response = client.post(
         "/sign-in",
         data={
-            "username": "test",
+            "username": "admin",
             "password": "nope",
         },
     )

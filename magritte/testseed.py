@@ -9,30 +9,26 @@ from magritte.schemas.auth import OAuth2Scope
 
 async def _seed_users(session: AsyncSession):
     secrets_config = get_secrets_config()
+    # Seed the first user which is always an admin
     session.add(
         User(
-            username="test",
+            username="admin",
             hashed_password=password_hash.hash("password", salt=secrets_config.salt),
             scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
     )
+    # Seed another user with the standard scopes
     session.add(
         User(
-            username="unlucky",
-            hashed_password=password_hash.hash("password", salt=secrets_config.salt),
-            scope=OAuth2Scope.to_str({*OAuth2Scope}),
-        )
-    )
-    session.add(
-        User(
-            username="restricted",
+            username="standard",
             hashed_password=password_hash.hash("password", salt=secrets_config.salt),
             scope=OAuth2Scope.to_str({OAuth2Scope.PROFILE, OAuth2Scope.LIBRARIES_READ}),
         )
     )
+    # Seed another admin which has no library or other resources/configuration
     session.add(
         User(
-            username="orphaned",
+            username="fresh_admin",
             hashed_password=password_hash.hash("password", salt=secrets_config.salt),
             scope=OAuth2Scope.to_str({*OAuth2Scope}),
         )
@@ -72,15 +68,6 @@ async def _seed_libraries(session: AsyncSession):
             can_add=True,
             can_edit=True,
             can_remove=True,
-        )
-    )
-    session.add(
-        UserLibraryLink(
-            user_id=2,  # unlucky
-            library_id=2,  # Scratch
-            can_add=False,
-            can_edit=False,
-            can_remove=False,
         )
     )
     await session.flush()
