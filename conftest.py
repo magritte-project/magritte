@@ -13,7 +13,7 @@ from magritte import app
 from magritte.db import create_db_engine, get_db_engine
 from magritte.email import EmailClient, get_email_client
 from magritte.model import create_model_tables_if_needed
-from magritte.schemas.user import Token
+from magritte.schemas.auth import Token
 from magritte.testseed import seed_test_data
 
 

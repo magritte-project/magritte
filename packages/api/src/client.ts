@@ -43,6 +43,8 @@ import {
     readUsersUsersAllGet,
     readUserUsersAllIdOrUsernameGet,
     requestSyncLibraryLibrariesLibraryIdSyncPost,
+    resetPasswordCompleteResetPasswordCompletePost,
+    resetPasswordResetPasswordPost,
     signInSignInPost,
     signUpSignUpPost,
     streamUserEventsPreflightUsersEventsPreflightPost,
@@ -67,6 +69,7 @@ import {
     type ArtworkUpdate,
     type BodySignInSignInPost,
     type BulkIngestSongs,
+    type CompleteResetPassword,
     type DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData,
     type ExtensionImportAdmin,
     type IngestPlaybackEvent,
@@ -100,6 +103,8 @@ import {
     type ReadNotificationsUsersNotificationsGetData,
     type ReadUsersAdminUsersAdminAllGetData,
     type ReadUsersUsersAllGetData,
+    type ResetPassword,
+    type SignUp,
     type SongRead,
     type SongUpdate,
     type SourceCreate,
@@ -115,7 +120,6 @@ import {
     type UserProfileMeUpdate,
     type UserProfileRead,
     type UserProfilesRead,
-    type UserSignUp,
 } from "./openapi"
 import { createClient, type Client } from "./openapi/client"
 import type { UserSessionManager } from "./userSession"
@@ -209,7 +213,7 @@ export class APIClient {
 
     // -- Root Routes -- //
 
-    async signUp(body: UserSignUp): Promise<UserProfileMeRead> {
+    async signUp(body: SignUp): Promise<UserProfileMeRead> {
         return await signUpSignUpPost({ ...this.options, body })
     }
 
@@ -219,6 +223,14 @@ export class APIClient {
 
     async verifyEmail(token: string): Promise<OperationResult> {
         return await verifyEmailVerifyEmailPost({ ...this.options, query: { token } })
+    }
+
+    async resetPassword(body: ResetPassword): Promise<OperationResult> {
+        return await resetPasswordResetPasswordPost({ ...this.options, body })
+    }
+
+    async resetPasswordComplete(body: CompleteResetPassword): Promise<OperationResult> {
+        return await resetPasswordCompleteResetPasswordCompletePost({ ...this.options, body })
     }
 
     // -- User Routes -- //

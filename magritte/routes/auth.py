@@ -1,3 +1,5 @@
+import secrets
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
@@ -11,15 +13,23 @@ from magritte.auth import (
     authenticate_user,
     create_user,
     get_feature_user,
+    password_hash,
+    send_reset_password_email,
     send_verification_email,
 )
-from magritte.config import config
+from magritte.config import config, get_secrets_config
 from magritte.db import get_db_session
 from magritte.email import EmailClient, get_email_client
 from magritte.model.user import User
-from magritte.schemas.auth import InstanceStatusRead
+from magritte.schemas.auth import (
+    CompleteResetPassword,
+    InstanceStatusRead,
+    ResetPassword,
+    SignUp,
+    Token,
+)
 from magritte.schemas.base import OperationResult
-from magritte.schemas.user import Token, UserProfileMeRead, UserSignUp
+from magritte.schemas.user import UserProfileMeRead
 
 router = APIRouter()
 
@@ -53,7 +63,7 @@ async def read_instance_status(
     summary="Sign up a new user",
 )
 async def sign_up(
-    sign_up: UserSignUp,
+    sign_up: SignUp,
     background_tasks: BackgroundTasks,
     email_client: Annotated[EmailClient | None, Depends(get_email_client)],
     session: Annotated[AsyncSession, Depends(get_db_session)],
@@ -158,3 +168,107 @@ async def verify_email(
     await session.flush()
 
     return OperationResult(message="Email verified")
+
+
+@router.post(
+    "/reset-password",
+    response_model=OperationResult,
+    summary="Request an email to reset a user's password",
+)
+async def reset_password(
+    reset_password: ResetPassword,
+    background_tasks: BackgroundTasks,
+    email_client: Annotated[EmailClient | None, Depends(get_email_client)],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not email_client:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Not configured to support emails",
+        )
+
+    user = await User.read_by_email(reset_password.email, session)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    if user.email is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User has no email"
+        )
+
+    token = secrets.token_hex(32)
+    user.hashed_reset_password_token = password_hash.hash(
+        token, salt=get_secrets_config().salt
+    )
+    user.reset_password_token_created_at = datetime.now(UTC)
+
+    await session.flush()
+
+    background_tasks.add_task(
+        send_reset_password_email,
+        email_client,
+        user_email=user.email,
+        user_username=user.username,
+        token=token,
+    )
+
+    return OperationResult(message="Reset password email sent")
+
+
+@router.post(
+    "/reset-password/complete",
+    response_model=OperationResult,
+    summary="Request an email to reset a user's password",
+)
+async def reset_password_complete(
+    complete_reset_password: CompleteResetPassword,
+    email_client: Annotated[EmailClient | None, Depends(get_email_client)],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not email_client:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Not configured to support emails",
+        )
+
+    user = await User.read_by_email(complete_reset_password.email, session)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    if user.email is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User has no email"
+        )
+
+    if (
+        user.hashed_reset_password_token is None
+        or user.reset_password_token_created_at is None
+        or datetime.now(UTC)
+        > user.reset_password_token_created_at.replace(tzinfo=UTC)
+        + timedelta(minutes=15)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token"
+        )
+
+    if user.hashed_reset_password_token is None or not password_hash.verify(
+        complete_reset_password.token, user.hashed_reset_password_token
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token"
+        )
+
+    user.hashed_password = password_hash.hash(
+        complete_reset_password.new_password,
+        salt=get_secrets_config().salt,
+    )
+    user.hashed_reset_password_token = None
+    user.reset_password_token_created_at = None
+
+    await session.flush()
+
+    return OperationResult(message="Password reset complete")

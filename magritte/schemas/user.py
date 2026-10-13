@@ -1,22 +1,10 @@
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import BaseModel, EmailStr, Field
 
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.base import TAG_MAX_LENGTH, PaginatedQuery
-
-
-class Token(BaseModel):
-    scopes: list[OAuth2Scope]
-    access_token: str
-    token_type: Literal["bearer"]
-
-
-class UserSignUp(BaseModel):
-    email: EmailStr | None = None
-    username: Annotated[str, Field(max_length=255)]
-    password: Annotated[str, Field(min_length=8, max_length=100)]
 
 
 class UserProfileRead(BaseModel):

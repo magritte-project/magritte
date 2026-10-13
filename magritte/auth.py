@@ -2,6 +2,7 @@ from datetime import UTC, datetime, timedelta
 from enum import Enum
 from functools import lru_cache
 from typing import Annotated, Any
+from urllib.parse import quote
 
 import jwt
 from fastapi import Depends, HTTPException, Query, WebSocketException, status
@@ -16,8 +17,7 @@ from magritte.db import get_db_session
 from magritte.email import EmailClient, EmailRecipient
 from magritte.email.templates import render_email_template
 from magritte.model.user import User
-from magritte.schemas.auth import OAuth2Scope
-from magritte.schemas.user import Token
+from magritte.schemas.auth import OAuth2Scope, Token
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/sign-in",
@@ -309,6 +309,29 @@ async def send_verification_email(
     await email_client.send(
         sender=EmailRecipient(address=config.email_sender_address, name="Magritte"),
         subject="Verify Your Email",
+        to={EmailRecipient(address=user_email, name=user_username)},
+        text=text,
+        html=html,
+    )
+
+
+async def send_reset_password_email(
+    email_client: EmailClient,
+    *,
+    user_email: str,
+    user_username: str,
+    token: str,
+):
+    text, html = await render_email_template(
+        "reset_password",
+        {
+            "name": user_username,
+            "reset_link": f"{config.web_url}/reset-password/complete?token={quote(token)}&email={quote(user_email)}",
+        },
+    )
+    await email_client.send(
+        sender=EmailRecipient(address=config.email_sender_address, name="Magritte"),
+        subject="Reset Your Password",
         to={EmailRecipient(address=user_email, name=user_username)},
         text=text,
         html=html,

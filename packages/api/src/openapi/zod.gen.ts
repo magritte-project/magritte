@@ -101,6 +101,15 @@ export const BodySignInSignInPostSchema = z.object({
 })
 
 /**
+ * CompleteResetPassword
+ */
+export const CompleteResetPasswordSchema = z.object({
+    email: z.email(),
+    token: z.string(),
+    new_password: z.string().min(8).max(100),
+})
+
+/**
  * ExtensionCommand
  */
 export const ExtensionCommandSchema = z.object({
@@ -417,6 +426,22 @@ export const PlaybackEventIngestResultSchema = z.object({
 })
 
 /**
+ * ResetPassword
+ */
+export const ResetPasswordSchema = z.object({
+    email: z.email(),
+})
+
+/**
+ * SignUp
+ */
+export const SignUpSchema = z.object({
+    email: z.email().nullish(),
+    username: z.string().max(255),
+    password: z.string().min(8).max(100),
+})
+
+/**
  * SongUpdate
  */
 export const SongUpdateSchema = z.object({
@@ -622,15 +647,6 @@ export const UserProfilesReadSchema = z.object({
     offset: z.int(),
     limit: z.int(),
     total: z.int(),
-})
-
-/**
- * UserSignUp
- */
-export const UserSignUpSchema = z.object({
-    email: z.email().nullish(),
-    username: z.string().max(255),
-    password: z.string().min(8).max(100),
 })
 
 /**

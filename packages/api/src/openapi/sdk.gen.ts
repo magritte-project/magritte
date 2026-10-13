@@ -144,6 +144,12 @@ import type {
     RequestSyncLibraryLibrariesLibraryIdSyncPostData,
     RequestSyncLibraryLibrariesLibraryIdSyncPostErrors,
     RequestSyncLibraryLibrariesLibraryIdSyncPostResponses,
+    ResetPasswordCompleteResetPasswordCompletePostData,
+    ResetPasswordCompleteResetPasswordCompletePostErrors,
+    ResetPasswordCompleteResetPasswordCompletePostResponses,
+    ResetPasswordResetPasswordPostData,
+    ResetPasswordResetPasswordPostErrors,
+    ResetPasswordResetPasswordPostResponses,
     SignInSignInPostData,
     SignInSignInPostErrors,
     SignInSignInPostResponses,
@@ -390,6 +396,60 @@ export const verifyEmailVerifyEmailPost = <ThrowOnError extends boolean = false>
         responseStyle: "data",
         url: "/verify-email",
         ...options,
+    })
+
+/**
+ * Request an email to reset a user's password
+ */
+export const resetPasswordResetPasswordPost = <ThrowOnError extends boolean = false>(
+    options: Options<ResetPasswordResetPasswordPostData, ThrowOnError>,
+): RequestResult<
+    ResetPasswordResetPasswordPostResponses,
+    ResetPasswordResetPasswordPostErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).post<
+        ResetPasswordResetPasswordPostResponses,
+        ResetPasswordResetPasswordPostErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        url: "/reset-password",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Request an email to reset a user's password
+ */
+export const resetPasswordCompleteResetPasswordCompletePost = <
+    ThrowOnError extends boolean = false,
+>(
+    options: Options<ResetPasswordCompleteResetPasswordCompletePostData, ThrowOnError>,
+): RequestResult<
+    ResetPasswordCompleteResetPasswordCompletePostResponses,
+    ResetPasswordCompleteResetPasswordCompletePostErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).post<
+        ResetPasswordCompleteResetPasswordCompletePostResponses,
+        ResetPasswordCompleteResetPasswordCompletePostErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        url: "/reset-password/complete",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
     })
 
 /**

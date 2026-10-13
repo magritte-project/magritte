@@ -1,4 +1,4 @@
-import type { UserSignUp } from "@magritte/api"
+import type { SignUp } from "@magritte/api"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import z from "zod"
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/sign-up")({
                 email: null,
                 username: "",
                 password: "",
-            } satisfies UserSignUp as UserSignUp,
+            } satisfies SignUp as SignUp,
             onSubmit: async ({ value }) => {
                 try {
                     await signUpMutation.mutateAsync(value)

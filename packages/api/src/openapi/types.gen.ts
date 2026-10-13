@@ -213,6 +213,24 @@ export type BulkIngestSongs = {
 }
 
 /**
+ * CompleteResetPassword
+ */
+export type CompleteResetPassword = {
+    /**
+     * Email
+     */
+    email: string
+    /**
+     * Token
+     */
+    token: string
+    /**
+     * New Password
+     */
+    new_password: string
+}
+
+/**
  * ExtensionCommand
  */
 export type ExtensionCommand = {
@@ -963,6 +981,34 @@ export type PlaybackEventIngestResult = {
 export type PlaybackEventKind = "play" | "pause" | "stop" | "fast_forward" | "rewind"
 
 /**
+ * ResetPassword
+ */
+export type ResetPassword = {
+    /**
+     * Email
+     */
+    email: string
+}
+
+/**
+ * SignUp
+ */
+export type SignUp = {
+    /**
+     * Email
+     */
+    email?: string | null
+    /**
+     * Username
+     */
+    username: string
+    /**
+     * Password
+     */
+    password: string
+}
+
+/**
  * SongRead
  */
 export type SongRead = {
@@ -1491,24 +1537,6 @@ export type UserProfilesRead = {
 }
 
 /**
- * UserSignUp
- */
-export type UserSignUp = {
-    /**
-     * Email
-     */
-    email?: string | null
-    /**
-     * Username
-     */
-    username: string
-    /**
-     * Password
-     */
-    password: string
-}
-
-/**
  * ValidationError
  */
 export type ValidationError = {
@@ -1678,7 +1706,7 @@ export type ReadInstanceStatusStatusGetResponse =
     ReadInstanceStatusStatusGetResponses[keyof ReadInstanceStatusStatusGetResponses]
 
 export type SignUpSignUpPostData = {
-    body: UserSignUp
+    body: SignUp
     path?: never
     query?: never
     url: "/sign-up"
@@ -1760,6 +1788,60 @@ export type VerifyEmailVerifyEmailPostResponses = {
 
 export type VerifyEmailVerifyEmailPostResponse =
     VerifyEmailVerifyEmailPostResponses[keyof VerifyEmailVerifyEmailPostResponses]
+
+export type ResetPasswordResetPasswordPostData = {
+    body: ResetPassword
+    path?: never
+    query?: never
+    url: "/reset-password"
+}
+
+export type ResetPasswordResetPasswordPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type ResetPasswordResetPasswordPostError =
+    ResetPasswordResetPasswordPostErrors[keyof ResetPasswordResetPasswordPostErrors]
+
+export type ResetPasswordResetPasswordPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: OperationResult
+}
+
+export type ResetPasswordResetPasswordPostResponse =
+    ResetPasswordResetPasswordPostResponses[keyof ResetPasswordResetPasswordPostResponses]
+
+export type ResetPasswordCompleteResetPasswordCompletePostData = {
+    body: CompleteResetPassword
+    path?: never
+    query?: never
+    url: "/reset-password/complete"
+}
+
+export type ResetPasswordCompleteResetPasswordCompletePostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type ResetPasswordCompleteResetPasswordCompletePostError =
+    ResetPasswordCompleteResetPasswordCompletePostErrors[keyof ResetPasswordCompleteResetPasswordCompletePostErrors]
+
+export type ResetPasswordCompleteResetPasswordCompletePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: OperationResult
+}
+
+export type ResetPasswordCompleteResetPasswordCompletePostResponse =
+    ResetPasswordCompleteResetPasswordCompletePostResponses[keyof ResetPasswordCompleteResetPasswordCompletePostResponses]
 
 export type ImportExtensionExtensionsAvailableImportPostData = {
     body: ExtensionImportAdmin

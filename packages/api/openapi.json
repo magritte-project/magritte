@@ -165,9 +165,7 @@
                 "operationId": "sign_up_sign_up_post",
                 "requestBody": {
                     "content": {
-                        "application/json": {
-                            "schema": { "$ref": "#/components/schemas/UserSignUp" }
-                        }
+                        "application/json": { "schema": { "$ref": "#/components/schemas/SignUp" } }
                     },
                     "required": true
                 },
@@ -240,6 +238,70 @@
                         "description": "A feature token"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reset-password": {
+            "post": {
+                "summary": "Request an email to reset a user's password",
+                "operationId": "reset_password_reset_password_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/ResetPassword" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reset-password/complete": {
+            "post": {
+                "summary": "Request an email to reset a user's password",
+                "operationId": "reset_password_complete_reset_password_complete_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/CompleteResetPassword" }
+                        }
+                    },
+                    "required": true
+                },
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -2735,6 +2797,21 @@
                 "required": ["songs"],
                 "title": "BulkIngestSongs"
             },
+            "CompleteResetPassword": {
+                "properties": {
+                    "email": { "type": "string", "format": "email", "title": "Email" },
+                    "token": { "type": "string", "title": "Token" },
+                    "new_password": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 8,
+                        "title": "New Password"
+                    }
+                },
+                "type": "object",
+                "required": ["email", "token", "new_password"],
+                "title": "CompleteResetPassword"
+            },
             "ExtensionCommand": {
                 "properties": {
                     "id": {
@@ -3420,6 +3497,32 @@
                 "enum": ["play", "pause", "stop", "fast_forward", "rewind"],
                 "title": "PlaybackEventKind"
             },
+            "ResetPassword": {
+                "properties": {
+                    "email": { "type": "string", "format": "email", "title": "Email" }
+                },
+                "type": "object",
+                "required": ["email"],
+                "title": "ResetPassword"
+            },
+            "SignUp": {
+                "properties": {
+                    "email": {
+                        "anyOf": [{ "type": "string", "format": "email" }, { "type": "null" }],
+                        "title": "Email"
+                    },
+                    "username": { "type": "string", "maxLength": 255, "title": "Username" },
+                    "password": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 8,
+                        "title": "Password"
+                    }
+                },
+                "type": "object",
+                "required": ["username", "password"],
+                "title": "SignUp"
+            },
             "SongRead": {
                 "properties": {
                     "id": { "type": "integer", "title": "Id" },
@@ -3897,24 +4000,6 @@
                 "type": "object",
                 "required": ["users", "offset", "limit", "total"],
                 "title": "UserProfilesRead"
-            },
-            "UserSignUp": {
-                "properties": {
-                    "email": {
-                        "anyOf": [{ "type": "string", "format": "email" }, { "type": "null" }],
-                        "title": "Email"
-                    },
-                    "username": { "type": "string", "maxLength": 255, "title": "Username" },
-                    "password": {
-                        "type": "string",
-                        "maxLength": 100,
-                        "minLength": 8,
-                        "title": "Password"
-                    }
-                },
-                "type": "object",
-                "required": ["username", "password"],
-                "title": "UserSignUp"
             },
             "ValidationError": {
                 "properties": {

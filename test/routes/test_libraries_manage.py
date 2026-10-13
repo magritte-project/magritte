@@ -3,7 +3,7 @@ from faker import Faker
 from fastapi.testclient import TestClient
 
 from conftest import AuthFixture
-from magritte.schemas.user import Token
+from magritte.schemas.auth import Token
 
 
 def _ingest_song_with_source(

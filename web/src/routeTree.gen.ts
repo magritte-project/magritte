@@ -11,12 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LibrariesRouteRouteImport } from './routes/libraries/route'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SettingsRouteRouteImport } from './routes/settings/route'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as LibrariesIndexRouteImport } from './routes/libraries/index'
 import { Route as LibrariesLibraryIdRouteRouteImport } from './routes/libraries.$libraryId/route'
 import { Route as LibrariesAddRouteImport } from './routes/libraries/add'
+import { Route as ResetPasswordCompleteRouteImport } from './routes/reset-password_.complete'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsAdminRouteImport } from './routes/settings/admin'
 import { Route as VerifyTokenRouteImport } from './routes/verify.$token'
@@ -48,6 +50,11 @@ const LibrariesRouteRoute = LibrariesRouteRouteImport.update({
   path: '/libraries',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRouteRoute = SettingsRouteRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -77,6 +84,11 @@ const LibrariesAddRoute = LibrariesAddRouteImport.update({
   id: '/add',
   path: '/add',
   getParentRoute: () => LibrariesRouteRoute,
+} as any)
+const ResetPasswordCompleteRoute = ResetPasswordCompleteRouteImport.update({
+  id: '/reset-password_/complete',
+  path: '/reset-password/complete',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
   id: '/',
@@ -193,10 +205,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/libraries': typeof LibrariesRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
+  '/reset-password/complete': typeof ResetPasswordCompleteRoute
   '/settings/admin': typeof SettingsAdminRouteWithChildren
   '/verify/$token': typeof VerifyTokenRoute
   '/libraries/': typeof LibrariesIndexRoute
@@ -221,9 +235,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/libraries/add': typeof LibrariesAddRoute
+  '/reset-password/complete': typeof ResetPasswordCompleteRoute
   '/settings/admin': typeof SettingsAdminRouteWithChildren
   '/verify/$token': typeof VerifyTokenRoute
   '/libraries': typeof LibrariesIndexRoute
@@ -250,10 +266,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/libraries': typeof LibrariesRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
+  '/reset-password_/complete': typeof ResetPasswordCompleteRoute
   '/settings/admin': typeof SettingsAdminRouteWithChildren
   '/verify/$token': typeof VerifyTokenRoute
   '/libraries/': typeof LibrariesIndexRoute
@@ -282,10 +300,12 @@ export interface FileRouteTypes {
     | '/'
     | '/libraries'
     | '/settings'
+    | '/reset-password'
     | '/sign-in'
     | '/sign-up'
     | '/libraries/$libraryId'
     | '/libraries/add'
+    | '/reset-password/complete'
     | '/settings/admin'
     | '/verify/$token'
     | '/libraries/'
@@ -310,9 +330,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/reset-password'
     | '/sign-in'
     | '/sign-up'
     | '/libraries/add'
+    | '/reset-password/complete'
     | '/settings/admin'
     | '/verify/$token'
     | '/libraries'
@@ -338,10 +360,12 @@ export interface FileRouteTypes {
     | '/'
     | '/libraries'
     | '/settings'
+    | '/reset-password'
     | '/sign-in'
     | '/sign-up'
     | '/libraries/$libraryId'
     | '/libraries/add'
+    | '/reset-password_/complete'
     | '/settings/admin'
     | '/verify/$token'
     | '/libraries/'
@@ -369,8 +393,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LibrariesRouteRoute: typeof LibrariesRouteRouteWithChildren
   SettingsRouteRoute: typeof SettingsRouteRouteWithChildren
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  ResetPasswordCompleteRoute: typeof ResetPasswordCompleteRoute
   VerifyTokenRoute: typeof VerifyTokenRoute
 }
 
@@ -388,6 +414,13 @@ declare module '@tanstack/react-router' {
       path: '/libraries'
       fullPath: '/libraries'
       preLoaderRoute: typeof LibrariesRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -431,6 +464,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/libraries/add'
       preLoaderRoute: typeof LibrariesAddRouteImport
       parentRoute: typeof LibrariesRouteRoute
+    }
+    '/reset-password_/complete': {
+      id: '/reset-password_/complete'
+      path: '/reset-password/complete'
+      fullPath: '/reset-password/complete'
+      preLoaderRoute: typeof ResetPasswordCompleteRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/settings/': {
       id: '/settings/'
@@ -712,8 +752,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LibrariesRouteRoute: LibrariesRouteRouteWithChildren,
   SettingsRouteRoute: SettingsRouteRouteWithChildren,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  ResetPasswordCompleteRoute: ResetPasswordCompleteRoute,
   VerifyTokenRoute: VerifyTokenRoute,
 }
 export const routeTree = rootRouteImport

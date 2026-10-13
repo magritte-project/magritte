@@ -1,7 +1,7 @@
 from enum import Enum
-from typing import Literal, Self
+from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 
 
 class OAuth2Scope(str, Enum):
@@ -19,6 +19,28 @@ class OAuth2Scope(str, Enum):
     def from_str(cls, scope: str) -> set[Self]:
         """Coerce a string into a set of scopes"""
         return {cls(scope) for scope in scope.split(" ")}
+
+
+class Token(BaseModel):
+    scopes: list[OAuth2Scope]
+    access_token: str
+    token_type: Literal["bearer"]
+
+
+class SignUp(BaseModel):
+    email: EmailStr | None = None
+    username: Annotated[str, Field(max_length=255)]
+    password: Annotated[str, Field(min_length=8, max_length=100)]
+
+
+class ResetPassword(BaseModel):
+    email: EmailStr
+
+
+class CompleteResetPassword(BaseModel):
+    email: EmailStr
+    token: str
+    new_password: Annotated[str, Field(min_length=8, max_length=100)]
 
 
 class InstanceStatusRead(BaseModel):

@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, override
+from datetime import datetime
+from typing import TYPE_CHECKING, Self, override
 
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -110,6 +111,15 @@ class User(LibraryModel, table=True):
     hashed_password: str = Field(
         description="This user's password",
     )
+    hashed_reset_password_token: str | None = Field(
+        default=None,
+        description="This user's pending password reset token",
+    )
+    reset_password_token_created_at: datetime | None = Field(
+        default=None,
+        sa_type=sa.TIMESTAMP,
+        description="When the user's pending password reset token was created, if applicable",
+    )
     scope: str = Field(
         description="The user's enabled scopes",
     )
@@ -160,24 +170,34 @@ class User(LibraryModel, table=True):
         return await session.scalar(select(func.count()).select_from(cls)) or 0
 
     @classmethod
-    async def read_by_username(cls, username: str, session: AsyncSession):
+    async def read_by_username(
+        cls, username: str, session: AsyncSession
+    ) -> Self | None:
         return await session.scalar(
-            select(User).where(
-                col(User.username) == username,
+            select(cls).where(
+                col(cls.username) == username,
+            ),
+        )
+
+    @classmethod
+    async def read_by_email(cls, email: str, session: AsyncSession) -> Self | None:
+        return await session.scalar(
+            select(cls).where(
+                col(cls.email) == email,
             ),
         )
 
     @classmethod
     async def read_by_username_or_email(
         cls, username_or_email: str, session: AsyncSession
-    ):
+    ) -> Self | None:
         return await session.scalar(
-            select(User).where(
+            select(cls).where(
                 or_(
-                    col(User.username) == username_or_email,
+                    col(cls.username) == username_or_email,
                     and_(
-                        col(User.email).is_not(None),
-                        col(User.email) == username_or_email,
+                        col(cls.email).is_not(None),
+                        col(cls.email) == username_or_email,
                     ),
                 ),
             ),
