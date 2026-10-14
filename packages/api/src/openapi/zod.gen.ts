@@ -472,6 +472,14 @@ export const SongUpdateSchema = z.object({
 })
 
 /**
+ * SourceChangesRead
+ */
+export const SourceChangesReadSchema = z.object({
+    since: z.iso.datetime(),
+    ids: z.array(z.int()),
+})
+
+/**
  * SourceCreate
  */
 export const SourceCreateSchema = z.object({

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
 from fastapi.responses import FileResponse
 from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col
+from sqlmodel import col, select
 
 from magritte.auth import FeatureScope, get_current_user, get_feature_user
 from magritte.db import get_db_session
@@ -14,7 +14,14 @@ from magritte.model.source import Source
 from magritte.model.user import User
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.library import LibraryMediaRead
-from magritte.schemas.source import SourceCreate, SourceQuery, SourceRead, SourceUpdate
+from magritte.schemas.source import (
+    SourceChangesQuery,
+    SourceChangesRead,
+    SourceCreate,
+    SourceQuery,
+    SourceRead,
+    SourceUpdate,
+)
 
 router = APIRouter(prefix="/sources")
 
@@ -139,6 +146,44 @@ async def delete_source(
 
     await session.delete(source)
     await session.flush()
+
+
+@router.get(
+    "/changes",
+    response_model=SourceChangesRead,
+    summary="Read changes made to sources for syncing",
+)
+async def read_source_changes(
+    query: Annotated[SourceChangesQuery, Query()],
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    where_criteria = list[ColumnExpressionArgument]()
+    where_criteria.append(col(Source.last_updated) >= query.since)
+    if query.ids:
+        where_criteria.append(col(Source.id).in_(query.ids))
+
+    libraries = await Library.read_all(current_user.id, session)
+    where_criteria.append(
+        col(Source.songs).any(
+            col(Song.libraries).any(
+                col(Library.id).in_(library.id for library in libraries)
+            )
+        )
+    )
+
+    ids = await session.scalars(
+        select(col(Source.id))
+        .where(*where_criteria)
+        .order_by(col(Source.last_updated).desc())
+    )
+
+    return SourceChangesRead(
+        since=query.since,
+        ids=ids,
+    )
 
 
 @router.get(

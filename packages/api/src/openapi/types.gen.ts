@@ -1269,6 +1269,20 @@ export type SongUpdate = {
 }
 
 /**
+ * SourceChangesRead
+ */
+export type SourceChangesRead = {
+    /**
+     * Since
+     */
+    since: string
+    /**
+     * Ids
+     */
+    ids: Array<number>
+}
+
+/**
  * SourceCreate
  */
 export type SourceCreate = {
@@ -3231,6 +3245,42 @@ export type UpdateSourceSourcesSourceIdPatchResponses = {
 
 export type UpdateSourceSourcesSourceIdPatchResponse =
     UpdateSourceSourcesSourceIdPatchResponses[keyof UpdateSourceSourcesSourceIdPatchResponses]
+
+export type ReadSourceChangesSourcesChangesGetData = {
+    body?: never
+    path?: never
+    query: {
+        /**
+         * Since
+         */
+        since: string
+        /**
+         * Ids
+         */
+        ids?: Array<number> | null
+    }
+    url: "/sources/changes"
+}
+
+export type ReadSourceChangesSourcesChangesGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type ReadSourceChangesSourcesChangesGetError =
+    ReadSourceChangesSourcesChangesGetErrors[keyof ReadSourceChangesSourcesChangesGetErrors]
+
+export type ReadSourceChangesSourcesChangesGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: SourceChangesRead
+}
+
+export type ReadSourceChangesSourcesChangesGetResponse =
+    ReadSourceChangesSourcesChangesGetResponses[keyof ReadSourceChangesSourcesChangesGetResponses]
 
 export type StreamSourceFileSourcesSourceIdFileGetData = {
     body?: never

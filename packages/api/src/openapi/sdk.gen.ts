@@ -126,6 +126,9 @@ import type {
     ReadNotificationUsersNotificationsNotificationIdGetData,
     ReadNotificationUsersNotificationsNotificationIdGetErrors,
     ReadNotificationUsersNotificationsNotificationIdGetResponses,
+    ReadSourceChangesSourcesChangesGetData,
+    ReadSourceChangesSourcesChangesGetErrors,
+    ReadSourceChangesSourcesChangesGetResponses,
     ReadSourceSourcesSourceIdGetData,
     ReadSourceSourcesSourceIdGetErrors,
     ReadSourceSourcesSourceIdGetResponses,
@@ -1424,6 +1427,29 @@ export const updateSourceSourcesSourceIdPatch = <ThrowOnError extends boolean = 
             "Content-Type": "application/json",
             ...options.headers,
         },
+    })
+
+/**
+ * Read changes made to sources for syncing
+ */
+export const readSourceChangesSourcesChangesGet = <ThrowOnError extends boolean = false>(
+    options: Options<ReadSourceChangesSourcesChangesGetData, ThrowOnError>,
+): RequestResult<
+    ReadSourceChangesSourcesChangesGetResponses,
+    ReadSourceChangesSourcesChangesGetErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).get<
+        ReadSourceChangesSourcesChangesGetResponses,
+        ReadSourceChangesSourcesChangesGetErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/sources/changes",
+        ...options,
     })
 
 /**

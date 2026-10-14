@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field, field_serializer
@@ -45,3 +46,13 @@ class SourceQuery(PaginatedQuery):
     library_id: int | None = None
     extension_manifest_id: str | None = None
     extension_tags: list[str] | None = None
+
+
+class SourceChangesRead(BaseModel):
+    since: datetime
+    ids: list[int]
+
+
+class SourceChangesQuery(BaseModel):
+    since: datetime
+    ids: list[int] | None = None

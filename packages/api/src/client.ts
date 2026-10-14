@@ -38,6 +38,7 @@ import {
     readMeUsersMeGet,
     readNotificationsUsersNotificationsGet,
     readNotificationUsersNotificationsNotificationIdGet,
+    readSourceChangesSourcesChangesGet,
     readUserAdminUsersAdminAllIdOrUsernameGet,
     readUsersAdminUsersAdminAllGet,
     readUsersUsersAllGet,
@@ -101,12 +102,14 @@ import {
     type ReadLibraryIgnoredResourcesLibrariesLibraryIdIgnoredGetData,
     type ReadLibrarySongsLibrariesLibraryIdSongsGetData,
     type ReadNotificationsUsersNotificationsGetData,
+    type ReadSourceChangesSourcesChangesGetData,
     type ReadUsersAdminUsersAdminAllGetData,
     type ReadUsersUsersAllGetData,
     type ResetPassword,
     type SignUp,
     type SongRead,
     type SongUpdate,
+    type SourceChangesRead,
     type SourceCreate,
     type SourceRead,
     type SourceUpdate,
@@ -567,6 +570,12 @@ export class APIClient {
 
     async deleteSource(source_id: number): Promise<void> {
         await deleteSourceSourcesSourceIdDelete({ ...this.options, path: { source_id } })
+    }
+
+    async readSourceChanges(
+        query: ReadSourceChangesSourcesChangesGetData["query"],
+    ): Promise<SourceChangesRead> {
+        return await readSourceChangesSourcesChangesGet({ ...this.options, query })
     }
 
     // -- Playback Event Routes -- //

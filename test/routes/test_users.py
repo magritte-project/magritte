@@ -551,8 +551,7 @@ class TestReadUsers:
 
 
 class TestReadUser:
-    @pytest.mark.asyncio
-    async def test_read_by_id(
+    def test_read_by_id(
         self,
         client: TestClient,
         admin_auth: AuthFixture,

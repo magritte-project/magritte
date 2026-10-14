@@ -2023,6 +2023,51 @@
                 }
             }
         },
+        "/sources/changes": {
+            "get": {
+                "summary": "Read changes made to sources for syncing",
+                "operationId": "read_source_changes_sources_changes_get",
+                "security": [{ "OAuth2PasswordBearer": ["library:read"] }],
+                "parameters": [
+                    {
+                        "name": "since",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "string", "format": "date-time", "title": "Since" }
+                    },
+                    {
+                        "name": "ids",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                { "type": "array", "items": { "type": "integer" } },
+                                { "type": "null" }
+                            ],
+                            "title": "Ids"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/SourceChangesRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/sources/{source_id}/file": {
             "get": {
                 "summary": "Stream the file of a source",
@@ -3764,6 +3809,15 @@
                 },
                 "type": "object",
                 "title": "SongUpdate"
+            },
+            "SourceChangesRead": {
+                "properties": {
+                    "since": { "type": "string", "format": "date-time", "title": "Since" },
+                    "ids": { "items": { "type": "integer" }, "type": "array", "title": "Ids" }
+                },
+                "type": "object",
+                "required": ["since", "ids"],
+                "title": "SourceChangesRead"
             },
             "SourceCreate": {
                 "properties": {
