@@ -64,6 +64,7 @@
         "@types/react-dom": "catalog:",
         "@vitejs/plugin-react": "catalog:",
         "baseline-browser-mapping": "catalog:",
+        "fake-indexeddb": "6.2.5",
         "jsdom": "catalog:",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",

@@ -6,7 +6,7 @@ import type {
     PlaybackEngineEnqueueOptions,
     PlaybackEngineEvent,
 } from "@/playback/engine"
-import type { LocalCache } from "@/playback/localFileCache"
+import type { LocalCache } from "@/playback/localCache"
 import type { PlaybackModes } from "@/playback/modes"
 import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 import { resolveResourceUrl } from "@/utilities/resources"
@@ -126,7 +126,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         if (bestUrl === undefined) {
             throw new Error("No compatible source in song")
         }
-        const sourceFile = await this._localCache.getFile(bestUrl)
+        const sourceFile = await this._localCache.getSourceFile(bestUrl)
         if (sourceFile !== undefined) {
             console.debug("Issuing local file blob for playback")
             const audioSrc = URL.createObjectURL(sourceFile)

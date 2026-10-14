@@ -7,7 +7,7 @@ import type { CommandRegistry } from "@/commands/registry"
 import type { SearchRegistry } from "@/commands/searchRegistry"
 import type { ExtensionRuntime } from "@/extensions/runtime"
 import type { NotificationCenter } from "@/notifications/center"
-import type { LocalCache } from "@/playback/localFileCache"
+import type { LocalCache } from "@/playback/localCache"
 import type { Player } from "@/playback/player"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"

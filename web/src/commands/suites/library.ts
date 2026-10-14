@@ -141,18 +141,15 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                 const librarySongs = await Promise.all(
                     songs.map((song) => api.client.readLibrarySong(library.id, song.id)),
                 )
-                const sources = librarySongs.flatMap((song) => {
-                    const source = song.sources?.find((source) =>
-                        source.url.startsWith("magritte://"),
-                    )
-                    return source !== undefined ? [source] : []
-                })
-                const existingFiles = await localCache.filesExist(
+                const sources = librarySongs.flatMap((song) =>
+                    (song.sources ?? []).filter((source) => source.url.startsWith("magritte://")),
+                )
+                const existingUrls = await localCache.getCachedSourceFileUrls(
                     sources.map((source) => source.url),
                 )
                 let downloadCount = 0
                 for (const source of sources) {
-                    if (existingFiles.has(source.url)) {
+                    if (existingUrls.has(source.url)) {
                         console.debug(`Skipping already downloaded source: ${source.url}`)
                         continue
                     }
@@ -165,7 +162,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                         }
                         const response = await fetch(url)
                         const contents = await response.blob()
-                        await localCache.putFile(source.url, contents)
+                        await localCache.putSourceFile(source.url, source.id, contents)
                         console.debug(`Downloaded source: ${source.url}`)
                         downloadCount++
                     } catch (error) {
