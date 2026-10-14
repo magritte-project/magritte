@@ -81,7 +81,7 @@ async def import_extension(
 async def delete_extension(
     extension_id: int,
     background_tasks: BackgroundTasks,
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: Annotated[AsyncSession, Depends(get_db_session, scope="function")],
     user_events: Annotated[UserEvents, Depends(get_user_events)],
 ):
     extension = await Extension.get_one_or_none(extension_id, session)

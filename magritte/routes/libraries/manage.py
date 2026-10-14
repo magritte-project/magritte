@@ -114,7 +114,7 @@ async def create_library(
     current_user: Annotated[
         User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
     ],
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: Annotated[AsyncSession, Depends(get_db_session, scope="function")],
     background_tasks: BackgroundTasks,
 ):
     new_library = Library(

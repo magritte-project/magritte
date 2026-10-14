@@ -78,7 +78,7 @@ async def update_me(
         User, Security(get_current_user, scopes=[OAuth2Scope.PROFILE])
     ],
     email_client: Annotated[EmailClient | None, Depends(get_email_client)],
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: Annotated[AsyncSession, Depends(get_db_session, scope="function")],
 ):
     updates = profile_update.model_dump(
         exclude={"email"},

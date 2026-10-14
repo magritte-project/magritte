@@ -66,7 +66,7 @@ async def sign_up(
     sign_up: SignUp,
     background_tasks: BackgroundTasks,
     email_client: Annotated[EmailClient | None, Depends(get_email_client)],
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: Annotated[AsyncSession, Depends(get_db_session, scope="function")],
 ):
     try:
         new_user = await create_user(
@@ -179,7 +179,7 @@ async def reset_password(
     reset_password: ResetPassword,
     background_tasks: BackgroundTasks,
     email_client: Annotated[EmailClient | None, Depends(get_email_client)],
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: Annotated[AsyncSession, Depends(get_db_session, scope="function")],
 ):
     if not email_client:
         raise HTTPException(
