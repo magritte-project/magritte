@@ -51,6 +51,7 @@
         "@typescript/typescript6": "6.0.2",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
+        "oxlint-tsgolint": "catalog:",
         "typescript": "catalog:",
         "vite": "catalog:",
         "vite-plugin-dts": "catalog:",

@@ -38,7 +38,7 @@ export class CommandInputs {
             this._inputs.push(input)
             this._kinds.add(input.kind)
         }
-        this._dispatch({ type: "commandInputsDidChange" })
+        void this._dispatch({ type: "commandInputsDidChange" })
     }
 
     remove(kind: string, id: CommandInputID): void {
@@ -48,7 +48,7 @@ export class CommandInputs {
         if (toRemove !== -1) {
             this._inputs.splice(toRemove, 1)
             this._kinds.delete(kind)
-            this._dispatch({ type: "commandInputsDidChange" })
+            void this._dispatch({ type: "commandInputsDidChange" })
         }
     }
 

@@ -33,6 +33,7 @@
         "@vitejs/plugin-react": "catalog:",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
+        "oxlint-tsgolint": "catalog:",
         "typescript": "catalog:",
         "vite": "catalog:",
         "vitest": "catalog:"

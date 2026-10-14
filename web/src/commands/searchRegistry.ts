@@ -85,14 +85,14 @@ export class SearchRegistry {
 
     add(command: SearchCommand): () => void {
         this._commands = [...this._commands, command]
-        this._dispatch({ type: "registeredCommandsDidChange" })
+        void this._dispatch({ type: "registeredCommandsDidChange" })
         return () => {
             const toRemove = this._commands.indexOf(command)
             if (toRemove !== -1) {
                 const commands = [...this._commands]
                 commands.splice(toRemove, 1)
                 this._commands = commands
-                this._dispatch({ type: "registeredCommandsDidChange" })
+                void this._dispatch({ type: "registeredCommandsDidChange" })
             }
         }
     }
@@ -100,7 +100,7 @@ export class SearchRegistry {
     wireUpExtensions(extensionRuntime: ExtensionRuntime): void {
         const removes = new Map<string, () => void>()
 
-        Promise.allSettled(
+        void Promise.allSettled(
             extensionRuntime.running.map(async (extension) => {
                 const searchCommand = await getExtensionSearchCommand(extension)
                 if (searchCommand) {

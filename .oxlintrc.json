@@ -1,5 +1,8 @@
 {
     "$schema": "./web/node_modules/oxlint/configuration_schema.json",
+    "options": {
+        "typeAware": true
+    },
     "plugins": ["import", "typescript", "unicorn", "react"],
     "env": {
         "browser": true,

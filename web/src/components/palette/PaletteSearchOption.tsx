@@ -34,7 +34,7 @@ export default function PaletteSearchOption({ item }: PaletteSearchOptionProps) 
                         onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()
-                            playItem(item)
+                            void playItem(item)
                         }}
                     >
                         <PlayIcon weight="fill" />
@@ -49,7 +49,7 @@ export default function PaletteSearchOption({ item }: PaletteSearchOptionProps) 
                         onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()
-                            addItemToLibrary(item)
+                            void addItemToLibrary(item)
                         }}
                     >
                         <PlusIcon weight="bold" />

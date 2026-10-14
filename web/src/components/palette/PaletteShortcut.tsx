@@ -22,7 +22,7 @@ export default function PaletteShortcut({ inputs, command, onWillExecute }: Pale
             event.preventDefault()
             event.stopPropagation()
             onWillExecute?.()
-            command.execute(inputs)
+            void command.execute(inputs)
         },
         [onWillExecute, inputs, command],
     )

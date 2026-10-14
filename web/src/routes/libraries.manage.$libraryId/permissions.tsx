@@ -144,7 +144,7 @@ function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
                     id={`permissions[${data.user_id}].canAdd`}
                     checked={data.can_add}
                     onChange={(checked) => {
-                        handleUpdate({
+                        void handleUpdate({
                             can_add: checked,
                             can_edit: null,
                             can_remove: null,
@@ -159,7 +159,7 @@ function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
                     id={`permissions[${data.user_id}].canEdit`}
                     checked={data.can_edit}
                     onChange={(checked) => {
-                        handleUpdate({
+                        void handleUpdate({
                             can_add: null,
                             can_edit: checked,
                             can_remove: null,
@@ -174,7 +174,7 @@ function UserPermissionItem({ libraryId, data }: UserPermissionItemProps) {
                     id={`permissions[${data.user_id}].canRemove`}
                     checked={data.can_remove}
                     onChange={(checked) => {
-                        handleUpdate({
+                        void handleUpdate({
                             can_add: null,
                             can_edit: null,
                             can_remove: checked,

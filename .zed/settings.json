@@ -114,6 +114,15 @@
         },
     },
     "lsp": {
+        "oxlint": {
+            "binary": {
+                "path": "./web/node_modules/.bin/oxlint",
+                "arguments": ["--lsp"],
+                "env": {
+                    "OXLINT_TSGOLINT_PATH": "./web/node_modules/.bin/tsgolint",
+                },
+            },
+        },
         "ruff": {
             "binary": {
                 "path": "./.venv/bin/ruff",

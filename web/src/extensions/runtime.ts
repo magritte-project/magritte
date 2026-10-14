@@ -206,10 +206,10 @@ export class ExtensionRuntime {
         this._available.set(manifest.id, manifest)
 
         console.debug("Extension added", manifest)
-        this._dispatch({ type: "extensionAdded", manifest })
+        void this._dispatch({ type: "extensionAdded", manifest })
 
         if (manifest.permissions?.includes("run:eager")) {
-            this._loadIfNeeded(manifest.id)
+            void this._loadIfNeeded(manifest.id)
         }
     }
 
@@ -221,7 +221,7 @@ export class ExtensionRuntime {
             this._available.delete(id)
 
             console.debug("Extension Removed", manifest)
-            this._dispatch({ type: "extensionRemoved", manifest })
+            void this._dispatch({ type: "extensionRemoved", manifest })
             return true
         } else {
             return false
@@ -298,14 +298,14 @@ export class ExtensionRuntime {
             iframe.remove()
             console.debug("*** Aborted loading extension", id)
             this._extensions.set(id, { status: "unloaded" })
-            this._dispatch({
+            void this._dispatch({
                 type: "extensionLoadFailed",
                 manifest,
                 error: new Error("Aborted extension load"),
             })
         })
         this._extensions.set(id, { status: "loading", abortController })
-        this._dispatch({ type: "extensionLoadStart", manifest })
+        void this._dispatch({ type: "extensionLoadStart", manifest })
 
         const iframe = document.createElement("iframe")
         try {
@@ -346,10 +346,10 @@ export class ExtensionRuntime {
                         }
                         break
                     case "requestOpen":
-                        this._dispatch({ type: "extensionOpenRequested", manifest })
+                        void this._dispatch({ type: "extensionOpenRequested", manifest })
                         break
                     case "requestClose":
-                        this._dispatch({ type: "extensionCloseRequested", manifest })
+                        void this._dispatch({ type: "extensionCloseRequested", manifest })
                         break
                     default:
                         break
@@ -359,7 +359,7 @@ export class ExtensionRuntime {
             const oldState = this._extensions.get(id) ?? { status: "unloaded" }
             if (oldState.status !== "loading") {
                 console.debug("Cancelled loading extension", id)
-                extension.disconnect()
+                void extension.disconnect()
                 iframe.remove()
                 return
             }
@@ -369,7 +369,7 @@ export class ExtensionRuntime {
 
             console.debug("Loaded extension", id)
             this._extensions.set(id, { status: "loaded", iframe, extension })
-            this._dispatch({ type: "extensionLoaded", extension })
+            void this._dispatch({ type: "extensionLoaded", extension })
         } catch (error) {
             if (!iframe.parentElement) {
                 // ^^ <iframe> was removed before load could complete, ignore
@@ -378,7 +378,7 @@ export class ExtensionRuntime {
             iframe.remove()
             console.error("*** Could not load extension", manifest.id, error)
             this._extensions.set(id, { status: "unloaded" })
-            this._dispatch({ type: "extensionLoadFailed", manifest, error })
+            void this._dispatch({ type: "extensionLoadFailed", manifest, error })
         }
     }
 
@@ -400,8 +400,8 @@ export class ExtensionRuntime {
                     break
                 case "loaded":
                     state.iframe.remove()
-                    state.extension.disconnect()
-                    this._dispatch({ type: "extensionUnloaded", extension: state.extension })
+                    void state.extension.disconnect()
+                    void this._dispatch({ type: "extensionUnloaded", extension: state.extension })
                     break
             }
             this._extensions.delete(id)
@@ -414,7 +414,7 @@ export class ExtensionRuntime {
     attach(id: string, element: HTMLElement) {
         const attachment = this._getAttachment(id)
         attachment.attach(element)
-        this._loadIfNeeded(id)
+        void this._loadIfNeeded(id)
     }
 
     detach(id: string, element: HTMLElement) {

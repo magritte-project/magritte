@@ -72,7 +72,7 @@ export default function Thread() {
         (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault()
-                send()
+                void send()
             }
         },
         [send],

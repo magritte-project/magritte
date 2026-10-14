@@ -12,6 +12,7 @@ import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/sign-in")({
     validateSearch: z.object({ redirect_to: z.string().optional() }),
@@ -52,7 +53,7 @@ export const Route = createFileRoute("/sign-in")({
                     navigate({ href: redirectTo })
                 } catch (e) {
                     notificationCenter.showToast({
-                        message: `Could not sign in: ${e}`,
+                        message: `Could not sign in: ${getErrorMessage(e)}`,
                         type: "error",
                     })
                 }

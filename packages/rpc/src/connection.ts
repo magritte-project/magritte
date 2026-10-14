@@ -107,7 +107,7 @@ export class RPCConnection {
             this.transport.postMessage({ type: "broadcast", channel, what, data })
         }
         this.transport.onmessage = (reply) => {
-            this.handleMessage(reply)
+            void this.handleMessage(reply)
         }
     }
 

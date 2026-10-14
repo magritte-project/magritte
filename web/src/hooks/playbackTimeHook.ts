@@ -27,7 +27,7 @@ export default function usePlaybackTime(): UsePlaybackTimeResult {
             return
         }
         const interval = setInterval(() => {
-            updateCurrentTime()
+            void updateCurrentTime()
         }, 1000)
         return () => {
             clearInterval(interval)

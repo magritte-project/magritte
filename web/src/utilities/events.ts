@@ -56,7 +56,7 @@ function buildEventDispatch<TEvent>(
     } else {
         return async (event: TEvent) => {
             for (const subscriber of subscribers.slice()) {
-                callOut(subscriber, event)
+                void callOut(subscriber, event)
             }
         }
     }

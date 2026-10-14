@@ -10,7 +10,7 @@ const ArithmeticCompleted = defineBroadcast("Arithmetic", "completed", z4.void()
 describe("RPCBroadcaster", () => {
     it("should route broadcasts to subscribers", () => {
         const subject = new RPCBroadcaster()
-        subject._connection_onsend = subject._connection_receive
+        subject._connection_onsend = subject._connection_receive.bind(subject)
         const addedSubscriber = vi.fn()
         const subtractedSubscriber = vi.fn()
         const completedSubscriber = vi.fn()
@@ -27,7 +27,7 @@ describe("RPCBroadcaster", () => {
 
     it("should be possible to unsubscribe", () => {
         const subject = new RPCBroadcaster()
-        subject._connection_onsend = subject._connection_receive
+        subject._connection_onsend = subject._connection_receive.bind(subject)
         const addedSubscriber = vi.fn()
         const subtractedSubscriber = vi.fn()
         const addedSubscription = subject.subscribe(ArithmeticAdded, addedSubscriber)
@@ -41,7 +41,7 @@ describe("RPCBroadcaster", () => {
 
     it("should send invalidated broadcast when invalidated", () => {
         const subject = new RPCBroadcaster()
-        subject._connection_onsend = subject._connection_receive
+        subject._connection_onsend = subject._connection_receive.bind(subject)
         const subscriber = vi.fn()
         subject.subscribe(RPCBroadcaster.invalidated, subscriber)
         subject.invalidate()
@@ -55,7 +55,7 @@ describe("RPCBroadcaster", () => {
 
     it("should reject all operations after invalidation", () => {
         const subject = new RPCBroadcaster()
-        subject._connection_onsend = subject._connection_receive
+        subject._connection_onsend = subject._connection_receive.bind(subject)
         subject.invalidate()
         expect(subject.isValid).toBe(false)
         expect(() => subject.send(ArithmeticAdded, 5)).toThrow()

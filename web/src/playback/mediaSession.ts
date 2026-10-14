@@ -42,7 +42,7 @@ export function connectMediaSession(api: API, player: Player) {
                     })
                     const artworks = playingItem.artworks ?? []
                     if (artworks.length > 0) {
-                        ;(async () => {
+                        void (async () => {
                             const token = await api.fileAccess.token()
                             if (player.playingItem?.id !== playingItem.id) {
                                 console.debug("Discarding artwork for no longer playing item")

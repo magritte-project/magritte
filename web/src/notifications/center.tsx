@@ -75,7 +75,7 @@ export class NotificationCenter {
     ) {
         if (result.isSuccess) {
             this._serverNotifications = result.data.items
-            this._dispatch({ type: "serverNotificationsDidChange" })
+            void this._dispatch({ type: "serverNotificationsDidChange" })
 
             switch (this._seenNotifications.status) {
                 case "unloaded":
@@ -123,14 +123,14 @@ export class NotificationCenter {
         this._toasts = [...this._toasts, options]
         if (this._toasts.length === 1) {
             this._dismissToastLater()
-            this._dispatch({ type: "toastDidChange" })
+            void this._dispatch({ type: "toastDidChange" })
         }
     }
 
     dismissToast(): void {
         if (this._toasts.length > 0) {
             this._toasts = this._toasts.slice(1)
-            this._dispatch({ type: "toastDidChange" })
+            void this._dispatch({ type: "toastDidChange" })
         }
         if (this._toastTimeoutId !== null) {
             clearTimeout(this._toastTimeoutId)
@@ -156,7 +156,7 @@ export class NotificationCenter {
             options.timeout ?? secondsToMilliseconds(60),
         )
         this._dialogs = [...this._dialogs, [options, resolver, timeoutId]]
-        this._dispatch({ type: "dialogDidChange" })
+        void this._dispatch({ type: "dialogDidChange" })
         return resolver.promise
     }
 
@@ -173,7 +173,7 @@ export class NotificationCenter {
             }
             clearTimeout(timeoutId)
             this._dialogs = this._dialogs.slice(1)
-            this._dispatch({ type: "dialogDidChange" })
+            void this._dispatch({ type: "dialogDidChange" })
         }
     }
 

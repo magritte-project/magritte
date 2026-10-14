@@ -58,25 +58,25 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     private _handleCanPlay(_event: Event) {
-        this._dispatch({
+        void this._dispatch({
             type: "playbackStateDidChange",
             playbackState: _getPlaybackState(this._audio),
         })
     }
 
     private _handleDurationChange(_event: Event) {
-        this._dispatch({ type: "playingItemChanged" })
+        void this._dispatch({ type: "playingItemChanged" })
     }
 
     private _handleEnded(_event: Event) {
         const lastItem = this._playingItem
-        this.stop()
-        this._dispatch({ type: "endOfAudio", lastItem })
+        void this.stop()
+        void this._dispatch({ type: "endOfAudio", lastItem })
     }
 
     private _handleError(_event: Event) {
         const mediaError = this._audio.error
-        this._dispatch({
+        void this._dispatch({
             type: "encounteredError",
             error: new Error(
                 mediaError ? `${mediaError.message} (${mediaError.code})` : "Unknown error",
@@ -85,14 +85,14 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     private _handlePause(_event: Event) {
-        this._dispatch({
+        void this._dispatch({
             type: "playbackStateDidChange",
             playbackState: _getPlaybackState(this._audio),
         })
     }
 
     private _handlePlay(_event: Event) {
-        this._dispatch({
+        void this._dispatch({
             type: "playbackStateDidChange",
             playbackState: _getPlaybackState(this._audio),
         })
@@ -142,7 +142,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         this._audio.load()
 
         this._playingItem = itemToPlay
-        this._dispatch({ type: "playingItemChanged" })
+        await this._dispatch({ type: "playingItemChanged" })
 
         if (playNow) {
             await this._audio.play()
@@ -173,16 +173,16 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
     }
 
     async resume(): Promise<void> {
-        this._audio.play()
+        await this._audio.play()
     }
 
     async stop(): Promise<void> {
         this._swapSrc("")
-        this._dispatch({
+        await this._dispatch({
             type: "playbackStateDidChange",
             playbackState: "stopped",
         })
         this._playingItem = null
-        this._dispatch({ type: "playingItemChanged" })
+        await this._dispatch({ type: "playingItemChanged" })
     }
 }

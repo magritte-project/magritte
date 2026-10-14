@@ -7,13 +7,13 @@ export type QueueEvent = { type: "queueDidChange" }
 
 export interface RandomItemContext<Item extends { id: unknown }> {
     /** Retrieve the number of played items */
-    getNumberOfPlayedItems(): Promise<number>
+    getNumberOfPlayedItems: () => Promise<number>
 
     /** Check whether an item has already been played */
-    hasPlayedItem(item: Item): Promise<boolean>
+    hasPlayedItem: (item: Item) => Promise<boolean>
 
     /** Get a random index */
-    randomIndex(length: number): Promise<number>
+    randomIndex: (length: number) => Promise<number>
 }
 
 export interface Queue<Item extends { id: unknown }> {

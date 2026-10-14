@@ -50,11 +50,11 @@ export default function PageFooter() {
     )
 
     useHotKey({ key: "ArrowLeft" }, () => {
-        player.skipPrevious()
+        void player.skipPrevious()
         return true
     })
     useHotKey({ key: "ArrowRight" }, () => {
-        player.skipNext()
+        void player.skipNext()
         return true
     })
     useHotKey({ key: "ArrowUp" }, () => {

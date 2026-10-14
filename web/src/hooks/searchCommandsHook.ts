@@ -32,7 +32,7 @@ export default function useSearchCommands({
     useEffect(() => {
         return inputs.subscribe(
             justEventsMatching("type", "commandInputsDidChange", () => {
-                resultQuery.refetch()
+                void resultQuery.refetch()
             }),
         )
     }, [inputs, resultQuery])

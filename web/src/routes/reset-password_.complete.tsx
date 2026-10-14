@@ -6,6 +6,7 @@ import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/reset-password_/complete")({
     validateSearch: z.object({
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/reset-password_/complete")({
                     navigate({ to: "/sign-in", replace: true })
                 } catch (e) {
                     notificationCenter.showToast({
-                        message: `Could not reset password: ${e}`,
+                        message: `Could not reset password: ${getErrorMessage(e)}`,
                         type: "error",
                     })
                 }

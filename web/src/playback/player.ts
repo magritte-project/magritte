@@ -115,13 +115,13 @@ export class Player {
     ): Promise<void> {
         const engine = await this._engineRegistry.findPlaybackEngineFor(item)
         if (engine === null) {
-            this._dispatch({
+            await this._dispatch({
                 type: "encounteredError",
-                error: new Error(`No engine available to play item ${item}`),
+                error: new Error(`No engine available to play item ${item.id}`),
             })
             return
         }
-        this._changeEngine(engine)
+        await this._changeEngine(engine)
         this._playingItem = item
         await engine.enqueue({
             itemToPlay: item,
@@ -178,17 +178,17 @@ export class Player {
         switch (event.type) {
             case "playbackStateDidChange":
                 this._playbackState = event.playbackState
-                this._dispatch(event)
+                await this._dispatch(event)
                 break
             case "playingItemChanged":
             case "encounteredError":
-                this._dispatch(event)
+                await this._dispatch(event)
                 break
             case "endOfAudio": {
                 const nextItem = await this._dequeueNextItem()
                 if (nextItem === null) {
                     await this.stop()
-                    this._dispatch(event)
+                    await this._dispatch(event)
                     return
                 }
                 await this._playItem(nextItem, { playNow: true })
@@ -221,8 +221,8 @@ export class Player {
         const normalizedVolume = Math.max(0, Math.min(1, volume))
         this._volume = normalizedVolume
         localStorage.setItem("player.volume", String(normalizedVolume))
-        this._activeEngine?.syncVolume(normalizedVolume)
-        this._dispatch({ type: "volumeDidChange", volume: normalizedVolume })
+        void this._activeEngine?.syncVolume(normalizedVolume)
+        void this._dispatch({ type: "volumeDidChange", volume: normalizedVolume })
     }
 
     /** Events relating to the state of playback */
@@ -245,7 +245,7 @@ export class Player {
 
         // TODO: Observe queue events
         this._queue = newQueue
-        this._dispatch({ type: "queueDidChange" })
+        await this._dispatch({ type: "queueDidChange" })
         const item = startingItem ?? (await this._dequeueNextItem())
         if (item === null) {
             return // shrug

@@ -148,7 +148,7 @@ export class MessageChannelTransport implements RPCTransport {
     ) {
         this.onmessage = null
         this.receivePort.onmessage = (event) => {
-            this.handleMessage(event)
+            void this.handleMessage(event)
         }
     }
 

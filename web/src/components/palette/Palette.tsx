@@ -62,18 +62,18 @@ export default function Palette({
                 switch (view) {
                     case "command": {
                         const command = value as Command
-                        command.execute(inputs)
+                        void command.execute(inputs)
                         break
                     }
                     case "search": {
                         const { shift, ctrl } = keyModifiersRef.current
                         const item = value as SearchCommandItem
                         if (shift) {
-                            playItem(item)
+                            void playItem(item)
                         } else if (ctrl) {
-                            addItemToLibrary(item)
+                            void addItemToLibrary(item)
                         } else {
-                            revealItem(item)
+                            void revealItem(item)
                         }
                         break
                     }

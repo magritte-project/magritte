@@ -138,7 +138,7 @@ export class PlaybackEventRecorder {
         this.cancelFlushLater()
         this.flushLaterTimeout = setTimeout(() => {
             this.flushLaterTimeout = null
-            this.flush()
+            void this.flush()
         }, 30_000)
     }
 
@@ -151,7 +151,7 @@ export class PlaybackEventRecorder {
                     const elapsedTime = currentTime.elapsedTime ?? 0
                     switch (event.playbackState) {
                         case "paused":
-                            this.enqueue({
+                            await this.enqueue({
                                 recorded_at: now,
                                 kind: "pause",
                                 song_id: player.playingItem.id,
@@ -160,7 +160,7 @@ export class PlaybackEventRecorder {
                             })
                             break
                         case "playing":
-                            this.enqueue({
+                            await this.enqueue({
                                 recorded_at: now,
                                 kind: "play",
                                 song_id: player.playingItem.id,
@@ -169,7 +169,7 @@ export class PlaybackEventRecorder {
                             })
                             break
                         case "stopped":
-                            this.enqueue({
+                            await this.enqueue({
                                 recorded_at: now,
                                 kind: "stop",
                                 song_id: player.playingItem.id,
@@ -188,7 +188,7 @@ export class PlaybackEventRecorder {
                     player.playingItem !== null &&
                     typeof player.playingItem.id === "number"
                 ) {
-                    this.enqueue({
+                    await this.enqueue({
                         recorded_at: new Date().toISOString(),
                         kind: event.newTime > event.oldTime ? "fast_forward" : "rewind",
                         song_id: player.playingItem.id,
@@ -199,7 +199,7 @@ export class PlaybackEventRecorder {
                 break
             case "endOfAudio":
                 if (event.lastItem !== null && typeof event.lastItem.id === "number") {
-                    this.enqueue({
+                    await this.enqueue({
                         recorded_at: new Date().toISOString(),
                         kind: "stop",
                         song_id: event.lastItem.id,

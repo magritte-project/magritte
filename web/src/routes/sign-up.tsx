@@ -11,6 +11,7 @@ import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
+import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/sign-up")({
     beforeLoad: async ({
@@ -54,7 +55,7 @@ export const Route = createFileRoute("/sign-up")({
                     navigate({ to: "/" })
                 } catch (e) {
                     notificationCenter.showToast({
-                        message: `Could not sign up: ${e}`,
+                        message: `Could not sign up: ${getErrorMessage(e)}`,
                         type: "error",
                     })
                 }

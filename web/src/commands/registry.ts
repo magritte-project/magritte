@@ -97,7 +97,7 @@ export class CommandRegistry {
             this._commands.add(command)
             this._registeredCommandIDs.add(command.id)
         }
-        this._dispatch({ type: "registeredCommandsDidChange" })
+        void this._dispatch({ type: "registeredCommandsDidChange" })
     }
 
     removeByID(...commandIDs: string[]): boolean {
@@ -108,7 +108,7 @@ export class CommandRegistry {
             for (const command of deletedCommands) {
                 this._registeredCommandIDs.delete(command.id)
             }
-            this._dispatch({ type: "registeredCommandsDidChange" })
+            void this._dispatch({ type: "registeredCommandsDidChange" })
         }
         return deleted
     }
@@ -126,7 +126,7 @@ export class CommandRegistry {
     }
 
     wireUpExtensions(extensionRuntime: ExtensionRuntime): void {
-        Promise.allSettled(
+        void Promise.allSettled(
             extensionRuntime.running.map(async (extension) => {
                 const commands = await getExtensionCommands(extension)
                 this.add(...commands)
