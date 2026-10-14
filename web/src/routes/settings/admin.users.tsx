@@ -16,7 +16,7 @@ export const Route = createFileRoute("/settings/admin/users")({
             search: { offset, query },
         },
     }) => {
-        await queryClient.ensureQueryData(readAllUsersAdmin(api, query, offset))
+        await queryClient.query({ ...readAllUsersAdmin(api, query, offset), staleTime: "static" })
     },
     component: function AdminUsers() {
         const { query, offset } = Route.useSearch()

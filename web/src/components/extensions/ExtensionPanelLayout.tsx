@@ -85,30 +85,26 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
     )
     const commands = useMemo(() => {
         return [
-            ...available.map(
-                (extension): Command => ({
-                    id: `extensions.reveal[${extension.id}]`,
-                    searchTerms: `show open ${extension.name} extension`,
-                    requiredInputKinds: [],
-                    highlightAvailability: false,
-                    present: async () => ({
-                        displayName: `extensions: ${extension.name}`,
-                    }),
-                    execute: async () => openExtension(extension.id),
+            ...available.map((extension): Command => ({
+                id: `extensions.reveal[${extension.id}]`,
+                searchTerms: `show open ${extension.name} extension`,
+                requiredInputKinds: [],
+                highlightAvailability: false,
+                present: async () => ({
+                    displayName: `extensions: ${extension.name}`,
                 }),
-            ),
-            ...openExtensions.map(
-                (extension): Command => ({
-                    id: `extensions.close[${extension.id}]`,
-                    searchTerms: `close hide ${extension.name} extension`,
-                    requiredInputKinds: [],
-                    highlightAvailability: false,
-                    present: async () => ({
-                        displayName: `extensions: close ${extension.name}`,
-                    }),
-                    execute: async () => closeExtension(extension.id),
+                execute: async () => openExtension(extension.id),
+            })),
+            ...openExtensions.map((extension): Command => ({
+                id: `extensions.close[${extension.id}]`,
+                searchTerms: `close hide ${extension.name} extension`,
+                requiredInputKinds: [],
+                highlightAvailability: false,
+                present: async () => ({
+                    displayName: `extensions: close ${extension.name}`,
                 }),
-            ),
+                execute: async () => closeExtension(extension.id),
+            })),
             {
                 id: "extensions.manage",
                 searchTerms: "install uninstall extensions",

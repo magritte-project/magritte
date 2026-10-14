@@ -50,7 +50,7 @@ export default function CollectionRow({ collection, subtitle }: CollectionRowPro
             accessory={
                 <AddToLibraryButton
                     songs={tracksQuery.data}
-                    getSongs={() => queryClient.fetchQuery(tracksOptions)}
+                    getSongs={() => queryClient.query(tracksOptions)}
                 />
             }
         />

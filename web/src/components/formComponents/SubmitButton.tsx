@@ -1,4 +1,4 @@
-import { useStore } from "@tanstack/react-form"
+import { useSelector } from "@tanstack/react-form"
 
 import type { ThemedButtonProps } from "@/components/theme/ThemedButton"
 import ThemedButton from "@/components/theme/ThemedButton"
@@ -12,7 +12,7 @@ export default function SubmitButton({
     ...rest
 }: SubmitButtonProps) {
     const form = useFormContext()
-    const [canSubmit, isSubmitting] = useStore(form.store, (state) => [
+    const [canSubmit, isSubmitting] = useSelector(form.store, (state) => [
         state.canSubmit,
         state.isSubmitting,
     ])

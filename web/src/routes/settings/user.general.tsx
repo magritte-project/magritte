@@ -17,7 +17,7 @@ import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/settings/user/general")({
     loader: async ({ context: { queryClient, api } }) => {
-        await queryClient.ensureQueryData(readUserProfile(api))
+        await queryClient.query({ ...readUserProfile(api), staleTime: "static" })
     },
     component: function UserGeneral() {
         const api = useAPI()

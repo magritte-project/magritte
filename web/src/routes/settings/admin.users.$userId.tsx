@@ -23,8 +23,8 @@ import { getErrorMessage } from "@/utilities/errors"
 export const Route = createFileRoute("/settings/admin/users/$userId")({
     loader: async ({ context: { queryClient, api }, params: { userId } }) => {
         await Promise.all([
-            queryClient.ensureQueryData(readUserProfileAdmin(api, userId)),
-            queryClient.ensureQueryData(readUserProfile(api)),
+            queryClient.query({ ...readUserProfileAdmin(api, userId), staleTime: "static" }),
+            queryClient.query({ ...readUserProfile(api), staleTime: "static" }),
         ])
     },
     component: function AdminUserEdit() {

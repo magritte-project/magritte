@@ -33,7 +33,7 @@ export const Route = createFileRoute("/libraries/add")({
         }
     },
     loader: async ({ context: { api, queryClient } }) => {
-        await queryClient.ensureQueryData(readInstanceStatus(api))
+        await queryClient.query({ ...readInstanceStatus(api), staleTime: "static" })
     },
     component: function LibrariesCreateComponent() {
         const navigate = useNavigate()

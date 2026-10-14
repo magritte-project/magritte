@@ -21,7 +21,7 @@ describe("events", () => {
             const [_dispatch, subscribe] = createEvent<number>()
             const subscriber = vi.fn().mockRejectedValue(new Error("test"))
             subscribe(subscriber)
-            expect(_dispatch(42)).resolves.not.toThrow()
+            await expect(_dispatch(42)).resolves.not.toThrow()
             expect(vi.mocked(subscriber)).toHaveBeenCalled()
         })
 

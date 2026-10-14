@@ -8,8 +8,5 @@
     "rules": {
         "no-else-return": "off"
     },
-    "ignorePatterns": [
-        "web/src/routeTree.gen.ts",
-        "web/src/api/openapi.d.ts"
-    ]
+    "ignorePatterns": ["web/src/routeTree.gen.ts", "web/src/api/openapi.d.ts"]
 }

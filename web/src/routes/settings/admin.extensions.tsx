@@ -30,7 +30,10 @@ export const Route = createFileRoute("/settings/admin/extensions")({
             search: { offset, limit },
         },
     }) => {
-        await queryClient.ensureQueryData(readAvailableExtensions(api, offset, limit))
+        await queryClient.query({
+            ...readAvailableExtensions(api, offset, limit),
+            staleTime: "static",
+        })
     },
     component: function AdminExtensions() {
         const { offset, limit } = Route.useSearch()

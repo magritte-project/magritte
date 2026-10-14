@@ -26,7 +26,7 @@ export const Route = createFileRoute("/sign-in")({
         }
     },
     loader: async ({ context: { api, queryClient } }) => {
-        await queryClient.ensureQueryData(readInstanceStatus(api))
+        await queryClient.query({ ...readInstanceStatus(api), staleTime: "static" })
     },
     component: function SignInComponent() {
         const navigate = Route.useNavigate()

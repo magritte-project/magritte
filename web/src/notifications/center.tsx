@@ -51,7 +51,7 @@ export class NotificationCenter {
 
         const observer = new QueryObserver(queryClient, readNotifications(api))
         observer.subscribe((result) => this._handleReadNotificationsQueryResult(result))
-        queryClient.ensureQueryData(readNotifications(api)).catch(() => undefined)
+        queryClient.query({ ...readNotifications(api), staleTime: "static" }).catch(() => undefined)
     }
 
     private async _handleUserEvent(event: UserEvent) {

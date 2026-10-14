@@ -25,9 +25,10 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/ignored")({
             search: { offset = 0 },
         },
     }) => {
-        await queryClient.ensureQueryData(
-            readLibraryIgnoredResources(api, Number(libraryId), { offset }),
-        )
+        await queryClient.query({
+            ...readLibraryIgnoredResources(api, Number(libraryId), { offset }),
+            staleTime: "static",
+        })
     },
     component: function ManageLibraryIgnoredResources() {
         const navigate = Route.useNavigate()

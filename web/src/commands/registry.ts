@@ -19,43 +19,41 @@ async function getExtensionCommands(extension: Extension): Promise<readonly Comm
 
     try {
         const responder = await extension.commandResponder()
-        return definitions.map(
-            (definition): Command => ({
-                id: getExtensionCommandID(extension.manifest, definition),
-                searchTerms: `${extension.manifest.name} ${definition.searchTerms}`,
-                requiredInputKinds: definition.requiredInputKinds,
-                highlightAvailability: definition.highlightAvailability ?? false,
-                present: async (inputs: CommandInputs) => {
-                    try {
-                        const presentation = await responder.presentCommand({
-                            id: definition.id,
-                            inputs: inputs.allMatching(definition.requiredInputKinds),
-                        })
-                        return {
-                            ...presentation,
-                            displayName: `${extension.manifest.name}: ${presentation.displayName}`,
-                        }
-                    } catch (error) {
-                        console.error(
-                            "*** Could not get presentation for command",
-                            error,
-                            extension.manifest.id,
-                            definition.id,
-                        )
-                        return {
-                            displayName: `${extension.manifest.name}: ???`,
-                            disabled: true,
-                        }
-                    }
-                },
-                execute: async (inputs: CommandInputs) => {
-                    return await responder.executeCommand({
+        return definitions.map((definition): Command => ({
+            id: getExtensionCommandID(extension.manifest, definition),
+            searchTerms: `${extension.manifest.name} ${definition.searchTerms}`,
+            requiredInputKinds: definition.requiredInputKinds,
+            highlightAvailability: definition.highlightAvailability ?? false,
+            present: async (inputs: CommandInputs) => {
+                try {
+                    const presentation = await responder.presentCommand({
                         id: definition.id,
                         inputs: inputs.allMatching(definition.requiredInputKinds),
                     })
-                },
-            }),
-        )
+                    return {
+                        ...presentation,
+                        displayName: `${extension.manifest.name}: ${presentation.displayName}`,
+                    }
+                } catch (error) {
+                    console.error(
+                        "*** Could not get presentation for command",
+                        error,
+                        extension.manifest.id,
+                        definition.id,
+                    )
+                    return {
+                        displayName: `${extension.manifest.name}: ???`,
+                        disabled: true,
+                    }
+                }
+            },
+            execute: async (inputs: CommandInputs) => {
+                return await responder.executeCommand({
+                    id: definition.id,
+                    inputs: inputs.allMatching(definition.requiredInputKinds),
+                })
+            },
+        }))
     } catch (error) {
         console.error(
             "*** Extension declares commands in manifest but does not export a responder",

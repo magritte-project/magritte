@@ -9,9 +9,10 @@ export const Route = createFileRoute("/")({
         } else {
             const firstSetupComplete = await (async () => {
                 try {
-                    const instanceStatus = await queryClient.ensureQueryData(
-                        readInstanceStatus(api),
-                    )
+                    const instanceStatus = await queryClient.query({
+                        ...readInstanceStatus(api),
+                        staleTime: "static",
+                    })
                     return instanceStatus.first_setup_complete
                 } catch (error) {
                     console.error("Error fetching instance status:", error)

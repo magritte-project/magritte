@@ -18,7 +18,7 @@ import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries/manage/$libraryId/")({
     loader: async ({ context: { api, queryClient } }) => {
-        await queryClient.ensureQueryData(readInstanceStatus(api))
+        await queryClient.query({ ...readInstanceStatus(api), staleTime: "static" })
     },
     component: function ManageLibraryGeneral() {
         const { libraryId } = Route.useParams()

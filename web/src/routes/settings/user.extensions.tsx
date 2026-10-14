@@ -31,7 +31,10 @@ export const Route = createFileRoute("/settings/user/extensions")({
             search: { offset, limit },
         },
     }) => {
-        await queryClient.ensureQueryData(readInstalledExtensions(api, offset, limit))
+        await queryClient.query({
+            ...readInstalledExtensions(api, offset, limit),
+            staleTime: "static",
+        })
     },
     component: function UserExtensions() {
         const { offset, limit } = Route.useSearch()

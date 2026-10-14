@@ -278,19 +278,17 @@ function parseSearchHitRelease(raw: any): SearchHitRelease {
 }
 
 export function parseRecordingSearch(raw: any): readonly RecordingSearchHit[] {
-    return asArray(raw?.recordings).map(
-        (hit): RecordingSearchHit => ({
-            id: asString(hit?.id) ?? "",
-            title: asString(hit?.title) ?? "",
-            disambiguation: asString(hit?.disambiguation),
-            firstReleaseDate: asString(hit?.["first-release-date"]),
-            score: asNumber(hit?.score) ?? 0,
-            lengthMs: asNumber(hit?.length),
-            video: hit?.video === true,
-            artistCredit: parseArtistCredit(hit?.["artist-credit"]),
-            releases: asArray(hit?.releases).map(parseSearchHitRelease),
-        }),
-    )
+    return asArray(raw?.recordings).map((hit): RecordingSearchHit => ({
+        id: asString(hit?.id) ?? "",
+        title: asString(hit?.title) ?? "",
+        disambiguation: asString(hit?.disambiguation),
+        firstReleaseDate: asString(hit?.["first-release-date"]),
+        score: asNumber(hit?.score) ?? 0,
+        lengthMs: asNumber(hit?.length),
+        video: hit?.video === true,
+        artistCredit: parseArtistCredit(hit?.["artist-credit"]),
+        releases: asArray(hit?.releases).map(parseSearchHitRelease),
+    }))
 }
 
 export function parseReleaseGroupBrowse(raw: any): {

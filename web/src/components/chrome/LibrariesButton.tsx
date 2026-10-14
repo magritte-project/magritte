@@ -22,18 +22,13 @@ export default function LibrariesButton() {
 
     const items = useMemo(
         () =>
-            libraries.map(
-                (library): ThemedPopUpMenuItem => ({
-                    key: `libraries[${library.id}]`,
-                    label: (
-                        <LibraryLabel
-                            name={library.name}
-                            selected={String(library.id) === libraryId}
-                        />
-                    ),
-                    onClick: () => navigate({ to: `/libraries/${library.id}` }),
-                }),
-            ),
+            libraries.map((library): ThemedPopUpMenuItem => ({
+                key: `libraries[${library.id}]`,
+                label: (
+                    <LibraryLabel name={library.name} selected={String(library.id) === libraryId} />
+                ),
+                onClick: () => navigate({ to: `/libraries/${library.id}` }),
+            })),
         [libraries, libraryId, navigate],
     )
     const selectedLibrary = useMemo(

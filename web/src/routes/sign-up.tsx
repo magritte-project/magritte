@@ -23,7 +23,7 @@ export const Route = createFileRoute("/sign-up")({
         }
     },
     loader: async ({ context: { api, queryClient } }) => {
-        await queryClient.ensureQueryData(readInstanceStatus(api))
+        await queryClient.query({ ...readInstanceStatus(api), staleTime: "static" })
     },
     component: function SignUpComponent() {
         const navigate = useNavigate()

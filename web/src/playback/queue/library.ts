@@ -43,12 +43,13 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         if (existingPage !== undefined) {
             return existingPage
         } else {
-            const newPage = await this._queryClient.ensureQueryData(
-                readLibrarySongs(this._api, {
+            const newPage = await this._queryClient.query({
+                ...readLibrarySongs(this._api, {
                     ...this._criteria,
                     offset,
                 }),
-            )
+                staleTime: "static",
+            })
             this._pages.set(offset, newPage)
             return newPage
         }
