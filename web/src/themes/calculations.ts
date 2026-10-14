@@ -23,7 +23,7 @@ export function nextLightnessNotch(L: number): number {
         return LIGHTNESS_NOTCHES[NUMBER_OF_LIGHTNESS_NOTCHES - 1]
     }
 
-    if (L > 50.0) {
+    if (L > 0.5) {
         let nearestNotchIndex = NUMBER_OF_LIGHTNESS_NOTCHES - 1
         let nearestNotchL = 0
         while (nearestNotchIndex >= 0) {
@@ -61,7 +61,6 @@ export function nextColor(color: string): string {
     if (parsedColor === null) {
         return color
     }
-    console.log(color, parsedColor)
     const newColor: ColorValue = {
         ...parsedColor,
         oklch: { ...parsedColor.oklch, L: nextLightnessNotch(parsedColor.oklch.L) },
@@ -73,6 +72,5 @@ export function nextColors(primary: string) {
     const secondary = nextColor(primary)
     const tertiary = nextColor(secondary)
     const quaternary = nextColor(tertiary)
-    console.log(primary, secondary, tertiary, quaternary)
     return { secondary, tertiary, quaternary }
 }
