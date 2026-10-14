@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import sys
 from argparse import ArgumentParser, Namespace
+from shutil import rmtree
 from traceback import print_tb
 
 
@@ -80,7 +81,9 @@ async def import_extension(args: Namespace):
             )
         except HTTPException as e:
             if e.status_code == status.HTTP_409_CONFLICT:
-                print("Extension already imported")
+                print("*** Extension already imported", file=sys.stderr)
+            else:
+                raise
 
 
 async def delete_extension(args: Namespace):
@@ -99,11 +102,28 @@ async def delete_extension(args: Namespace):
             )
         )
         if not extension:
-            print("No extension found")
+            print("*** No extension found", file=sys.stderr)
             return
 
         await session.delete(extension)
         await session.flush()
+
+
+async def reset(args: Namespace):
+    from magritte.config import config
+
+    data_home_path = config.data_home_path
+    print(f"Resetting this instance will remove all data in {data_home_path}.")
+    print("Library media will not be affected nor will data stored in extensions.")
+
+    if not args.yes:
+        result = input("Are you sure you to continue? [y/N] ").strip().lower()
+        if not result.startswith("y") and not result.startswith("t"):
+            sys.exit(1)
+
+    print(f"Removing all instance data from {data_home_path}")
+    rmtree(data_home_path)
+    print(f"Removed all instance data from {data_home_path}")
 
 
 if __name__ == "__main__":
@@ -173,6 +193,19 @@ if __name__ == "__main__":
         help="The manifest ID of the extension to delete",
     )
     parser_delete_extension.set_defaults(func=delete_extension)
+
+    ## reset
+    parser_reset = subparsers.add_parser(
+        "reset",
+        help="Reset this instance",
+    )
+    parser_reset.add_argument(
+        "--yes",
+        "-y",
+        action="store_true",
+        help="Reset without confirming",
+    )
+    parser_reset.set_defaults(func=reset)
 
     parser.set_defaults(func=run_main)
 
