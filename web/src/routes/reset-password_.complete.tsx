@@ -4,6 +4,7 @@ import { z } from "zod"
 import { useResetPasswordComplete } from "@/api/mutations/root"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
+import ThemedInput from "@/components/theme/ThemedInput"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import { getErrorMessage } from "@/utilities/errors"
@@ -41,6 +42,14 @@ export const Route = createFileRoute("/reset-password_/complete")({
                         <img src="/icon.svg" alt="Magritte Logo" className="w-8 h-8" />
                         <span className="font-semibold text-xl">Reset Password</span>
                     </header>
+                    <FieldDecoration label="Email">
+                        <ThemedInput
+                            type="text"
+                            placeholder="Your email address"
+                            value={email}
+                            disabled={true}
+                        />
+                    </FieldDecoration>
                     <form.AppField
                         name="new_password"
                         validators={{

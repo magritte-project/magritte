@@ -113,9 +113,12 @@ export const Route = createFileRoute("/sign-in")({
                         )}
                     </form.AppField>
                     <form.SubmitButton>Sign In</form.SubmitButton>
-                    <span className="self-center text-center">
+                    <p className="self-center text-center">
                         Don't have an account? <ThemedLink to="/sign-up">Sign up</ThemedLink>
-                    </span>
+                    </p>
+                    <ThemedLink className="self-center text-center" to="/reset-password">
+                        Reset Password
+                    </ThemedLink>
                 </AppForm>
             </div>
         )
