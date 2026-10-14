@@ -14,14 +14,14 @@ export default function ToastNotification({ className, message, type }: ToastNot
             id="toast-notification"
             aria-live="polite"
             className={classNames(
-                "bg-primary border border-separator drop-shadow-lg rounded-panel p-md flex items-center gap-sm z-100",
+                "bg-primary border border-separator drop-shadow-lg rounded-panel p-md flex items-center gap-md z-100",
                 className,
             )}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
         >
-            <DialogIcon type={type} size="1rem" />
+            <DialogIcon type={type} size="1.5rem" />
             <span className="font-medium text-sm">{message}</span>
         </motion.div>
     )
