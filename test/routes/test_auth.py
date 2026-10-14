@@ -5,9 +5,10 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi.testclient import TestClient
 
-from conftest import AuthFixture
+from conftest import AuthFixture, override_dependency
 from magritte.auth import FeatureScope, create_feature_token, password_hash
 from magritte.config import get_secrets_config
+from magritte.email import get_email_client
 from magritte.model.user import User
 
 
@@ -18,10 +19,20 @@ async def _update_user(auth: AuthFixture, **values: Any):
             setattr(user, key, value)
 
 
+@pytest.fixture
+def disable_email_client():
+    def override_get_email_client():
+        return None
+
+    with override_dependency(get_email_client, override_get_email_client):
+        yield
+
+
 class TestSignUp:
     def test_with_fresh_credentials(
         self,
         client: TestClient,
+        disable_email_client: None,
     ):
         response = client.post(
             "/sign-up",
@@ -39,6 +50,7 @@ class TestSignUp:
     def test_rejects_already_in_use_usernames(
         self,
         client: TestClient,
+        disable_email_client: None,
     ):
         response = client.post(
             "/sign-up",
@@ -200,10 +212,11 @@ class TestVerifyEmail:
         assert await self._read_is_email_verified(standard_auth) is True
 
     @pytest.mark.asyncio
-    async def test_requires_email_when_configured(
+    async def test_requires_email_to_be_configured(
         self,
         client: TestClient,
         standard_auth: AuthFixture,
+        disable_email_client: None,
     ):
         await _update_user(standard_auth, is_email_verified=False)
 
@@ -295,10 +308,11 @@ class TestResetPassword:
         installed_mock_email_client.send.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_requires_email_when_configured(
+    async def test_requires_email_to_be_configured(
         self,
         client: TestClient,
         standard_auth: AuthFixture,
+        disable_email_client: None,
     ):
         response = client.post(
             "/reset-password",
@@ -428,10 +442,11 @@ class TestResetPasswordComplete:
         assert self._sign_in_status(client, "password") == 200
 
     @pytest.mark.asyncio
-    async def test_requires_email_when_configured(
+    async def test_requires_email_to_be_configured(
         self,
         client: TestClient,
         standard_auth: AuthFixture,
+        disable_email_client: None,
     ):
         await self._set_reset_token(standard_auth)
 
