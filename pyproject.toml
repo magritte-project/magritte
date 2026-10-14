@@ -6,23 +6,23 @@ readme = "README.md"
 license = "GPL-3.0-only"
 requires-python = ">=3.13"
 dependencies = [
-    "aiosqlite>=0.21.0",
-    "alembic>=1.18.4",
-    "cryptography>=46.0.3",
-    "fastapi[standard]>=0.140.9",
-    "greenlet>=3.5.4",
-    "httpx2>=2.10.0",
+    "aiosqlite>=0.22.1",
+    "alembic>=1.20.0",
+    "cryptography>=50.0.2",
+    "fastapi[standard]>=0.143.1",
+    "greenlet>=3.5.6",
+    "httpx2>=2.13.1",
     "jinja2>=3.1.6",
     "pathvalidate>=3.3.1",
-    "pillow>=12.0.0",
-    "pwdlib[argon2]>=0.2.1",
-    "pydantic>=2.11.9",
-    "pyjwt>=2.10.1",
-    "python-dotenv>=1.1.1",
-    "sqlmodel>=0.0.25",
-    "tinytag>=2.3.0",
+    "pillow>=12.3.0",
+    "pwdlib[argon2]>=0.3.1",
+    "pydantic>=2.14.1",
+    "pyjwt>=2.15.1",
+    "python-dotenv>=1.2.4",
+    "sqlmodel>=0.0.48",
+    "tinytag>=2.3.2",
     "watchdog>=6.0.0",
-    "websockets>=16.1.1",
+    "websockets>=17.2",
 ]
 
 [project.optional-dependencies]
@@ -30,17 +30,17 @@ desktop = [
     "keyring>=25.7.0",
 ]
 mailtrap = [
-    "mailtrap>=2.10.0"
+    "mailtrap>=2.11.0"
 ]
 
 [dependency-groups]
 dev = [
-    "datamodel-code-generator>=0.71.0",
-    "faker>=40.36.0",
-    "pytest>=8.4.2",
-    "pytest-asyncio>=1.2.0",
-    "ruff>=0.16.0",
-    "ty>=0.0.64",
+    "datamodel-code-generator>=0.83.0",
+    "faker>=40.43.0",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.17.0",
+    "ty>=0.0.87",
 ]
 
 [build-system]
