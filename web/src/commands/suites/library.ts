@@ -144,7 +144,7 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                 const sources = librarySongs.flatMap((song) =>
                     (song.sources ?? []).filter((source) => source.url.startsWith("magritte://")),
                 )
-                const existingUrls = await localCache.getCachedSourceFileUrls(
+                const existingUrls = await localCache.intersectionSourceFileUrls(
                     sources.map((source) => source.url),
                 )
                 let downloadCount = 0

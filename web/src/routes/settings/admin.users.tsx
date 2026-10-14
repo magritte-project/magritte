@@ -32,7 +32,7 @@ export const Route = createFileRoute("/settings/admin/users")({
                     {allUsers.users.map((user) => (
                         <li
                             key={`users[${user.id}]`}
-                            className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-list-element"
+                            className="bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-li"
                         >
                             <Link
                                 className="w-full flex items-center px-md py-1 h-9"

@@ -613,6 +613,9 @@ importers:
       classnames:
         specifier: 'catalog:'
         version: 2.5.1
+      filesize:
+        specifier: 11.0.26
+        version: 11.0.26
       fuse.js:
         specifier: 7.5.0
         version: 7.5.0
@@ -2976,6 +2979,10 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  filesize@11.0.26:
+    resolution: {integrity: sha512-CgbdcjFLDJzMUnxQxHZ5uVxREmTVkjoXnppVB0AH8X0N8Uz4CZarWZLFALLv/Ymyf6EEu1AgaLPS6laXiqBEWA==}
+    engines: {node: '>= 10.8.0'}
 
   finalhandler@1.3.2:
     resolution: {integrity: sha512-aA4RyPcd3badbdABGDuTXCMTtOneUCAYH/gxoYRTZlIJdF0YPWuGqiAsIrhNnnqdXGswYk6dGujem4w80UJFhg==}
@@ -6025,6 +6032,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
       picomatch: 4.0.7
+
+  filesize@11.0.26: {}
 
   finalhandler@1.3.2:
     dependencies:

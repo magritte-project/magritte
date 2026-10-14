@@ -52,33 +52,51 @@ describe("LocalCache", () => {
         })
     })
 
-    describe("#isSourceFileCached", () => {
+    describe("#hasSourceFile", () => {
         it("should return true for cached files", async () => {
             const cache = await LocalCache.open()
             await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["a"]))
 
-            expect(await cache.isSourceFileCached("https://example.com/a.mp3")).toBe(true)
+            expect(await cache.hasSourceFile("https://example.com/a.mp3")).toBe(true)
         })
 
         it("should return false for uncached files", async () => {
             const cache = await LocalCache.open()
 
-            expect(await cache.isSourceFileCached("https://example.com/a.mp3")).toBe(false)
+            expect(await cache.hasSourceFile("https://example.com/a.mp3")).toBe(false)
         })
     })
 
-    describe("#getCachedSourceFileUrls", () => {
+    describe("#intersectionSourceFileUrls", () => {
         it("should return only the urls which are cached", async () => {
             const cache = await LocalCache.open()
             await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["a"]))
             await cache.putSourceFile("https://example.com/b.mp3", 2, new Blob(["b"]))
 
-            const cachedUrls = await cache.getCachedSourceFileUrls([
+            const cachedUrls = await cache.intersectionSourceFileUrls([
                 "https://example.com/a.mp3",
                 "https://example.com/c.mp3",
             ])
 
             expect(cachedUrls).toEqual(new Set(["https://example.com/a.mp3"]))
+        })
+    })
+
+    describe("#getAllSourceFileUrls", () => {
+        it("should return the urls of all cached files", async () => {
+            const cache = await LocalCache.open()
+            await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["a"]))
+            await cache.putSourceFile("https://example.com/b.mp3", 2, new Blob(["b"]))
+
+            const urls = await cache.getAllSourceFileUrls()
+
+            expect(urls.sort()).toEqual(["https://example.com/a.mp3", "https://example.com/b.mp3"])
+        })
+
+        it("should return an empty array if nothing is cached", async () => {
+            const cache = await LocalCache.open()
+
+            expect(await cache.getAllSourceFileUrls()).toEqual([])
         })
     })
 
@@ -116,11 +134,90 @@ describe("LocalCache", () => {
             const contents = await cache.getSourceFile("https://example.com/a.mp3", 60_000)
 
             expect(contents).toBeUndefined()
-            expect(await cache.isSourceFileCached("https://example.com/a.mp3")).toBe(false)
+            expect(await cache.hasSourceFile("https://example.com/a.mp3")).toBe(false)
+        })
+
+        it("should notify subscribers when evicting files", async () => {
+            const cache = await LocalCache.open()
+            const lastModified = new Date(Date.now() - 120_000)
+            await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["a"]), lastModified)
+            const subscriber = vi.fn()
+            cache.subscribe(subscriber)
+
+            await cache.getSourceFile("https://example.com/a.mp3", 60_000)
+
+            expect(subscriber).toHaveBeenCalledExactlyOnceWith({
+                type: "sourceFileDelete",
+                url: "https://example.com/a.mp3",
+            })
+        })
+
+        it("should not notify subscribers when returning files", async () => {
+            const cache = await LocalCache.open()
+            await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["a"]))
+            const subscriber = vi.fn()
+            cache.subscribe(subscriber)
+
+            await cache.getSourceFile("https://example.com/a.mp3", 60_000)
+
+            expect(subscriber).not.toHaveBeenCalled()
+        })
+    })
+
+    describe("#deleteSourceFile", () => {
+        it("should remove cached files", async () => {
+            const cache = await LocalCache.open()
+            await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["a"]))
+            await cache.putSourceFile("https://example.com/b.mp3", 2, new Blob(["b"]))
+
+            await cache.deleteSourceFile("https://example.com/a.mp3")
+
+            expect(await cache.hasSourceFile("https://example.com/a.mp3")).toBe(false)
+            expect(await cache.hasSourceFile("https://example.com/b.mp3")).toBe(true)
+        })
+
+        it("should notify subscribers", async () => {
+            const cache = await LocalCache.open()
+            await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["a"]))
+            const subscriber = vi.fn()
+            cache.subscribe(subscriber)
+
+            await cache.deleteSourceFile("https://example.com/a.mp3")
+
+            expect(subscriber).toHaveBeenCalledExactlyOnceWith({
+                type: "sourceFileDelete",
+                url: "https://example.com/a.mp3",
+            })
         })
     })
 
     describe("#putSourceFile", () => {
+        it("should notify subscribers", async () => {
+            const cache = await LocalCache.open()
+            const subscriber = vi.fn()
+            cache.subscribe(subscriber)
+
+            await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["a"]))
+
+            expect(subscriber).toHaveBeenCalledExactlyOnceWith({
+                type: "sourceFilePut",
+                url: "https://example.com/a.mp3",
+            })
+        })
+
+        it("should not notify subscribers if the file is rejected", async () => {
+            mockStorageManager({ quota: 10, usage: 8 })
+            const cache = await LocalCache.open()
+            const subscriber = vi.fn()
+            cache.subscribe(subscriber)
+
+            await expect(
+                cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["abc"])),
+            ).rejects.toThrow("Local storage is full")
+
+            expect(subscriber).not.toHaveBeenCalled()
+        })
+
         it("should replace existing files with the same url", async () => {
             const cache = await LocalCache.open()
             await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["old"]))
@@ -148,7 +245,7 @@ describe("LocalCache", () => {
             await cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["a"]))
 
             expect(warn).toHaveBeenCalledWith("*** Local cache may not be reliable")
-            expect(await cache.isSourceFileCached("https://example.com/a.mp3")).toBe(true)
+            expect(await cache.hasSourceFile("https://example.com/a.mp3")).toBe(true)
         })
 
         it("should reject files which would exceed the storage quota", async () => {
@@ -158,7 +255,7 @@ describe("LocalCache", () => {
             await expect(
                 cache.putSourceFile("https://example.com/a.mp3", 1, new Blob(["abc"])),
             ).rejects.toThrow("Local storage is full")
-            expect(await cache.isSourceFileCached("https://example.com/a.mp3")).toBe(false)
+            expect(await cache.hasSourceFile("https://example.com/a.mp3")).toBe(false)
         })
     })
 })

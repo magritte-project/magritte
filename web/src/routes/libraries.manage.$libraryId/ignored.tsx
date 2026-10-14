@@ -61,7 +61,7 @@ export const Route = createFileRoute("/libraries/manage/$libraryId/ignored")({
                     {ignoredResources.items.map((ignoredResource) => (
                         <li key={ignoredResource.id} className="flex items-center gap-lg">
                             <div className="flex-1 text-sm font-mono">
-                                <div className="truncate max-w-lg">{ignoredResource.url}</div>
+                                <div className="truncate max-w-120">{ignoredResource.url}</div>
                             </div>
                             <ThemedSubtleButton
                                 type="button"

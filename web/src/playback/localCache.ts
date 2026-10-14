@@ -19,8 +19,8 @@ interface LocalCacheStoreDB extends DBSchema {
 }
 
 export type LocalCacheEvent =
-    | { type: "sourceFilePut"; url: string; id: number }
-    | { type: "sourceFileDelete"; url: string; id: number }
+    | { type: "sourceFilePut"; url: string }
+    | { type: "sourceFileDelete"; url: string }
 
 export class LocalCache {
     static async open(): Promise<LocalCache> {
@@ -53,11 +53,11 @@ export class LocalCache {
 
     readonly subscribe: EventSubscribe<LocalCacheEvent>
 
-    async isSourceFileCached(url: string): Promise<boolean> {
+    async hasSourceFile(url: string): Promise<boolean> {
         return (await this.db.count("sourceFiles", url)) > 0
     }
 
-    async getCachedSourceFileUrls(urls: Iterable<string>): Promise<Set<string>> {
+    async intersectionSourceFileUrls(urls: Iterable<string>): Promise<Set<string>> {
         const foundNames = new Set<string>()
         const allNames = new Set(await this.db.getAllKeys("sourceFiles"))
         for (const name of urls) {
@@ -68,6 +68,10 @@ export class LocalCache {
         return foundNames
     }
 
+    async getAllSourceFileUrls(): Promise<string[]> {
+        return await this.db.getAllKeys("sourceFiles")
+    }
+
     async getSourceFile(url: string, maxAge?: number): Promise<Blob | undefined> {
         const sourceFile = await this.db.get("sourceFiles", url)
         if (sourceFile === undefined) {
@@ -75,10 +79,15 @@ export class LocalCache {
         }
         if (maxAge !== undefined && Date.now() - sourceFile.lastModified.getTime() > maxAge) {
             await this.db.delete("sourceFiles", url)
-            void this._dispatch({ type: "sourceFileDelete", url, id: sourceFile.id })
+            void this._dispatch({ type: "sourceFileDelete", url })
             return undefined
         }
         return sourceFile.contents
+    }
+
+    async deleteSourceFile(url: string): Promise<void> {
+        await this.db.delete("sourceFiles", url)
+        void this._dispatch({ type: "sourceFileDelete", url })
     }
 
     async putSourceFile(
@@ -103,6 +112,6 @@ export class LocalCache {
             contents,
             lastModified,
         })
-        void this._dispatch({ type: "sourceFilePut", url, id })
+        void this._dispatch({ type: "sourceFilePut", url })
     }
 }

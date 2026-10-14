@@ -124,7 +124,7 @@ export const Route = createFileRoute("/settings/admin/users/$userId")({
                                 <label htmlFor={field.name} className="text-sm font-semibold">
                                     Scopes
                                 </label>
-                                <ol className="bg-secondary rounded-list-element p-lg flex flex-col gap-lg">
+                                <ol className="bg-secondary rounded-li p-lg flex flex-col gap-lg">
                                     {OAuth2ScopeSchema.options.map((scope) => (
                                         <li key={scope}>
                                             <Field className="flex items-center gap-lg">

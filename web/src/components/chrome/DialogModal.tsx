@@ -50,7 +50,7 @@ export default function DialogModal({ options, onDismiss }: DialogModalProps) {
                     initial={{ opacity: 0, scale: 0.95, y: 16 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 16 }}
-                    className="max-w-lg space-y-2 p-lg drop-shadow-2xl shadow-black bg-primary/90 rounded-panel"
+                    className="max-w-120 space-y-2 p-lg drop-shadow-2xl shadow-black bg-primary/90 rounded-panel"
                 >
                     <div className="flex items-start gap-lg">
                         <DialogIcon

@@ -104,7 +104,7 @@ export const Route = createFileRoute("/settings/user/extensions")({
                         <li key={`extensions[${extension.id}]`}>
                             <button
                                 type="button"
-                                className="flex flex-col items-center justify-center gap-md p-md w-24 h-24 rounded-list-element hover:bg-secondary active:bg-secondary-active"
+                                className="flex flex-col items-center justify-center gap-md p-md w-24 h-24 rounded-li hover:bg-secondary active:bg-secondary-active"
                                 onClick={() => presentExtension(extension.id)}
                             >
                                 <ExtensionIcon

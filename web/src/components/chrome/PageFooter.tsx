@@ -74,7 +74,7 @@ export default function PageFooter() {
         >
             <div className="relative isolate bg-linear-to-t from-primary/50 to-transparent">
                 <div className="absolute inset-x-0 -top-full bottom-0 backdrop-blur-lg mask-[linear-gradient(to_top,black,transparent)] pointer-events-none -z-10" />
-                <div className="relative p-lg flex items-center gap-6 max-w-2xl mx-auto">
+                <div className="relative p-lg flex items-center gap-6 max-w-200 mx-auto">
                     <AnimatePresence initial={false} mode="popLayout">
                         {isSm && !isNowPlayingRevealed && (
                             <motion.div

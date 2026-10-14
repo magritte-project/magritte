@@ -25,7 +25,7 @@ export default function LibraryArtistListItem({
     return (
         <li
             className={classNames(
-                "bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-list-element",
+                "bg-secondary odd:bg-inherit hover:bg-key-subtle rounded-li",
                 "flex items-center gap-md",
                 "px-md py-1 h-9",
                 className,

@@ -45,7 +45,7 @@ export default function LibraryHomeBrowser({ relativeTo, onNavigateTo }: Library
                 <li key={`${subpath}-${index}`}>
                     <button
                         type="button"
-                        className="text-start text-nowrap truncate flex items-center gap-sm p-sm w-full hover:bg-blue-100 rounded-list-element"
+                        className="text-start text-nowrap truncate flex items-center gap-sm p-sm w-full hover:bg-blue-100 rounded-li"
                         onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()

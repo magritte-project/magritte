@@ -29,6 +29,7 @@ import { Route as LibrariesLibraryIdSongsRouteImport } from './routes/libraries.
 import { Route as LibrariesManageLibraryIdRouteRouteImport } from './routes/libraries.manage.$libraryId/route'
 import { Route as SettingsAdminExtensionsRouteImport } from './routes/settings/admin.extensions'
 import { Route as SettingsAdminUsersRouteImport } from './routes/settings/admin.users'
+import { Route as SettingsUserDownloadsRouteImport } from './routes/settings/user.downloads'
 import { Route as SettingsUserExtensionsRouteImport } from './routes/settings/user.extensions'
 import { Route as SettingsUserGeneralRouteImport } from './routes/settings/user.general'
 import { Route as SettingsUserThemeRouteImport } from './routes/settings/user.theme'
@@ -143,6 +144,11 @@ const SettingsAdminUsersRoute = SettingsAdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => SettingsAdminRoute,
 } as any)
+const SettingsUserDownloadsRoute = SettingsUserDownloadsRouteImport.update({
+  id: '/user/downloads',
+  path: '/user/downloads',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
 const SettingsUserExtensionsRoute = SettingsUserExtensionsRouteImport.update({
   id: '/user/extensions',
   path: '/user/extensions',
@@ -221,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
   '/settings/admin/extensions': typeof SettingsAdminExtensionsRouteWithChildren
   '/settings/admin/users': typeof SettingsAdminUsersRouteWithChildren
+  '/settings/user/downloads': typeof SettingsUserDownloadsRoute
   '/settings/user/extensions': typeof SettingsUserExtensionsRouteWithChildren
   '/settings/user/general': typeof SettingsUserGeneralRoute
   '/settings/user/theme': typeof SettingsUserThemeRoute
@@ -249,6 +256,7 @@ export interface FileRoutesByTo {
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
   '/settings/admin/extensions': typeof SettingsAdminExtensionsRouteWithChildren
   '/settings/admin/users': typeof SettingsAdminUsersRouteWithChildren
+  '/settings/user/downloads': typeof SettingsUserDownloadsRoute
   '/settings/user/extensions': typeof SettingsUserExtensionsRouteWithChildren
   '/settings/user/general': typeof SettingsUserGeneralRoute
   '/settings/user/theme': typeof SettingsUserThemeRoute
@@ -282,6 +290,7 @@ export interface FileRoutesById {
   '/libraries/$libraryId/songs': typeof LibrariesLibraryIdSongsRoute
   '/settings/admin/extensions': typeof SettingsAdminExtensionsRouteWithChildren
   '/settings/admin/users': typeof SettingsAdminUsersRouteWithChildren
+  '/settings/user/downloads': typeof SettingsUserDownloadsRoute
   '/settings/user/extensions': typeof SettingsUserExtensionsRouteWithChildren
   '/settings/user/general': typeof SettingsUserGeneralRoute
   '/settings/user/theme': typeof SettingsUserThemeRoute
@@ -316,6 +325,7 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId/songs'
     | '/settings/admin/extensions'
     | '/settings/admin/users'
+    | '/settings/user/downloads'
     | '/settings/user/extensions'
     | '/settings/user/general'
     | '/settings/user/theme'
@@ -344,6 +354,7 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId/songs'
     | '/settings/admin/extensions'
     | '/settings/admin/users'
+    | '/settings/user/downloads'
     | '/settings/user/extensions'
     | '/settings/user/general'
     | '/settings/user/theme'
@@ -376,6 +387,7 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId/songs'
     | '/settings/admin/extensions'
     | '/settings/admin/users'
+    | '/settings/user/downloads'
     | '/settings/user/extensions'
     | '/settings/user/general'
     | '/settings/user/theme'
@@ -541,6 +553,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/admin/users'
       preLoaderRoute: typeof SettingsAdminUsersRouteImport
       parentRoute: typeof SettingsAdminRoute
+    }
+    '/settings/user/downloads': {
+      id: '/settings/user/downloads'
+      path: '/user/downloads'
+      fullPath: '/settings/user/downloads'
+      preLoaderRoute: typeof SettingsUserDownloadsRouteImport
+      parentRoute: typeof SettingsRouteRoute
     }
     '/settings/user/extensions': {
       id: '/settings/user/extensions'
@@ -731,6 +750,7 @@ const SettingsUserExtensionsRouteWithChildren =
 interface SettingsRouteRouteChildren {
   SettingsAdminRoute: typeof SettingsAdminRouteWithChildren
   SettingsIndexRoute: typeof SettingsIndexRoute
+  SettingsUserDownloadsRoute: typeof SettingsUserDownloadsRoute
   SettingsUserExtensionsRoute: typeof SettingsUserExtensionsRouteWithChildren
   SettingsUserGeneralRoute: typeof SettingsUserGeneralRoute
   SettingsUserThemeRoute: typeof SettingsUserThemeRoute
@@ -739,6 +759,7 @@ interface SettingsRouteRouteChildren {
 const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
   SettingsAdminRoute: SettingsAdminRouteWithChildren,
   SettingsIndexRoute: SettingsIndexRoute,
+  SettingsUserDownloadsRoute: SettingsUserDownloadsRoute,
   SettingsUserExtensionsRoute: SettingsUserExtensionsRouteWithChildren,
   SettingsUserGeneralRoute: SettingsUserGeneralRoute,
   SettingsUserThemeRoute: SettingsUserThemeRoute,
