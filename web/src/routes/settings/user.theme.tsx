@@ -1,18 +1,48 @@
+import { Field, Label } from "@headlessui/react"
 import { createFileRoute } from "@tanstack/react-router"
+import { useMemo, useState } from "react"
 
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
+import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import ThemedSection from "@/components/theme/ThemedSection"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import { useAppForm } from "@/hooks/formHook"
 import { applyTheme } from "@/themes/apply"
-import { getThemeSectionKeys } from "@/themes/base"
+import { getThemeSectionKeys, type ThemeSection } from "@/themes/base"
+import { nextColors } from "@/themes/calculations"
 import { defaultTheme } from "@/themes/default"
 import { DISPLAY_FONTS, MONOSPACE_FONTS } from "@/themes/fonts"
 import { camelCaseToTitleCase } from "@/utilities/strings"
 
+const MAGIC_SEMANTIC_COLORS: ReadonlySet<keyof ThemeSection<"semanticColors">> = new Set([
+    "primary",
+    "primaryActive",
+    "onPrimary",
+    "secondary",
+    "secondaryActive",
+    "onSecondary",
+    "tertiary",
+    "tertiaryActive",
+    "onTertiary",
+    "quaternary",
+    "quaternaryActive",
+    "onQuaternary",
+])
+
 export const Route = createFileRoute("/settings/user/theme")({
     component: function UserTheme() {
+        const [showAllColors, setShowAllColors] = useState(false)
+        const semanticColorsKeys = useMemo(
+            () =>
+                showAllColors
+                    ? getThemeSectionKeys("semanticColors")
+                    : getThemeSectionKeys("semanticColors").filter(
+                          (key) => !MAGIC_SEMANTIC_COLORS.has(key),
+                      ),
+            [showAllColors],
+        )
+
         const form = useAppForm({
             defaultValues: defaultTheme,
             onSubmit: ({ value }) => {
@@ -64,8 +94,101 @@ export const Route = createFileRoute("/settings/user/theme")({
                 </ThemedSection>
 
                 <ThemedSection header="Semantic Colors">
+                    <Field className="flex items-center gap-md mb-lg">
+                        <ThemedCheckbox
+                            className="peer"
+                            id="showAllColors"
+                            checked={showAllColors}
+                            onChange={setShowAllColors}
+                        />
+                        <Label
+                            htmlFor="showAllColors"
+                            className="text-sm font-semibold peer-aria-disabled:opacity-disabled"
+                        >
+                            Show All Colors
+                        </Label>
+                    </Field>
                     <ol className="flex flex-col gap-lg">
-                        {getThemeSectionKeys("semanticColors").map((key, index) => (
+                        {!showAllColors && (
+                            <>
+                                <li>
+                                    <form.AppField
+                                        name="semanticColors.primary"
+                                        listeners={{
+                                            onChange: ({ value: primary }) => {
+                                                const { secondary, tertiary, quaternary } =
+                                                    nextColors(primary ?? "")
+                                                form.setFieldValue(
+                                                    "semanticColors.secondary",
+                                                    secondary,
+                                                )
+                                                form.setFieldValue(
+                                                    "semanticColors.tertiary",
+                                                    tertiary,
+                                                )
+                                                form.setFieldValue(
+                                                    "semanticColors.quaternary",
+                                                    quaternary,
+                                                )
+                                            },
+                                        }}
+                                    >
+                                        {(field) => <field.ColorField label="Background" />}
+                                    </form.AppField>
+                                </li>
+                                <li>
+                                    <form.AppField
+                                        name="semanticColors.primaryActive"
+                                        listeners={{
+                                            onChange: ({ value: primary }) => {
+                                                const { secondary, tertiary, quaternary } =
+                                                    nextColors(primary ?? "")
+                                                form.setFieldValue(
+                                                    "semanticColors.secondaryActive",
+                                                    secondary,
+                                                )
+                                                form.setFieldValue(
+                                                    "semanticColors.tertiaryActive",
+                                                    tertiary,
+                                                )
+                                                form.setFieldValue(
+                                                    "semanticColors.quaternaryActive",
+                                                    quaternary,
+                                                )
+                                            },
+                                        }}
+                                    >
+                                        {(field) => <field.ColorField label="Background Active" />}
+                                    </form.AppField>
+                                </li>
+                                <li>
+                                    <form.AppField
+                                        name="semanticColors.onPrimary"
+                                        listeners={{
+                                            onChange: ({ value: primary }) => {
+                                                const { secondary, tertiary, quaternary } =
+                                                    nextColors(primary ?? "")
+                                                form.setFieldValue(
+                                                    "semanticColors.onSecondary",
+                                                    secondary,
+                                                )
+                                                form.setFieldValue(
+                                                    "semanticColors.onTertiary",
+                                                    tertiary,
+                                                )
+                                                form.setFieldValue(
+                                                    "semanticColors.onQuaternary",
+                                                    quaternary,
+                                                )
+                                            },
+                                        }}
+                                    >
+                                        {(field) => <field.ColorField label="Foreground" />}
+                                    </form.AppField>
+                                </li>
+                            </>
+                        )}
+                        {semanticColorsKeys.map((key, index) => (
                             <li key={`semanticColors[${key}@${index}]`}>
                                 <form.AppField name={`semanticColors.${key}`}>
                                     {(field) => (
