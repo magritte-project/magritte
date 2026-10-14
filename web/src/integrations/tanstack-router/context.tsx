@@ -11,6 +11,7 @@ import type { LocalCache } from "@/playback/localFileCache"
 import type { Player } from "@/playback/player"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
+import { poll } from "@/utilities/promises"
 
 export interface MagritteRouterContext {
     readonly api: API
@@ -35,10 +36,14 @@ export function createMagritteRouter(context: MagritteRouterContext) {
         defaultPreloadStaleTime: 0,
     })
 
-    context.api.client.subscribe((event) => {
+    context.api.client.subscribe(async (event) => {
+        // NOTE: Must poll since we make API calls before the router is fully set up
+        const matches = await poll(() => router.state.matches, {
+            test: (matches) => matches.length > 0,
+        })
         if (
             event.type === "unauthorized" &&
-            !router.state.matches.some((match) => match.staticData.noAuth === true)
+            !matches.some((match) => match.staticData.noAuth === true)
         ) {
             const currentLocation = router.state.location.href
             router.navigate({
