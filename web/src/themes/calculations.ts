@@ -1,39 +1,78 @@
-import { parseColor, rgbaToColorValue, type OKLCH } from "chromakit-react"
+import { formatColor, type ColorValue } from "chromakit-react"
 
-const LIGHTNESS_STEPS: readonly number[] = [
-    98.4, 96.8, 92.9, 86.9, 70.4, 55.4, 44.6, 37.2, 27.9, 20.8, 12.9,
+import { parseColorValue } from "@/utilities/css"
+
+/** The lightness notches used to ramp values in the OKLCH colorspace up and down */
+const LIGHTNESS_NOTCHES: readonly number[] = [
+    0.0, 0.129, 0.208, 0.279, 0.372, 0.446, 0.554, 0.704, 0.869, 0.929, 0.968, 0.984, 1.0,
 ]
 
-function nearest(values: readonly number[], target: number): number | undefined {
-    let closest: number | undefined
-    let closestDistance = Infinity
-    for (const value of values) {
-        const distance = Math.abs(value - target)
-        if (distance < closestDistance) {
-            closest = value
-            closestDistance = distance
+/** The number of lightness notches defined */
+const NUMBER_OF_LIGHTNESS_NOTCHES = LIGHTNESS_NOTCHES.length
+
+/**
+ * Calculate the next lightness notch for a given color.
+ *
+ * @param L A lightness value from a color in the OKLCH colorspace.
+ * @returns The next lightness notch.
+ */
+export function nextLightnessNotch(L: number): number {
+    if (L < 0.0) {
+        return LIGHTNESS_NOTCHES[0]
+    } else if (L > 1.0) {
+        return LIGHTNESS_NOTCHES[NUMBER_OF_LIGHTNESS_NOTCHES - 1]
+    }
+
+    if (L > 50.0) {
+        let nearestNotchIndex = NUMBER_OF_LIGHTNESS_NOTCHES - 1
+        let nearestNotchL = 0
+        while (nearestNotchIndex >= 0) {
+            nearestNotchL = LIGHTNESS_NOTCHES[nearestNotchIndex]
+            if (nearestNotchL <= L) {
+                break
+            }
+            nearestNotchIndex--
         }
+        if (nearestNotchL < L) {
+            return nearestNotchL
+        }
+        const previousNotchIndex = Math.max(nearestNotchIndex - 1, 0)
+        return LIGHTNESS_NOTCHES[previousNotchIndex]
+    } else {
+        let nearestNotchIndex = 0
+        let nearestNotchL = 0
+        while (nearestNotchIndex < NUMBER_OF_LIGHTNESS_NOTCHES) {
+            nearestNotchL = LIGHTNESS_NOTCHES[nearestNotchIndex]
+            if (nearestNotchL >= L) {
+                break
+            }
+            nearestNotchIndex++
+        }
+        if (nearestNotchL > L) {
+            return nearestNotchL
+        }
+        const nextNotchIndex = Math.min(nearestNotchIndex + 1, NUMBER_OF_LIGHTNESS_NOTCHES - 1)
+        return LIGHTNESS_NOTCHES[nextNotchIndex]
     }
-    return closest
 }
 
-export function parseIntoOKLCH(color: string): OKLCH | null {
-    const rgba = parseColor(color)
-    if (!rgba) {
-        return null
+export function nextColor(color: string): string {
+    const parsedColor = parseColorValue(color)
+    if (parsedColor === null) {
+        return color
     }
-    const { oklch } = rgbaToColorValue(rgba)
-    return oklch
+    console.log(color, parsedColor)
+    const newColor: ColorValue = {
+        ...parsedColor,
+        oklch: { ...parsedColor.oklch, L: nextLightnessNotch(parsedColor.oklch.L) },
+    }
+    return formatColor(newColor, "oklch")
 }
 
-export function nextLightnessStep(color: OKLCH, forward: boolean): number {
-    const nearestLightnessStep = nearest(LIGHTNESS_STEPS, color.L)
-    if (nearestLightnessStep === undefined) {
-        throw new Error()
-    }
-
-    const nearestLightnessStepIndex = LIGHTNESS_STEPS.indexOf(nearestLightnessStep)
-    const nextLightnessStepIndex = nearestLightnessStepIndex + (forward ? +1 : -1)
-    const nextLightnessStep = LIGHTNESS_STEPS[nextLightnessStepIndex]
-    return Math.abs(nearestLightnessStep - nextLightnessStep)
+export function nextColors(primary: string) {
+    const secondary = nextColor(primary)
+    const tertiary = nextColor(secondary)
+    const quaternary = nextColor(tertiary)
+    console.log(primary, secondary, tertiary, quaternary)
+    return { secondary, tertiary, quaternary }
 }
