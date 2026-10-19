@@ -141,7 +141,7 @@ export class LastfmClient {
     private async _lookup(
         method: string,
         parameters: Readonly<Record<string, string | undefined>>,
-    ): Promise<any | null> {
+    ): Promise<any> {
         try {
             return await this._call(method, { ...parameters, autocorrect: "1" })
         } catch (error) {

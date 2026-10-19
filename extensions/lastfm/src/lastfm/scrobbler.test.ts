@@ -86,7 +86,7 @@ interface Harness {
     readonly updateNowPlaying: ReturnType<typeof vi.fn>
     readonly storage: FakeStorage
     /** Sample the player, having played for one interval since the last sample */
-    play(intervals?: number): Promise<void>
+    readonly play: (intervals?: number) => Promise<void>
 }
 
 function makeHarness(): Harness {

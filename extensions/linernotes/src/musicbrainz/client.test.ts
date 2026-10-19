@@ -6,7 +6,7 @@ import { RateLimiter } from "@/musicbrainz/rateLimiter"
 type FetchMock = ReturnType<typeof respondWith>
 
 /** A `fetch` which answers each call with the next payload, repeating the last */
-function respondWith(...responses: readonly (unknown | Response)[]) {
+function respondWith(...responses: readonly unknown[]) {
     let index = 0
     return vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) => {
         const next = responses[Math.min(index++, responses.length - 1)]
@@ -27,7 +27,8 @@ function makeClient(fetch: FetchMock) {
 }
 
 function requestUrl(fetch: FetchMock, call = 0): URL {
-    return new URL(String(fetch.mock.calls[call][0]))
+    const [input] = fetch.mock.calls[call]
+    return new URL(input instanceof Request ? input.url : input)
 }
 
 describe("MusicBrainzClient", () => {

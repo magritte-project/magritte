@@ -65,7 +65,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
         switch (event.state) {
             case MusicKit.PlaybackStates.ended:
             case MusicKit.PlaybackStates.completed: {
-                this.stop()
+                void this.stop()
                 this._broadcaster.send(PlaybackEngineEndOfAudio, undefined)
                 break
             }
@@ -177,7 +177,7 @@ export default class AppleMusicPlaybackEngine implements PlaybackEngine {
     }
 
     async stop(): Promise<void> {
-        this._musicKit.stop()
         this._playingItem = null
+        await this._musicKit.stop()
     }
 }

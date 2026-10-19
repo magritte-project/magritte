@@ -17,7 +17,8 @@ function makeClient(fetch: FetchMock) {
 }
 
 function requestParameters(fetch: FetchMock): URLSearchParams {
-    return new URL(String(fetch.mock.calls[0][0])).searchParams
+    const [input] = fetch.mock.calls[0]
+    return new URL(input instanceof Request ? input.url : input).searchParams
 }
 
 const BIO = {

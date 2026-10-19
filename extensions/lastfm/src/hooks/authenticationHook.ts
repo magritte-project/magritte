@@ -25,9 +25,9 @@ export interface UseAuthenticationResult {
     /** Whatever went wrong with the last attempt, if anything */
     readonly error: unknown
 
-    signIn(): Promise<void>
-    signOut(): void
-    cancel(): void
+    readonly signIn: () => Promise<void>
+    readonly signOut: () => void
+    readonly cancel: () => void
 }
 
 export default function useAuthentication(): UseAuthenticationResult {

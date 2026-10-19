@@ -89,7 +89,7 @@ export default class AppleMusicSearchResponder implements SearchCommandResponder
         return song
     }
 
-    async executeReveal(_: SearchCommandResponderEffectContext): Promise<void> {}
+    async executeReveal(): Promise<void> {}
 
     async executePlay({ id }: SearchCommandResponderEffectContext): Promise<void> {
         const player = await this.host.get().player()

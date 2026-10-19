@@ -16,7 +16,8 @@ function makeClient(fetch: FetchMock) {
 }
 
 function requestUrl(fetch: FetchMock): URL {
-    return new URL(String(fetch.mock.calls[0][0]))
+    const [input] = fetch.mock.calls[0]
+    return new URL(input instanceof Request ? input.url : input)
 }
 
 describe("encodeTitle", () => {

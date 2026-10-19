@@ -24,8 +24,11 @@ function makeClient(fetch: FetchMock | typeof globalThis.fetch) {
 
 /** The parameters of the request a mocked `fetch` was called with, sent either way */
 function requestParameters(fetch: FetchMock): URLSearchParams {
-    const [url, init] = fetch.mock.calls[0]
-    return init?.body instanceof URLSearchParams ? init.body : new URL(String(url)).searchParams
+    const [input, init] = fetch.mock.calls[0]
+    if (init?.body instanceof URLSearchParams) {
+        return init.body
+    }
+    return new URL(input instanceof Request ? input.url : input).searchParams
 }
 
 describe("signParameters", () => {
