@@ -2,17 +2,17 @@ import { Field, Label, RadioGroup } from "@headlessui/react"
 import { useEffect, useRef } from "react"
 
 import ThemedButton from "@/components/theme/ThemedButton"
+import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import ThemedInput from "@/components/theme/ThemedInput"
+import ThemedLink from "@/components/theme/ThemedLink"
+import ThemedRadio from "@/components/theme/ThemedRadio"
 import ThemedSearchInput from "@/components/theme/ThemedSearchInput"
+import ThemedSelect from "@/components/theme/ThemedSelect"
+import ThemedSlider from "@/components/theme/ThemedSlider"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import { applyTheme } from "@/themes/apply"
 import type { Theme } from "@/themes/base"
 import { defaultTheme } from "@/themes/default"
-
-import ThemedCheckbox from "./ThemedCheckbox"
-import ThemedLink from "./ThemedLink"
-import ThemedRadio from "./ThemedRadio"
-import ThemedSelect from "./ThemedSelect"
 
 export interface ThemedPreviewProps {
     readonly theme: Theme
@@ -89,6 +89,7 @@ export default function ThemedPreview({ theme, fallback = defaultTheme }: Themed
                 <option value="0">First</option>
                 <option value="1">Second</option>
             </ThemedSelect>
+            <ThemedSlider min={0} max={1} step={0.1} defaultValue={0.5} />
             <pre style={{ fontFamily: "var(--default-mono-font-family)" }}>Monospace</pre>
         </div>
     )
