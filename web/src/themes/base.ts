@@ -39,7 +39,6 @@ export const ThemeSchema = z.object({
         onDestructive: z.string().optional(),
         destructiveActive: z.string().optional(),
         onDestructiveActive: z.string().optional(),
-        destructiveSubtle: z.string().optional(),
 
         highContrast: z.string().optional(),
     }),
