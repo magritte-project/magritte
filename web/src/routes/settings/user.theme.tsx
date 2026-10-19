@@ -243,7 +243,17 @@ export const Route = createFileRoute("/settings/user/theme")({
                                                     field={field}
                                                     label={camelCaseToTitleCase(key)}
                                                 >
-                                                    <field.InputField />
+                                                    <div className="flex items-center gap-md">
+                                                        <field.SliderField
+                                                            className="flex-1"
+                                                            min={0}
+                                                            max={1}
+                                                            step={0.1}
+                                                        />
+                                                        <div className="text-xs">
+                                                            {field.state.value}
+                                                        </div>
+                                                    </div>
                                                 </FieldDecoration>
                                             )}
                                         </form.AppField>

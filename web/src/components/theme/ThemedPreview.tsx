@@ -56,7 +56,13 @@ export default function ThemedPreview({ theme, fallback = defaultTheme }: Themed
                 Quaternary
             </div>
             <ThemedButton type="button">Button</ThemedButton>
+            <ThemedButton type="button" disabled>
+                Disabled Button
+            </ThemedButton>
             <ThemedSubtleButton type="button">Subtle Button</ThemedSubtleButton>
+            <ThemedSubtleButton type="button" disabled>
+                Disabled Subtle Button
+            </ThemedSubtleButton>
             <ThemedLink to=".">Link</ThemedLink>
             <ThemedInput placeholder="Input" />
             <ThemedSearchInput placeholder="Search Input" />
