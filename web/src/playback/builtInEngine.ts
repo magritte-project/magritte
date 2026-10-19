@@ -126,7 +126,7 @@ export default class BuiltInPlaybackEngine implements PlaybackEngine {
         if (bestUrl === undefined) {
             throw new Error("No compatible source in song")
         }
-        const sourceFile = await this._localCache.getSourceFile(bestUrl)
+        const sourceFile = await this._localCache.store.getSourceFile(bestUrl)
         if (sourceFile !== undefined) {
             console.debug("Issuing local file blob for playback")
             const audioSrc = URL.createObjectURL(sourceFile)

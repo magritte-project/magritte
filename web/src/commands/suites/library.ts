@@ -13,7 +13,6 @@ import type { RegisteredRouter } from "@tanstack/react-router"
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import type { Command } from "@/commands/base"
 import { getMagritteRouterContext } from "@/integrations/tanstack-router/context"
-import { resolveResourceUrl } from "@/utilities/resources"
 
 export function libraryCommands(router: RegisteredRouter): Command[] {
     return [
@@ -141,37 +140,24 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                 const librarySongs = await Promise.all(
                     songs.map((song) => api.client.readLibrarySong(library.id, song.id)),
                 )
-                const sources = librarySongs.flatMap((song) =>
-                    (song.sources ?? []).filter((source) => source.url.startsWith("magritte://")),
-                )
-                const existingUrls = await localCache.intersectionSourceFileUrls(
-                    sources.map((source) => source.url),
-                )
-                let downloadCount = 0
-                for (const source of sources) {
-                    if (existingUrls.has(source.url)) {
+                const downloadCount = await localCache.downloadMany({
+                    sources: librarySongs.flatMap((song) => song.sources ?? []),
+                    onSkipUpToDate: (source) => {
                         console.debug(`Skipping already downloaded source: ${source.url}`)
-                        continue
-                    }
-                    console.debug(`Downloading source: ${source.url}`)
-                    try {
-                        const token = await api.fileAccess.token()
-                        const url = resolveResourceUrl(source.url, token)
-                        if (url === undefined) {
-                            throw new Error("Could not resolve song source URL")
-                        }
-                        const response = await fetch(url)
-                        const contents = await response.blob()
-                        await localCache.putSourceFile(source.url, source.id, contents)
+                    },
+                    onBeginDownload: (source) => {
+                        console.debug(`Downloading source: ${source.url}`)
+                    },
+                    onEndDownload: (source) => {
                         console.debug(`Downloaded source: ${source.url}`)
-                        downloadCount++
-                    } catch (error) {
+                    },
+                    onDownloadError: (_source, error) => {
                         notificationCenter.showToast({
                             message: `Could not download library song: ${getErrorMessage(error)}`,
                             type: "error",
                         })
-                    }
-                }
+                    },
+                })
                 if (downloadCount > 0) {
                     notificationCenter.showToast({
                         message: `Downloaded ${downloadCount} song(s)`,

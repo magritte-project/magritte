@@ -1,6 +1,8 @@
+import type { API, SourceRead } from "@magritte/api"
 import { openDB, type DBSchema, type IDBPDatabase } from "idb"
 
 import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
+import { resolveResourceUrl } from "@/utilities/resources"
 
 interface LocalCacheStoreDB extends DBSchema {
     sourceFiles: {
@@ -18,12 +20,12 @@ interface LocalCacheStoreDB extends DBSchema {
     }
 }
 
-export type LocalCacheEvent =
+export type LocalCacheStoreEvent =
     | { type: "sourceFilePut"; url: string }
     | { type: "sourceFileDelete"; url: string }
 
-export class LocalCache {
-    static async open(): Promise<LocalCache> {
+export class LocalCacheStore {
+    static async open(): Promise<LocalCacheStore> {
         const db = await openDB<LocalCacheStoreDB>("LocalCacheStore", 1, {
             upgrade(db) {
                 const sourceFiles = db.createObjectStore("sourceFiles", {
@@ -39,10 +41,10 @@ export class LocalCache {
                 )
             },
         })
-        return new LocalCache(db)
+        return new LocalCacheStore(db)
     }
 
-    private readonly _dispatch: EventDispatch<LocalCacheEvent>
+    private readonly _dispatch: EventDispatch<LocalCacheStoreEvent>
 
     private constructor(private readonly db: IDBPDatabase<LocalCacheStoreDB>) {
         ;[this._dispatch, this.subscribe] = createEvent({
@@ -51,7 +53,7 @@ export class LocalCache {
         })
     }
 
-    readonly subscribe: EventSubscribe<LocalCacheEvent>
+    readonly subscribe: EventSubscribe<LocalCacheStoreEvent>
 
     async hasSourceFile(url: string): Promise<boolean> {
         return (await this.db.count("sourceFiles", url)) > 0
@@ -113,5 +115,96 @@ export class LocalCache {
             lastModified,
         })
         void this._dispatch({ type: "sourceFilePut", url })
+    }
+}
+
+export interface LocalStoreOptions {
+    readonly api: API
+    readonly storage?: Storage
+}
+
+export interface LocalStoreDownloadManyOptions {
+    readonly sources: readonly SourceRead[]
+    readonly onSkipUpToDate?: (source: SourceRead) => void
+    readonly onBeginDownload?: (source: SourceRead) => void
+    readonly onEndDownload?: (source: SourceRead) => void
+    readonly onDownloadError?: (source: SourceRead, error: unknown) => void
+}
+
+export class LocalCache {
+    static async open({
+        api,
+        storage = globalThis.localStorage,
+    }: LocalStoreOptions): Promise<LocalCache> {
+        return new LocalCache(api, storage, await LocalCacheStore.open())
+    }
+
+    private readonly _api: API
+    private readonly _storage: Storage
+
+    private constructor(api: API, storage: Storage, store: LocalCacheStore) {
+        this._api = api
+        this._storage = storage
+        this.store = store
+    }
+
+    readonly store: LocalCacheStore
+
+    get lastSync(): Date | null {
+        const rawLastSync = this._storage.getItem("localCache.lastSync")
+        if (rawLastSync === null) {
+            return null
+        }
+        return new Date(rawLastSync)
+    }
+
+    async downloadMany({
+        sources,
+        onSkipUpToDate,
+        onBeginDownload,
+        onEndDownload,
+        onDownloadError,
+    }: LocalStoreDownloadManyOptions): Promise<number> {
+        const fileSources = sources.filter((source) => source.url.startsWith("magritte://"))
+        if (fileSources.length === 0) {
+            return 0
+        }
+
+        const existingUrls = await this.store.intersectionSourceFileUrls(
+            fileSources.map((source) => source.url),
+        )
+        const lastSync = this.lastSync
+        const sourceChanges =
+            lastSync !== null && existingUrls.size > 0
+                ? await this._api.client.readSourceChanges({
+                      since: lastSync.toISOString(),
+                      ids: fileSources
+                          .filter((source) => existingUrls.has(source.url))
+                          .map((source) => source.id),
+                  })
+                : undefined
+        let downloadCount = 0
+        for (const fileSource of fileSources) {
+            if (existingUrls.has(fileSource.url) && !sourceChanges?.ids.includes(fileSource.id)) {
+                onSkipUpToDate?.(fileSource)
+                continue
+            }
+            onBeginDownload?.(fileSource)
+            try {
+                const token = await this._api.fileAccess.token()
+                const url = resolveResourceUrl(fileSource.url, token)
+                if (url === undefined) {
+                    throw new Error("Could not resolve song source URL")
+                }
+                const response = await fetch(url)
+                const contents = await response.blob()
+                await this.store.putSourceFile(fileSource.url, fileSource.id, contents)
+                downloadCount++
+                onEndDownload?.(fileSource)
+            } catch (error) {
+                onDownloadError?.(fileSource, error)
+            }
+        }
+        return downloadCount
     }
 }

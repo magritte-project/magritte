@@ -21,11 +21,11 @@ export const Route = createFileRoute("/settings/user/downloads")({
         })
         const { data: sourceFileUrls, refetch: refetchSourceFileUrls } = useSuspenseQuery({
             queryKey: ["localCache", "getAllSourceFileUrls"],
-            queryFn: () => localCache.getAllSourceFileUrls(),
+            queryFn: () => localCache.store.getAllSourceFileUrls(),
         })
 
         useEffect(() => {
-            return localCache.subscribe(() => {
+            return localCache.store.subscribe(() => {
                 void refetchStorageEstimate()
                 void refetchSourceFileUrls()
             })
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/settings/user/downloads")({
                 if (!confirmed) {
                     return
                 }
-                await localCache.deleteSourceFile(url)
+                await localCache.store.deleteSourceFile(url)
             },
             onError: (error) => {
                 notificationCenter.showToast({

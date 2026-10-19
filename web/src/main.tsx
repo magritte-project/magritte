@@ -56,7 +56,7 @@ try {
     const notificationCenter = new NotificationCenter(queryClient, api)
 
     // Set up playback
-    const localCache = await LocalCache.open()
+    const localCache = await LocalCache.open({ api })
     const playbackEngineRegistry = new PlaybackEngineRegistry({
         defaultEngine: new BuiltInPlaybackEngine(api, localCache),
     })
