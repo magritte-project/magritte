@@ -2,6 +2,8 @@ import logging
 import os
 import secrets
 from contextlib import asynccontextmanager
+from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 
 from pathvalidate import sanitize_filename
@@ -102,8 +104,8 @@ async def _try_ingest_file(
     canonizer: Canonizer,
     session: AsyncSession,
 ) -> list[Song]:
-    mime_type, _encoding = get_mime_types().guess_file_type(path)
-    if not mime_type or not mime_type.startswith("audio"):
+    inferred_mime_type, _encoding = get_mime_types().guess_file_type(path)
+    if not inferred_mime_type or not inferred_mime_type.startswith("audio"):
         return []
 
     file_url = path_as_file_uri(path)
@@ -119,14 +121,17 @@ async def _try_ingest_file(
     ):
         raise FileExistsError("File ignored by user")
 
-    try:
-        tags = TinyTag.get(path, image=True)
-        # NOTE: If TinyTag is able to infer a mime type, this will be more
-        #       accurate than what we get from the file's extension above.
-        if tags.mime_type is not None:
-            mime_type = tags.mime_type
-    except UnsupportedFormatError:
-        tags = None
+    file_last_modified = datetime.fromtimestamp(path.stat().st_mtime)
+
+    @lru_cache
+    def read_tags() -> tuple[TinyTag | None, str | None]:
+        try:
+            tags = TinyTag.get(path, image=True)
+            # NOTE: If TinyTag is able to infer a mime type, this will be more
+            #       accurate than what we get from the file's extension above.
+            return (tags, tags.mime_type or inferred_mime_type)
+        except UnsupportedFormatError:
+            return (None, inferred_mime_type)
 
     existing_source = await Source.read_one(
         file_url,
@@ -137,18 +142,23 @@ async def _try_ingest_file(
     if existing_source:
         await ensure_libraries_linked(existing_source, libraries, session)
 
-        songs += [
-            song
-            for song in await existing_source.awaitable_attrs.songs
-            if not song.has_altered_metadata
-        ]
+        if file_last_modified != existing_source.file_last_modified:
+            existing_source.file_last_modified = file_last_modified
+
+            songs += [
+                song
+                for song in await existing_source.awaitable_attrs.songs
+                if not song.has_altered_metadata
+            ]
     else:
+        _, mime_type = read_tags()
         new_song = Song(
             libraries=libraries,
             sources=[
                 Source(
                     url=file_url,
                     mime_type=mime_type,
+                    file_last_modified=file_last_modified,
                 )
             ],
         )
@@ -157,6 +167,7 @@ async def _try_ingest_file(
 
         songs.append(new_song)
 
+    tags, _ = read_tags()
     for song in songs:
         if tags:
             await _update_song_metadata(song, tags, libraries, canonizer, session)

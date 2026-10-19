@@ -481,9 +481,9 @@ class TestReadSourceChanges:
         )
         async with admin_auth.db_session() as db_session:
             stale_source = await db_session.get_one(Source, stale_source_id)
-            stale_source.last_updated = datetime(2001, 1, 1)
+            stale_source.file_last_modified = datetime(2001, 1, 1)
             fresh_source = await db_session.get_one(Source, fresh_source_id)
-            fresh_source.last_updated = datetime(2020, 1, 1)
+            fresh_source.file_last_modified = datetime(2020, 1, 1)
         session = admin_auth.sign_in()
 
         response = client.get(
@@ -495,7 +495,8 @@ class TestReadSourceChanges:
         assert response.status_code == 200
         assert response_json.get("ids") == [fresh_source_id]
 
-    def test_with_ids(
+    @pytest.mark.asyncio
+    async def test_with_ids(
         self,
         client: TestClient,
         admin_auth: AuthFixture,
@@ -504,6 +505,11 @@ class TestReadSourceChanges:
         first_source_id, second_source_id = ingest_library_sources(
             client, admin_auth, faker, source_count=2
         )
+        async with admin_auth.db_session() as db_session:
+            first_source = await db_session.get_one(Source, first_source_id)
+            first_source.file_last_modified = datetime(2020, 1, 1)
+            second_source = await db_session.get_one(Source, second_source_id)
+            second_source.file_last_modified = datetime(2020, 1, 1)
         session = admin_auth.sign_in()
 
         response = client.get(
@@ -516,7 +522,8 @@ class TestReadSourceChanges:
         assert response_json.get("ids") == [first_source_id]
         assert second_source_id not in response_json.get("ids")
 
-    def test_includes_only_user_accessible_sources(
+    @pytest.mark.asyncio
+    async def test_includes_only_user_accessible_sources(
         self,
         client: TestClient,
         admin_auth: AuthFixture,
@@ -526,6 +533,9 @@ class TestReadSourceChanges:
         (admin_source_id,) = ingest_library_sources(
             client, admin_auth, faker, source_count=1
         )
+        async with admin_auth.db_session() as db_session:
+            admin_source = await db_session.get_one(Source, admin_source_id)
+            admin_source.file_last_modified = datetime(2020, 1, 1)
 
         admin_session = admin_auth.sign_in()
         admin_response = client.get(

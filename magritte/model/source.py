@@ -1,5 +1,8 @@
+from datetime import datetime
 from os import PathLike
+from typing import Self
 
+import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Field, Relationship, col, delete, select, update
 
@@ -22,6 +25,12 @@ class Source(LibraryModel, table=True):
     is_invalid: bool = Field(
         default=False,
         description="Whether this source is known to be invalid",
+    )
+    file_last_modified: datetime | None = Field(
+        sa_type=sa.TIMESTAMP,
+        nullable=True,
+        default=None,
+        description="When this source's underlying file was last modified, if known/applicable",
     )
     extension_manifest_id: str | None = Field(
         default=None,
@@ -48,7 +57,7 @@ class Source(LibraryModel, table=True):
         )
 
     @classmethod
-    async def read_one(cls, url: str, session: AsyncSession):
+    async def read_one(cls, url: str, session: AsyncSession) -> Self | None:
         """
         Read the existing source with the given URL.
 

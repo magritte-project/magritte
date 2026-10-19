@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
 from fastapi.responses import FileResponse
 from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col, select
+from sqlmodel import and_, col, select
 
 from magritte.auth import FeatureScope, get_current_user, get_feature_user
 from magritte.db import get_db_session
@@ -161,7 +161,12 @@ async def read_source_changes(
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     where_criteria = list[ColumnExpressionArgument]()
-    where_criteria.append(col(Source.last_updated) >= query.since)
+    where_criteria.append(
+        and_(
+            col(Source.file_last_modified).is_not(None),
+            col(Source.file_last_modified) >= query.since,
+        )
+    )
     if query.ids:
         where_criteria.append(col(Source.id).in_(query.ids))
 
