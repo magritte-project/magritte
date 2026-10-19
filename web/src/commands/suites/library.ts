@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { getCommandInputKind, LibraryInputSchema, LibrarySongInputSchema } from "@magritte/sdk"
 import {
     ArrowsClockwiseIcon,
@@ -12,7 +13,6 @@ import type { RegisteredRouter } from "@tanstack/react-router"
 import { libraryAlbums, libraryArtists, librarySongs } from "@/api/keys/libraries"
 import type { Command } from "@/commands/base"
 import { getMagritteRouterContext } from "@/integrations/tanstack-router/context"
-import { getErrorMessage } from "@/utilities/errors"
 import { resolveResourceUrl } from "@/utilities/resources"
 
 export function libraryCommands(router: RegisteredRouter): Command[] {

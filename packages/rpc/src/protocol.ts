@@ -195,6 +195,7 @@ export async function cast<Signatures extends MethodSignatures>(
 ): Promise<ProtocolInterface<Signatures>> {
     const proxy = await tryCast(protocol, object)
     if (!proxy) {
+        // oxlint-disable-next-line typescript/no-base-to-string typescript/restrict-template-expressions
         throw new Error(`Failed to cast ${object} to ${protocol.name}`)
     }
     return proxy

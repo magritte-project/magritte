@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { ArrowsClockwiseIcon, GearSixIcon, ListIcon, UsersThreeIcon } from "@phosphor-icons/react"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { useCallback } from "react"
@@ -7,7 +8,6 @@ import PrimaryDetail from "@/components/chrome/PrimaryDetail"
 import ThemedSidebarItemLink from "@/components/theme/ThemedSidebarItemLabelThemedSidebarItemLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries/manage/$libraryId")({
     component: function ManageRoute() {

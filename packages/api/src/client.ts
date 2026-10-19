@@ -184,7 +184,9 @@ export class APIClient {
                         message += String(detail)
                     }
                 } catch (e) {
-                    console.warn(`Could not include detail for error response, reason: ${e}`)
+                    console.warn(
+                        `Could not include detail for error response, reason: ${String(e)}`,
+                    )
                 }
 
                 throw new Error(message)

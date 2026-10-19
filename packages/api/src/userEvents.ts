@@ -25,10 +25,10 @@ export class UserEventsManager {
 
         userSessionManager.subscribe((event) => {
             if (event.type === "currentChanged") {
-                this._syncWithUserSession()
+                void this._syncWithUserSession()
             }
         })
-        this._syncWithUserSession()
+        void this._syncWithUserSession()
     }
 
     async _syncWithUserSession() {

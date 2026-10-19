@@ -1,3 +1,5 @@
+import { getErrorMessage } from "@magritte/rpc"
+
 import {
     primaryButtonClassName,
     secondaryButtonClassName,
@@ -58,9 +60,7 @@ export default function SignInButton({ showStatus = true }: SignInButtonProps) {
                 </div>
             )}
             {error !== null && (
-                <p className="text-center text-xs text-[#b90000]">
-                    {error instanceof Error ? error.message : String(error)}
-                </p>
+                <p className="text-center text-xs text-[#b90000]">{getErrorMessage(error)}</p>
             )}
         </div>
     )

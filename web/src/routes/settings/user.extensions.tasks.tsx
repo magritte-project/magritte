@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { SkullIcon } from "@phosphor-icons/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useCallback, useEffect, useState } from "react"
@@ -7,7 +8,6 @@ import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import Modal from "@/components/reusable/Modal"
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/settings/user/extensions/tasks")({
     component: function UserExtensionsManage() {
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/settings/user/extensions/tasks")({
                 try {
                     extensionRuntime.terminate(id)
                 } catch (error) {
-                    notificationCenter.showDialog({
+                    void notificationCenter.showDialog({
                         type: "error",
                         title: "Could not terminate extension",
                         message: getErrorMessage(error),

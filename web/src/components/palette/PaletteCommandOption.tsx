@@ -1,10 +1,10 @@
 import { ComboboxOption } from "@headlessui/react"
+import { getErrorMessage } from "@magritte/rpc"
 import { useQuery } from "@tanstack/react-query"
 
 import type { Command } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
 import PaletteOptionIcon from "@/components/palette/PaletteOptionIcon"
-import { getErrorMessage } from "@/utilities/errors"
 
 export interface PaletteCommandOptionProps {
     readonly inputs: CommandInputs

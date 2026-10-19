@@ -1,10 +1,10 @@
 import type { ExtensionManifest } from "@magritte/api"
+import { getErrorMessage } from "@magritte/rpc"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import ExtensionIcon from "@/components/extensions/ExtensionIcon"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useExtensionRuntime from "@/hooks/extensionRuntimeHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export interface ExtensionComponentProps {
     readonly manifest: ExtensionManifest
@@ -13,7 +13,7 @@ export interface ExtensionComponentProps {
 export default function ExtensionComponent({ manifest }: ExtensionComponentProps) {
     const extensionRuntime = useExtensionRuntime()
     const containerRef = useRef<HTMLDivElement | null>(null)
-    const [error, setError] = useState<unknown | null>(null)
+    const [error, setError] = useState<unknown>(null)
     const [isLoading, setIsLoading] = useState(() => extensionRuntime.isLoading(manifest.id))
     const [isLoaded, setIsLoaded] = useState(
         () => extensionRuntime.getRunning(manifest.id) !== null,

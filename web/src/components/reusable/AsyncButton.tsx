@@ -1,7 +1,7 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { useCallback, useState } from "react"
 
 import { DefaultButtonComponent, type ButtonComponent } from "@/components/reusable/ButtonComponent"
-import { getErrorMessage } from "@/utilities/errors"
 
 function defaultOnErrorCaught(error: unknown) {
     console.log("AsyncButton caught error", error)

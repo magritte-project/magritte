@@ -1,5 +1,6 @@
 import { Field, Label } from "@headlessui/react"
 import type { LibraryPermissionRead, LibraryPermissionUpdate } from "@magritte/api"
+import { getErrorMessage } from "@magritte/rpc"
 import { PlusIcon, TrashIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -21,7 +22,6 @@ import ThemedInput from "@/components/theme/ThemedInput"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries/manage/$libraryId/permissions")({
     component: function ManageLibraryPermissions() {

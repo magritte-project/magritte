@@ -1,7 +1,6 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { WarningCircleIcon } from "@phosphor-icons/react"
 import type { AnyFieldApi } from "@tanstack/react-form"
-
-import { getErrorMessage } from "@/utilities/errors"
 
 export interface FieldInfoProps {
     readonly field: AnyFieldApi

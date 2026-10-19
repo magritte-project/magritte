@@ -9,7 +9,23 @@
         "es2024": true
     },
     "rules": {
-        "no-else-return": "off"
+        "no-else-return": "off",
+        "typescript/no-floating-promises": [
+            "warn",
+            {
+                "allowForKnownSafeCalls": [
+                    {
+                        "from": "package",
+                        "package": "@tanstack/router-core",
+                        "name": ["NavigateFn", "UseNavigateResult"]
+                    }
+                ]
+            }
+        ]
     },
-    "ignorePatterns": ["web/src/routeTree.gen.ts", "web/src/api/openapi.d.ts"]
+    "ignorePatterns": [
+        "web/src/routeTree.gen.ts",
+        "web/src/api/openapi.d.ts",
+        "packages/api/src/openapi/**/*.gen.ts"
+    ]
 }

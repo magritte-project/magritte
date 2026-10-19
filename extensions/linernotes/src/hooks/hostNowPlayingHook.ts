@@ -21,7 +21,7 @@ export default function useHostNowPlaying(): NowPlaying | null {
             return
         }
         const subscription = broadcaster.subscribe(PlayerNowPlayingDidChange, () => {
-            queryClient.invalidateQueries({ queryKey: nowPlaying() })
+            void queryClient.invalidateQueries({ queryKey: nowPlaying() })
         })
         return () => subscription.unsubscribe()
     }, [extensionHost, queryClient])

@@ -1,4 +1,5 @@
 import type { SignUp } from "@magritte/api"
+import { getErrorMessage } from "@magritte/rpc"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import z from "zod"
@@ -11,7 +12,6 @@ import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/sign-up")({
     beforeLoad: async ({

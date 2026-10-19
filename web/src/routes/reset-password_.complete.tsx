@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 
@@ -7,7 +8,6 @@ import AppForm from "@/components/reusable/AppForm"
 import ThemedInput from "@/components/theme/ThemedInput"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/reset-password_/complete")({
     validateSearch: z.object({

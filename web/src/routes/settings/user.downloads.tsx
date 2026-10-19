@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { FileIcon, TrashIcon } from "@phosphor-icons/react"
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -8,7 +9,6 @@ import { useEffect } from "react"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useLocalCache from "@/hooks/localCacheHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/settings/user/downloads")({
     component: function UserCache() {

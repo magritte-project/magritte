@@ -1,4 +1,5 @@
 import type { LibraryIgnoredResourceRead } from "@magritte/api"
+import { getErrorMessage } from "@magritte/rpc"
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -11,7 +12,6 @@ import TableFooter from "@/components/reusable/TableFooter"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries/manage/$libraryId/ignored")({
     validateSearch: z.object({

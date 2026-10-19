@@ -1,4 +1,5 @@
 import type { ResetPassword } from "@magritte/api"
+import { getErrorMessage } from "@magritte/rpc"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 
@@ -7,7 +8,6 @@ import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/reset-password")({
     component: function ResetPassword() {

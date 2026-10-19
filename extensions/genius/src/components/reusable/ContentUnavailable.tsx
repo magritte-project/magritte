@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { CircleNotchIcon, WarningCircleIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 
@@ -32,9 +33,7 @@ export default function ContentUnavailable({
                 <>
                     <WarningCircleIcon size="3em" weight="light" />
                     <div className="content-unavailable__title">Something went wrong</div>
-                    <div className="content-unavailable__message">
-                        {error instanceof Error ? error.message : String(error)}
-                    </div>
+                    <div className="content-unavailable__message">{getErrorMessage(error)}</div>
                 </>
             ) : (
                 <CircleNotchIcon

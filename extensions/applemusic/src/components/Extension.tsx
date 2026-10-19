@@ -112,7 +112,7 @@ export default function Extension() {
     const queryClient = useQueryClient()
     useEffect(() => {
         const handleAuthorizationStatusDidChange = () => {
-            queryClient.resetQueries({ queryKey: recent() })
+            void queryClient.resetQueries({ queryKey: recent() })
         }
         musicKit.addEventListener(
             "authorizationStatusDidChange",

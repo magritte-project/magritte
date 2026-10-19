@@ -21,7 +21,7 @@ export default function useOnScreenLibraryIds(): readonly number[] {
             return
         }
         const subscription = broadcaster.subscribe(CommandInputsDidChange, () => {
-            queryClient.invalidateQueries({ queryKey: commandInputs() })
+            void queryClient.invalidateQueries({ queryKey: commandInputs() })
         })
         return () => subscription.unsubscribe()
     }, [extensionHost, queryClient])

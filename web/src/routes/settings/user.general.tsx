@@ -1,4 +1,5 @@
 import { Field, Label } from "@headlessui/react"
+import { getErrorMessage } from "@magritte/rpc"
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -13,7 +14,6 @@ import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailabl
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/settings/user/general")({
     loader: async ({ context: { queryClient, api } }) => {

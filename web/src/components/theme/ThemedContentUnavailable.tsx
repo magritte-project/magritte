@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { CircleNotchIcon, WarningCircleIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 import type { ReactNode } from "react"
@@ -48,9 +49,7 @@ export default function ThemedContentUnavailable({
                 <>
                     <WarningCircleIcon size="3em" weight="light" />
                     <div className="text-lg font-bold">Something went wrong</div>
-                    <div className="text-sm">
-                        {error instanceof Error ? error.message : String(error)}
-                    </div>
+                    <div className="text-sm">{getErrorMessage(error)}</div>
                     {onRetry && <ThemedButton onClick={onRetry}>{retryLabel}</ThemedButton>}
                 </>
             ) : (

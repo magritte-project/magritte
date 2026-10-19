@@ -1,10 +1,10 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { useQuery } from "@tanstack/react-query"
 import classNames from "classnames"
 import { useCallback } from "react"
 
 import type { Command } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
-import { getErrorMessage } from "@/utilities/errors"
 
 export interface PaletteShortcutProps {
     readonly inputs: CommandInputs

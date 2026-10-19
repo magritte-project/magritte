@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useCallback, useEffect } from "react"
 
@@ -5,7 +6,6 @@ import type { SearchCommandItem, SearchCommandSection } from "@/commands/base"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useSearchRegistry from "@/hooks/searchRegistryHook"
-import { getErrorMessage } from "@/utilities/errors"
 import { justEventsMatching } from "@/utilities/events"
 
 export interface UseSearchCommandsOptions {

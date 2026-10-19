@@ -1,5 +1,6 @@
 import { Field, Label } from "@headlessui/react"
 import { TAG_MAX_LENGTH, type LibraryUpdate } from "@magritte/api"
+import { getErrorMessage } from "@magritte/rpc"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
@@ -14,7 +15,6 @@ import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailabl
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/libraries/manage/$libraryId/")({
     loader: async ({ context: { api, queryClient } }) => {

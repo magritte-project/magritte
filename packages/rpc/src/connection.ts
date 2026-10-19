@@ -1,4 +1,5 @@
 import { RPCBroadcaster } from "./broadcasts"
+import { getErrorMessage, getErrorName } from "./errors"
 import { Local } from "./internal/local"
 import { LocalObject } from "./internal/localObject"
 import { RemoteObject } from "./internal/remoteObject"
@@ -35,8 +36,8 @@ async function dispatchCommand(command: RPCCommand, object: RPCObject): Promise<
     } catch (error) {
         return {
             type: "error",
-            name: error instanceof Error ? error.name : "UnknownError",
-            message: error instanceof Error ? error.message : String(error),
+            name: getErrorName(error),
+            message: getErrorMessage(error),
         }
     }
 }

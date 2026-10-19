@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@magritte/rpc"
 import { ArrowSquareInIcon } from "@phosphor-icons/react"
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
@@ -19,7 +20,6 @@ import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import usePresentation from "@/hooks/presentationHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/settings/admin/extensions")({
     validateSearch: z.object({ offset: z.number().optional(), limit: z.number().optional() }),

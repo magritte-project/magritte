@@ -1,5 +1,6 @@
 import { Field, Label } from "@headlessui/react"
 import { OAuth2ScopeSchema, type UserAdminUpdate } from "@magritte/api"
+import { getErrorMessage } from "@magritte/rpc"
 import { TrashIcon } from "@phosphor-icons/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -18,7 +19,6 @@ import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/settings/admin/users/$userId")({
     loader: async ({ context: { queryClient, api }, params: { userId } }) => {

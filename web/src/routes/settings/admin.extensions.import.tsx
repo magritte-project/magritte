@@ -1,4 +1,5 @@
 import { URL_MAX_LENGTH, type ExtensionImportAdmin } from "@magritte/api"
+import { getErrorMessage } from "@magritte/rpc"
 import { isSameOrigin } from "@magritte/sdk"
 import { createFileRoute } from "@tanstack/react-router"
 import z from "zod"
@@ -10,7 +11,6 @@ import AppForm from "@/components/reusable/AppForm"
 import Modal from "@/components/reusable/Modal"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/settings/admin/extensions/import")({
     component: function AdminExtensionsImport() {

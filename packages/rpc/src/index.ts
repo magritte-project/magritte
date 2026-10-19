@@ -1,5 +1,6 @@
 export * from "./broadcasts"
 export * from "./connection"
+export * from "./errors"
 export * from "./object"
 export * from "./protocol"
 export * from "./transport"

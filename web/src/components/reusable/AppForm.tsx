@@ -12,7 +12,7 @@ export default function AppForm({ form, children, ...rest }: AppFormProps) {
         (event: React.SubmitEvent<HTMLFormElement>) => {
             event.stopPropagation()
             event.preventDefault()
-            form.handleSubmit()
+            void form.handleSubmit()
         },
         [form],
     )

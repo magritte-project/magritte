@@ -1,4 +1,5 @@
 import type { BodySignInSignInPost } from "@magritte/api"
+import { getErrorMessage } from "@magritte/rpc"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import z from "zod"
@@ -12,7 +13,6 @@ import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
 import useUserSession from "@/hooks/userSessionHook"
-import { getErrorMessage } from "@/utilities/errors"
 
 export const Route = createFileRoute("/sign-in")({
     validateSearch: z.object({ redirect_to: z.string().optional() }),

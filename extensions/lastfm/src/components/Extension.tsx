@@ -66,8 +66,8 @@ export default function Extension() {
     useEffect(() => {
         return scrobbler.subscribe((event) => {
             if (event.type === "scrobbled") {
-                queryClient.invalidateQueries({ queryKey: recentTracks() })
-                queryClient.invalidateQueries({ queryKey: topTracks() })
+                void queryClient.invalidateQueries({ queryKey: recentTracks() })
+                void queryClient.invalidateQueries({ queryKey: topTracks() })
             }
         })
     }, [scrobbler, queryClient])
