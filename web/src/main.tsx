@@ -26,9 +26,19 @@ import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
 
 import "@/styles.css"
-import "@/themes/default"
+
+// NOTE: Must come after @/styles.css import
+import { applyTheme } from "@/themes/apply"
+import { retrieveCustomTheme } from "@/themes/custom"
+import { defaultTheme } from "@/themes/default"
 
 try {
+    applyTheme({
+        element: document.documentElement,
+        theme: retrieveCustomTheme(),
+        fallback: defaultTheme,
+    })
+
     // Set up API client
     const api = createAPI({
         baseUrl: import.meta.env.VITE_API_URL,

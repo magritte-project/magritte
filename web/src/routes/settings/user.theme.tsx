@@ -12,6 +12,7 @@ import { useAppForm } from "@/hooks/formHook"
 import { applyTheme } from "@/themes/apply"
 import { getThemeSectionKeys, type ThemeSection } from "@/themes/base"
 import { nextColors } from "@/themes/calculations"
+import { storeCustomTheme } from "@/themes/custom"
 import { defaultTheme } from "@/themes/default"
 import { DISPLAY_FONTS, MONOSPACE_FONTS } from "@/themes/fonts"
 import { camelCaseToTitleCase } from "@/utilities/strings"
@@ -52,6 +53,7 @@ export const Route = createFileRoute("/settings/user/theme")({
                     theme: value,
                     fallback: defaultTheme,
                 })
+                storeCustomTheme(value)
             },
         })
 
