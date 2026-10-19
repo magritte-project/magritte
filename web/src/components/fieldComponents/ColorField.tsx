@@ -3,16 +3,14 @@ import { CaretDownIcon } from "@phosphor-icons/react"
 import { ColorPicker, formatColor, type ColorPickerProps, type ColorValue } from "chromakit-react"
 
 import "chromakit-react/chromakit.css"
-import { useCallback, type ReactNode } from "react"
+import classNames from "classnames"
+import { useCallback } from "react"
 
-import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import { useFieldContext } from "@/contexts/formContext"
 
-export interface ColorFieldProps extends Omit<ColorPickerProps, "value" | "onChange"> {
-    readonly label: ReactNode
-}
+export type ColorFieldProps = Omit<ColorPickerProps, "value" | "onChange">
 
-export default function ColorField({ label, ...rest }: ColorFieldProps) {
+export default function ColorField({ ...props }: ColorFieldProps) {
     const field = useFieldContext<string | null | undefined>()
 
     const handleChange = useCallback(
@@ -24,23 +22,28 @@ export default function ColorField({ label, ...rest }: ColorFieldProps) {
 
     return (
         <Popover className="relative">
-            <ThemedSubtleButton buttonComponent={PopoverButton} className="relative group">
-                <div className="flex items-center gap-md">
-                    <div
-                        className="w-4 h-4 rounded-full border border-white/20"
-                        style={{ backgroundColor: field.state.value ?? undefined }}
-                        aria-label={`Color: ${field.state.value ?? "none"}`}
-                    />
-                    <span>{label}</span>
-                    <CaretDownIcon />
-                </div>
-            </ThemedSubtleButton>
+            <PopoverButton
+                className={classNames(
+                    "px-lg py-md flex items-center gap-md text-start",
+                    "rounded-input bg-secondary active:bg-secondary-active data-open:bg-secondary-active",
+                    "font-bold disabled:opacity-disabled drop-shadow-xs",
+                    "w-full relative group",
+                )}
+            >
+                <div
+                    className="w-4 h-4 rounded-full border border-white/20"
+                    style={{ backgroundColor: field.state.value ?? undefined }}
+                    aria-hidden
+                />
+                <span className="flex-1">{field.state.value ?? "none"}</span>
+                <CaretDownIcon />
+            </PopoverButton>
             <PopoverPanel anchor="bottom start" className="shadow-sm">
                 <ColorPicker
                     showAlpha={false}
                     value={field.state.value ?? undefined}
                     onChange={handleChange}
-                    {...rest}
+                    {...props}
                 />
             </PopoverPanel>
         </Popover>

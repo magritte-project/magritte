@@ -133,7 +133,11 @@ export const Route = createFileRoute("/settings/user/theme")({
                                             },
                                         }}
                                     >
-                                        {(field) => <field.ColorField label="Background" />}
+                                        {(field) => (
+                                            <FieldDecoration field={field} label="Background">
+                                                <field.ColorField />
+                                            </FieldDecoration>
+                                        )}
                                     </form.AppField>
                                 </li>
                                 <li>
@@ -158,7 +162,14 @@ export const Route = createFileRoute("/settings/user/theme")({
                                             },
                                         }}
                                     >
-                                        {(field) => <field.ColorField label="Background Active" />}
+                                        {(field) => (
+                                            <FieldDecoration
+                                                field={field}
+                                                label="Background Active"
+                                            >
+                                                <field.ColorField />
+                                            </FieldDecoration>
+                                        )}
                                     </form.AppField>
                                 </li>
                                 <li>
@@ -183,7 +194,11 @@ export const Route = createFileRoute("/settings/user/theme")({
                                             },
                                         }}
                                     >
-                                        {(field) => <field.ColorField label="Foreground" />}
+                                        {(field) => (
+                                            <FieldDecoration field={field} label="Foreground">
+                                                <field.ColorField />
+                                            </FieldDecoration>
+                                        )}
                                     </form.AppField>
                                 </li>
                             </>
@@ -192,7 +207,12 @@ export const Route = createFileRoute("/settings/user/theme")({
                             <li key={`semanticColors[${key}@${index}]`}>
                                 <form.AppField name={`semanticColors.${key}`}>
                                     {(field) => (
-                                        <field.ColorField label={camelCaseToTitleCase(key)} />
+                                        <FieldDecoration
+                                            field={field}
+                                            label={camelCaseToTitleCase(key)}
+                                        >
+                                            <field.ColorField />
+                                        </FieldDecoration>
                                     )}
                                 </form.AppField>
                             </li>
