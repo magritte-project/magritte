@@ -8,9 +8,10 @@ export interface UserSession {
 export type UserSessionManagerEvent = { type: "currentChanged" }
 
 export interface UserSessionManager {
-    current: UserSession | null
+    readonly session: UserSession | null
     readonly isSignedIn: boolean
 
+    replaceSession(newSession: UserSession | null): void
     hasScope(scope: OAuth2Scope): boolean
 
     subscribe(subscriber: (event: UserSessionManagerEvent) => void): () => void
@@ -52,13 +53,17 @@ export class StorageUserSessionManager implements UserSessionManager {
     private readonly subscribers: ((event: UserSessionManagerEvent) => void)[]
     private _current: UserSession | null
 
-    get current(): UserSession | null {
+    get session(): UserSession | null {
         return this._current
     }
 
-    set current(userSession: UserSession | null) {
-        this._current = userSession
-        storeUserSession(this.storage, userSession)
+    get isSignedIn(): boolean {
+        return this._current !== null
+    }
+
+    replaceSession(newSession: UserSession | null) {
+        this._current = newSession
+        storeUserSession(this.storage, newSession)
         for (const subscriber of this.subscribers.slice()) {
             try {
                 subscriber({ type: "currentChanged" })
@@ -68,12 +73,8 @@ export class StorageUserSessionManager implements UserSessionManager {
         }
     }
 
-    get isSignedIn(): boolean {
-        return this._current !== null
-    }
-
     hasScope(scope: OAuth2Scope): boolean {
-        const current = this.current
+        const current = this.session
         return current !== null && current.scopes.includes(scope)
     }
 

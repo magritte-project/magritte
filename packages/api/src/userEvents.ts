@@ -32,7 +32,7 @@ export class UserEventsManager {
     }
 
     async _syncWithUserSession() {
-        if (this.userSessionManager.current !== null) {
+        if (this.userSessionManager.session !== null) {
             if (this.state.type !== "notConnected") {
                 this._disconnect()
             }

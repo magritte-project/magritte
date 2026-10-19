@@ -145,13 +145,13 @@ export class APIClient {
     constructor({ baseUrl, userSessionManager }: APIClientOptions) {
         const client = createClient({
             baseUrl,
-            auth: () => userSessionManager.current?.accessToken,
+            auth: () => userSessionManager.session?.accessToken,
         })
         const subscribers: ((event: APIClientEvent) => void)[] = []
         client.interceptors.response.use(async (response) => {
             if (!response.ok) {
                 if (response.status === 401) {
-                    userSessionManager.current = null
+                    userSessionManager.replaceSession(null)
                     for (const subscriber of this.subscribers.slice()) {
                         try {
                             subscriber({ type: "unauthorized" })

@@ -1,43 +1,32 @@
 export type RepeatMode = "off" | "one" | "all"
 export type ShuffleMode = "off" | "on"
 
-export class PlaybackModes {
-    static readonly default = new PlaybackModes()
+export interface PlaybackModes {
+    readonly repeat: RepeatMode
+    readonly shuffle: ShuffleMode
+}
 
-    private constructor(
-        readonly repeat: RepeatMode = "off",
-        readonly shuffle: ShuffleMode = "off",
-    ) {}
+export const defaultPlaybackModes: PlaybackModes = {
+    repeat: "off",
+    shuffle: "off",
+}
 
-    withRepeat(repeat: RepeatMode): PlaybackModes {
-        return new PlaybackModes(repeat, this.shuffle)
+export function withNextRepeat(prev: PlaybackModes): PlaybackModes {
+    switch (prev.repeat) {
+        case "off":
+            return { ...prev, repeat: "all" }
+        case "all":
+            return { ...prev, repeat: "one" }
+        case "one":
+            return { ...prev, repeat: "off" }
     }
+}
 
-    withNextRepeat(): PlaybackModes {
-        switch (this.repeat) {
-            case "off":
-                return this.withRepeat("all")
-            case "all":
-                return this.withRepeat("one")
-            case "one":
-                return this.withRepeat("off")
-        }
-    }
-
-    withShuffle(shuffle: ShuffleMode): PlaybackModes {
-        return new PlaybackModes(this.repeat, shuffle)
-    }
-
-    withNextShuffle(): PlaybackModes {
-        switch (this.shuffle) {
-            case "off":
-                return this.withShuffle("on")
-            case "on":
-                return this.withShuffle("off")
-        }
-    }
-
-    toString(): string {
-        return `PlaybackModes{ repeat: ${this.repeat}, shuffle: ${this.shuffle} }`
+export function withNextShuffle(prev: PlaybackModes): PlaybackModes {
+    switch (prev.shuffle) {
+        case "off":
+            return { ...prev, shuffle: "on" }
+        case "on":
+            return { ...prev, shuffle: "off" }
     }
 }

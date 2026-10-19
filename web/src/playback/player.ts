@@ -6,15 +6,15 @@ import type {
     PlaybackEngineEvent,
 } from "@/playback/engine"
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
-import { PlaybackModes } from "@/playback/modes"
+import { defaultPlaybackModes, type PlaybackModes } from "@/playback/modes"
 import ArrayQueue from "@/playback/queue/array"
 import { type Queue, type RandomItemContext } from "@/playback/queue/base"
 import { CountingStack, type ReadonlyCountingStack } from "@/utilities/countingStack"
 import {
-    type EventUnsubscriber,
+    createEvent,
     type EventDispatch,
     type EventSubscribe,
-    createEvent,
+    type EventUnsubscriber,
 } from "@/utilities/events"
 import { resolveNewValue } from "@/utilities/react"
 
@@ -56,7 +56,7 @@ export class Player {
         })
         this._playedItems = new CountingStack("id")
         this._shuffleContext = new ShuffleContext(this._playedItems)
-        this._modes = PlaybackModes.default
+        this._modes = defaultPlaybackModes
         this._activeEngineEventUnsubscribe = null
         this._activeEngine = null
         this._queue = ArrayQueue.of()
@@ -217,16 +217,16 @@ export class Player {
         return this._volume
     }
 
-    set volume(volume: number) {
+    /** Events relating to the state of playback */
+    readonly subscribe: EventSubscribe<PlayerEvent>
+
+    async setVolume(volume: number): Promise<void> {
         const normalizedVolume = Math.max(0, Math.min(1, volume))
         this._volume = normalizedVolume
         localStorage.setItem("player.volume", String(normalizedVolume))
-        void this._activeEngine?.syncVolume(normalizedVolume)
-        void this._dispatch({ type: "volumeDidChange", volume: normalizedVolume })
+        await this._activeEngine?.syncVolume(normalizedVolume)
+        await this._dispatch({ type: "volumeDidChange", volume: normalizedVolume })
     }
-
-    /** Events relating to the state of playback */
-    readonly subscribe: EventSubscribe<PlayerEvent>
 
     async setPlaybackModes(
         newModes: PlaybackModes | ((prevState: PlaybackModes) => PlaybackModes),

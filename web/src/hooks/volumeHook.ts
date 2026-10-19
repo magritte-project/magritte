@@ -13,7 +13,7 @@ export default function useVolume(): [number, React.Dispatch<React.SetStateActio
     )
     const setVolume = useCallback(
         (newVolume: React.SetStateAction<number>) => {
-            player.volume = resolveNewValue(player.volume, newVolume)
+            void player.setVolume(resolveNewValue(player.volume, newVolume))
         },
         [player],
     )

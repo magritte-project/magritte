@@ -23,6 +23,7 @@ import type { RegisteredRouter } from "@tanstack/react-router"
 import type { Command } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
 import { getMagritteRouterContext } from "@/integrations/tanstack-router/context"
+import { withNextShuffle } from "@/playback/modes"
 import type { Player } from "@/playback/player"
 
 export function playerCommands(router: RegisteredRouter): Command[] {
@@ -94,7 +95,10 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             },
             execute: async () => {
                 const { player } = getMagritteRouterContext(router)
-                await player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("off"))
+                await player.setPlaybackModes((playbackModes) => ({
+                    ...playbackModes,
+                    repeat: "off",
+                }))
             },
         },
         {
@@ -112,7 +116,10 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             },
             execute: async () => {
                 const { player } = getMagritteRouterContext(router)
-                await player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("all"))
+                await player.setPlaybackModes((playbackModes) => ({
+                    ...playbackModes,
+                    repeat: "all",
+                }))
             },
         },
         {
@@ -130,7 +137,10 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             },
             execute: async () => {
                 const { player } = getMagritteRouterContext(router)
-                await player.setPlaybackModes((playbackModes) => playbackModes.withRepeat("one"))
+                await player.setPlaybackModes((playbackModes) => ({
+                    ...playbackModes,
+                    repeat: "one",
+                }))
             },
         },
         {
@@ -148,7 +158,7 @@ export function playerCommands(router: RegisteredRouter): Command[] {
             },
             execute: async () => {
                 const { player } = getMagritteRouterContext(router)
-                await player.setPlaybackModes((playbackModes) => playbackModes.withNextShuffle())
+                await player.setPlaybackModes(withNextShuffle)
             },
         },
     ]

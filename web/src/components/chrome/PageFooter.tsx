@@ -58,11 +58,11 @@ export default function PageFooter() {
         return true
     })
     useHotKey({ key: "ArrowUp" }, () => {
-        player.volume += 0.05
+        void player.setVolume(player.volume + 0.05)
         return true
     })
     useHotKey({ key: "ArrowDown" }, () => {
-        player.volume -= 0.05
+        void player.setVolume(player.volume - 0.05)
         return true
     })
 

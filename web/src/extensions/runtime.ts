@@ -229,7 +229,7 @@ export class ExtensionRuntime {
     }
 
     async sync() {
-        if (this._api.userSessionManager.current === null) {
+        if (this._api.userSessionManager.session === null) {
             for (const id of Array.from(this._available.keys())) {
                 this.remove(id)
             }

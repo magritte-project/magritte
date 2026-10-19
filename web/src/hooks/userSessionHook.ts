@@ -26,7 +26,7 @@ export default function useUserSession(): UseUserSessionResult {
             )
         },
         () => {
-            return userSessionManager.current
+            return userSessionManager.session
         },
     )
     const isSignedIn = useSyncExternalStore(
@@ -42,15 +42,15 @@ export default function useUserSession(): UseUserSessionResult {
 
     const signIn = useCallback(
         async (token: Token) => {
-            userSessionManager.current = {
+            userSessionManager.replaceSession({
                 accessToken: token.access_token,
                 scopes: token.scopes,
-            }
+            })
         },
         [userSessionManager],
     )
     const signOut = useCallback(async () => {
-        userSessionManager.current = null
+        userSessionManager.replaceSession(null)
     }, [userSessionManager])
 
     const result = useMemo(

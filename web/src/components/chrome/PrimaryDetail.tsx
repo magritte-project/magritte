@@ -2,7 +2,7 @@ import { ListIcon } from "@phosphor-icons/react"
 import { useRouterState } from "@tanstack/react-router"
 import { useMediaQuery } from "@uidotdev/usehooks"
 import classNames from "classnames"
-import { useCallback, useEffect, useState, type ReactNode } from "react"
+import { useCallback, useState, type ReactNode } from "react"
 
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import { dataFlag } from "@/utilities/react"
@@ -14,24 +14,16 @@ export interface PrimaryDetailProps {
 }
 
 export default function PrimaryDetail({ title, navigation, children }: PrimaryDetailProps) {
-    const [isRevealed, setIsRevealed] = useState(false)
+    const [revealedAtHref, setRevealedAtHref] = useState<string | null>(null)
 
-    const isSm = useMediaQuery("(max-width: 768px)")
+    // Must match the `lg` breakpoint used by the reveal button and navigation below.
+    const isBelowLg = useMediaQuery("(width < 64rem)")
     const currentHref = useRouterState({ select: (state) => state.location.href })
-    useEffect(() => {
-        return () => {
-            setIsRevealed(false)
-        }
-    }, [currentHref])
-    useEffect(() => {
-        if (!isSm && isRevealed) {
-            setIsRevealed(false)
-        }
-    }, [isSm, isRevealed])
+    const isRevealed = isBelowLg && revealedAtHref === currentHref
 
     const handleRevealClick = useCallback(() => {
-        setIsRevealed((prev) => !prev)
-    }, [setIsRevealed])
+        setRevealedAtHref((prev) => (prev === currentHref ? null : currentHref))
+    }, [currentHref])
 
     return (
         <div className="flex flex-col lg:flex-row lg:items-stretch lg:min-h-screen">

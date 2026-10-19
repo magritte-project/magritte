@@ -36,7 +36,7 @@ describe("userSession", () => {
             const subject = new StorageUserSessionManager(mockStorage())
             const listener = vi.fn()
             subject.subscribe(listener)
-            subject.current = { accessToken: "<NOISE>", scopes: [] }
+            subject.replaceSession({ accessToken: "<NOISE>", scopes: [] })
             expect(listener).toHaveBeenCalled()
         })
     })
