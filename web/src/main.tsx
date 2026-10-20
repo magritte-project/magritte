@@ -24,13 +24,14 @@ import { connectMediaSession } from "@/playback/mediaSession"
 import { PlaybackEventRecorder } from "@/playback/playbackEventRecorder"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
+// NOTE: Must come after @/styles.css import
+import { applyTheme } from "@/themes/apply"
 
 import "@/styles.css"
 
-// NOTE: Must come after @/styles.css import
-import { applyTheme } from "@/themes/apply"
 import { retrieveCustomTheme } from "@/themes/custom"
 import { defaultTheme } from "@/themes/default"
+import { TaskProgressReporter } from "@/utilities/taskProgress"
 
 try {
     applyTheme({
@@ -55,8 +56,11 @@ try {
     // Set up user events
     const notificationCenter = new NotificationCenter(queryClient, api)
 
+    // Set up job reporting
+    const taskProgressReporter = new TaskProgressReporter()
+
     // Set up playback
-    const localCache = await LocalCache.open({ api })
+    const localCache = await LocalCache.open({ api, taskProgressReporter })
     const playbackEngineRegistry = new PlaybackEngineRegistry({
         defaultEngine: new BuiltInPlaybackEngine(api, localCache),
     })
@@ -86,6 +90,7 @@ try {
         extensionRuntime,
         localCache,
         notificationCenter,
+        taskProgressReporter,
         player,
         queryClient,
     })

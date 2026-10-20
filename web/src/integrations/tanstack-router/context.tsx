@@ -12,6 +12,7 @@ import type { Player } from "@/playback/player"
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen"
 import { poll } from "@/utilities/promises"
+import type { TaskProgressReporter } from "@/utilities/taskProgress"
 
 export interface MagritteRouterContext {
     readonly api: API
@@ -21,6 +22,7 @@ export interface MagritteRouterContext {
     readonly extensionRuntime: ExtensionRuntime
     readonly localCache: LocalCache
     readonly notificationCenter: NotificationCenter
+    readonly taskProgressReporter: TaskProgressReporter
     readonly player: Player
     readonly queryClient: QueryClient
 }

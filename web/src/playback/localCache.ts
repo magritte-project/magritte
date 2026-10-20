@@ -1,8 +1,10 @@
-import type { API, SourceRead } from "@magritte/api"
+import { LIMIT_MAX, type API, type SourceRead } from "@magritte/api"
 import { openDB, type DBSchema, type IDBPDatabase } from "idb"
 
 import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
+import { getPeriodicTaskLastFireDate, periodicTask } from "@/utilities/periodicTask"
 import { resolveResourceUrl } from "@/utilities/resources"
+import { TaskProgressReporter } from "@/utilities/taskProgress"
 
 interface LocalCacheStoreDB extends DBSchema {
     sourceFiles: {
@@ -74,6 +76,49 @@ export class LocalCacheStore {
         return await this.db.getAllKeys("sourceFiles")
     }
 
+    async *streamAllSourceFileIds(batchCount = 50): AsyncGenerator<number[]> {
+        let range: IDBKeyRange | null = null
+        for (;;) {
+            const ids: number[] = []
+            // A key cursor over the `id` index reads index keys without loading values (and their
+            // blobs). Each batch gets its own transaction, as one would commit while the caller
+            // awaits other work between batches.
+            let cursor = await this.db
+                .transaction("sourceFiles")
+                .store.index("id")
+                .openKeyCursor(range, "nextunique")
+            while (cursor) {
+                ids.push(cursor.key)
+                if (ids.length === batchCount) {
+                    break
+                }
+                cursor = await cursor.continue()
+            }
+            if (ids.length > 0) {
+                yield ids
+            }
+            if (ids.length < batchCount) {
+                break
+            }
+            range = IDBKeyRange.lowerBound(ids[ids.length - 1], true)
+        }
+    }
+
+    async *streamAllSourceFiles(batchCount: number) {
+        let range: IDBKeyRange | null = null
+        for (;;) {
+            const batch = await this.db.getAll("sourceFiles", range, batchCount)
+            if (batch.length === 0) {
+                break
+            }
+            yield batch
+            if (batch.length < batchCount) {
+                break
+            }
+            range = IDBKeyRange.lowerBound(batch[batch.length - 1].url, true)
+        }
+    }
+
     async getSourceFile(url: string, maxAge?: number): Promise<Blob | undefined> {
         const sourceFile = await this.db.get("sourceFiles", url)
         if (sourceFile === undefined) {
@@ -120,6 +165,7 @@ export class LocalCacheStore {
 
 export interface LocalStoreOptions {
     readonly api: API
+    readonly taskProgressReporter: TaskProgressReporter
     readonly storage?: Storage
 }
 
@@ -134,28 +180,90 @@ export interface LocalStoreDownloadManyOptions {
 export class LocalCache {
     static async open({
         api,
+        taskProgressReporter,
         storage = globalThis.localStorage,
     }: LocalStoreOptions): Promise<LocalCache> {
-        return new LocalCache(api, storage, await LocalCacheStore.open())
+        return new LocalCache(api, taskProgressReporter, storage, await LocalCacheStore.open())
     }
 
     private readonly _api: API
     private readonly _storage: Storage
+    private readonly _taskProgressReporter: TaskProgressReporter
 
-    private constructor(api: API, storage: Storage, store: LocalCacheStore) {
+    private constructor(
+        api: API,
+        taskProgressReporter: TaskProgressReporter,
+        storage: Storage,
+        store: LocalCacheStore,
+    ) {
         this._api = api
         this._storage = storage
+        this._taskProgressReporter = taskProgressReporter
         this.store = store
+
+        periodicTask(() => void this.sync(), { interval: 1000, key: "localCache.lastSync" })
     }
 
     readonly store: LocalCacheStore
 
     get lastSync(): Date | null {
-        const rawLastSync = this._storage.getItem("localCache.lastSync")
-        if (rawLastSync === null) {
-            return null
+        return getPeriodicTaskLastFireDate("localCache.lastSync", this._storage)
+    }
+
+    async sync(): Promise<void> {
+        const lastSync = this.lastSync
+        if (lastSync !== null) {
+            await this._taskProgressReporter.perform(
+                {
+                    label: "Checking for out of date downloads",
+                    totalUnits: 1,
+                },
+                async () => {
+                    for await (const sourceFiles of this.store.streamAllSourceFiles(LIMIT_MAX)) {
+                        const sourceChanges = await this._api.client.readSourceChanges({
+                            since: lastSync.toISOString(),
+                            ids: sourceFiles.map((file) => file.id),
+                        })
+                        const changedIds = new Set(sourceChanges.ids)
+                        if (changedIds.size === 0) {
+                            continue
+                        }
+
+                        const toRedownload = sourceFiles.filter((sourceFiles) =>
+                            changedIds.has(sourceFiles.id),
+                        )
+                        await this._taskProgressReporter.perform(
+                            {
+                                label: "Redownloading files",
+                                totalUnits: toRedownload.length,
+                            },
+                            async ({ advance, handledFailure }) => {
+                                try {
+                                    for (const sourceFile of toRedownload) {
+                                        const token = await this._api.fileAccess.token()
+                                        const url = resolveResourceUrl(sourceFile.url, token)
+                                        if (url === undefined) {
+                                            throw new Error("Could not resolve song source URL")
+                                        }
+                                        const response = await fetch(url)
+                                        const contents = await response.blob()
+                                        await this.store.putSourceFile(
+                                            sourceFile.url,
+                                            sourceFile.id,
+                                            contents,
+                                        )
+                                    }
+                                } catch (error) {
+                                    handledFailure(error)
+                                } finally {
+                                    advance()
+                                }
+                            },
+                        )
+                    }
+                },
+            )
         }
-        return new Date(rawLastSync)
     }
 
     async downloadMany({
