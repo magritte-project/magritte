@@ -312,8 +312,12 @@ async def stream_user_events(
         User, Depends(get_feature_user(FeatureScope.USER_EVENTS_STREAM))
     ],
     user_events: Annotated[UserEvents, Depends(get_user_events)],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     user_id = current_user.id
+    # Dependencies stay open for the life of the socket, so release the DB connection
+    # used to authenticate rather than holding it until the socket closes
+    await session.commit()
     await user_events.connect(user_id, websocket)
     try:
         while True:

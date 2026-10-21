@@ -71,6 +71,9 @@ line-ending = "auto"
 docstring-code-format = false
 docstring-code-line-length = "dynamic"
 
+[tool.pytest.ini_options]
+# Dump every thread's stack if a test hangs, rather than stalling silently in CI
+faulthandler_timeout = 60
 
 [tool.alembic]
 script_location = "%(here)s/magritte/migrations"

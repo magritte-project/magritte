@@ -23,6 +23,7 @@ async def db_engine():
     await create_model_tables_if_needed(test_engine)
     await seed_test_data(test_engine)
     yield test_engine
+    await test_engine.dispose()
 
 
 @pytest_asyncio.fixture

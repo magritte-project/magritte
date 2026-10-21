@@ -489,6 +489,7 @@ class TestUpdateMe:
         self,
         client: TestClient,
         admin_auth: AuthFixture,
+        installed_mock_email_client: AsyncMock,
     ):
         session = admin_auth.sign_in()
 
@@ -515,6 +516,9 @@ class TestUpdateMe:
         )
         assert clear_response.status_code == 400
         assert clear_response.json().get("detail") == "Cannot clear email"
+
+        # It should only send the email for the successful request
+        installed_mock_email_client.send.assert_called_once()
 
 
 class TestReadUsers:
