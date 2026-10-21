@@ -81,7 +81,7 @@ describe("TaskProgressReporter", () => {
             const [{ id }] = events
             expect(events).toStrictEqual([
                 { type: "taskStarted", id },
-                { type: "taskFailed", id, reason: error, handled: false },
+                { type: "taskFailed", id, label: "Task", reason: error, handled: false },
             ])
             expect(subject.activeTaskCount).toBe(0)
         })
@@ -148,7 +148,7 @@ describe("TaskProgressReporter", () => {
             const [{ id }] = events
             expect(events).toStrictEqual([
                 { type: "taskStarted", id },
-                { type: "taskFailed", id, reason: "Skipped one", handled: true },
+                { type: "taskFailed", id, label: "Task", reason: "Skipped one", handled: true },
                 { type: "taskEnded", id },
             ])
         })

@@ -1,3 +1,9 @@
+/** How many milliseconds are in a minute */
+export const MS_PER_MINUTE = 60_000
+
+/** How many milliseconds are in an hour */
+export const MS_PER_HOUR = MS_PER_MINUTE * 60
+
 export interface PeriodicTaskOptions {
     /** How often the task should run in milliseconds */
     readonly interval: number

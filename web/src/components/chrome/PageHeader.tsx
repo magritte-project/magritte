@@ -5,6 +5,7 @@ import { type ReactNode } from "react"
 import LibrariesButton from "@/components/chrome/LibrariesButton"
 import LibraryTabs from "@/components/chrome/LibraryTabs"
 import PaletteButton from "@/components/chrome/PaletteButton"
+import TaskProgressButton from "@/components/chrome/TaskProgressButton"
 import UserButton from "@/components/chrome/UserButton"
 import UserNotificationsButton from "@/components/chrome/UserNotificationsButton"
 import ThemedHeader from "@/components/theme/ThemedHeader"
@@ -31,6 +32,7 @@ export default function PageHeader({ children }: PageHeaderProps) {
             }
             supplementaryEnd={
                 <>
+                    <TaskProgressButton />
                     <PaletteButton />
                     <UserNotificationsButton />
                     <UserButton />

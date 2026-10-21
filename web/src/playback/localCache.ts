@@ -2,7 +2,7 @@ import { LIMIT_MAX, type API, type SourceRead } from "@magritte/api"
 import { openDB, type DBSchema, type IDBPDatabase } from "idb"
 
 import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
-import { getPeriodicTaskLastFireDate, periodicTask } from "@/utilities/periodicTask"
+import { getPeriodicTaskLastFireDate, MS_PER_HOUR, periodicTask } from "@/utilities/periodicTask"
 import { resolveResourceUrl } from "@/utilities/resources"
 import { TaskProgressReporter } from "@/utilities/taskProgress"
 
@@ -169,14 +169,6 @@ export interface LocalStoreOptions {
     readonly storage?: Storage
 }
 
-export interface LocalStoreDownloadManyOptions {
-    readonly sources: readonly SourceRead[]
-    readonly onSkipUpToDate?: (source: SourceRead) => void
-    readonly onBeginDownload?: (source: SourceRead) => void
-    readonly onEndDownload?: (source: SourceRead) => void
-    readonly onDownloadError?: (source: SourceRead, error: unknown) => void
-}
-
 export class LocalCache {
     static async open({
         api,
@@ -201,7 +193,10 @@ export class LocalCache {
         this._taskProgressReporter = taskProgressReporter
         this.store = store
 
-        periodicTask(() => void this.sync(), { interval: 1000, key: "localCache.lastSync" })
+        periodicTask(() => void this.sync(), {
+            interval: MS_PER_HOUR * 6,
+            key: "localCache.lastSync",
+        })
     }
 
     readonly store: LocalCacheStore
@@ -266,16 +261,10 @@ export class LocalCache {
         }
     }
 
-    async downloadMany({
-        sources,
-        onSkipUpToDate,
-        onBeginDownload,
-        onEndDownload,
-        onDownloadError,
-    }: LocalStoreDownloadManyOptions): Promise<number> {
+    async downloadMany(sources: readonly SourceRead[]): Promise<void> {
         const fileSources = sources.filter((source) => source.url.startsWith("magritte://"))
         if (fileSources.length === 0) {
-            return 0
+            return
         }
 
         const existingUrls = await this.store.intersectionSourceFileUrls(
@@ -291,28 +280,33 @@ export class LocalCache {
                           .map((source) => source.id),
                   })
                 : undefined
-        let downloadCount = 0
-        for (const fileSource of fileSources) {
-            if (existingUrls.has(fileSource.url) && !sourceChanges?.ids.includes(fileSource.id)) {
-                onSkipUpToDate?.(fileSource)
-                continue
-            }
-            onBeginDownload?.(fileSource)
-            try {
-                const token = await this._api.fileAccess.token()
-                const url = resolveResourceUrl(fileSource.url, token)
-                if (url === undefined) {
-                    throw new Error("Could not resolve song source URL")
+        const toDownload = fileSources.filter(
+            (fileSource) =>
+                !existingUrls.has(fileSource.url) || sourceChanges?.ids.includes(fileSource.id),
+        )
+        await this._taskProgressReporter.perform(
+            {
+                label: "Downloading files",
+                totalUnits: toDownload.length,
+            },
+            async ({ advance, handledFailure }) => {
+                for (const fileSource of toDownload) {
+                    try {
+                        const token = await this._api.fileAccess.token()
+                        const url = resolveResourceUrl(fileSource.url, token)
+                        if (url === undefined) {
+                            throw new Error("Could not resolve song source URL")
+                        }
+                        const response = await fetch(url)
+                        const contents = await response.blob()
+                        await this.store.putSourceFile(fileSource.url, fileSource.id, contents)
+                    } catch (error) {
+                        handledFailure(error)
+                    } finally {
+                        advance()
+                    }
                 }
-                const response = await fetch(url)
-                const contents = await response.blob()
-                await this.store.putSourceFile(fileSource.url, fileSource.id, contents)
-                downloadCount++
-                onEndDownload?.(fileSource)
-            } catch (error) {
-                onDownloadError?.(fileSource, error)
-            }
-        }
-        return downloadCount
+            },
+        )
     }
 }

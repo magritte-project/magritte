@@ -31,7 +31,7 @@ export type TaskProgressReporterEvent =
     | { type: "taskStarted"; id: number }
     | { type: "taskProgressed"; id: number; totalUnits: number; completedUnits: number }
     | { type: "taskEnded"; id: number }
-    | { type: "taskFailed"; id: number; reason: unknown; handled: boolean }
+    | { type: "taskFailed"; id: number; label: string; reason: unknown; handled: boolean }
 
 export class TaskProgressReporter {
     private readonly _taskDetails: Map<number, TaskDetails>
@@ -95,11 +95,11 @@ export class TaskProgressReporter {
         return [id, details]
     }
 
-    private _failTask(id: number, reason: unknown, handled: boolean) {
+    private _failTask(id: number, label: string, reason: unknown, handled: boolean) {
         if (!handled && !this._taskDetails.delete(id)) {
             return
         }
-        void this._dispatch({ type: "taskFailed", id, reason, handled })
+        void this._dispatch({ type: "taskFailed", id, label, reason, handled })
     }
 
     private _endTask(id: number) {
@@ -127,13 +127,13 @@ export class TaskProgressReporter {
                 })
             }
             const fail = (reason: unknown) => {
-                this._failTask(id, reason, true)
+                this._failTask(id, details.label, reason, true)
             }
             const result = await task({ advance, handledFailure: fail })
             this._endTask(id)
             return result
         } catch (reason) {
-            this._failTask(id, reason, false)
+            this._failTask(id, details.label, reason, false)
             throw reason
         }
     }

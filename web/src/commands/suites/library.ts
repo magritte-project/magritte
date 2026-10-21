@@ -140,28 +140,14 @@ export function libraryCommands(router: RegisteredRouter): Command[] {
                 const librarySongs = await Promise.all(
                     songs.map((song) => api.client.readLibrarySong(library.id, song.id)),
                 )
-                const downloadCount = await localCache.downloadMany({
-                    sources: librarySongs.flatMap((song) => song.sources ?? []),
-                    onSkipUpToDate: (source) => {
-                        console.debug(`Skipping already downloaded source: ${source.url}`)
-                    },
-                    onBeginDownload: (source) => {
-                        console.debug(`Downloading source: ${source.url}`)
-                    },
-                    onEndDownload: (source) => {
-                        console.debug(`Downloaded source: ${source.url}`)
-                    },
-                    onDownloadError: (_source, error) => {
-                        notificationCenter.showToast({
-                            message: `Could not download library song: ${getErrorMessage(error)}`,
-                            type: "error",
-                        })
-                    },
-                })
-                if (downloadCount > 0) {
+                try {
+                    await localCache.downloadMany(
+                        librarySongs.flatMap((song) => song.sources ?? []),
+                    )
+                } catch (error) {
                     notificationCenter.showToast({
-                        message: `Downloaded ${downloadCount} song(s)`,
-                        type: "info",
+                        message: `Could not download files: ${getErrorMessage(error)}`,
+                        type: "error",
                     })
                 }
             },
