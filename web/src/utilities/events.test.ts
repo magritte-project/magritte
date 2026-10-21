@@ -1,8 +1,19 @@
-import { describe, expect, it, vi } from "vitest"
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 
 import { createEvent, justEventsMatching, combineUnsubscribers } from "./events"
 
+const mockConsoleError = vi.fn()
+
 describe("events", () => {
+    beforeAll(() => {
+        vi.resetAllMocks()
+        vi.stubGlobal("console", { ...console, error: mockConsoleError })
+    })
+
+    afterAll(() => {
+        vi.unstubAllGlobals()
+    })
+
     describe("#createEvent", () => {
         it("should notify active subscribers", async () => {
             const [_dispatch, subscribe] = createEvent<number>()
@@ -23,6 +34,7 @@ describe("events", () => {
             subscribe(subscriber)
             await expect(_dispatch(42)).resolves.not.toThrow()
             expect(vi.mocked(subscriber)).toHaveBeenCalled()
+            expect(mockConsoleError).toHaveBeenCalled()
         })
 
         it("should not block without await subscribers", async () => {

@@ -25,6 +25,34 @@ function mockStorageManager({
     return storage
 }
 
+function mockStorage() {
+    const items = new Map<string, string>()
+    return {
+        get length(): number {
+            return items.size
+        },
+        clear: vi.fn(() => {
+            items.clear()
+        }),
+        getItem: vi.fn((key: string): string | null => {
+            return items.get(key) ?? null
+        }),
+        key: vi.fn((index: number): string | null => {
+            return items.get([...items.keys()][index]) ?? null
+        }),
+        removeItem: vi.fn((key: string): void => {
+            items.delete(key)
+        }),
+        setItem: vi.fn((key: string, value: string): void => {
+            items.set(key, value)
+        }),
+    } satisfies Storage
+}
+
+vi.hoisted(() => {
+    vi.stubGlobal("localStorage", mockStorage())
+})
+
 describe("localCache", () => {
     describe("#LocalCacheStore", () => {
         beforeEach(() => {
