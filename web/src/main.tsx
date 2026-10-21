@@ -10,6 +10,7 @@ import { LibraryAlbumsSearchCommand } from "@/commands/searchCommands/libraryAlb
 import { LibraryArtistsSearchCommand } from "@/commands/searchCommands/libraryArtists"
 import { LibrarySongsSearchCommand } from "@/commands/searchCommands/librarySongs"
 import { SearchRegistry } from "@/commands/searchRegistry"
+import { globalCommands } from "@/commands/suites/global"
 import { libraryCommands } from "@/commands/suites/library"
 import { playerCommands, wirePlayerCommandInputs } from "@/commands/suites/player"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
@@ -24,11 +25,11 @@ import { connectMediaSession } from "@/playback/mediaSession"
 import { PlaybackEventRecorder } from "@/playback/playbackEventRecorder"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
-// NOTE: Must come after @/styles.css import
-import { applyTheme } from "@/themes/apply"
 
 import "@/styles.css"
 
+// NOTE: Must come after @/styles.css import
+import { applyTheme } from "@/themes/apply"
 import { retrieveCustomTheme } from "@/themes/custom"
 import { defaultTheme } from "@/themes/default"
 import { TaskProgressReporter } from "@/utilities/taskProgress"
@@ -96,6 +97,7 @@ try {
     })
 
     // Hook up commands
+    commandRegistry.add(...globalCommands(router))
     commandRegistry.add(...libraryCommands(router))
     commandRegistry.add(...playerCommands(router))
     wirePlayerCommandInputs(player, commandInputs)
