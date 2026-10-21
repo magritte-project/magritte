@@ -25,6 +25,10 @@ dependencies = [
     "websockets>=17.2",
 ]
 
+[project.urls]
+Homepage = "https://magritte-project.github.io/"
+Repository = "https://github.com/magritte-project"
+
 [project.optional-dependencies]
 desktop = [
     "keyring>=25.7.0",
