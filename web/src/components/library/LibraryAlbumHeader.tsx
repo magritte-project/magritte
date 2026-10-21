@@ -20,7 +20,7 @@ export default function LibraryAlbumHeader({ libraryId, albumId }: LibraryAlbumH
     return (
         <div className="flex items-center gap-lg">
             <ArtworkImage
-                className="h-36 w-36"
+                className="h-30 md:h-36 aspect-square"
                 artworks={albumQuery.data?.artworks}
                 itemTitle={albumQuery.data?.title}
             />

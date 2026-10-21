@@ -9,6 +9,8 @@ export interface ThemedTabItemLabelProps extends Omit<
     readonly isActive: boolean
     readonly icon: Icon
     readonly label: ReactNode
+    readonly alwaysInline?: boolean
+    readonly alwaysShowLabel?: boolean
 }
 
 export default function ThemedTabItemLabel({
@@ -16,23 +18,41 @@ export default function ThemedTabItemLabel({
     isActive,
     icon: Icon,
     label,
+    alwaysInline = true,
+    alwaysShowLabel = true,
     ...rest
 }: ThemedTabItemLabelProps) {
     return (
         <div
             className={classNames(
-                "flex flex-col md:flex-row items-center gap-sm px-lg py-sm",
+                "flex items-center gap-sm px-lg py-sm",
                 "group-first:rounded-l-button group-last:rounded-r-button",
                 "not-group-last:border-r border-separator",
                 "bg-secondary active:bg-secondary-active",
                 "rounded data-[active=true]:text-key group-aria-disabled:opacity-disabled aria-disabled:opacity-disabled",
+                { "flex-col md:flex-row": !alwaysInline },
                 className,
             )}
             data-active={isActive}
+            title={typeof label === "string" ? label : undefined}
             {...rest}
         >
-            <Icon className="text-[24px] md:text-[28px]" weight="light" />
-            <span className="text-xs md:text-sm text-nowrap">{label}</span>
+            <Icon
+                className={classNames({
+                    "text-[24px] md:text-[28px]": !alwaysInline,
+                    "text-[28px]": alwaysInline,
+                })}
+                weight="light"
+            />
+            <span
+                className={classNames("text-nowrap", {
+                    "text-xs md:text-sm": !alwaysInline,
+                    "text-sm": alwaysInline,
+                    "hidden md:inline": !alwaysShowLabel,
+                })}
+            >
+                {label}
+            </span>
         </div>
     )
 }

@@ -19,6 +19,7 @@ export default function LibraryTabs({ className, children, ...rest }: LibraryTab
                 icon={MicrophoneStageIcon}
                 label="Artists"
                 disabled={libraryId === undefined}
+                alwaysInline={false}
             />
             <ThemedTabItemLink
                 to="/libraries/$libraryId/albums"
@@ -26,6 +27,7 @@ export default function LibraryTabs({ className, children, ...rest }: LibraryTab
                 icon={DiscIcon}
                 label="Albums"
                 disabled={libraryId === undefined}
+                alwaysInline={false}
             />
             <ThemedTabItemLink
                 to="/libraries/$libraryId/songs"
@@ -33,6 +35,7 @@ export default function LibraryTabs({ className, children, ...rest }: LibraryTab
                 icon={MusicNotesIcon}
                 label="Songs"
                 disabled={libraryId === undefined}
+                alwaysInline={false}
             />
             {children}
         </div>

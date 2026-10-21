@@ -8,7 +8,7 @@ import ThemedTabItemLabel from "@/components/theme/ThemedTabItemLabel"
 interface BasicLinkProps
     extends
         React.AnchorHTMLAttributes<HTMLAnchorElement>,
-        Pick<ThemedTabItemLabelProps, "icon" | "label"> {
+        Pick<ThemedTabItemLabelProps, "icon" | "label" | "alwaysInline"> {
     readonly ref?: React.Ref<HTMLAnchorElement>
 }
 
@@ -24,6 +24,7 @@ const ThemedTabItemLink: LinkComponent<typeof BasicLink> = (props) => {
                     isActive={state.isActive}
                     icon={props.icon}
                     label={props.label}
+                    alwaysInline={props.alwaysInline}
                 />
             )}
         </BasicLink>

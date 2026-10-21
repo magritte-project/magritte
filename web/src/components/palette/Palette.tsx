@@ -35,6 +35,7 @@ export default function Palette({
 }: PaletteProps) {
     const inputs = useCommandInputs()
     const { playItem, addItemToLibrary, revealItem } = useSearchCommands()
+    const inputRef = useRef<HTMLInputElement | null>(null)
 
     const keyModifiersRef = useRef({ shift: false, ctrl: false })
     useEffect(() => {
@@ -147,7 +148,8 @@ export default function Palette({
                                     size={16}
                                 />
                                 <ComboboxInput
-                                    className="flex-1 bg-transparent py-lg text-sm outline-none"
+                                    ref={inputRef}
+                                    className="flex-1 bg-transparent py-lg text-sm outline-none min-w-0"
                                     autoFocus
                                     placeholder={
                                         view === "command"
@@ -164,12 +166,16 @@ export default function Palette({
                                         className="group text-xs cursor-pointer"
                                         role="radio"
                                         aria-checked={view === "command"}
-                                        onClick={() => setView("command")}
+                                        onClick={() => {
+                                            setView("command")
+                                            inputRef.current?.focus()
+                                        }}
                                     >
                                         <ThemedTabItemLabel
                                             isActive={view === "command"}
                                             icon={GearIcon}
                                             label="Commands"
+                                            alwaysShowLabel={false}
                                         />
                                     </button>
                                     <button
@@ -177,12 +183,16 @@ export default function Palette({
                                         className="group text-xs cursor-pointer"
                                         role="radio"
                                         aria-checked={view === "search"}
-                                        onClick={() => setView("search")}
+                                        onClick={() => {
+                                            setView("search")
+                                            inputRef.current?.focus()
+                                        }}
                                     >
                                         <ThemedTabItemLabel
                                             isActive={view === "search"}
                                             icon={BooksIcon}
                                             label="Library"
+                                            alwaysShowLabel={false}
                                         />
                                     </button>
                                 </div>

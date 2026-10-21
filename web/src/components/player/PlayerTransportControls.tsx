@@ -17,7 +17,7 @@ export default function PlayerTransportControls({
         <>
             <AsyncButton
                 className={classNames(
-                    " p-md rounded-button active:bg-on-primary/10",
+                    "p-md rounded-button active:bg-on-primary/10",
                     "font-bold text-on-primary disabled:opacity-disabled",
                 )}
                 title="Skip Previous"
@@ -27,7 +27,7 @@ export default function PlayerTransportControls({
             </AsyncButton>
             <AsyncButton
                 className={classNames(
-                    " p-md rounded-button active:bg-on-primary/10",
+                    "p-md rounded-button active:bg-on-primary/10",
                     "font-bold text-on-primary disabled:opacity-disabled",
                 )}
                 title={playbackState === "playing" ? "Pause" : "Play"}
@@ -41,7 +41,7 @@ export default function PlayerTransportControls({
             </AsyncButton>
             <AsyncButton
                 className={classNames(
-                    " p-md rounded-button active:bg-on-primary/10",
+                    "p-md rounded-button active:bg-on-primary/10",
                     "font-bold text-on-primary disabled:opacity-disabled",
                 )}
                 title="Skip Next"

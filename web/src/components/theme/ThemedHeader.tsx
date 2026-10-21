@@ -17,7 +17,7 @@ export default function ThemedHeader({
     return (
         <header
             className={classNames(
-                "shrink-0 sticky top-0 isolate bg-linear-to-b from-primary/50 to-transparent text-sm font-semibold flex items-center gap-lg p-lg h-header z-40",
+                "shrink-0 sticky left-0 top-0 isolate bg-linear-to-b from-primary/50 to-transparent text-sm font-semibold flex items-center gap-lg p-lg h-header z-40",
                 className,
             )}
         >

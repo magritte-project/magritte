@@ -16,17 +16,17 @@ export default function LibrarySongTable({
     ...rest
 }: LibrarySongTableProps) {
     return (
-        <table className={classNames("w-full table-fixed", className)} {...rest}>
+        <table className={classNames("min-w-200 w-full table-fixed", className)} {...rest}>
             <thead>
                 <tr className="text-left font-semibold text-sm border-b border-separator">
                     <th className="w-8">
                         <LibrarySongTableSort order={sortBy} setOrder={onChangeSortBy} />
                     </th>
-                    <th className=" p-md border-r border-separator">Title</th>
+                    <th className="p-md border-r border-separator">Title</th>
                     <th className="w-14 p-md border-r border-separator">Time</th>
-                    <th className=" p-md border-r border-separator">Artist</th>
-                    <th className=" p-md border-r border-separator">Album</th>
-                    <th className=" p-md">Genre</th>
+                    <th className="p-md border-r border-separator">Artist</th>
+                    <th className="p-md border-r border-separator">Album</th>
+                    <th className="p-md">Genre</th>
                 </tr>
             </thead>
             <tbody>{children}</tbody>
