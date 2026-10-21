@@ -26,7 +26,6 @@ export default function RootLayout() {
                         {!hideTransportControls && <PageFooter />}
                     </ExtensionPanelLayout>
                 )}
-                {/*<PlayerOverlay />*/}
             </Wiring>
         </NotificationCenterLayout>
     )

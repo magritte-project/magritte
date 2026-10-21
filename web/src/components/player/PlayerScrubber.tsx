@@ -8,7 +8,7 @@ import { formatDuration } from "@/utilities/duration"
 
 export default function PlayerScrubber() {
     const { elapsedTime, totalTime, seekToTime, isSeeking } = usePlaybackTime()
-    const playbackState = usePlaybackState()
+    const { playbackState } = usePlaybackState()
     const handleChange = useCallback(
         async (newValue: number | number[]) => {
             await seekToTime(newValue as number)
