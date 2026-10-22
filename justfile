@@ -1,6 +1,7 @@
 mod server
 mod web
 mod packages
+mod project
 mod extensions
 
 sync-deps:
@@ -12,9 +13,9 @@ dev: server::dev web::dev
 
 test: server::test web::test packages::test
 
-lint: server::lint web::lint packages::lint packages::lint extensions::lint
+lint: server::lint web::lint packages::lint extensions::lint
 
-format: server::format web::format packages::format packages::format extensions::format
+format: server::format web::format packages::format extensions::format project::format
 
 check-types: server::check-types web::check-types packages::check-types extensions::check-types
 

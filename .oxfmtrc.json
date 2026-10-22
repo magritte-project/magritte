@@ -2,6 +2,7 @@
     "$schema": "./web/node_modules/oxfmt/configuration_schema.json",
     "printWidth": 100,
     "tabWidth": 4,
+    "proseWrap": "always",
     "useTabs": false,
     "semi": false,
     "singleQuote": false,

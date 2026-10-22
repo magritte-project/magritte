@@ -6,24 +6,35 @@ A personal music platform
 
 ## The User Story
 
-- Have your own collection of music files? Install Magritte on your computer or server and start listening to your music from anywhere.
-- Use a streaming service? Magritte supports streaming from various providers through an ecosystem of extensions. Combine your own music collection with streaming to create a seamless listening experience.
-- Want to share your music with your family? Magritte supports multiple users and multiple libraries. Create a separate curated library for your family to listen to together.
+- Have your own collection of music files? Install Magritte on your computer or server and start
+  listening to your music from anywhere.
+- Use a streaming service? Magritte supports streaming from various providers through an ecosystem
+  of extensions. Combine your own music collection with streaming to create a seamless listening
+  experience.
+- Want to share your music with your family? Magritte supports multiple users and multiple
+  libraries. Create a separate curated library for your family to listen to together.
 - Don't want to self-host? Use a public streaming only instance instead.
 
 ---
 
-- Looking to understand your listening habits better but don't want to use a proprietary service? Magritte has built in support for scrobbling. Get insights without losing control over your data.
+- Looking to understand your listening habits better but don't want to use a proprietary service?
+  Magritte has built in support for scrobbling. Get insights without losing control over your data.
 - Like to hack on the code? Magritte is open source and contributions are welcome.
 
 ## The Scope
 
-Magritte is intended to be highly flexible in how it can be configured and where it can be installed.
+Magritte is intended to be highly flexible in how it can be configured and where it can be
+installed.
 
-- The first targeted configuration is in-home servers with a large storage medium available e.g. a Synology DiskStation or a Raspberry Pi with an m.2 hat.
-- In the medium term, Magritte will also be distributable as an app which can be installed on any device with a desktop class operating system.
-- Longer term, it will be possible to configure Magritte to run on cloud infrastructure. In this scenario, Magritte will default to not allowing file uploads to discourage it being used as a tool for piracy.
-- The dream is for Magritte to ship on its own dedicated hardware, likely something around the level of oomph of a Raspberry Pi 5.
+- The first targeted configuration is in-home servers with a large storage medium available e.g. a
+  Synology DiskStation or a Raspberry Pi with an m.2 hat.
+- In the medium term, Magritte will also be distributable as an app which can be installed on any
+  device with a desktop class operating system.
+- Longer term, it will be possible to configure Magritte to run on cloud infrastructure. In this
+  scenario, Magritte will default to not allowing file uploads to discourage it being used as a tool
+  for piracy.
+- The dream is for Magritte to ship on its own dedicated hardware, likely something around the level
+  of oomph of a Raspberry Pi 5.
 
 ### Known Working Configurations
 
@@ -31,289 +42,17 @@ Magritte is intended to be highly flexible in how it can be configured and where
 - Arch Linux
 - Raspberry Pi OS
 
-## Front ends
-
-- [web](/magritte/tree/main/web): The built-in web front end.
-
 ## AI Usage Disclosure
 
-Claude Code and Gemini were used for research, to generate config files, to find solutions for bugs, to generate some SQL queries, to apply repetitive pattern refactors, and to generate code in the extensions. A majority of the code in the core Magritte codebases was handwritten.
-
-## Contributors
-
-Contributions are welcomed! Kindly keep these things in mind:
-
-- Pull requests should be short enough to review in about 15 minutes.
-- An easy to digest summary / explanation increases chances of your changes being accepted.
-- Please limit pull requests to a single commit when possible.
-- A change set should not touch both an extension and the main codebase.
-  - Please separate out any new APIs required by your extension changes into their own pull request.
-  - Ideally any new extension APIs were preceded by an enhancement / issue issue.
-- Update the AI usage disclosure in this README if you use a new AI tool or apply AI in a new way on this codebase.
-- Be mindful of the license for the part of the codebase you are working on.
-
-## Installation
-
-### For Users
-
-Magritte is distributed as a Python package. You can install it using `pip`:
-
-```sh
-$ pip install magritte
-```
-
-If you are installing Magritte on your own machine, you can use the `desktop` extra to simplify the post-installation process:
-
-```sh
-$ pip install magritte[desktop]
-```
-
-### For Developers
-
-Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling and [`just`](https://just.systems/) to handle tasks. Follow the Getting Started directions to install `asdf` on your machine. Once you've installed `asdf`, you can bootstrap your development environment:
-
-```sh
-$ ./bootstrap
-```
-
-Bootstrapping the development environment creates a single `.env` file at the root project directory and symlinks it into the `server/` and `web/` subdirectories. Edit the entries the `.env` file to be suitable for your local working environment.
-
-### Secrets
-
-Because Magritte is intended to be installable into a wide range of environments, it offers multiple solutions for managing secrets:
-
-1. Secrets may be loaded from the environment. If the environment contains a full set of secrets, Magritte will use those values when signing and validating sensitive data. **This is the solution to use if you are running Magritte on a server or in the cloud.**
-2. Secrets may be automatically generated, stored, and loaded from the user's keyring (Keychain, KWallet, etc). This requires enabling the `desktop` extras when installing Magritte (done automatically by the `bootstap` script for development). **This is a good solution if you are running Magritte on your own machine.**
-
-If you plan for Magritte to load secrets from the environment, it can generate secrets and salts for you:
-
-```sh
-$ magritte generate-secrets
-```
-
-Paste the result into your `.env` file.
-
-#### Extensions
-
-If you are doing development on Magritte or its first party extensions, you may wish to review the `.env` files in the extension projects included in the monorepo. The `bootstrap` script will create `.env` files in any extensions which have them, but further configuration such as API keys may be necessary for an extension to function.
-
-## Development
-
-Once you've installed all of the prerequisites, you can run the development API and web servers:
-
-```sh
-$ just dev
-```
-
-After a few moments, you should be able to navigate to the Magritte web front end in your browser:
-
-```
-http://localhost:6479/
-```
-
-To execute the tests:
-
-```sh
-$ just test
-```
-
-### First Party Extensions
-
-To run a development server for a specific extension, use the `extensions::dev` recipe with the extension name as an argument:
-
-```sh
-$ just extensions::dev applemusic
-```
-
-Activating an extension with the `extensions::dev` recipe will automatically import the extension to your local Magritte instance and run the extension's development server. To add the extension to your user account:
-
-1. Navigate to the My Settings page
-2. Select Extensions
-3. Click the + add extension button
-4. Pick the extension from the list
-
-The extension can now be opened by searching for it in the cmd+k command palette.
-
-### Third Party Extensions
-
-Third party extensions can be built using the `@magritte/sdk` package. When developing a third party extension, you will need to manually import it into your local Magritte instance:
-
-1. Sign in to an administrator account
-2. Click the User menu in the top right corner
-3. Select Admin
-4. Select Extensions
-5. Click the + import extension button
-6. Enter the extension's development server URL – for example, the Apple Music extension would have the URL `http://localhost:9292/`
-
-After an extension has been imported, any user can install it from the Extensions area of the My Settings page located in the user menu.
-
-### DB Migrations
-
-To create a new database migration, use the `server::db-create-migration` recipe with the migration name as an argument:
-
-```sh
-$ just server::db-create-migration "extensions_table"
-```
-
-This will create a new migration file in `server/migrations/` with the given name.
-
-The next time you run Magritte, it should automatically apply your migration during start up. To manually apply the migration to the database, use the `server::db-migrate` recipe:
-
-```sh
-$ just server::db-migrate
-```
-
-If you need to clear the database and start fresh, you can delete it from the file system and restart the server. Assuming you haven't set a custom `DATA_HOME` environment variable, the database file will be located at `~/.magritte/db.sqlite3`. You may also wish to delete the artwork cache directory at `~/.magritte/artwork/`, however this is not generally required.
-
-### Packaging
-
-The server and web app can be packaged together for execution outside of a development environment:
-
-```sh
-$ just build
-```
-
-The package recipe will first build the web app, then bundle the server into a python package which includes both the server and web app code. This package can then be installed and run outside of a development environment.
-
-### Publishing
-
-To publish the front end packages, run the following command:
-
-```sh
-$ just packages::publish
-```
-
-To publish the server package with the web app bundled in, run the following commands:
-
-```sh
-$ just web::build
-$ just server::publish
-```
-
-## Data Architecture
-
-Magritte is intended to manage multiple libraries. Each library is owned by a single user, a member of a household. Each library contains zero or more songs, artists, and albums. By default, a library is only accessible to the user which created it. Additional users can be added to a library to share access with different permissions for read, write, and remove. Songs may be added to another library on the same instance.
-
-```
-┌─────┐
-│Users│
-└─────┘
-   ┼
-   │       ┌─────────┐╲         ╱┌─────┐╲      ╱┌───────┐
-   └──────┼│Libraries│──┼─────┬○─│Songs│─○────○─│Sources│
-           └─────────┘╱       │ ╲└─────┘╱      ╲└───────┘
-                              │    ╲│╱
-                              │     ○
-                              │     │          ╱┌──────────────┐
-                              │     └─────────○─│PlaybackEvents│
-                              │                ╲└──────────────┘
-                              │
-                              │
-                              │        ╱┌───────┐
-                              ├───────○─│Artists│
-                              │        ╲└───────┘
-                              │            ╲│╱
-                              │             ┼
-                              │             ┼
-                              │            ╱│╲
-                              │        ╱┌──────┐
-                              └───────○─│Albums│
-                                       ╲└──────┘
-```
-
-## App Architecture
-
-Magritte's architecture is roughly split into five main components:
-
-```
-     ┌────────┐        
-     │Database│        
-     └────────┘        
-          ┼            
-  ┌───────┴────────┐   
-  ┼                ┼   
-┌───┐          ┌──────┐
-│API│┼────────┼│Worker│
-└───┘          └──────┘
- ╲│╱                   
-  │                    
-  │                    
-  ┼                    
-┌───┐     ╱┌──────────┐
-│App│┼───○─│Extensions│
-└───┘     ╲└──────────┘
-```
-
-The API and its companion worker(s) are responsible for managing users and their libraries.
-The app allows users to sign in, browse their libraries, and listen to audio.
-Extensions are separate embedded apps which add additional functionality to the app.
-
-## File Management
-
-Songs in a Magritte library can have multiple sources associated with them. This enables several features:
-
-- A high fidelity canonical copy of a song can be uploaded as a primary source
-- A lower quality compressed copy of the song can be created during import as a secondary source
-- Streaming services can be used as additional sources of a song.
-
-Files backing sources may be de-duplicated. This means that e.g. a single file can serve as the source for an identical single and album track.
-
-Files are treated as read only – editing a song's metadata _does not_ modify the underlying files. Use dedicated software for this like mp3tag before importing files into Magritte.
-
-If a song is manually edited, changes made to the underlying file will no longer be reflected the next time the library is synched.
-
-## Streaming Service Libraries
-
-Magritte does not integrate with libraries from streaming services such as Apple Music. That is to say, adding a song from a streaming service to a Magritte library does not also add it to your library on that service. Magritte is at its core a database for managing media which may be backed by multiple sources. A streaming service is just another source, like a local file.
-
-## Scrobbling
-
-As songs are played back from a Magritte library, front ends keep a timestamped record of all play, pause, fast forward, rewind, and skip previous/next events which occur while the song is played. These playback events are periodically uploaded to the Magritte server. Playback events can then be used to calculate play and skip counts, to generate rich reports such as what songs/artists/albums the user was listening to in a given period of time, to feed signals into recommendation features, and as means to integrate with services like last.fm.
-
-## Extensions
-
-A Magritte extension is a web app which is run inside of the Magritte front end. Extensions are hosted inside of `<iframe>` elements and messages are passed over a message port. The connection between the extension and its host is established using the `postMessage` API. The handshake and communication process is handled by the `@magritte/sdk` package.
-
-Extensions can be written using any stack, but the ones developed alongside Magritte use the same stack: React + TypeScript built with Vite. To create a new extension, you can follow the standard procedure for standing up a new Vite project. It is recommended that you choose a unique port for your extension project's Vite dev server.
-
-Once you have created a new extension project, you must add an `extension.magritte.json` file to the project's public assets. At a minimum an extension manifest must include a name, id, version, and url. You will likely also want to list the permissions your extension needs to function properly and may want to include commands and source schemes if your extension provides custom content handling or adds new functionality to Magritte.
-
-```json
-{
-    "name": "Example",
-    "id": "magritte.example",
-    "version": "0.0.0",
-    "url": "..."
-}
-```
-
-After adding the `extension.magritte.json` file, you will need to modify your extension's `main.tsx` file to connect to the Magritte host app. This can be done using the `ExtensionHost` class exported by the `@magritte/sdk` package.
-
-```tsx
-import { ExtensionHost } from '@magritte/sdk'
-
-const extensionHost = await ExtensionHost.connect({
-    extensionId: 'magritte.example'
-})
-```
-
-You must specify the same `extensionId` as the one listed in your `extension.magritte.json` file. If `ExtensionHost.connect` is called outside of a Magritte host app, or the handshake process otherwise fails, it will throw an error. You may wish to wrap the `ExtensionHost.connect` call in a `try/catch` block to handle errors gracefully.
-
-Once you have connected to the Magritte host app, you can use the extension object to interact with the host and perform extension-specific operations. For example, you can use the command coordinator to query the host for available commands and execute them.
-
-```tsx
-// Get the command coordinator
-const commandCoordinator = await extensionHost.commandCoordinator()
-
-// Query the host for available runnable commands, optionally specifying a query string to filter results
-const runnable = await commandCoordinator.queryRunnable({ query: undefined })
-
-// Execute the first runnable command returned by the query
-await commandCoordinator.runCommand({ id: runnable[0].id })
-```
-
-Note: You must include "commands:query" and "commands:run" in your `extension.magritte.json` file to use the command coordinator.
-
-## Styling & Theming
-
-Magritte uses tailwindcss v4 for most application styling. Whenever elements and components use the semantic theme variables defined in `web/src/styles.css` for colors, spacing, etc. These variables roughly follow the patterns from material design: there are 4 visual levels defined which follow the pattern of level, on-level for background and fill pairs. Magritte does not currently have a mechanism for loading custom themes, but the variables in the theme may be customized to suit your tastes.
+The Magritte project contains a mix of handwritten code and AI output.
+
+- Claude Code and Gemini have been used for research
+- Claude Code has been used to...
+    - Generate config files
+    - Find and apply solutions for bugs
+    - Generate complex SQL queries
+    - Apply repetitive pattern refactors
+    - Generate and extend unit tests
+    - Generate whole extension projects
+
+The architecture and core vision of Magritte came from thinking humans.
