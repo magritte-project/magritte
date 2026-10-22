@@ -11,8 +11,8 @@ This project uses the following tooling:
 All tools can be invoked through `just`. The recipes are split into separate `.just` files for
 different areas.
 
-If you make changes to the extensions/ directory, you should avoid making changes elsewhere in the
-same commit when possible.
+If you have been directed to work specifically on an extension, you should avoid making changes
+elsewhere in the same commit when possible to make the changes easier to review.
 
 Any time changes are made to the `magritte/models/` or `magritte/routes/` directories,
 `just generate-openapi` should be run to keep the exported OpenAPI assets up to date.
