@@ -1,5 +1,4 @@
 import type { ExtensionManifest } from "@magritte/api"
-import { useNavigate } from "@tanstack/react-router"
 import { useMediaQuery } from "@uidotdev/usehooks"
 import classNames from "classnames"
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
@@ -18,7 +17,6 @@ export interface ExtensionPanelLayoutProps {
 }
 
 export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutProps) {
-    const navigate = useNavigate()
     const preferVerticalOrientation = useMediaQuery("(max-width: 768px)")
 
     const extensionRuntime = useExtensionRuntime()
@@ -102,31 +100,12 @@ export default function ExtensionPanelLayout({ children }: ExtensionPanelLayoutP
                 highlightAvailability: false,
                 present: async () => ({
                     displayName: `extensions: close ${extension.name}`,
+                    disabled: !openExtensions.some((candidate) => candidate.id === extension.id),
                 }),
                 execute: async () => closeExtension(extension.id),
             })),
-            {
-                id: "extensions.manage",
-                searchTerms: "install uninstall extensions",
-                requiredInputKinds: [],
-                highlightAvailability: false,
-                present: async () => ({
-                    displayName: `extensions: install/uninstall`,
-                }),
-                execute: async () => navigate({ to: "/settings/user/extensions" }),
-            } satisfies Command,
-            {
-                id: "extensions.taskManager",
-                searchTerms: "extensions task manager",
-                requiredInputKinds: [],
-                highlightAvailability: false,
-                present: async () => ({
-                    displayName: `extensions: task manager`,
-                }),
-                execute: async () => navigate({ to: "/settings/user/extensions/tasks" }),
-            } satisfies Command,
         ]
-    }, [available, openExtensions, openExtension, closeExtension, navigate])
+    }, [available, openExtensions, openExtension, closeExtension])
 
     return (
         <CommandsProvider commands={commands}>
