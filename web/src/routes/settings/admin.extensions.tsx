@@ -15,6 +15,7 @@ import AsyncButton from "@/components/reusable/AsyncButton"
 import Modal from "@/components/reusable/Modal"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
+import ThemedLargeTitleSubheader from "@/components/theme/ThemedLargeTitleSubheader"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
@@ -87,12 +88,15 @@ export const Route = createFileRoute("/settings/admin/extensions")({
 
         return (
             <div className="flex flex-col gap-lg">
-                <header className="flex items-center gap-lg">
-                    <h1 className="flex-1 text-2xl font-bold">Available Extensions</h1>
-                    <ThemedLink to="/settings/admin/extensions/import" title="Import Extension">
-                        <ArrowSquareInIcon size="1.2rem" weight="bold" />
-                    </ThemedLink>
-                </header>
+                <ThemedLargeTitleSubheader
+                    supplementaryEnd={
+                        <ThemedLink to="/settings/admin/extensions/import" title="Import Extension">
+                            <ArrowSquareInIcon size="1.2rem" weight="bold" />
+                        </ThemedLink>
+                    }
+                >
+                    Available Extensions
+                </ThemedLargeTitleSubheader>
                 <ol className="flex items-start content-start flex-wrap gap-md">
                     {availableExtensions.items.map((extension) => (
                         <li key={`extensions[${extension.id}]`}>

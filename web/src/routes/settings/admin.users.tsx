@@ -5,6 +5,7 @@ import z from "zod"
 
 import { readAllUsersAdmin } from "@/api/queries/users"
 import TableFooter from "@/components/reusable/TableFooter"
+import ThemedLargeTitleSubheader from "@/components/theme/ThemedLargeTitleSubheader"
 import useAPI from "@/hooks/apiHook"
 
 export const Route = createFileRoute("/settings/admin/users")({
@@ -25,9 +26,7 @@ export const Route = createFileRoute("/settings/admin/users")({
         const { data: allUsers } = useSuspenseQuery(readAllUsersAdmin(api, query, offset))
         return (
             <div className="flex flex-col gap-lg">
-                <header className="flex items-center gap-lg">
-                    <h1 className="flex-1 text-2xl font-bold">Users</h1>
-                </header>
+                <ThemedLargeTitleSubheader>Users</ThemedLargeTitleSubheader>
                 <ol className="flex flex-col">
                     {allUsers.users.map((user) => (
                         <li

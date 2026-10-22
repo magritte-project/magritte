@@ -5,6 +5,7 @@ import {
     PuzzlePieceIcon,
     UsersThreeIcon,
 } from "@phosphor-icons/react"
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 import PrimaryDetail from "@/components/chrome/PrimaryDetail"
@@ -41,6 +42,12 @@ export const Route = createFileRoute("/settings")({
                                 icon={FilesIcon}
                                 label="Downloads"
                                 to="/settings/user/downloads"
+                            />
+                            <ThemedSidebarSectionHeader>Magritte</ThemedSidebarSectionHeader>
+                            <ThemedSidebarItemLink
+                                icon={WarningCircleIcon}
+                                label="About"
+                                to="/settings/about"
                             />
                             {userSession.current?.scopes.includes("admin") && (
                                 <>

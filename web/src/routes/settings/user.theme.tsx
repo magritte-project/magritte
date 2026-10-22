@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import FieldDecoration from "@/components/formComponents/FieldDecoration"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
+import ThemedLargeTitleSubheader from "@/components/theme/ThemedLargeTitleSubheader"
 import ThemedPreview from "@/components/theme/ThemedPreview"
 import ThemedSection from "@/components/theme/ThemedSection"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
@@ -59,13 +60,19 @@ export const Route = createFileRoute("/settings/user/theme")({
 
         return (
             <AppForm form={form} className="flex flex-col gap-lg">
-                <h1 className="flex items-center gap-lg sticky top-header bg-primary z-50">
-                    <div className="flex-1 text-xl font-bold">Theme</div>
-                    <ThemedSubtleButton type="button" onClick={() => form.reset()}>
-                        Reset
-                    </ThemedSubtleButton>
-                    <form.SubmitButton>Apply</form.SubmitButton>
-                </h1>
+                <ThemedLargeTitleSubheader
+                    className="sticky top-header bg-primary z-50"
+                    supplementaryEnd={
+                        <>
+                            <ThemedSubtleButton type="button" onClick={() => form.reset()}>
+                                Reset
+                            </ThemedSubtleButton>
+                            <form.SubmitButton>Apply</form.SubmitButton>
+                        </>
+                    }
+                >
+                    Theme
+                </ThemedLargeTitleSubheader>
 
                 <div className="flex flex-col lg:flex-row gap-lg">
                     <div className="lg:flex-1 flex flex-col gap-lg">

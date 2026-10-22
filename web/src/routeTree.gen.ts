@@ -20,6 +20,7 @@ import { Route as LibrariesLibraryIdRouteRouteImport } from './routes/libraries.
 import { Route as LibrariesAddRouteImport } from './routes/libraries/add'
 import { Route as ResetPasswordCompleteRouteImport } from './routes/reset-password_.complete'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as SettingsAboutRouteImport } from './routes/settings/about'
 import { Route as SettingsAdminRouteImport } from './routes/settings/admin'
 import { Route as VerifyTokenRouteImport } from './routes/verify.$token'
 import { Route as LibrariesLibraryIdIndexRouteImport } from './routes/libraries.$libraryId/index'
@@ -94,6 +95,11 @@ const ResetPasswordCompleteRoute = ResetPasswordCompleteRouteImport.update({
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+const SettingsAboutRoute = SettingsAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 const SettingsAdminRoute = SettingsAdminRouteImport.update({
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
   '/reset-password/complete': typeof ResetPasswordCompleteRoute
+  '/settings/about': typeof SettingsAboutRoute
   '/settings/admin': typeof SettingsAdminRouteWithChildren
   '/verify/$token': typeof VerifyTokenRoute
   '/libraries/': typeof LibrariesIndexRoute
@@ -247,6 +254,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/libraries/add': typeof LibrariesAddRoute
   '/reset-password/complete': typeof ResetPasswordCompleteRoute
+  '/settings/about': typeof SettingsAboutRoute
   '/settings/admin': typeof SettingsAdminRouteWithChildren
   '/verify/$token': typeof VerifyTokenRoute
   '/libraries': typeof LibrariesIndexRoute
@@ -280,6 +288,7 @@ export interface FileRoutesById {
   '/libraries/$libraryId': typeof LibrariesLibraryIdRouteRouteWithChildren
   '/libraries/add': typeof LibrariesAddRoute
   '/reset-password_/complete': typeof ResetPasswordCompleteRoute
+  '/settings/about': typeof SettingsAboutRoute
   '/settings/admin': typeof SettingsAdminRouteWithChildren
   '/verify/$token': typeof VerifyTokenRoute
   '/libraries/': typeof LibrariesIndexRoute
@@ -315,6 +324,7 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId'
     | '/libraries/add'
     | '/reset-password/complete'
+    | '/settings/about'
     | '/settings/admin'
     | '/verify/$token'
     | '/libraries/'
@@ -345,6 +355,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/libraries/add'
     | '/reset-password/complete'
+    | '/settings/about'
     | '/settings/admin'
     | '/verify/$token'
     | '/libraries'
@@ -377,6 +388,7 @@ export interface FileRouteTypes {
     | '/libraries/$libraryId'
     | '/libraries/add'
     | '/reset-password_/complete'
+    | '/settings/about'
     | '/settings/admin'
     | '/verify/$token'
     | '/libraries/'
@@ -489,6 +501,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/settings/'
       preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/about': {
+      id: '/settings/about'
+      path: '/about'
+      fullPath: '/settings/about'
+      preLoaderRoute: typeof SettingsAboutRouteImport
       parentRoute: typeof SettingsRouteRoute
     }
     '/settings/admin': {
@@ -748,6 +767,7 @@ const SettingsUserExtensionsRouteWithChildren =
   )
 
 interface SettingsRouteRouteChildren {
+  SettingsAboutRoute: typeof SettingsAboutRoute
   SettingsAdminRoute: typeof SettingsAdminRouteWithChildren
   SettingsIndexRoute: typeof SettingsIndexRoute
   SettingsUserDownloadsRoute: typeof SettingsUserDownloadsRoute
@@ -757,6 +777,7 @@ interface SettingsRouteRouteChildren {
 }
 
 const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
+  SettingsAboutRoute: SettingsAboutRoute,
   SettingsAdminRoute: SettingsAdminRouteWithChildren,
   SettingsIndexRoute: SettingsIndexRoute,
   SettingsUserDownloadsRoute: SettingsUserDownloadsRoute,

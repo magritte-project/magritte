@@ -11,6 +11,7 @@ import FieldInfo from "@/components/formComponents/FieldInfo"
 import AppForm from "@/components/reusable/AppForm"
 import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
+import ThemedLargeTitleSubheader from "@/components/theme/ThemedLargeTitleSubheader"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
@@ -42,9 +43,9 @@ export const Route = createFileRoute("/settings/user/general")({
 
         return (
             <div className="flex flex-col gap-lg">
-                <header className="flex items-center gap-lg">
-                    <h1 className="flex-1 text-2xl font-bold">{me.username}</h1>
-                </header>
+                <ThemedLargeTitleSubheader className="flex-1 text-2xl font-bold">
+                    {me.username}
+                </ThemedLargeTitleSubheader>
                 <AppForm form={form} className="flex flex-col gap-lg">
                     <form.AppField
                         name="preferred_name"

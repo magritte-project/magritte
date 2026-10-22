@@ -6,6 +6,7 @@ import classNames from "classnames"
 import { filesize } from "filesize"
 import { useEffect } from "react"
 
+import ThemedLargeTitleSubheader from "@/components/theme/ThemedLargeTitleSubheader"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useLocalCache from "@/hooks/localCacheHook"
 import useNotificationCenter from "@/hooks/notificationCenterHook"
@@ -55,13 +56,18 @@ export const Route = createFileRoute("/settings/user/downloads")({
 
         return (
             <div className="flex flex-col gap-lg">
-                <header className="flex-1 text-2xl font-bold">Downloads</header>
-                {storageEstimate.quota !== undefined && (
-                    <div>
-                        {filesize(storageEstimate.usage ?? 0)} of {filesize(storageEstimate.quota)}{" "}
-                        used
-                    </div>
-                )}
+                <ThemedLargeTitleSubheader
+                    caption={
+                        storageEstimate.quota !== undefined && (
+                            <div>
+                                {filesize(storageEstimate.usage ?? 0)} of{" "}
+                                {filesize(storageEstimate.quota)} used
+                            </div>
+                        )
+                    }
+                >
+                    Downloads
+                </ThemedLargeTitleSubheader>
                 <ol className="flex flex-col">
                     {sourceFileUrls.map((url) => (
                         <li

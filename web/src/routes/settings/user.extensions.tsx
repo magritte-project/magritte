@@ -16,6 +16,7 @@ import Modal from "@/components/reusable/Modal"
 import ScopeRestricted from "@/components/reusable/ScopeRestricted"
 import TableFooter from "@/components/reusable/TableFooter"
 import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
+import ThemedLargeTitleSubheader from "@/components/theme/ThemedLargeTitleSubheader"
 import ThemedLink from "@/components/theme/ThemedLink"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAPI from "@/hooks/apiHook"
@@ -88,17 +89,25 @@ export const Route = createFileRoute("/settings/user/extensions")({
 
         return (
             <div className="flex flex-col gap-lg">
-                <header className="flex items-center gap-lg">
-                    <h1 className="flex-1 text-2xl font-bold">Installed Extensions</h1>
-                    <ScopeRestricted expected={["admin"]}>
-                        <ThemedLink to="/settings/admin/extensions/import" title="Import Extension">
-                            <ArrowSquareInIcon size="1.2rem" weight="bold" />
-                        </ThemedLink>
-                    </ScopeRestricted>
-                    <ThemedLink to="/settings/user/extensions/add" title="Add Extension">
-                        <PlusIcon size="1.2rem" weight="bold" />
-                    </ThemedLink>
-                </header>
+                <ThemedLargeTitleSubheader
+                    supplementaryEnd={
+                        <>
+                            <ScopeRestricted expected={["admin"]}>
+                                <ThemedLink
+                                    to="/settings/admin/extensions/import"
+                                    title="Import Extension"
+                                >
+                                    <ArrowSquareInIcon size="1.2rem" weight="bold" />
+                                </ThemedLink>
+                            </ScopeRestricted>
+                            <ThemedLink to="/settings/user/extensions/add" title="Add Extension">
+                                <PlusIcon size="1.2rem" weight="bold" />
+                            </ThemedLink>
+                        </>
+                    }
+                >
+                    Installed Extensions
+                </ThemedLargeTitleSubheader>
                 <ol className="flex items-start content-start flex-wrap gap-md">
                     {installedExtensions.items.map((extension) => (
                         <li key={`extensions[${extension.id}]`}>

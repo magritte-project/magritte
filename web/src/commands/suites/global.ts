@@ -1,4 +1,13 @@
-import { ArrowsInIcon, ArrowsOutIcon, GearIcon } from "@phosphor-icons/react"
+import {
+    AppWindowIcon,
+    ArrowsInIcon,
+    ArrowsOutIcon,
+    FilesIcon,
+    GearIcon,
+    PaletteIcon,
+    PuzzlePieceIcon,
+    WarningCircleIcon,
+} from "@phosphor-icons/react"
 import type { RegisteredRouter } from "@tanstack/react-router"
 
 import type { Command } from "@/commands/base"
@@ -24,6 +33,7 @@ export function globalCommands(router: RegisteredRouter): Command[] {
             requiredInputKinds: [],
             highlightAvailability: false,
             present: async () => ({
+                icon: PuzzlePieceIcon,
                 displayName: `settings: extensions`,
                 disabled: !getMagritteRouterContext(router).api.userSessionManager.isSignedIn,
             }),
@@ -35,6 +45,7 @@ export function globalCommands(router: RegisteredRouter): Command[] {
             requiredInputKinds: [],
             highlightAvailability: false,
             present: async () => ({
+                icon: AppWindowIcon,
                 displayName: `settings: extensions: task manager`,
                 disabled: !getMagritteRouterContext(router).api.userSessionManager.isSignedIn,
             }),
@@ -46,6 +57,7 @@ export function globalCommands(router: RegisteredRouter): Command[] {
             requiredInputKinds: [],
             highlightAvailability: false,
             present: async () => ({
+                icon: PaletteIcon,
                 displayName: `settings: theme`,
                 disabled: !getMagritteRouterContext(router).api.userSessionManager.isSignedIn,
             }),
@@ -57,10 +69,23 @@ export function globalCommands(router: RegisteredRouter): Command[] {
             requiredInputKinds: [],
             highlightAvailability: false,
             present: async () => ({
+                icon: FilesIcon,
                 displayName: `settings: downloads`,
                 disabled: !getMagritteRouterContext(router).api.userSessionManager.isSignedIn,
             }),
             execute: async () => router.navigate({ to: "/settings/user/downloads" }),
+        },
+        {
+            id: "global.settings.about",
+            searchTerms: "about",
+            requiredInputKinds: [],
+            highlightAvailability: false,
+            present: async () => ({
+                icon: WarningCircleIcon,
+                displayName: `settings: about`,
+                disabled: !getMagritteRouterContext(router).api.userSessionManager.isSignedIn,
+            }),
+            execute: async () => router.navigate({ to: "/settings/about" }),
         },
         {
             id: "global.fullScreen.enter",
