@@ -97,6 +97,23 @@ export const Route = createFileRoute("/settings/about")({
                         />
                     </li>
                 </ol>
+                <ThemedSubsection>AI Usage Disclosure</ThemedSubsection>
+                <p>The Magritte project contains a mix of handwritten code and AI output.</p>
+                <ul className="list-inside list-disc *:ml-lg">
+                    <li>Claude Code and Gemini have been used for research</li>
+                    <li>
+                        Claude Code has been used to...
+                        <ul className="list-inside list-[circle] *:ml-lg">
+                            <li>Generate config files</li>
+                            <li>Find and apply solutions for bugs</li>
+                            <li>Generate complex SQL queries</li>
+                            <li>Apply repetitive pattern refactors</li>
+                            <li>Generate and extend unit tests</li>
+                            <li>Generate whole extension projects</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p>The architecture and core vision of Magritte came from thinking humans.</p>
                 <ThemedSubsection>License</ThemedSubsection>
                 <p>
                     Magritte is made available under the terms of the{" "}
