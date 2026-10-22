@@ -3244,12 +3244,19 @@
             "InstanceStatusRead": {
                 "properties": {
                     "env": { "type": "string", "enum": ["dev", "ci", "prod"], "title": "Env" },
+                    "version": { "type": "string", "title": "Version" },
                     "uploads_enabled": { "type": "boolean", "title": "Uploads Enabled" },
                     "email_enabled": { "type": "boolean", "title": "Email Enabled" },
                     "first_setup_complete": { "type": "boolean", "title": "First Setup Complete" }
                 },
                 "type": "object",
-                "required": ["env", "uploads_enabled", "email_enabled", "first_setup_complete"],
+                "required": [
+                    "env",
+                    "version",
+                    "uploads_enabled",
+                    "email_enabled",
+                    "first_setup_complete"
+                ],
                 "title": "InstanceStatusRead"
             },
             "LibraryCreate": {

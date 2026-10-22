@@ -239,6 +239,7 @@ export const BulkIngestSongsSchema = z.object({
  */
 export const InstanceStatusReadSchema = z.object({
     env: z.enum(["dev", "ci", "prod"]),
+    version: z.string(),
     uploads_enabled: z.boolean(),
     email_enabled: z.boolean(),
     first_setup_complete: z.boolean(),

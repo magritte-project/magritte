@@ -5,18 +5,28 @@ import {
     ShoppingBagIcon,
     type Icon,
 } from "@phosphor-icons/react"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import classNames from "classnames"
 import type { ReactNode } from "react"
 
+import { readInstanceStatus } from "@/api/queries/auth"
 import ThemedLargeTitleSubheader from "@/components/theme/ThemedLargeTitleSubheader"
 import ThemedSubsection from "@/components/theme/ThemedSubsection"
+import useAPI from "@/hooks/apiHook"
 
 export const Route = createFileRoute("/settings/about")({
+    loader: async ({ context: { api, queryClient } }) => {
+        await queryClient.query(readInstanceStatus(api))
+    },
     component: function About() {
+        const api = useAPI()
+        const { data: instanceStatus } = useSuspenseQuery(readInstanceStatus(api))
         return (
             <div className="flex flex-col gap-lg">
-                <ThemedLargeTitleSubheader caption="A personal music platform – Version 0.1.0">
+                <ThemedLargeTitleSubheader
+                    caption={<>A personal music platform – Version {instanceStatus.version}</>}
+                >
                     Magritte
                 </ThemedLargeTitleSubheader>
                 <ThemedSubsection>Get Involved</ThemedSubsection>

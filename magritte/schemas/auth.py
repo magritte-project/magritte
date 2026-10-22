@@ -45,6 +45,7 @@ class CompleteResetPassword(BaseModel):
 
 class InstanceStatusRead(BaseModel):
     env: Literal["dev", "ci", "prod"]
+    version: str
     uploads_enabled: bool
     email_enabled: bool
     first_setup_complete: bool

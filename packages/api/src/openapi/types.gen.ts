@@ -588,6 +588,10 @@ export type InstanceStatusRead = {
      */
     env: "dev" | "ci" | "prod"
     /**
+     * Version
+     */
+    version: string
+    /**
      * Uploads Enabled
      */
     uploads_enabled: boolean

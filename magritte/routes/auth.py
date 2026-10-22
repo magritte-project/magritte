@@ -1,5 +1,6 @@
 import secrets
 from datetime import UTC, datetime, timedelta
+from importlib.metadata import PackageNotFoundError, version
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
@@ -43,8 +44,14 @@ async def read_instance_status(
     email_client: Annotated[EmailClient | None, Depends(get_email_client)],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
+    try:
+        package_version = version("magritte")
+    except PackageNotFoundError:
+        package_version = "0.0.0+unknown"
+
     return InstanceStatusRead(
         env=config.env,
+        version=package_version,
         uploads_enabled=config.enable_uploads,
         email_enabled=email_client is not None,
         first_setup_complete=await User.exists(
