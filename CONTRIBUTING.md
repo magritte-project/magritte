@@ -1,33 +1,36 @@
 # Contributing
 
-Contributions are welcomed! Kindly keep these things in mind:
+Contributions are welcome! Kindly keep these things in mind:
 
 - Pull requests should be short enough to review in about 15 minutes.
-- An easy to digest summary / explanation increases chances of your changes being accepted.
+- An easy-to-digest summary or explanation increases the chances of your changes being accepted.
 - Please limit pull requests to a single commit when possible.
 - A change set should not touch both an extension and the main codebase.
     - Please separate out any new APIs required by your extension changes into their own pull
       request.
-    - Ideally any new extension APIs were preceded by an enhancement / issue issue.
-- Update the AI usage disclosure in the README if you use a new AI tool or apply AI in a new way on
-  this codebase.
-- Be mindful of the license for the part of the codebase you are working on.
+    - Ideally, any new extension APIs should be preceded by an enhancement request or issue.
+- Update the [AI usage disclosure](README.md#ai-usage-disclosure) in the README if you use a new AI
+  tool or apply AI in a new way on this codebase.
+- Be mindful of the license for the part of the codebase you are working on. The project as a whole
+  is licensed under the GPL-3.0, while the `packages/api`, `packages/rpc`, and `packages/sdk`
+  packages are licensed under the MIT No Attribution license.
 
 ## Getting Started
 
 Magritte uses [`asdf`](https://asdf-vm.com/) to manage tooling and [`just`](https://just.systems/)
-to handle tasks. Follow the Getting Started directions to install `asdf` on your machine. Once
-you've installed `asdf`, you can bootstrap your development environment:
+to handle tasks. Follow the
+[asdf Getting Started guide](https://asdf-vm.com/guide/getting-started.html) to install `asdf` on
+your machine. Once you've installed `asdf`, you can bootstrap your development environment:
 
 ```sh
 $ ./bootstrap
 ```
 
-Bootstrapping the development environment creates a single `.env` file at the root project directory
-and symlinks it into the `server/` and `web/` subdirectories. Edit the entries the `.env` file to be
-suitable for your local working environment.
+Bootstrapping the development environment creates a `.env` file at the project root and symlinks it
+into the `web/` subdirectory. Edit the entries in the `.env` file to be suitable for your local
+working environment.
 
-Note: Magritte currently does not support development on Windows. Pull requests welcome!
+Note: Magritte currently does not support development on Windows. Pull requests are welcome!
 
 ### Secrets
 
@@ -46,27 +49,28 @@ If you want Magritte to load secrets from the environment instead of your keyrin
 development, it can generate secrets and salts for you:
 
 ```sh
-$ magritte generate-secrets
+$ ./admin generate-secrets
 ```
 
 Paste the result into your `.env` file.
 
 ### Extensions
 
-If you are doing development on Magritte's first party extensions, you may wish to review the `.env`
+If you are doing development on Magritte's first-party extensions, you may wish to review the `.env`
 files in the extension projects included in the monorepo. The `bootstrap` script will create `.env`
-files in any extensions which have them, but further configuration such as API keys may be necessary
+files in any extensions that have them, but further configuration such as API keys may be necessary
 for an extension to function.
 
 ## Development
 
-Once you've installed all of the prerequisites, you can run the development API and web servers:
+Once bootstrapping finishes, you can run the development API and web servers:
 
 ```sh
 $ just dev
 ```
 
-After a few moments, you should be able to navigate to the Magritte web front end in your browser:
+This starts the API server on port 6477 and the web front end on port 6479. After a few moments, you
+should be able to navigate to the Magritte web front end in your browser:
 
 ```
 http://localhost:6479/
@@ -78,7 +82,22 @@ To execute the tests:
 $ just test
 ```
 
-### First Party Extensions
+Before opening a pull request, please also format, lint, and type check your changes:
+
+```sh
+$ just format
+$ just lint
+$ just check-types
+```
+
+If you make changes to the `magritte/model/` or `magritte/routes/` directories, regenerate the
+exported OpenAPI assets to keep them up to date:
+
+```sh
+$ just generate-openapi
+```
+
+### First-Party Extensions
 
 To run a development server for a specific extension, use the `extensions::dev` recipe with the
 extension name as an argument:
@@ -91,12 +110,13 @@ Activating an extension with the `extensions::dev` recipe will automatically imp
 your local Magritte instance and run the extension's development server. To add the extension to
 your user account:
 
-1. Navigate to the My Settings page
-2. Select Extensions
-3. Click the + add extension button
-4. Pick the extension from the list
+1. Click the **User** menu in the top right corner
+2. Select **Settings**
+3. Select **Extensions**
+4. Click the **+ Add Extension** button
+5. Pick the extension from the list
 
-The extension can now be opened by searching for it in the cmd+k command palette.
+The extension can now be opened by searching for it in the command palette (**⌘K** / **Ctrl+K**).
 
 ### DB Migrations
 
@@ -107,9 +127,9 @@ name as an argument:
 $ just server::db-create-migration "extensions_table"
 ```
 
-This will create a new migration file in `server/migrations/` with the given name.
+This will create a new migration file in `magritte/migrations/versions/` with the given name.
 
-The next time you run Magritte, it should automatically apply your migration during start up. To
+The next time you run Magritte, it should automatically apply your migration during startup. To
 manually apply the migration to the database, use the `server::db-migrate` recipe:
 
 ```sh
@@ -134,7 +154,7 @@ The server and web app can be packaged together for execution outside of a devel
 $ just build
 ```
 
-The package recipe will first build the web app, then bundle the server into a python package which
+The `build` recipe will first build the web app, then bundle the server into a Python package which
 includes both the server and web app code. This package can then be installed and run outside of a
 development environment.
 
@@ -152,3 +172,6 @@ To publish the server package with the web app bundled in, run the following com
 $ just web::build
 $ just server::publish
 ```
+
+The web app must be built first, as `server::publish` bundles the contents of `web/dist` into the
+server package.
