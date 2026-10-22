@@ -10,6 +10,7 @@ import classNames from "classnames"
 import type { ReactNode } from "react"
 
 import ThemedLargeTitleSubheader from "@/components/theme/ThemedLargeTitleSubheader"
+import ThemedSubsection from "@/components/theme/ThemedSubsection"
 
 export const Route = createFileRoute("/settings/about")({
     component: function About() {
@@ -18,9 +19,7 @@ export const Route = createFileRoute("/settings/about")({
                 <ThemedLargeTitleSubheader caption="A personal music platform – Version 0.1.0">
                     Magritte
                 </ThemedLargeTitleSubheader>
-                <h2 className="text-xl font-bold mt-lg pb-sm border-b border-quaternary">
-                    Get Involved
-                </h2>
+                <ThemedSubsection>Get Involved</ThemedSubsection>
                 <p>
                     Magritte is non-commercial and community driven. It’s built by and for people
                     who care about how they listen to music. Pitch in however you can to keep it
@@ -67,52 +66,28 @@ export const Route = createFileRoute("/settings/about")({
                         />
                     </li>
                 </ol>
-                <h2 className="text-xl font-bold mt-lg pb-sm border-b border-quaternary">
-                    Contributors
-                </h2>
+                <ThemedSubsection>Contributors</ThemedSubsection>
                 <ol className="flex flex-col gap-lg">
                     <li className="flex items-center gap-sm">
-                        <a
-                            href="https://github.com/decarbonization/"
-                            target="_blank"
-                            className="flex items-center gap-lg underline"
-                        >
-                            <img
-                                src="https://avatars.githubusercontent.com/u/79944?v=4"
-                                referrerPolicy="no-referrer"
-                                alt="Profile Icon"
-                                className="w-8 aspect-square rounded-full"
-                            />{" "}
-                            @decarbonization
-                        </a>{" "}
-                        /{" "}
-                        <a href="https://swampmonkeyco.com" target="_blank" className="underline">
-                            Swamp Monkey Consulting
-                        </a>
+                        <Contributor
+                            profileHref="https://github.com/decarbonization/"
+                            profileImageSrc="https://avatars.githubusercontent.com/u/79944?v=4"
+                            profileName="decarbonization"
+                            corporationHref="https://swampmonkeyco.com"
+                            corporationName="Swamp Monkey Consulting"
+                        />
                     </li>
                     <li className="flex items-center gap-sm">
-                        <a
-                            href="https://github.com/jkantro/"
-                            target="_blank"
-                            className="flex items-center gap-lg underline"
-                        >
-                            <img
-                                src="https://avatars.githubusercontent.com/u/160623?v=4"
-                                referrerPolicy="no-referrer"
-                                alt="Profile Icon"
-                                className="w-8 aspect-square rounded-full"
-                            />{" "}
-                            @jkantro
-                        </a>
-                        /{" "}
-                        <a href="https://jonkantro.com/" target="_blank" className="underline">
-                            Jon Kantro Design
-                        </a>
+                        <Contributor
+                            profileHref="https://github.com/jkantro/"
+                            profileImageSrc="https://avatars.githubusercontent.com/u/160623?v=4"
+                            profileName="jkantro"
+                            corporationHref="https://jonkantro.com"
+                            corporationName="Kantro Design"
+                        />
                     </li>
                 </ol>
-                <h2 className="text-xl font-bold mt-lg pb-sm border-b border-quaternary">
-                    License
-                </h2>
+                <ThemedSubsection>License</ThemedSubsection>
                 <p>
                     Magritte is made available under the terms of the{" "}
                     <a
@@ -172,5 +147,39 @@ function GetInvolvedAnchor({
             </div>
             <CaretRightIcon />
         </a>
+    )
+}
+
+interface ContributorProps {
+    readonly profileHref: string
+    readonly profileImageSrc: string
+    readonly profileName: string
+    readonly corporationHref: string
+    readonly corporationName: string
+}
+
+function Contributor({
+    profileHref,
+    profileImageSrc,
+    profileName,
+    corporationHref,
+    corporationName,
+}: ContributorProps) {
+    return (
+        <div className="flex items-center gap-sm">
+            <a href={profileHref} target="_blank" className="flex items-center gap-lg underline">
+                <img
+                    src={profileImageSrc}
+                    referrerPolicy="no-referrer"
+                    alt={`${profileName} Profile Image`}
+                    className="w-8 aspect-square rounded-full"
+                />{" "}
+                @{profileName}
+            </a>{" "}
+            /{" "}
+            <a href={corporationHref} target="_blank" className="underline">
+                {corporationName}
+            </a>
+        </div>
     )
 }
