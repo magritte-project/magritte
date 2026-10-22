@@ -2,7 +2,11 @@
 
 A personal music platform
 
-[![Test](https://github.com/decarbonization/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/decarbonization/magritte/actions/workflows/test.yml)
+[![Test](https://github.com/magritte-project/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/magritte-project/magritte/actions/workflows/test.yml)
+
+[Contributing](https://github.com/magritte-project/magritte/blob/HEAD/CONTRIBUTING.md) |
+[Extensions](https://github.com/magritte-project/magritte/blob/HEAD/EXTENSIONS.md) |
+[Architecture](https://github.com/magritte-project/magritte/blob/HEAD/ARCHITECTURE.md)
 
 ## The User Story
 
