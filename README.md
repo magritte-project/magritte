@@ -15,7 +15,7 @@ data.
 
 ## Learn More
 
-- [Getting Started](https://magritte-project.github.io/resources/extensions/)
+- [Getting Started](https://magritte-project.github.io/getting-started/)
 - [Contributing](https://github.com/magritte-project/magritte/blob/HEAD/CONTRIBUTING.md)
 - [Building Extensions](https://magritte-project.github.io/resources/extensions/)
 - [Architecture Overview](https://magritte-project.github.io/resources/architecture/)
