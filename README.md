@@ -4,9 +4,21 @@ A personal music platform
 
 [![Test](https://github.com/magritte-project/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/magritte-project/magritte/actions/workflows/test.yml)
 
-[Contributing](https://github.com/magritte-project/magritte/blob/HEAD/CONTRIBUTING.md) |
-[Extensions](https://github.com/magritte-project/magritte/blob/HEAD/EXTENSIONS.md) |
-[Architecture](https://github.com/magritte-project/magritte/blob/HEAD/ARCHITECTURE.md)
+## Get ready to love your music again
+
+Magritte is your own personal streaming music service.
+
+Install it on your computer or home server and listen to your own music collection from anywhere.
+Mix in streaming services through extensions, give everyone in your household their own account and
+libraries, and track your listening with built-in scrobbling, all without giving up control of your
+data.
+
+## Learn More
+
+- [Getting Started](https://magritte-project.github.io/resources/extensions/)
+- [Contributing](https://github.com/magritte-project/magritte/blob/HEAD/CONTRIBUTING.md)
+- [Building Extensions](https://magritte-project.github.io/resources/extensions/)
+- [Architecture Overview](https://magritte-project.github.io/resources/architecture/)
 
 ## AI Usage Disclosure
 
