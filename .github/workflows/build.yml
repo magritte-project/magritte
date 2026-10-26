@@ -1,0 +1,94 @@
+name: Build
+
+on:
+    workflow_call:
+        inputs:
+            release-tag:
+                description: If set, fail unless this tag matches the pyproject.toml version
+                type: string
+                default: ""
+            dev-version:
+                description: Build as a unique .devN pre-release of the pyproject.toml version
+                type: boolean
+                default: false
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Install just
+              uses: extractions/setup-just@v3
+            - name: Setup asdf
+              uses: asdf-vm/actions/setup@v4
+            - name: Cache asdf
+              id: asdf-tools-cache
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      /home/runner/.asdf
+                  key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
+                  restore-keys: |
+                      ${{ runner.os }}-asdf-
+            - name: Install dependencies in .tool-versions
+              if: ${{ steps.asdf-tools-cache.outputs.cache-hit != 'true' }}
+              uses: asdf-vm/actions/install@v4
+            - name: Bootstrap
+              run: ./bootstrap
+            - name: Verify Tag Matches Version
+              if: ${{ inputs.release-tag != '' }}
+              env:
+                  TAG: ${{ inputs.release-tag }}
+              run: |
+                  version="$(uv version --short)"
+                  if [[ "${TAG#v}" != "$version" ]]; then
+                    echo "::error::Release tag $TAG does not match pyproject.toml version $version"
+                    exit 1
+                  fi
+            - name: Set Dev Version
+              if: ${{ inputs.dev-version }}
+              run: uv version --frozen "$(uv version --short).dev${{ github.run_number }}"
+            - name: Build
+              env:
+                  VITE_ENV: prod
+                  VITE_API_URL: /api
+              run: just build
+            - name: Smoke Test Wheel
+              run: |
+                  uv venv -p 3.13 "$RUNNER_TEMP/venv"
+                  uv pip install --python "$RUNNER_TEMP/venv" dist/*.whl
+                  python="$RUNNER_TEMP/venv/bin/python"
+
+                  mkdir "$RUNNER_TEMP/smoke" && cd "$RUNNER_TEMP/smoke"
+                  "$python" -m magritte generate-secrets > .env
+                  echo "ENV=prod" >> .env
+                  echo "DATA_HOME=$RUNNER_TEMP/smoke/data" >> .env
+                  echo "MUSIC_HOME=$RUNNER_TEMP/smoke/music" >> .env
+                  mkdir music
+
+                  "$python" -m magritte run > server.log 2>&1 &
+                  for _ in $(seq 1 30); do
+                    curl -sf -o /dev/null http://localhost:8090/api/openapi.json && break
+                    sleep 1
+                  done
+
+                  status=0
+                  for path in / /libraries /api/openapi.json; do
+                    if ! curl -sf -o /dev/null "http://localhost:8090$path"; then
+                      echo "::error::GET $path failed"
+                      status=1
+                    fi
+                  done
+                  kill %1
+                  cat server.log
+                  exit $status
+            - name: Upload Distributions
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dist
+                  path: dist/
+                  if-no-files-found: error

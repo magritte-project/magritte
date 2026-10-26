@@ -1,0 +1,29 @@
+name: Release
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    build:
+        uses: ./.github/workflows/build.yml
+        with:
+            release-tag: ${{ github.event.release.tag_name }}
+
+    publish:
+        name: Publish to PyPI
+        needs: build
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        environment: pypi
+        permissions:
+            id-token: write
+
+        steps:
+            - name: Download Distributions
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist
+                  path: dist/
+            - name: Publish
+              uses: pypa/gh-action-pypi-publish@release/v1

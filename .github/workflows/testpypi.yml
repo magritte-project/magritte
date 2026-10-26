@@ -1,0 +1,30 @@
+name: Publish to TestPyPI
+
+on:
+    workflow_dispatch:
+
+jobs:
+    build:
+        uses: ./.github/workflows/build.yml
+        with:
+            dev-version: true
+
+    publish:
+        name: Publish to TestPyPI
+        needs: build
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        environment: testpypi
+        permissions:
+            id-token: write
+
+        steps:
+            - name: Download Distributions
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist
+                  path: dist/
+            - name: Publish
+              uses: pypa/gh-action-pypi-publish@release/v1
+              with:
+                  repository-url: https://test.pypi.org/legacy/
