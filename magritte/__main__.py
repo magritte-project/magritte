@@ -7,11 +7,17 @@ from traceback import print_tb
 
 
 def run_main(args: Namespace):
+    from pathlib import Path
+
     import uvicorn
     from fastapi import FastAPI
 
     from magritte import app, app_lifespan
     from magritte.utilities.spa import SPAStaticFiles
+
+    static_directory = Path(__file__).parent / "static"
+    if not static_directory.exists():
+        raise FileNotFoundError("static assets not found, is Magritte packaged?")
 
     super_app = FastAPI(
         lifespan=app_lifespan,
@@ -19,7 +25,9 @@ def run_main(args: Namespace):
     )
     super_app.mount("/api", app, name="api")
     super_app.mount(
-        "/", SPAStaticFiles(directory="static", html=True), name="static-files"
+        "/",
+        SPAStaticFiles(directory=static_directory, html=True),
+        name="static-files",
     )
 
     uvicorn.run(super_app, host="0.0.0.0", port=8090)
