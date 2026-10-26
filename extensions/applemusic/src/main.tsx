@@ -1,6 +1,8 @@
 import { ExtensionHost } from "@magritte/sdk"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
+import "@magritte/fonts/fira-go.css"
+import "@magritte/fonts/fira-mono.css"
 import "@/styles.css"
 
 import { StrictMode } from "react"

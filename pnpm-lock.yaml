@@ -107,6 +107,9 @@ importers:
       '@magritte/api':
         specifier: workspace:*
         version: link:../../packages/api
+      '@magritte/fonts':
+        specifier: workspace:*
+        version: link:../../packages/fonts
       '@magritte/rpc':
         specifier: workspace:*
         version: link:../../packages/rpc
