@@ -1000,7 +1000,7 @@ wheels = [
 ]
 
 [[package]]
-name = "magritte"
+name = "magritte-project"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
