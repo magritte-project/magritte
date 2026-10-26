@@ -19,6 +19,7 @@ from magritte.schemas.extension import (
     ExtensionRead,
 )
 from magritte.schemas.library import LibraryMediaRead
+from magritte.utilities.http import get_http_client
 from magritte.utilities.user_events import (
     UserEvent,
     UserEvents,
@@ -38,9 +39,8 @@ router = APIRouter(prefix="/extensions")
 async def import_extension(
     import_extension: ExtensionImportAdmin,
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    http_client: Annotated[httpx2.AsyncClient, Depends(get_http_client)],
 ):
-    # TODO: Figure out how to unit test this
-
     manifest_url_path = import_extension.manifest_url.path
     if manifest_url_path is None or not manifest_url_path.endswith(
         "/extension.magritte.json"
@@ -59,10 +59,9 @@ async def import_extension(
             detail="Extension already imported",
         )
 
-    async with httpx2.AsyncClient() as client:
-        manifest = await ExtensionManifest.fetch_from(
-            client, import_extension.manifest_url
-        )
+    manifest = await ExtensionManifest.fetch_from(
+        http_client, import_extension.manifest_url
+    )
 
     await Extension.import_from(import_extension.manifest_url, manifest, session)
 

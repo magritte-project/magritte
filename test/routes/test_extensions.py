@@ -1,16 +1,42 @@
-from unittest.mock import AsyncMock, Mock
+import asyncio
+from collections.abc import AsyncIterable, Callable
+from contextlib import contextmanager
 
 import pytest
 import pytest_asyncio
 from faker import Faker
 from fastapi.testclient import TestClient
-from httpx2 import AsyncClient, Response
+from httpx2 import AsyncClient, MockTransport, Request, Response
 from pydantic import HttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from conftest import AuthFixture
+from conftest import AuthFixture, override_dependency
 from magritte.model.extension import Extension
 from magritte.schemas.extension import ExtensionManifest
+from magritte.utilities.http import get_http_client
+
+MANIFEST_URL = "http://localhost:1234/extension.magritte.json"
+
+
+@contextmanager
+def serve_manifest(handler: Callable[[Request], Response]):
+    """Route outbound requests made by the API to a mock handler"""
+
+    async def override_get_http_client():
+        async with AsyncClient(transport=MockTransport(handler)) as client:
+            yield client
+
+    with override_dependency(get_http_client, override_get_http_client):
+        yield
+
+
+def mock_manifest_json(faker: Faker) -> str:
+    return ExtensionManifest(
+        name=faker.name(),
+        id=faker.uuid4(),
+        version="0.0.0",
+        url="/",
+    ).model_dump_json()
 
 
 @pytest_asyncio.fixture
@@ -55,18 +81,15 @@ class TestExtensionManifest:
             url="/",
             icon_url="/icon.svg",
         )
-        mock_client = Mock(spec=AsyncClient)
-        mock_client.get = AsyncMock(
-            return_value=Response(
-                status_code=200,
-                text=mock_manifest.model_dump_json(),
-            )
+        mock_transport = MockTransport(
+            lambda request: Response(200, text=mock_manifest.model_dump_json())
         )
 
-        fetched_manifest = await ExtensionManifest.fetch_from(
-            client=mock_client,
-            manifest_url=HttpUrl("http://localhost:1234/extension.magritte.json"),
-        )
+        async with AsyncClient(transport=mock_transport) as mock_client:
+            fetched_manifest = await ExtensionManifest.fetch_from(
+                client=mock_client,
+                manifest_url=HttpUrl(MANIFEST_URL),
+            )
         assert fetched_manifest.url == "http://localhost:1234/"
         assert fetched_manifest.icon_url == "http://localhost:1234/icon.svg"
 
@@ -83,20 +106,147 @@ class TestExtensionManifest:
             url="http://localhost:4321/",
             icon_url="http://localhost:4321/icon.svg",
         )
-        mock_client = Mock(spec=AsyncClient)
-        mock_client.get = AsyncMock(
-            return_value=Response(
-                status_code=200,
-                text=mock_manifest.model_dump_json(),
-            )
+        mock_transport = MockTransport(
+            lambda request: Response(200, text=mock_manifest.model_dump_json())
         )
 
-        fetched_manifest = await ExtensionManifest.fetch_from(
-            client=mock_client,
-            manifest_url=HttpUrl("http://localhost:1234/extension.magritte.json"),
-        )
+        async with AsyncClient(transport=mock_transport) as mock_client:
+            fetched_manifest = await ExtensionManifest.fetch_from(
+                client=mock_client,
+                manifest_url=HttpUrl(MANIFEST_URL),
+            )
         assert fetched_manifest.url == "http://localhost:4321/"
         assert fetched_manifest.icon_url == "http://localhost:4321/icon.svg"
+
+
+async def streamed_oversized_body():
+    for _ in range(4):
+        yield b"x" * 8
+
+
+async def slow_body():
+    yield b"{"
+    await asyncio.sleep(60)
+    yield b"}"
+
+
+class TestImportExtension:
+    def test_import(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        faker: Faker,
+    ):
+        session = admin_auth.sign_in()
+        manifest_json = mock_manifest_json(faker)
+
+        with serve_manifest(lambda request: Response(200, text=manifest_json)):
+            response = client.post(
+                "/extensions/available/import",
+                json={"manifest_url": MANIFEST_URL},
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+        assert response.status_code == 200
+        assert response.json().get("message") == "Extension imported successfully"
+
+    @pytest.mark.parametrize(
+        "manifest_url",
+        [
+            "http://localhost:1234/manifest.json",
+            "http://localhost:1234/extension.magritte.json/other",
+        ],
+    )
+    def test_rejects_invalid_manifest_urls(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        faker: Faker,
+        manifest_url: str,
+    ):
+        session = admin_auth.sign_in()
+        manifest_json = mock_manifest_json(faker)
+
+        with serve_manifest(lambda request: Response(200, text=manifest_json)):
+            response = client.post(
+                "/extensions/available/import",
+                json={"manifest_url": manifest_url},
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+        assert response.status_code == 400
+        assert response.json().get("detail") == "Invalid manifest URL"
+
+    def test_rejects_already_imported_extensions(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        faker: Faker,
+    ):
+        session = admin_auth.sign_in()
+        manifest_json = mock_manifest_json(faker)
+
+        with serve_manifest(lambda request: Response(200, text=manifest_json)):
+            response_1 = client.post(
+                "/extensions/available/import",
+                json={"manifest_url": MANIFEST_URL},
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+            assert response_1.status_code == 200
+
+            response_2 = client.post(
+                "/extensions/available/import",
+                json={"manifest_url": MANIFEST_URL},
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+        assert response_2.status_code == 409
+        assert response_2.json().get("detail") == "Extension already imported"
+
+    @pytest.mark.parametrize(
+        "make_body",
+        [
+            pytest.param(lambda: b"x" * 32, id="content-length"),
+            pytest.param(streamed_oversized_body, id="streamed"),
+        ],
+    )
+    def test_rejects_too_large_manifests(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        monkeypatch: pytest.MonkeyPatch,
+        make_body: Callable[[], bytes | AsyncIterable[bytes]],
+    ):
+        monkeypatch.setattr("magritte.schemas.extension._MANIFEST_MAX_BYTES", 16)
+        session = admin_auth.sign_in()
+
+        with serve_manifest(lambda request: Response(200, content=make_body())):
+            response = client.post(
+                "/extensions/available/import",
+                json={"manifest_url": MANIFEST_URL},
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+        assert response.status_code == 413
+        assert response.json().get("detail") == "Manifest exceeds size limit"
+
+    def test_applies_timeout_to_manifest_fetch(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        # asyncio's event loop clock can't be usefully frozen, so shrink the
+        # timeout instead of fast-forwarding time
+        monkeypatch.setattr(
+            "magritte.schemas.extension._MANIFEST_FETCH_TIMEOUT_SECONDS", 0.1
+        )
+        session = admin_auth.sign_in()
+
+        with serve_manifest(lambda request: Response(200, content=slow_body())):
+            response = client.post(
+                "/extensions/available/import",
+                json={"manifest_url": MANIFEST_URL},
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+        assert response.status_code == 504
+        assert response.json().get("detail") == "Manifest fetch timed out"
 
 
 class TestDeleteExtension:

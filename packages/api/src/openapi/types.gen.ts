@@ -258,6 +258,7 @@ export type ExtensionCommand = {
      * Whether the command should be highlighted when it becomes available
      */
     highlightAvailability?: boolean
+    [key: string]: unknown
 }
 
 /**
@@ -327,7 +328,7 @@ export type ExtensionManifest = {
      *
      * An optional array of permissions required by the extension
      */
-    permissions?: Array<ExtensionPermissions> | null
+    permissions?: Array<ExtensionPermissions | string> | null
     /**
      * Sourceschemes
      *
@@ -344,6 +345,7 @@ export type ExtensionManifest = {
      * An optional search command supported by the extension
      */
     searchCommand?: ExtensionSearchCommand | null
+    [key: string]: unknown
 }
 
 /**
@@ -382,6 +384,7 @@ export type ExtensionSearchCommand = {
      * The kinds of the inputs the search command requires to execute
      */
     requiredInputKinds: Array<string>
+    [key: string]: unknown
 }
 
 /**

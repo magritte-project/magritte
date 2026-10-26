@@ -1,60 +1,12 @@
-import type { ExtensionPermissions } from "@magritte/api"
-
-interface Info {
-    readonly name: string
-    readonly description: string
-}
-
-const info: Readonly<Record<ExtensionPermissions, Info>> = {
-    "run:background": {
-        name: "Runs In Background",
-        description: "The extension may run in the background, even when not in use.",
-    },
-    "run:eager": {
-        name: "Runs At Start Up",
-        description: "The extension will run when Magritte starts up.",
-    },
-    "commands:input:read": {
-        name: "Reads On Screen Context",
-        description: "The extension can read information about what's on screen in Magritte.",
-    },
-    "commands:input:add": {
-        name: "Adds To On Screen Context",
-        description: "The extension can add information about what's on screen in Magritte.",
-    },
-    "commands:query": {
-        name: "Queries Commands",
-        description: "The extension can query what commands are available.",
-    },
-    "commands:run": {
-        name: "Runs Commands",
-        description: "The extension can run commands.",
-    },
-    "libraries:read": {
-        name: "Reads Library Data",
-        description: "The extension can read any library data you have access to.",
-    },
-    "libraries:write": {
-        name: "Writes Library Data",
-        description: "The extension can write to libraries you have access to.",
-    },
-    "playback:read": {
-        name: "Reads Playback Data",
-        description: "The extension can read and monitor playback data.",
-    },
-    "playback:control": {
-        name: "Controls Playback",
-        description: "The extension can control playback.",
-    },
-}
+import { getExtensionPermissionInfo } from "@/extensions/permissions"
 
 export interface PermissionInfoProps {
-    readonly permission: ExtensionPermissions
+    readonly permission: string
     readonly compact?: boolean
 }
 
 export default function PermissionInfo({ permission, compact = false }: PermissionInfoProps) {
-    const { name, description } = info[permission]
+    const { name, description } = getExtensionPermissionInfo(permission)
     return compact ? (
         <div className="text-xs px-md py-1 bg-secondary rounded-lg" title={description}>
             {name}

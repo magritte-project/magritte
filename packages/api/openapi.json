@@ -2882,6 +2882,7 @@
                         "default": false
                     }
                 },
+                "additionalProperties": true,
                 "type": "object",
                 "required": ["id", "searchTerms", "requiredInputKinds"],
                 "title": "ExtensionCommand"
@@ -2948,7 +2949,12 @@
                     "permissions": {
                         "anyOf": [
                             {
-                                "items": { "$ref": "#/components/schemas/ExtensionPermissions" },
+                                "items": {
+                                    "anyOf": [
+                                        { "$ref": "#/components/schemas/ExtensionPermissions" },
+                                        { "type": "string" }
+                                    ]
+                                },
                                 "type": "array"
                             },
                             { "type": "null" }
@@ -2983,6 +2989,7 @@
                         "description": "An optional search command supported by the extension"
                     }
                 },
+                "additionalProperties": true,
                 "type": "object",
                 "required": ["name", "id", "version", "url"],
                 "title": "ExtensionManifest"
@@ -3021,6 +3028,7 @@
                         "description": "The kinds of the inputs the search command requires to execute"
                     }
                 },
+                "additionalProperties": true,
                 "type": "object",
                 "required": ["requiredInputKinds"],
                 "title": "ExtensionSearchCommand"

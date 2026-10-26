@@ -1,12 +1,19 @@
+import asyncio
 from enum import Enum
 from typing import Annotated
 from urllib.parse import urljoin
 
 from fastapi import HTTPException, status
-from httpx2 import AsyncClient
-from pydantic import BaseModel, Field, HttpUrl
+from httpx2 import AsyncClient, TimeoutException
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 from magritte.schemas.base import URL_MAX_LENGTH
+
+_MANIFEST_MAX_BYTES: int = 1024 * 500
+"""The maximum size an extension manifest is permitted to be."""
+
+_MANIFEST_FETCH_TIMEOUT_SECONDS: float = 10
+"""How long to wait before aborting a fetch manifest."""
 
 
 class ExtensionPermissions(Enum):
@@ -45,6 +52,8 @@ class ExtensionCommand(BaseModel):
         ),
     ] = False
 
+    model_config = ConfigDict(extra="allow")
+
 
 class ExtensionSearchCommand(BaseModel):
     required_input_kinds: Annotated[
@@ -54,6 +63,8 @@ class ExtensionSearchCommand(BaseModel):
             description="The kinds of the inputs the search command requires to execute",
         ),
     ]
+
+    model_config = ConfigDict(extra="allow")
 
 
 class ExtensionManifest(BaseModel):
@@ -99,7 +110,7 @@ class ExtensionManifest(BaseModel):
         ),
     ] = None
     permissions: Annotated[
-        list[ExtensionPermissions] | None,
+        list[ExtensionPermissions | str] | None,
         Field(description="An optional array of permissions required by the extension"),
     ] = None
     source_schemes: Annotated[
@@ -123,6 +134,8 @@ class ExtensionManifest(BaseModel):
         ),
     ] = None
 
+    model_config = ConfigDict(extra="allow")
+
     def resolve_relative_urls(self, manifest_url: HttpUrl):
         """Resolve any relative URLs in the manifest against the manifest URL"""
         self.url = urljoin(str(manifest_url), self.url)
@@ -131,19 +144,48 @@ class ExtensionManifest(BaseModel):
 
     @classmethod
     async def fetch_from(cls, client: AsyncClient, manifest_url: HttpUrl):
-        response = await client.get(
-            str(manifest_url),
-            headers={"Accept": "application/json"},
-            follow_redirects=True,
-        )
+        try:
+            async with (
+                asyncio.timeout(_MANIFEST_FETCH_TIMEOUT_SECONDS),
+                client.stream(
+                    "GET",
+                    str(manifest_url),
+                    headers={"Accept": "application/json"},
+                    follow_redirects=True,
+                ) as response,
+            ):
+                if response.status_code != status.HTTP_200_OK:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Manifest could not be fetched",
+                    )
 
-        if response.status_code != status.HTTP_200_OK:
+                content_length = response.headers.get("Content-Length", "")
+                if (
+                    content_length.isdigit()
+                    and int(content_length) > _MANIFEST_MAX_BYTES
+                ):
+                    raise HTTPException(
+                        status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+                        detail="Manifest exceeds size limit",
+                    )
+
+                body = bytearray()
+                async for chunk in response.aiter_bytes():
+                    body.extend(chunk)
+                    if len(body) > _MANIFEST_MAX_BYTES:
+                        raise HTTPException(
+                            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+                            detail="Manifest exceeds size limit",
+                        )
+        except (TimeoutError, TimeoutException) as e:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Manifest could not be fetched",
-            )
+                status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+                detail="Manifest fetch timed out",
+            ) from e
 
-        manifest = cls.model_validate_json(response.text)
+        response_text = body.decode(response.encoding or "utf-8")
+        manifest = cls.model_validate_json(response_text)
         manifest.resolve_relative_urls(manifest_url)
         return manifest
 
