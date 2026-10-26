@@ -1,7 +1,7 @@
 [project]
-name = "magritte"
+name = "magritte-project"
 version = "0.1.0"
-description = "The API server of Magritte"
+description = "A personal music platform"
 readme = "README.md"
 license = "GPL-3.0-only"
 requires-python = ">=3.13"
@@ -27,7 +27,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://magritte-project.github.io/"
-Repository = "https://github.com/magritte-project"
+Repository = "https://github.com/magritte-project/magritte"
 
 [project.optional-dependencies]
 desktop = [
