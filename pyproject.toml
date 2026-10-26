@@ -34,6 +34,9 @@ dependencies = [
 Homepage = "https://magritte-project.github.io/"
 Repository = "https://github.com/magritte-project/magritte"
 
+[project.scripts]
+magritte = "magritte.__main__:main"
+
 [project.optional-dependencies]
 desktop = [
     "keyring>=25.7.0",

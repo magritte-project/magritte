@@ -142,7 +142,7 @@ async def reset(args: Namespace):
     print(f"Removed all instance data from {data_home_path}")
 
 
-if __name__ == "__main__":
+def main():
     parser = ArgumentParser(
         prog="magritte",
         description="Run and manage a Magritte instance",
@@ -236,3 +236,7 @@ if __name__ == "__main__":
             print_tb(e.__traceback__)
         print(f"*** Error: {e}", file=sys.stderr)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

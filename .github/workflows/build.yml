@@ -61,16 +61,16 @@ jobs:
               run: |
                   uv venv -p 3.13 "$RUNNER_TEMP/venv"
                   uv pip install --python "$RUNNER_TEMP/venv" dist/*.whl
-                  python="$RUNNER_TEMP/venv/bin/python"
+                  magritte="$RUNNER_TEMP/venv/bin/magritte"
 
                   mkdir "$RUNNER_TEMP/smoke" && cd "$RUNNER_TEMP/smoke"
-                  "$python" -m magritte generate-secrets > .env
+                  "$magritte" generate-secrets > .env
                   echo "ENV=prod" >> .env
                   echo "DATA_HOME=$RUNNER_TEMP/smoke/data" >> .env
                   echo "MUSIC_HOME=$RUNNER_TEMP/smoke/music" >> .env
                   mkdir music
 
-                  "$python" -m magritte run > server.log 2>&1 &
+                  "$magritte" run > server.log 2>&1 &
                   for _ in $(seq 1 30); do
                     curl -sf -o /dev/null http://localhost:8090/api/openapi.json && break
                     sleep 1
