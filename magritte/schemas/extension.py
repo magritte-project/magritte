@@ -1,6 +1,6 @@
 import asyncio
 from enum import Enum
-from typing import Annotated
+from typing import Annotated, Self
 from urllib.parse import urljoin
 
 from fastapi import HTTPException, status
@@ -143,7 +143,7 @@ class ExtensionManifest(BaseModel):
             self.icon_url = urljoin(str(manifest_url), self.icon_url)
 
     @classmethod
-    async def fetch_from(cls, client: AsyncClient, manifest_url: HttpUrl):
+    async def fetch_from(cls, client: AsyncClient, manifest_url: HttpUrl) -> Self:
         try:
             async with (
                 asyncio.timeout(_MANIFEST_FETCH_TIMEOUT_SECONDS),

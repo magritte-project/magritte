@@ -98,10 +98,13 @@ async def update_extension(
             http_client, HttpUrl(extension.manifest_url)
         )
 
-    extension.manifest = manifest.model_dump(
-        mode="json",
-        by_alias=True,
-    )
+    if manifest.id != extension.manifest_id:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Manifest no longer matches extension",
+        )
+
+    extension.update_from(manifest)
     await session.flush()
 
     if affected_user_ids := {user.id for user in await extension.awaitable_attrs.users}:

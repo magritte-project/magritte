@@ -67,3 +67,10 @@ class Extension(LibraryModel, table=True):
         )
         session.add(new_extension)
         await session.flush()
+
+    def update_from(self, manifest: ExtensionManifest):
+        self.manifest_name = manifest.name
+        self.manifest = manifest.model_dump(
+            mode="json",
+            by_alias=True,
+        )

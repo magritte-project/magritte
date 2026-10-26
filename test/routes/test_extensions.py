@@ -37,10 +37,10 @@ def serve_manifest(handler: Callable[[Request], Response]):
         yield
 
 
-def mock_manifest_json(faker: Faker) -> str:
+def mock_manifest_json(faker: Faker, manifest_id: str | None = None) -> str:
     return ExtensionManifest(
         name=faker.name(),
-        id=faker.uuid4(),
+        id=manifest_id or faker.uuid4(),
         version="0.0.0",
         url="/",
     ).model_dump_json()
@@ -72,6 +72,15 @@ async def throwaway_extension(
     await db_session.commit()
 
     return throwaway_extension_id
+
+
+@pytest_asyncio.fixture
+async def throwaway_extension_manifest_id(
+    throwaway_extension: int,
+    db_session: AsyncSession,
+) -> str:
+    extension = await db_session.get_one(Extension, throwaway_extension)
+    return extension.manifest_id
 
 
 class TestExtensionManifest:
@@ -257,18 +266,20 @@ class TestImportExtension:
 
 
 class TestUpdateExtension:
-    def test_update(
+    @pytest.mark.asyncio
+    async def test_update(
         self,
         client: TestClient,
         admin_auth: AuthFixture,
         throwaway_extension: int,
+        throwaway_extension_manifest_id: str,
         faker: Faker,
     ):
         session = admin_auth.sign_in()
         updated_name = faker.name()
         updated_manifest_json = ExtensionManifest(
             name=updated_name,
-            id=faker.uuid4(),
+            id=throwaway_extension_manifest_id,
             version="1.0.0",
             url="/",
         ).model_dump_json()
@@ -293,12 +304,18 @@ class TestUpdateExtension:
         assert updated_extension["manifest"]["name"] == updated_name
         assert updated_extension["manifest"]["version"] == "1.0.0"
 
-    def test_notifies_users_with_extension_installed(
+        async with admin_auth.db_session() as db_session:
+            extension = await db_session.get_one(Extension, throwaway_extension)
+            assert extension.manifest_name == updated_name
+
+    @pytest.mark.asyncio
+    async def test_notifies_users_with_extension_installed(
         self,
         client: TestClient,
         admin_auth: AuthFixture,
         standard_auth: AuthFixture,
         throwaway_extension: int,
+        throwaway_extension_manifest_id: str,
         faker: Faker,
     ):
         standard_session = standard_auth.sign_in()
@@ -310,7 +327,7 @@ class TestUpdateExtension:
 
         mock_user_events = AsyncMock(spec=UserEvents)
         admin_session = admin_auth.sign_in()
-        manifest_json = mock_manifest_json(faker)
+        manifest_json = mock_manifest_json(faker, throwaway_extension_manifest_id)
 
         with (
             override_dependency(get_user_events, lambda: mock_user_events),
@@ -323,7 +340,7 @@ class TestUpdateExtension:
         assert response.status_code == 200
 
         mock_user_events.notify.assert_awaited_once_with(
-            {asyncio.run(standard_auth.user_id)},
+            {await standard_auth.user_id},
             UserEvent(
                 event_type=UserEventType.EXTENSIONS_CHANGED,
                 ids=[throwaway_extension],
@@ -335,11 +352,12 @@ class TestUpdateExtension:
         client: TestClient,
         admin_auth: AuthFixture,
         throwaway_extension: int,
+        throwaway_extension_manifest_id: str,
         faker: Faker,
     ):
         mock_user_events = AsyncMock(spec=UserEvents)
         session = admin_auth.sign_in()
-        manifest_json = mock_manifest_json(faker)
+        manifest_json = mock_manifest_json(faker, throwaway_extension_manifest_id)
 
         with (
             override_dependency(get_user_events, lambda: mock_user_events),
@@ -352,6 +370,35 @@ class TestUpdateExtension:
         assert response.status_code == 200
 
         mock_user_events.notify.assert_not_awaited()
+
+    def test_rejects_manifest_with_different_id(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        throwaway_extension: int,
+        faker: Faker,
+    ):
+        session = admin_auth.sign_in()
+        manifest_json = mock_manifest_json(faker)
+
+        read_before = client.get(
+            "/extensions/available",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+
+        with serve_manifest(lambda request: Response(200, text=manifest_json)):
+            response = client.post(
+                f"/extensions/available/{throwaway_extension}/update",
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+        assert response.status_code == 409
+        assert response.json().get("detail") == "Manifest no longer matches extension"
+
+        read_after = client.get(
+            "/extensions/available",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert read_after.json() == read_before.json()
 
     def test_keeps_existing_manifest_when_fetch_fails(
         self,
