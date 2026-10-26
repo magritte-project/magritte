@@ -13,8 +13,20 @@ from pydantic import BaseModel, ConfigDict, Field
 
 logger = logging.getLogger(__name__)
 
-_dotenv_path = Path(".env").resolve()
-load_dotenv(_dotenv_path)
+
+# First, resolve env vars from any .env in $PWD
+_pwd_dotenv_path = Path(".env").resolve()
+load_dotenv(_pwd_dotenv_path)
+
+# Second, read or default $DATA_HOME
+_data_home = os.environ.setdefault(
+    "DATA_HOME", str(pathlib.Path.home().joinpath(".magritte"))
+)
+
+# Third, resolve env vars from any env in $DATA_HOME
+_data_home_env_path = pathlib.Path(_data_home) / "env"
+if _data_home_env_path.exists():
+    load_dotenv(_data_home_env_path, override=True)
 
 
 class Config(BaseModel):
@@ -31,7 +43,6 @@ class Config(BaseModel):
     )
 
     data_home: str = Field(
-        default=str(pathlib.Path.home().joinpath(".magritte")),
         alias="DATA_HOME",
         description="Where the instance stores its data. Defaults to $HOME/.magritte",
     )
@@ -170,7 +181,7 @@ class Config(BaseModel):
                 assert_never(self.env)
 
     @classmethod
-    def from_dot_env(cls) -> Self:
+    def from_env(cls) -> Self:
         return cls.model_validate(os.environ)
 
     model_config = ConfigDict(
@@ -179,7 +190,7 @@ class Config(BaseModel):
     )
 
 
-config = Config.from_dot_env()
+config = Config.from_env()
 if not config.data_home_path.exists():
     config.data_home_path.mkdir(parents=True)
     logging.debug(f"Created data home directory at {config.data_home_path}")
