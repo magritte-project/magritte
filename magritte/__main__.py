@@ -61,6 +61,7 @@ async def import_extension(args: Namespace):
 
     from fastapi import HTTPException, status
     from pydantic import FileUrl, HttpUrl
+    from sqlmodel import col, select
 
     from magritte.db import get_db_engine, get_db_session
     from magritte.model import Extension
@@ -76,9 +77,16 @@ async def import_extension(args: Namespace):
     engine = await get_db_engine()
     async for session in get_db_session(engine):
         try:
-            await Extension.import_from(
-                FileUrl(manifest_path.as_uri()), manifest, session
-            )
+            if existing := await session.scalar(
+                select(Extension).where(
+                    col(Extension.manifest_id) == manifest.id,
+                )
+            ):
+                existing.update_from(manifest)
+            else:
+                await Extension.import_from(
+                    FileUrl(manifest_path.as_uri()), manifest, session
+                )
         except HTTPException as e:
             if e.status_code == status.HTTP_409_CONFLICT:
                 print("*** Extension already imported", file=sys.stderr)
