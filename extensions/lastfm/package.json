@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "@magritte/api": "workspace:*",
+        "@magritte/fonts": "workspace:*",
         "@magritte/rpc": "workspace:*",
         "@magritte/sdk": "workspace:*",
         "@phosphor-icons/react": "catalog:",
