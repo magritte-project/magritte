@@ -32,6 +32,7 @@
         "@dnd-kit/utilities": "3.2.2",
         "@headlessui/react": "catalog:",
         "@magritte/api": "workspace:*",
+        "@magritte/fonts": "workspace:*",
         "@magritte/rpc": "workspace:*",
         "@magritte/sdk": "workspace:*",
         "@phosphor-icons/react": "catalog:",

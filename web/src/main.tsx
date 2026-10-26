@@ -26,6 +26,7 @@ import { PlaybackEventRecorder } from "@/playback/playbackEventRecorder"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
 
+import "@magritte/fonts"
 import "@/styles.css"
 
 // NOTE: Must come after @/styles.css import

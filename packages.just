@@ -8,7 +8,7 @@ format:
     pnpm --filter "./packages/*" run format
 
 check-types:
-    pnpm --filter "./packages/*" exec tsc --noEmit
+    pnpm --filter "./packages/*" --filter "!@magritte/fonts" exec tsc --noEmit
 
 generate-openapi:
     pnpm --filter "./packages/*" run generate-openapi

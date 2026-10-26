@@ -1,0 +1,52 @@
+{
+    "name": "@magritte/fonts",
+    "version": "0.1.0",
+    "description": "Fonts shared by the Magritte front end and extensions",
+    "keywords": [
+        "extensions",
+        "fonts",
+        "magritte"
+    ],
+    "license": "(OFL-1.1 AND Bitstream-Vera)",
+    "author": {
+        "name": "P. Kevin Contreras",
+        "email": "magritte@swampmonkeyco.com",
+        "url": "https://magritte-project.github.io/"
+    },
+    "funding": {
+        "type": "individual",
+        "url": "https://github.com/sponsors/decarbonization"
+    },
+    "files": [
+        "index.css",
+        "index.d.ts",
+        "BitstreamVeraSans",
+        "BitstreamVeraSansMono",
+        "BitstreamVeraSerif",
+        "Comfortaa",
+        "FiraGO",
+        "FiraMono",
+        "IBMPlexSans",
+        "Inter",
+        "*.txt",
+        "*.TXT"
+    ],
+    "sideEffects": [
+        "*.css"
+    ],
+    "exports": {
+        ".": {
+            "types": "./index.d.ts",
+            "default": "./index.css"
+        },
+        "./bitstream-vera-sans.css": "./BitstreamVeraSans/BitstreamVeraSans.css",
+        "./bitstream-vera-sans-mono.css": "./BitstreamVeraSansMono/BitstreamVeraSansMono.css",
+        "./bitstream-vera-serif.css": "./BitstreamVeraSerif/BitstreamVeraSerif.css",
+        "./comfortaa.css": "./Comfortaa/Comfortaa.css",
+        "./fira-go.css": "./FiraGO/FiraGO.css",
+        "./fira-mono.css": "./FiraMono/FiraMono.css",
+        "./ibm-plex-sans.css": "./IBMPlexSans/IBMPlexSans.css",
+        "./inter.css": "./Inter/Inter.css"
+    },
+    "packageManager": "pnpm@12.8.1"
+}
