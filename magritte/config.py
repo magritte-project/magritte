@@ -54,6 +54,20 @@ class Config(BaseModel):
         description="The maximum size of a file that can be uploaded to this instance",
     )
 
+    host: str = Field(
+        default="0.0.0.0",
+        alias="HOST",
+        description="The interface the server listens on. Defaults to 0.0.0.0",
+    )
+
+    port: int = Field(
+        default=8090,
+        ge=1,
+        le=65535,
+        alias="PORT",
+        description="The port the server listens on. Defaults to 8090",
+    )
+
     custom_web_url: str | None = Field(
         default=None,
         alias="WEB_URL",
@@ -105,7 +119,7 @@ class Config(BaseModel):
             return self.custom_web_url
         else:
             if self.env == "prod":
-                return "http://localhost:8090"
+                return f"http://localhost:{self.port}"
             else:
                 return "http://localhost:6479"
 

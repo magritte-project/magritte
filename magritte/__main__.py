@@ -13,6 +13,7 @@ def run_main(args: Namespace):
     from fastapi import FastAPI
 
     from magritte import app, app_lifespan
+    from magritte.config import config
     from magritte.utilities.spa import SPAStaticFiles
 
     static_directory = Path(__file__).parent / "static"
@@ -30,7 +31,7 @@ def run_main(args: Namespace):
         name="static-files",
     )
 
-    uvicorn.run(super_app, host="0.0.0.0", port=8090)
+    uvicorn.run(super_app, host=config.host, port=config.port)
 
 
 def dump_openapi_main(args: Namespace):
