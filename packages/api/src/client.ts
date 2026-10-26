@@ -51,6 +51,7 @@ import {
     streamUserEventsPreflightUsersEventsPreflightPost,
     uninstallExtensionExtensionsInstalledExtensionIdDelete,
     updateArtworkArtworksArtworkIdPatch,
+    updateExtensionExtensionsAvailableExtensionIdUpdatePost,
     updateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatch,
     updateLibraryArtistLibrariesLibraryIdArtistsArtistIdPatch,
     updateLibraryLibrariesLibraryIdPatch,
@@ -618,6 +619,13 @@ export class APIClient {
 
     async importExtension(body: ExtensionImportAdmin): Promise<OperationResult> {
         return await importExtensionExtensionsAvailableImportPost({ ...this.options, body })
+    }
+
+    async updateExtension(extension_id: number): Promise<OperationResult> {
+        return await updateExtensionExtensionsAvailableExtensionIdUpdatePost({
+            ...this.options,
+            path: { extension_id },
+        })
     }
 
     async deleteExtension(extension_id: number): Promise<OperationResult> {

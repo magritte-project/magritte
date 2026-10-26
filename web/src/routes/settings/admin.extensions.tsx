@@ -1,12 +1,12 @@
 import { getErrorMessage } from "@magritte/rpc"
-import { ArrowSquareInIcon } from "@phosphor-icons/react"
+import { ArrowSquareInIcon, ClockClockwiseIcon } from "@phosphor-icons/react"
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { useCallback, useMemo } from "react"
 import { z } from "zod"
 
-import { useDeleteExtension } from "@/api/mutations/extensions"
+import { useDeleteExtension, useUpdateExtension } from "@/api/mutations/extensions"
 import { readAvailableExtensions } from "@/api/queries/extensions"
 import ModalHeader from "@/components/chrome/ModalHeader"
 import ExtensionIcon from "@/components/extensions/ExtensionIcon"
@@ -59,6 +59,25 @@ export const Route = createFileRoute("/settings/admin/extensions")({
                 ),
             [availableExtensions, presentedExtensionId],
         )
+
+        const updateMutation = useUpdateExtension()
+        const handleUpdateClick = useCallback(async () => {
+            if (presentedExtensionId === undefined) {
+                return
+            }
+            try {
+                await updateMutation.mutateAsync(presentedExtensionId)
+                notificationCenter.showToast({
+                    message: "Extension updated successfully",
+                    type: "info",
+                })
+            } catch (error) {
+                notificationCenter.showToast({
+                    message: `Could not Update extension: ${getErrorMessage(error)}`,
+                    type: "error",
+                })
+            }
+        }, [updateMutation, presentedExtensionId, notificationCenter])
 
         const deleteMutation = useDeleteExtension()
         const handleDeleteClick = useCallback(async () => {
@@ -144,13 +163,22 @@ export const Route = createFileRoute("/settings/admin/extensions")({
                 >
                     <ModalHeader
                         supplementaryEnd={
-                            <ThemedSubtleButton
-                                buttonComponent={AsyncButton}
-                                onClick={handleDeleteClick}
-                                title="Delete"
-                            >
-                                <TrashIcon />
-                            </ThemedSubtleButton>
+                            <>
+                                <ThemedSubtleButton
+                                    buttonComponent={AsyncButton}
+                                    onClick={handleUpdateClick}
+                                    title="Update"
+                                >
+                                    <ClockClockwiseIcon />
+                                </ThemedSubtleButton>
+                                <ThemedSubtleButton
+                                    buttonComponent={AsyncButton}
+                                    onClick={handleDeleteClick}
+                                    title="Delete"
+                                >
+                                    <TrashIcon />
+                                </ThemedSubtleButton>
+                            </>
                         }
                     >
                         About Extension

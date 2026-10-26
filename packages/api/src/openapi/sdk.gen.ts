@@ -170,6 +170,9 @@ import type {
     UpdateArtworkArtworksArtworkIdPatchData,
     UpdateArtworkArtworksArtworkIdPatchErrors,
     UpdateArtworkArtworksArtworkIdPatchResponses,
+    UpdateExtensionExtensionsAvailableExtensionIdUpdatePostData,
+    UpdateExtensionExtensionsAvailableExtensionIdUpdatePostErrors,
+    UpdateExtensionExtensionsAvailableExtensionIdUpdatePostResponses,
     UpdateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatchData,
     UpdateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatchErrors,
     UpdateLibraryAlbumLibrariesLibraryIdAlbumsAlbumIdPatchResponses,
@@ -480,6 +483,31 @@ export const importExtensionExtensionsAvailableImportPost = <ThrowOnError extend
             "Content-Type": "application/json",
             ...options.headers,
         },
+    })
+
+/**
+ * Update an extension for all users
+ */
+export const updateExtensionExtensionsAvailableExtensionIdUpdatePost = <
+    ThrowOnError extends boolean = false,
+>(
+    options: Options<UpdateExtensionExtensionsAvailableExtensionIdUpdatePostData, ThrowOnError>,
+): RequestResult<
+    UpdateExtensionExtensionsAvailableExtensionIdUpdatePostResponses,
+    UpdateExtensionExtensionsAvailableExtensionIdUpdatePostErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).post<
+        UpdateExtensionExtensionsAvailableExtensionIdUpdatePostResponses,
+        UpdateExtensionExtensionsAvailableExtensionIdUpdatePostErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/extensions/available/{extension_id}/update",
+        ...options,
     })
 
 /**

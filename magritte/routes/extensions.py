@@ -2,6 +2,7 @@ from typing import Annotated
 
 import httpx2
 from fastapi import APIRouter, Depends, HTTPException, Query, Security
+from pydantic import HttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
 from starlette import status
@@ -19,6 +20,7 @@ from magritte.schemas.extension import (
     ExtensionRead,
 )
 from magritte.schemas.library import LibraryMediaRead
+from magritte.utilities.db import suspend_db_session
 from magritte.utilities.http import get_http_client
 from magritte.utilities.user_events import (
     UserEvent,
@@ -59,14 +61,58 @@ async def import_extension(
             detail="Extension already imported",
         )
 
-    manifest = await ExtensionManifest.fetch_from(
-        http_client, import_extension.manifest_url
-    )
+    async with suspend_db_session(session):
+        manifest = await ExtensionManifest.fetch_from(
+            http_client, import_extension.manifest_url
+        )
 
     await Extension.import_from(import_extension.manifest_url, manifest, session)
 
     return OperationResult(
         message="Extension imported successfully",
+        row_count=1,
+    )
+
+
+@router.post(
+    "/available/{extension_id}/update",
+    response_model=OperationResult,
+    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.ADMIN])],
+    summary="Update an extension for all users",
+)
+async def update_extension(
+    extension_id: int,
+    background_tasks: BackgroundTasks,
+    session: Annotated[AsyncSession, Depends(get_db_session, scope="function")],
+    user_events: Annotated[UserEvents, Depends(get_user_events)],
+    http_client: Annotated[httpx2.AsyncClient, Depends(get_http_client)],
+):
+    extension = await Extension.get_one_or_none(extension_id, session)
+    if not extension:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Extension not found"
+        )
+
+    async with suspend_db_session(session, refresh_after=[extension]):
+        manifest = await ExtensionManifest.fetch_from(
+            http_client, HttpUrl(extension.manifest_url)
+        )
+
+    extension.manifest = manifest.model_dump(
+        mode="json",
+        by_alias=True,
+    )
+    await session.flush()
+
+    if affected_user_ids := {user.id for user in await extension.awaitable_attrs.users}:
+        background_tasks.add_task(
+            user_events.notify,
+            affected_user_ids,
+            UserEvent(event_type=UserEventType.EXTENSIONS_CHANGED, ids=[extension_id]),
+        )
+
+    return OperationResult(
+        message="Extension updated successfully",
         row_count=1,
     )
 

@@ -54,7 +54,7 @@ async def try_ingest_artwork(
     image: tinytag.Image,
     kind: ArtworkKind,
     session: AsyncSession,
-):
+) -> Artwork:
     image_hash = Artwork.create_image_hash(image.data)
 
     existing_artwork = await session.scalar(

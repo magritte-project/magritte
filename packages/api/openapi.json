@@ -355,6 +355,39 @@
                 "security": [{ "OAuth2PasswordBearer": ["admin"] }]
             }
         },
+        "/extensions/available/{extension_id}/update": {
+            "post": {
+                "summary": "Update an extension for all users",
+                "operationId": "update_extension_extensions_available__extension_id__update_post",
+                "security": [{ "OAuth2PasswordBearer": ["admin"] }],
+                "parameters": [
+                    {
+                        "name": "extension_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Extension Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/OperationResult" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/extensions/available/{extension_id}": {
             "delete": {
                 "summary": "Remove an extension for all users",

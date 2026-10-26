@@ -95,7 +95,7 @@ class LibraryModel(SQLModel, AsyncAttrs):
         cls,
         id: int | None,
         session: AsyncSession,
-    ):
+    ) -> Self | None:
         """
         Read the model with the given ID, if any.
 
@@ -222,7 +222,7 @@ class LibraryModel(SQLModel, AsyncAttrs):
                 raise e
 
     @classmethod
-    def combine(cls, lhs: Iterable[Self], rhs: Iterable[Self]):
+    def combine(cls, lhs: Iterable[Self], rhs: Iterable[Self]) -> list[Self]:
         """
         Merge a pair of iterables containing this model
         into a list containing only unique items.

@@ -19,6 +19,26 @@ export function useImportExtension() {
     })
 }
 
+export function useUpdateExtension() {
+    const { client } = useAPI()
+    const queryClient = useQueryClient()
+    const extensionRuntime = useExtensionRuntime()
+    return useMutation({
+        mutationFn: (extensionID: number) => client.updateExtension(extensionID),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: availableExtensions(),
+                exact: false,
+            })
+            await queryClient.invalidateQueries({
+                queryKey: installedExtensions(),
+                exact: false,
+            })
+            await extensionRuntime.sync()
+        },
+    })
+}
+
 export function useDeleteExtension() {
     const { client } = useAPI()
     const queryClient = useQueryClient()

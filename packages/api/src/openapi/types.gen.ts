@@ -1891,6 +1891,38 @@ export type ImportExtensionExtensionsAvailableImportPostResponses = {
 export type ImportExtensionExtensionsAvailableImportPostResponse =
     ImportExtensionExtensionsAvailableImportPostResponses[keyof ImportExtensionExtensionsAvailableImportPostResponses]
 
+export type UpdateExtensionExtensionsAvailableExtensionIdUpdatePostData = {
+    body?: never
+    path: {
+        /**
+         * Extension Id
+         */
+        extension_id: number
+    }
+    query?: never
+    url: "/extensions/available/{extension_id}/update"
+}
+
+export type UpdateExtensionExtensionsAvailableExtensionIdUpdatePostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type UpdateExtensionExtensionsAvailableExtensionIdUpdatePostError =
+    UpdateExtensionExtensionsAvailableExtensionIdUpdatePostErrors[keyof UpdateExtensionExtensionsAvailableExtensionIdUpdatePostErrors]
+
+export type UpdateExtensionExtensionsAvailableExtensionIdUpdatePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: OperationResult
+}
+
+export type UpdateExtensionExtensionsAvailableExtensionIdUpdatePostResponse =
+    UpdateExtensionExtensionsAvailableExtensionIdUpdatePostResponses[keyof UpdateExtensionExtensionsAvailableExtensionIdUpdatePostResponses]
+
 export type DeleteExtensionExtensionsAvailableExtensionIdDeleteData = {
     body?: never
     path: {

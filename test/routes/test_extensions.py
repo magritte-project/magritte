@@ -1,6 +1,7 @@
 import asyncio
 from collections.abc import AsyncIterable, Callable
 from contextlib import contextmanager
+from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
@@ -14,6 +15,12 @@ from conftest import AuthFixture, override_dependency
 from magritte.model.extension import Extension
 from magritte.schemas.extension import ExtensionManifest
 from magritte.utilities.http import get_http_client
+from magritte.utilities.user_events import (
+    UserEvent,
+    UserEvents,
+    UserEventType,
+    get_user_events,
+)
 
 MANIFEST_URL = "http://localhost:1234/extension.magritte.json"
 
@@ -247,6 +254,159 @@ class TestImportExtension:
             )
         assert response.status_code == 504
         assert response.json().get("detail") == "Manifest fetch timed out"
+
+
+class TestUpdateExtension:
+    def test_update(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        throwaway_extension: int,
+        faker: Faker,
+    ):
+        session = admin_auth.sign_in()
+        updated_name = faker.name()
+        updated_manifest_json = ExtensionManifest(
+            name=updated_name,
+            id=faker.uuid4(),
+            version="1.0.0",
+            url="/",
+        ).model_dump_json()
+
+        with serve_manifest(lambda request: Response(200, text=updated_manifest_json)):
+            response = client.post(
+                f"/extensions/available/{throwaway_extension}/update",
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+        assert response.status_code == 200
+        assert response.json().get("message") == "Extension updated successfully"
+
+        read_response = client.get(
+            "/extensions/available",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        updated_extension = next(
+            extension
+            for extension in read_response.json().get("items")
+            if extension.get("id") == throwaway_extension
+        )
+        assert updated_extension["manifest"]["name"] == updated_name
+        assert updated_extension["manifest"]["version"] == "1.0.0"
+
+    def test_notifies_users_with_extension_installed(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        standard_auth: AuthFixture,
+        throwaway_extension: int,
+        faker: Faker,
+    ):
+        standard_session = standard_auth.sign_in()
+        install_response = client.post(
+            f"/extensions/available/{throwaway_extension}/install",
+            headers={"Authorization": f"Bearer {standard_session.access_token}"},
+        )
+        assert install_response.status_code == 200
+
+        mock_user_events = AsyncMock(spec=UserEvents)
+        admin_session = admin_auth.sign_in()
+        manifest_json = mock_manifest_json(faker)
+
+        with (
+            override_dependency(get_user_events, lambda: mock_user_events),
+            serve_manifest(lambda request: Response(200, text=manifest_json)),
+        ):
+            response = client.post(
+                f"/extensions/available/{throwaway_extension}/update",
+                headers={"Authorization": f"Bearer {admin_session.access_token}"},
+            )
+        assert response.status_code == 200
+
+        mock_user_events.notify.assert_awaited_once_with(
+            {asyncio.run(standard_auth.user_id)},
+            UserEvent(
+                event_type=UserEventType.EXTENSIONS_CHANGED,
+                ids=[throwaway_extension],
+            ),
+        )
+
+    def test_skips_notifying_when_not_installed(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        throwaway_extension: int,
+        faker: Faker,
+    ):
+        mock_user_events = AsyncMock(spec=UserEvents)
+        session = admin_auth.sign_in()
+        manifest_json = mock_manifest_json(faker)
+
+        with (
+            override_dependency(get_user_events, lambda: mock_user_events),
+            serve_manifest(lambda request: Response(200, text=manifest_json)),
+        ):
+            response = client.post(
+                f"/extensions/available/{throwaway_extension}/update",
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+        assert response.status_code == 200
+
+        mock_user_events.notify.assert_not_awaited()
+
+    def test_keeps_existing_manifest_when_fetch_fails(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+        throwaway_extension: int,
+    ):
+        session = admin_auth.sign_in()
+
+        read_before = client.get(
+            "/extensions/available",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+
+        with serve_manifest(lambda request: Response(404)):
+            response = client.post(
+                f"/extensions/available/{throwaway_extension}/update",
+                headers={"Authorization": f"Bearer {session.access_token}"},
+            )
+        assert response.status_code == 400
+        assert response.json().get("detail") == "Manifest could not be fetched"
+
+        read_after = client.get(
+            "/extensions/available",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert read_after.json() == read_before.json()
+
+    def test_requires_extension_to_exist(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+    ):
+        session = admin_auth.sign_in()
+
+        response = client.post(
+            "/extensions/available/9999999/update",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Extension not found"
+
+    def test_requires_admin(
+        self,
+        client: TestClient,
+        standard_auth: AuthFixture,
+    ):
+        session = standard_auth.sign_in()
+
+        response = client.post(
+            "/extensions/available/1/update",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not enough permissions"
 
 
 class TestDeleteExtension:

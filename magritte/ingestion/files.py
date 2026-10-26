@@ -15,6 +15,7 @@ from tinytag import TinyTag, UnsupportedFormatError
 from magritte.ingestion.artwork import try_ingest_artwork
 from magritte.ingestion.canon import Canonizer
 from magritte.ingestion.types import get_mime_types
+from magritte.model import Artwork
 from magritte.model.album import Album
 from magritte.model.artist import Artist
 from magritte.model.ignored_resource import IgnoredResource
@@ -50,7 +51,7 @@ async def _update_song_metadata(
             ArtworkKind.FRONT_COVER,
             session,
         )
-        song.artworks = Library.combine(
+        song.artworks = Artwork.combine(
             [cover_artwork], await song.awaitable_attrs.artworks
         )
 
