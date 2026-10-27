@@ -3,6 +3,7 @@
 A personal music platform
 
 [![Test](https://github.com/magritte-project/magritte/actions/workflows/test.yml/badge.svg)](https://github.com/magritte-project/magritte/actions/workflows/test.yml)
+[![Release](https://github.com/magritte-project/magritte/actions/workflows/release.yml/badge.svg)](https://github.com/magritte-project/magritte/actions/workflows/release.yml)
 
 ## Get ready to love your music again
 
