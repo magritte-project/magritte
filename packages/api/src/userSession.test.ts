@@ -39,5 +39,14 @@ describe("userSession", () => {
             subject.replaceSession({ accessToken: "<NOISE>", scopes: [] })
             expect(listener).toHaveBeenCalled()
         })
+
+        it("should not read localStorage until local is first used", () => {
+            // oxlint-disable-next-line typescript/unbound-method
+            expect(vi.mocked(localStorage.getItem)).not.toHaveBeenCalled()
+            const local = StorageUserSessionManager.local
+            // oxlint-disable-next-line typescript/unbound-method
+            expect(vi.mocked(localStorage.getItem)).toHaveBeenCalled()
+            expect(StorageUserSessionManager.local).toBe(local)
+        })
     })
 })

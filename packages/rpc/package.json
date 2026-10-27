@@ -8,11 +8,20 @@
         "magritte",
         "rpc"
     ],
+    "homepage": "https://github.com/magritte-project/magritte/tree/main/packages/rpc#readme",
+    "bugs": {
+        "url": "https://github.com/magritte-project/magritte/issues"
+    },
     "license": "MIT",
     "author": {
         "name": "P. Kevin Contreras",
         "email": "magritte@swampmonkeyco.com",
         "url": "https://magritte-project.github.io/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/magritte-project/magritte.git",
+        "directory": "packages/rpc"
     },
     "funding": {
         "type": "individual",
@@ -40,10 +49,11 @@
                 "default": "./dist/index.js"
             },
             "./transports": {
-                "types": "./dist/transports/index.d.ts",
+                "types": "./dist/transports.d.ts",
                 "default": "./dist/transports.js"
             }
-        }
+        },
+        "access": "public"
     },
     "scripts": {
         "build": "vite build",
@@ -54,6 +64,7 @@
         "check": "oxlint && oxfmt --check"
     },
     "devDependencies": {
+        "@microsoft/api-extractor": "catalog:",
         "@typescript/typescript6": "6.0.2",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
@@ -65,7 +76,7 @@
         "zod": "catalog:"
     },
     "peerDependencies": {
-        "zod": "catalog:"
+        "zod": "^4.6.7"
     },
     "packageManager": "pnpm@12.8.1"
 }

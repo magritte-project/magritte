@@ -7,11 +7,20 @@
         "magritte",
         "sdk"
     ],
+    "homepage": "https://github.com/magritte-project/magritte/tree/main/packages/sdk#readme",
+    "bugs": {
+        "url": "https://github.com/magritte-project/magritte/issues"
+    },
     "license": "MIT",
     "author": {
         "name": "P. Kevin Contreras",
         "email": "magritte@swampmonkeyco.com",
         "url": "https://magritte-project.github.io/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/magritte-project/magritte.git",
+        "directory": "packages/sdk"
     },
     "funding": {
         "type": "individual",
@@ -34,7 +43,8 @@
                 "types": "./dist/index.d.ts",
                 "default": "./dist/index.js"
             }
-        }
+        },
+        "access": "public"
     },
     "scripts": {
         "build": "vite build",
@@ -47,6 +57,7 @@
     "devDependencies": {
         "@magritte/api": "workspace:*",
         "@magritte/rpc": "workspace:*",
+        "@microsoft/api-extractor": "catalog:",
         "@typescript/typescript6": "6.0.2",
         "oxfmt": "catalog:",
         "oxlint": "catalog:",
@@ -60,7 +71,7 @@
     "peerDependencies": {
         "@magritte/api": "workspace:^",
         "@magritte/rpc": "workspace:^",
-        "zod": "catalog:"
+        "zod": "^4.6.7"
     },
     "packageManager": "pnpm@12.8.1"
 }

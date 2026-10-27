@@ -7,6 +7,15 @@
         "fonts",
         "magritte"
     ],
+    "homepage": "https://github.com/magritte-project/magritte/tree/main/packages/fonts#readme",
+    "bugs": {
+        "url": "https://github.com/magritte-project/magritte/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/magritte-project/magritte.git",
+        "directory": "packages/fonts"
+    },
     "license": "(OFL-1.1 AND Bitstream-Vera)",
     "author": {
         "name": "P. Kevin Contreras",
@@ -47,6 +56,9 @@
         "./fira-mono.css": "./FiraMono/FiraMono.css",
         "./ibm-plex-sans.css": "./IBMPlexSans/IBMPlexSans.css",
         "./inter.css": "./Inter/Inter.css"
+    },
+    "publishConfig": {
+        "access": "public"
     },
     "packageManager": "pnpm@12.8.1"
 }

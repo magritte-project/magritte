@@ -41,7 +41,13 @@ function storeUserSession(storage: Storage, userSession: UserSession | null) {
 }
 
 export class StorageUserSessionManager implements UserSessionManager {
-    static readonly local = new StorageUserSessionManager(globalThis.localStorage)
+    private static _local: StorageUserSessionManager | undefined
+
+    // Created on first use so importing this module doesn't require `localStorage`
+    static get local(): StorageUserSessionManager {
+        StorageUserSessionManager._local ??= new StorageUserSessionManager(globalThis.localStorage)
+        return StorageUserSessionManager._local
+    }
 
     constructor(storage: Storage) {
         this.storage = storage
