@@ -27,3 +27,44 @@ jobs:
                   path: dist/
             - name: Publish
               uses: pypa/gh-action-pypi-publish@release/v1
+
+    publish-npm:
+        name: Publish to npm
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        environment: pypi
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Install just
+              uses: extractions/setup-just@v3
+            - name: Setup asdf
+              uses: asdf-vm/actions/setup@v4
+            - name: Cache asdf
+              id: asdf-tools-cache
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      /home/runner/.asdf
+                  key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
+                  restore-keys: |
+                      ${{ runner.os }}-asdf-
+            - name: Install dependencies in .tool-versions
+              if: ${{ steps.asdf-tools-cache.outputs.cache-hit != 'true' }}
+              uses: asdf-vm/actions/install@v4
+            - name: Install Packages
+              run: pnpm install --frozen-lockfile
+            - name: Check Types
+              run: just packages::check-types
+            - name: Test
+              run: just packages::test
+            - name: Build
+              run: just packages::build
+            # Only versions not already on npm are published, so releases that don't
+            # bump a package are a no-op here. Authenticates via npm trusted publishing.
+            - name: Publish
+              run: pnpm --filter "./packages/*" publish --no-git-checks --provenance
