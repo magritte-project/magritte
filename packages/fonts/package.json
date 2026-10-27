@@ -1,6 +1,6 @@
 {
     "name": "@magritte/fonts",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Fonts shared by the Magritte front end and extensions",
     "keywords": [
         "extensions",
@@ -11,16 +11,16 @@
     "bugs": {
         "url": "https://github.com/magritte-project/magritte/issues"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/magritte-project/magritte.git",
-        "directory": "packages/fonts"
-    },
     "license": "(OFL-1.1 AND Bitstream-Vera)",
     "author": {
         "name": "P. Kevin Contreras",
         "email": "magritte@swampmonkeyco.com",
         "url": "https://magritte-project.github.io/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/magritte-project/magritte.git",
+        "directory": "packages/fonts"
     },
     "funding": {
         "type": "individual",
