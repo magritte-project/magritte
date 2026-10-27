@@ -1,6 +1,6 @@
 {
     "name": "@magritte/rpc",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "RPC infrastructure for cross-origin communication in Magritte clients",
     "keywords": [
         "communication",

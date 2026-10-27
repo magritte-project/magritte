@@ -1,6 +1,6 @@
 {
     "name": "@magritte/fonts",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Fonts shared by the Magritte front end and extensions",
     "keywords": [
         "extensions",
