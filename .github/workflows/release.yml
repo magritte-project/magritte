@@ -64,7 +64,8 @@ jobs:
               run: just packages::test
             - name: Build
               run: just packages::build
-            # Only versions not already on npm are published, so releases that don't
-            # bump a package are a no-op here. Authenticates via npm trusted publishing.
-            - name: Publish
-              run: pnpm --filter "./packages/*" publish --no-git-checks --provenance
+            # Only versions not already on npm are staged, so releases that don't bump a
+            # package are a no-op here. Authenticates via npm trusted publishing, which only
+            # permits staging; approve staged versions on npmjs.com or with `pnpm stage approve`.
+            - name: Stage
+              run: pnpm --filter "./packages/*" stage publish --no-git-checks --provenance
