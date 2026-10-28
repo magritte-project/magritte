@@ -43,7 +43,10 @@ export function nextColors(primary: string) {
         return { secondary: primary, tertiary: primary, quaternary: primary }
     }
     const primaryOklch = parsedPrimary.oklch
-    const distanceL = Math.min(0.1, primaryOklch.L / 4) * getColorSchemeSign(primaryOklch)
+    const sign = getColorSchemeSign(primaryOklch)
+    // Cap steps so three of them never pass black (dark colors) or white (light colors)
+    const headroom = sign > 0 ? 1 - primaryOklch.L : primaryOklch.L
+    const distanceL = Math.min(0.1, headroom / 4) * sign
     const secondary = formatUpdatedColorValue(
         parsedPrimary,
         "oklch",
