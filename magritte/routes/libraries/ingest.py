@@ -10,7 +10,7 @@ from fastapi import (
     status,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import and_, col
+from sqlmodel import and_, col, select
 
 from magritte.auth import get_current_user
 from magritte.config import config
@@ -21,11 +21,11 @@ from magritte.model.artwork import Artwork
 from magritte.model.library import Library
 from magritte.model.song import Song
 from magritte.model.source import Source
-from magritte.model.user import User
+from magritte.model.user import User, UserLibraryLink
 from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.auth import OAuth2Scope
 from magritte.schemas.base import OperationResult
-from magritte.schemas.ingest import BulkIngestSongs
+from magritte.schemas.ingest import BulkIngestExistingSongs, BulkIngestSongs
 from magritte.schemas.song import SongRead
 from magritte.schemas.source import SourceRead
 from magritte.worker import ingest_uploaded_files, sync_library
@@ -230,6 +230,73 @@ async def ingest_songs(
             ],
         )
         for new_song in new_songs
+    ]
+
+
+@router.post(
+    "/{library_id}/ingest/songs/existing",
+    response_model=list[SongRead],
+    summary="Bulk ingest new songs without uploading files",
+)
+async def ingest_existing_songs(
+    library_id: int,
+    batch: BulkIngestExistingSongs,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    if not await Library.can_user_access_by_id(
+        library_id,
+        current_user.id,
+        session,
+        can_add=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
+        )
+
+    library = await session.get_one(Library, library_id)
+    existing_songs = (
+        await session.scalars(
+            select(Song).where(
+                col(Song.id).in_(batch.existing_song_ids),
+                # Only songs in at least one library the user can access
+                col(Song.libraries).any(
+                    col(Library.id).in_(
+                        select(UserLibraryLink.library_id).where(
+                            col(UserLibraryLink.user_id) == current_user.id
+                        )
+                    )
+                ),
+            )
+        )
+    ).all()
+    if len(existing_songs) != len(set(batch.existing_song_ids)):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Song not found"
+        )
+
+    for existing_song in existing_songs:
+        existing_song.libraries = Library.combine(
+            [library], await existing_song.awaitable_attrs.libraries
+        )
+
+    await session.flush()
+
+    return [
+        SongRead(
+            **existing_song.model_dump(),
+            artworks=[
+                ArtworkRead(**artwork.model_dump())
+                for artwork in await existing_song.awaitable_attrs.artworks
+            ],
+            sources=[
+                SourceRead(**source.model_dump())
+                for source in await existing_song.awaitable_attrs.sources
+            ],
+        )
+        for existing_song in existing_songs
     ]
 
 

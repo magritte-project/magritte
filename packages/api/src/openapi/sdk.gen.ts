@@ -56,6 +56,9 @@ import type {
     ImportExtensionExtensionsAvailableImportPostData,
     ImportExtensionExtensionsAvailableImportPostErrors,
     ImportExtensionExtensionsAvailableImportPostResponses,
+    IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostData,
+    IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostErrors,
+    IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostResponses,
     IngestFilesLibrariesLibraryIdIngestFilesPostData,
     IngestFilesLibrariesLibraryIdIngestFilesPostErrors,
     IngestFilesLibrariesLibraryIdIngestFilesPostResponses,
@@ -885,6 +888,38 @@ export const ingestSongsLibrariesLibraryIdIngestSongsPost = <ThrowOnError extend
         responseStyle: "data",
         security: [{ scheme: "bearer", type: "http" }],
         url: "/libraries/{library_id}/ingest/songs",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Bulk ingest new songs without uploading files
+ */
+export const ingestExistingSongsLibrariesLibraryIdIngestSongsExistingPost = <
+    ThrowOnError extends boolean = false,
+>(
+    options: Options<
+        IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostData,
+        ThrowOnError
+    >,
+): RequestResult<
+    IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostResponses,
+    IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).post<
+        IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostResponses,
+        IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/libraries/{library_id}/ingest/songs/existing",
         ...options,
         headers: {
             "Content-Type": "application/json",

@@ -203,6 +203,16 @@ export type BodySignInSignInPost = {
 }
 
 /**
+ * BulkIngestExistingSongs
+ */
+export type BulkIngestExistingSongs = {
+    /**
+     * Existing Song Ids
+     */
+    existing_song_ids: Array<number>
+}
+
+/**
  * BulkIngestSongs
  */
 export type BulkIngestSongs = {
@@ -2482,6 +2492,40 @@ export type IngestSongsLibrariesLibraryIdIngestSongsPostResponses = {
 
 export type IngestSongsLibrariesLibraryIdIngestSongsPostResponse =
     IngestSongsLibrariesLibraryIdIngestSongsPostResponses[keyof IngestSongsLibrariesLibraryIdIngestSongsPostResponses]
+
+export type IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostData = {
+    body: BulkIngestExistingSongs
+    path: {
+        /**
+         * Library Id
+         */
+        library_id: number
+    }
+    query?: never
+    url: "/libraries/{library_id}/ingest/songs/existing"
+}
+
+export type IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostError =
+    IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostErrors[keyof IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostErrors]
+
+export type IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostResponses = {
+    /**
+     * Response Ingest Existing Songs Libraries  Library Id  Ingest Songs Existing Post
+     *
+     * Successful Response
+     */
+    200: Array<SongRead>
+}
+
+export type IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostResponse =
+    IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostResponses[keyof IngestExistingSongsLibrariesLibraryIdIngestSongsExistingPostResponses]
 
 export type RequestSyncLibraryLibrariesLibraryIdSyncPostData = {
     body?: never

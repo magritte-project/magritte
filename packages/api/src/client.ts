@@ -14,6 +14,7 @@ import {
     deleteSourceSourcesSourceIdDelete,
     deleteUserAdminUsersAdminAllUserIdDelete,
     importExtensionExtensionsAvailableImportPost,
+    ingestExistingSongsLibrariesLibraryIdIngestSongsExistingPost,
     ingestFilesLibrariesLibraryIdIngestFilesPost,
     ingestPlaybackEventsPlaybackEventsIngestPost,
     ingestSongsLibrariesLibraryIdIngestSongsPost,
@@ -70,6 +71,7 @@ import {
     type ArtworkRead,
     type ArtworkUpdate,
     type BodySignInSignInPost,
+    type BulkIngestExistingSongs,
     type BulkIngestSongs,
     type CompleteResetPassword,
     type DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData,
@@ -602,6 +604,17 @@ export class APIClient {
 
     async ingestSongs(library_id: number, body: BulkIngestSongs): Promise<readonly SongRead[]> {
         return await ingestSongsLibrariesLibraryIdIngestSongsPost({
+            ...this.options,
+            path: { library_id },
+            body,
+        })
+    }
+
+    async ingestExistingSongs(
+        library_id: number,
+        body: BulkIngestExistingSongs,
+    ): Promise<readonly SongRead[]> {
+        return await ingestExistingSongsLibrariesLibraryIdIngestSongsExistingPost({
             ...this.options,
             path: { library_id },
             body,

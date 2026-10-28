@@ -101,6 +101,13 @@ export const BodySignInSignInPostSchema = z.object({
 })
 
 /**
+ * BulkIngestExistingSongs
+ */
+export const BulkIngestExistingSongsSchema = z.object({
+    existing_song_ids: z.array(z.int()).max(50),
+})
+
+/**
  * CompleteResetPassword
  */
 export const CompleteResetPasswordSchema = z.object({

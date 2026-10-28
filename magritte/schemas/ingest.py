@@ -58,3 +58,7 @@ class IngestSong(BaseModel):
 
 class BulkIngestSongs(BaseModel):
     songs: Annotated[list[IngestSong], Field(max_length=INGEST_BATCH_MAX_SIZE)]
+
+
+class BulkIngestExistingSongs(BaseModel):
+    existing_song_ids: Annotated[list[int], Field(max_length=INGEST_BATCH_MAX_SIZE)]

@@ -1078,6 +1078,51 @@
                 }
             }
         },
+        "/libraries/{library_id}/ingest/songs/existing": {
+            "post": {
+                "summary": "Bulk ingest new songs without uploading files",
+                "operationId": "ingest_existing_songs_libraries__library_id__ingest_songs_existing_post",
+                "security": [{ "OAuth2PasswordBearer": ["library:write"] }],
+                "parameters": [
+                    {
+                        "name": "library_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Library Id" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/BulkIngestExistingSongs" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/SongRead" },
+                                    "title": "Response Ingest Existing Songs Libraries  Library Id  Ingest Songs Existing Post"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/libraries/{library_id}/sync": {
             "post": {
                 "summary": "Request that a library sync its songs with the file system",
@@ -2861,6 +2906,19 @@
                 "type": "object",
                 "required": ["username", "password"],
                 "title": "Body_sign_in_sign_in_post"
+            },
+            "BulkIngestExistingSongs": {
+                "properties": {
+                    "existing_song_ids": {
+                        "items": { "type": "integer" },
+                        "type": "array",
+                        "maxItems": 50,
+                        "title": "Existing Song Ids"
+                    }
+                },
+                "type": "object",
+                "required": ["existing_song_ids"],
+                "title": "BulkIngestExistingSongs"
             },
             "BulkIngestSongs": {
                 "properties": {
