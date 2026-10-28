@@ -11,6 +11,7 @@ export interface UseSelectionResult {
     readonly select: (id: number) => void
     readonly deselect: (id: number) => void
     readonly toggle: (id: number) => void
+    readonly clear: () => void
 }
 
 export default function useSelection({
@@ -50,5 +51,8 @@ export default function useSelection({
             return next
         })
     }, [])
-    return { selection, setSelection, isSelected, select, deselect, toggle }
+    const clear = useCallback(() => {
+        setSelection(new Set())
+    }, [])
+    return { selection, setSelection, isSelected, select, deselect, toggle, clear }
 }

@@ -7,6 +7,7 @@ import { useInView } from "motion/react"
 import { Fragment, useMemo, useRef } from "react"
 import { z } from "zod"
 
+import { libraryArtists } from "@/api/keys/libraries"
 import { readLibraryArtists } from "@/api/queries/libraries"
 import FindBar from "@/components/chrome/FindBar"
 import LibraryArtistList from "@/components/library/LibraryArtistList"
@@ -15,6 +16,7 @@ import AppForm from "@/components/reusable/AppForm"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
+import useQueryChangeEffect from "@/hooks/queryChangeEffectHook"
 import useSelection from "@/hooks/selectionHook"
 
 export const Route = createFileRoute("/libraries/$libraryId/artists")({
@@ -39,7 +41,8 @@ export const Route = createFileRoute("/libraries/$libraryId/artists")({
             )
         }, [firstPage])
 
-        const { selection, isSelected, toggle } = useSelection()
+        const { selection, isSelected, toggle, clear } = useSelection()
+        useQueryChangeEffect({ queryKey: libraryArtists(Number(libraryId)) }, clear)
         const commandInputs = useMemo(() => {
             return Array.from(
                 selection,

@@ -7,6 +7,7 @@ import { useInView } from "motion/react"
 import { Fragment, useMemo, useRef } from "react"
 import { z } from "zod"
 
+import { libraryAlbums } from "@/api/keys/libraries"
 import { readLibraryAlbums } from "@/api/queries/libraries"
 import FindBar from "@/components/chrome/FindBar"
 import LibraryAlbumList from "@/components/library/LibraryAlbumList"
@@ -16,6 +17,7 @@ import AppForm from "@/components/reusable/AppForm"
 import CommandInputProvider from "@/contexts/providers/CommandInputProvider"
 import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
+import useQueryChangeEffect from "@/hooks/queryChangeEffectHook"
 import useSelection from "@/hooks/selectionHook"
 
 export const Route = createFileRoute("/libraries/$libraryId/albums")({
@@ -42,7 +44,8 @@ export const Route = createFileRoute("/libraries/$libraryId/albums")({
             )
         }, [firstPage])
 
-        const { selection, isSelected, toggle } = useSelection()
+        const { selection, isSelected, toggle, clear } = useSelection()
+        useQueryChangeEffect({ queryKey: libraryAlbums(Number(libraryId)) }, clear)
         const commandInputs = useMemo(() => {
             return Array.from(
                 selection,

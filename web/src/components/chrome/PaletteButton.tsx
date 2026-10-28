@@ -31,6 +31,7 @@ export default function PaletteButton() {
     const inputs = useCommandInputs()
     const [highlightedCommands, setHighlightedCommands] = useState<readonly Command[]>([])
     useEffect(() => {
+        let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
         function refreshHighlighted() {
             const highlightedCommands = registry.all.filter(
                 (command) =>
@@ -39,6 +40,9 @@ export default function PaletteButton() {
                     inputs.hasAllOf(...command.requiredInputKinds),
             )
             setHighlightedCommands(highlightedCommands)
+
+            clearTimeout(timeoutId)
+            timeoutId = setTimeout(() => setHighlightedCommands([]), 7_000)
         }
         refreshHighlighted()
         return combineUnsubscribers(
@@ -48,6 +52,7 @@ export default function PaletteButton() {
             inputs.subscribe(
                 justEventsMatching("type", "commandInputsDidChange", refreshHighlighted),
             ),
+            () => clearTimeout(timeoutId),
         )
     }, [inputs, registry])
     const handleWillExecute = useCallback(() => {

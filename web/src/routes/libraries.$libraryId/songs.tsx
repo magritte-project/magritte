@@ -7,6 +7,7 @@ import { useInView } from "motion/react"
 import { Fragment, useCallback, useMemo, useRef } from "react"
 import { z } from "zod"
 
+import { librarySongs } from "@/api/keys/libraries"
 import { readLibrarySongs } from "@/api/queries/libraries"
 import FindBar from "@/components/chrome/FindBar"
 import LibraryAlbumHeader from "@/components/library/LibraryAlbumHeader"
@@ -18,6 +19,7 @@ import useAPI from "@/hooks/apiHook"
 import { useAppForm } from "@/hooks/formHook"
 import usePlayer from "@/hooks/playerHook"
 import usePlayingItem from "@/hooks/playingItemHook"
+import useQueryChangeEffect from "@/hooks/queryChangeEffectHook"
 import useQueueContext from "@/hooks/queueContextHook"
 import useSelection from "@/hooks/selectionHook"
 import LibraryQueue from "@/playback/queue/library"
@@ -100,7 +102,8 @@ export const Route = createFileRoute("/libraries/$libraryId/songs")({
         const player = usePlayer()
         const playingItem = usePlayingItem()
 
-        const { selection, isSelected, toggle } = useSelection()
+        const { selection, isSelected, toggle, clear } = useSelection()
+        useQueryChangeEffect({ queryKey: librarySongs(Number(libraryId)) }, clear)
         const commandInputs = useMemo(() => {
             return Array.from(
                 selection,
@@ -156,7 +159,6 @@ export const Route = createFileRoute("/libraries/$libraryId/songs")({
                                             artistId,
                                             sortBy,
                                         }),
-
                                         startingItem: song,
                                         playNow: true,
                                     })
@@ -230,7 +232,6 @@ function SongPageFragment({ isSelected, toggle, offset, limit }: SongPageFragmen
                                 artistId,
                                 sortBy,
                             }),
-
                             startingItem: song,
                             playNow: true,
                         })
