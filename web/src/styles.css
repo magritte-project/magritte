@@ -50,15 +50,15 @@
 
     --color-secondary: var(--color-mg-midnight-900);
     --color-secondary-active: var(--color-mg-midnight-700);
-    --color-on-secondary: var(--color-gray-500);
+    --color-on-secondary: var(--color-gray-200);
 
     --color-tertiary: var(--color-mg-midnight-800);
     --color-tertiary-active: var(--color-mg-midnight-600);
-    --color-on-tertiary: var(--color-gray-600);
+    --color-on-tertiary: var(--color-gray-200);
 
     --color-quaternary: var(--color-mg-midnight-700);
     --color-quaternary-active: var(--color-mg-midnight-500);
-    --color-on-quaternary: var(--color-gray-700);
+    --color-on-quaternary: var(--color-gray-200);
 
     --color-placeholder: var(--color-gray-500);
     --color-outline: var(--color-gray-700);

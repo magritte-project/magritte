@@ -196,19 +196,17 @@ export const Route = createFileRoute("/settings/user/theme")({
                                                 name="semanticColors.onPrimary"
                                                 listeners={{
                                                     onChange: ({ value: primary }) => {
-                                                        const { secondary, tertiary, quaternary } =
-                                                            nextColors(primary ?? "")
                                                         form.setFieldValue(
                                                             "semanticColors.onSecondary",
-                                                            secondary,
+                                                            primary,
                                                         )
                                                         form.setFieldValue(
                                                             "semanticColors.onTertiary",
-                                                            tertiary,
+                                                            primary,
                                                         )
                                                         form.setFieldValue(
                                                             "semanticColors.onQuaternary",
-                                                            quaternary,
+                                                            primary,
                                                         )
                                                     },
                                                 }}
