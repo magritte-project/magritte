@@ -1,5 +1,6 @@
 /// <reference types="node" />
 
+import "@/actions/env"
 import { z } from "zod"
 
 const GetLyricsSchema = z.object({
@@ -46,9 +47,9 @@ class HttpError extends Error {
  * the song and then extracts the lyrics from the song's page on genius.com.
  */
 export async function getLyrics({ artist, title }: GetLyricsParams): Promise<string> {
-    const accessToken = import.meta.env.VITE_GENIUS_ACCESS_TOKEN
+    const accessToken = process.env["GENIUS_ACCESS_TOKEN"]
     if (!accessToken) {
-        throw new HttpError("VITE_GENIUS_ACCESS_TOKEN is not configured", 503, "NOT_CONFIGURED")
+        throw new HttpError("Extension not configured with credentials", 503, "NOT_CONFIGURED")
     }
 
     const song = await searchSong(accessToken, artist, title)

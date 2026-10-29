@@ -2,9 +2,7 @@ interface ViteTypeOptions {
     strictImportMetaEnv: unknown
 }
 
-interface ImportMetaEnv {
-    readonly VITE_GENIUS_ACCESS_TOKEN: string
-}
+interface ImportMetaEnv {}
 
 interface ImportMeta {
     readonly env: ImportMetaEnv
