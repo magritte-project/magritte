@@ -1,6 +1,7 @@
 import secrets
 from datetime import UTC, datetime, timedelta
 from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
@@ -47,7 +48,16 @@ async def read_instance_status(
     try:
         package_version = version("magritte")
     except PackageNotFoundError:
-        package_version = "0.0.0+unknown"
+        # NOTE: Magritte is not packaged during development, so we fallback
+        #       to reading the current version from the project manifest:
+        try:
+            import tomllib
+
+            with Path("pyproject.toml").open("rb") as pyproject_file:
+                pyproject = tomllib.load(pyproject_file)
+                package_version = str(pyproject["project"]["version"])
+        except (KeyError, FileNotFoundError, tomllib.TOMLDecodeError):
+            package_version = "0.0.0+unknown"
 
     return InstanceStatusRead(
         env=config.env,

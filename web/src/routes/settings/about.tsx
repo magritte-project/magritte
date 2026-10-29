@@ -8,9 +8,11 @@ import {
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import classNames from "classnames"
-import type { ReactNode } from "react"
+import { useMemo, type ReactNode } from "react"
+import semver from "semver"
 
 import { readInstanceStatus } from "@/api/queries/auth"
+import { readPyPIProjectIndex } from "@/api/queries/pypi"
 import ThemedLargeTitleSubheader from "@/components/theme/ThemedLargeTitleSubheader"
 import ThemedSubsection from "@/components/theme/ThemedSubsection"
 import useAPI from "@/hooks/apiHook"
@@ -22,10 +24,38 @@ export const Route = createFileRoute("/settings/about")({
     component: function About() {
         const api = useAPI()
         const { data: instanceStatus } = useSuspenseQuery(readInstanceStatus(api))
+        const { data: pyPiProjectIndex } = useSuspenseQuery(
+            readPyPIProjectIndex("magritte-project"),
+        )
+        const isNewVersionAvailable = useMemo(
+            () =>
+                pyPiProjectIndex.versions.some((candidate) =>
+                    semver.gt(candidate, instanceStatus.version),
+                ),
+            [pyPiProjectIndex.versions, instanceStatus.version],
+        )
         return (
             <div className="flex flex-col gap-lg">
                 <ThemedLargeTitleSubheader
-                    caption={<>A personal music platform – Version {instanceStatus.version}</>}
+                    caption={
+                        <>
+                            A personal music platform – Version {instanceStatus.version}
+                            {isNewVersionAvailable && (
+                                <>
+                                    <br />
+                                    <a
+                                        href="https://github.com/magritte-project/magritte/releases"
+                                        target="_blank"
+                                        referrerPolicy="no-referrer"
+                                        className="text-xs font-bold text-key hover:text-key-active flex items-center gap-xs mt-sm"
+                                    >
+                                        New Version Available
+                                        <CaretRightIcon />
+                                    </a>
+                                </>
+                            )}
+                        </>
+                    }
                 >
                     Magritte
                 </ThemedLargeTitleSubheader>

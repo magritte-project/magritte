@@ -55,6 +55,7 @@
         "react": "catalog:",
         "react-dom": "catalog:",
         "react-resizable-panels": "4.14.5",
+        "semver": "^7.8.5",
         "tailwindcss": "catalog:",
         "zod": "catalog:"
     },
@@ -64,6 +65,7 @@
         "@types/node": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
+        "@types/semver": "^7.8.0",
         "@vitejs/plugin-react": "catalog:",
         "baseline-browser-mapping": "catalog:",
         "fake-indexeddb": "6.2.5",

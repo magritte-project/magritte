@@ -9,6 +9,7 @@ import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 import PrimaryDetail from "@/components/chrome/PrimaryDetail"
+import ThemedContentUnavailable from "@/components/theme/ThemedContentUnavailable"
 import ThemedSidebarItemLink from "@/components/theme/ThemedSidebarItemLabelThemedSidebarItemLink"
 import ThemedSidebarSectionHeader from "@/components/theme/ThemedSidebarSectionHeader"
 import useUserSession from "@/hooks/userSessionHook"
@@ -71,5 +72,11 @@ export const Route = createFileRoute("/settings")({
                 </PrimaryDetail>
             </>
         )
+    },
+    pendingComponent() {
+        return <ThemedContentUnavailable />
+    },
+    errorComponent({ error, reset }) {
+        return <ThemedContentUnavailable error={error} onRetry={reset} />
     },
 })
