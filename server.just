@@ -19,9 +19,6 @@ clean:
 build:
     uv build
 
-publish: format lint check-types test clean build
-    uv publish --dry-run
-
 generate-openapi:
     ./admin dump-openapi > packages/api/openapi.json
     just format

@@ -18,6 +18,3 @@ clean:
 
 build:
     pnpm --filter "./packages/*" run build
-
-publish: format lint check-types test clean build
-    pnpm --filter "./packages/*" publish
