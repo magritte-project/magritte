@@ -24,7 +24,7 @@
         "dotenv": "18.0.9",
         "react": "catalog:",
         "react-dom": "catalog:",
-        "vite-plugin-server-actions": "1.5.0",
+        "vite-plugin-server-actions": "catalog:",
         "zod": "catalog:"
     },
     "devDependencies": {

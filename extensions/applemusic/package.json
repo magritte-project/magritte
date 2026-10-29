@@ -26,10 +26,12 @@
         "@tanstack/react-query": "catalog:",
         "@uidotdev/usehooks": "catalog:",
         "classnames": "catalog:",
+        "dotenv": "18.0.9",
         "jose": "6.2.12",
         "react": "catalog:",
         "react-dom": "catalog:",
         "tailwindcss": "catalog:",
+        "vite-plugin-server-actions": "catalog:",
         "zod": "catalog:"
     },
     "devDependencies": {
