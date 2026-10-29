@@ -24,3 +24,6 @@ generate-openapi: server::generate-openapi packages::generate-openapi
 clean: server::clean web::clean packages::clean
 
 build: web::build server::build
+
+bump-vers *ARGS: && sync-deps format
+    uv run python scripts/bump-vers.py {{ARGS}}
