@@ -1,13 +1,14 @@
 import { ExtensionHost } from "@magritte/sdk"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
+import "@/styles.css"
 import "@magritte/fonts/fira-go.css"
 import "@magritte/fonts/fira-mono.css"
-import "@/styles.css"
 
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
+import { getDeveloperToken } from "@/actions/getToken.server"
 import Extension from "@/components/Extension"
 import ContentUnavailable from "@/components/structure/ContentUnavailable"
 import { ExtensionHostContext } from "@/contexts/extensionHostContext"
@@ -16,12 +17,10 @@ import AppleMusicPlaybackEngine from "@/extension/engine"
 import AppleMusicCommandResponder from "@/extension/responder"
 import AppleMusicSearchResponder from "@/extension/searchResponder"
 import { initializeMusicKit } from "@/musickit/initialization"
-import { createDefaultClientTokenFactory } from "@/musickit/tokens/default"
 
 try {
     // Set up Apple Music API
-    const tokenFactory = createDefaultClientTokenFactory()
-    const developerToken = await tokenFactory.createDeveloperToken()
+    const { developerToken } = await getDeveloperToken()
     const musicKit = await initializeMusicKit({
         developerToken,
         app: {
