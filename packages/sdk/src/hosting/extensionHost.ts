@@ -10,6 +10,7 @@ import { LoopbackTransport, MessageChannelTransport } from "@magritte/rpc/transp
 import { CommandCoordinatorProtocol, type CommandCoordinator } from "../commands/coordinator"
 import { CommandResponderProtocol, type CommandResponder } from "../commands/responder"
 import { SearchCommandResponderProtocol, type SearchCommandResponder } from "../commands/search"
+import { ExtensionsProtocol, type Extensions } from "../extensions"
 import { LibraryProtocol, type Library } from "../library"
 import { NotificationCenterProtocol, type NotificationCenter } from "../notificationCenter"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../playback/playbackEngine"
@@ -156,6 +157,10 @@ export class ExtensionHost {
 
     async commandCoordinator(): Promise<CommandCoordinator> {
         return cast(CommandCoordinatorProtocol, this.connection.remoteObject)
+    }
+
+    async extensions(): Promise<Extensions> {
+        return cast(ExtensionsProtocol, this.connection.remoteObject)
     }
 
     async notificationCenter(): Promise<NotificationCenter> {

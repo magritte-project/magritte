@@ -1,4 +1,4 @@
-import type { ExtensionManifest } from "@magritte/api"
+import type { ExtensionManifest, ExtensionPermissions } from "@magritte/api"
 import { RPCBroadcaster } from "@magritte/rpc"
 import {
     type CommandCoordinator,
@@ -16,7 +16,7 @@ export function exportCommandCoordinator(
     inputs: CommandInputs,
     registry: CommandRegistry,
 ): CommandCoordinator {
-    if (manifest.permissions?.includes("commands:input:read")) {
+    if (manifest.permissions?.includes("commands:input:read" satisfies ExtensionPermissions)) {
         const unsubscribe = inputs.subscribe(async (event) => {
             switch (event.type) {
                 case "commandInputsDidChange":

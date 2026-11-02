@@ -11,6 +11,7 @@ import { MessageChannelTransport } from "@magritte/rpc/transports"
 import { type CommandCoordinator, CommandCoordinatorProtocol } from "../commands/coordinator"
 import { CommandResponderProtocol, type CommandResponder } from "../commands/responder"
 import { type SearchCommandResponder, SearchCommandResponderProtocol } from "../commands/search"
+import { ExtensionsProtocol, type Extensions } from "../extensions"
 import { type Library, LibraryProtocol } from "../library"
 import { getExtensionOrigin } from "../manifest"
 import { type NotificationCenter, NotificationCenterProtocol } from "../notificationCenter"
@@ -32,6 +33,7 @@ export interface HostExportsOptions {
 
 export interface HostExportsObject {
     readonly commandCoordinator: CommandCoordinator
+    readonly extensions: Extensions
     readonly notificationCenter: NotificationCenter
     readonly library: Library
     readonly player: Player
@@ -42,10 +44,11 @@ export type HostExports =
     | ((options: HostExportsOptions) => Promise<HostExportsObject>)
 
 async function implementExports(options: HostExportsOptions, exports: HostExports) {
-    const { commandCoordinator, notificationCenter, library, player } =
+    const { commandCoordinator, extensions, notificationCenter, library, player } =
         typeof exports === "function" ? await exports(options) : exports
     return [
         implement(CommandCoordinatorProtocol, commandCoordinator),
+        implement(ExtensionsProtocol, extensions),
         implement(NotificationCenterProtocol, notificationCenter),
         implement(LibraryProtocol, library),
         implement(PlayerProtocol, player),

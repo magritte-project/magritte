@@ -10,6 +10,13 @@ export function readAvailableExtensions(api: API, offset?: number, limit?: numbe
     })
 }
 
+export function readAvailableExtension(api: API, extensionId: number) {
+    return queryOptions({
+        queryKey: availableExtensions(extensionId),
+        queryFn: () => api.client.readAvailableExtension(extensionId),
+    })
+}
+
 export function readInstalledExtensions(api: API, offset?: number, limit?: number) {
     return queryOptions({
         queryKey: installedExtensions(offset, limit),

@@ -17,6 +17,8 @@ import {
     type EventSubscribe,
 } from "@/utilities/events"
 
+import { exportExtensions } from "./exports/exportExtensions"
+
 export interface ExtensionRuntimeOptions {
     readonly container: HTMLElement
     readonly commandInputs: CommandInputs
@@ -332,6 +334,14 @@ export class ExtensionRuntime {
                         broadcaster,
                         this._commandInputs,
                         this._commandRegistry,
+                    ),
+                    extensions: exportExtensions(
+                        manifest,
+                        broadcaster,
+                        this._api,
+                        this._queryClient,
+                        this._notificationCenter,
+                        this,
                     ),
                     notificationCenter: exportNotificationCenter(this._notificationCenter),
                     library: exportLibrary(manifest, this._queryClient, this._api),
