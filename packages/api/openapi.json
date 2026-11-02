@@ -3097,7 +3097,10 @@
                     "libraries:read",
                     "libraries:write",
                     "playback:read",
-                    "playback:control"
+                    "playback:control",
+                    "extensions:read",
+                    "extensions:write",
+                    "extensions:admin"
                 ],
                 "title": "ExtensionPermissions"
             },

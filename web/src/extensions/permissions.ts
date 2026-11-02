@@ -46,6 +46,18 @@ const KNOWN_INFO: Readonly<Record<ExtensionPermissions, ExtensionPermissionInfo>
         name: "Controls Playback",
         description: "The extension can control playback.",
     },
+    "extensions:read": {
+        name: "Read Installed Extensions",
+        description: "The extension can read your installed extensions.",
+    },
+    "extensions:write": {
+        name: "Write Installed Extensions",
+        description: "The extension can write your installed extensions.",
+    },
+    "extensions:admin": {
+        name: "Adminster Extensions",
+        description: "The extension can read and manage available extensions. Admins only.",
+    },
 }
 
 export function getExtensionPermissionInfo(permission: string): ExtensionPermissionInfo {

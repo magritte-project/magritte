@@ -372,6 +372,9 @@ export type ExtensionPermissions =
     | "libraries:write"
     | "playback:read"
     | "playback:control"
+    | "extensions:read"
+    | "extensions:write"
+    | "extensions:admin"
 
 /**
  * ExtensionRead

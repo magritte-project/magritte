@@ -147,6 +147,9 @@ export const ExtensionPermissionsSchema = z.enum([
     "libraries:write",
     "playback:read",
     "playback:control",
+    "extensions:read",
+    "extensions:write",
+    "extensions:admin",
 ])
 
 /**

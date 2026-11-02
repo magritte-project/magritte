@@ -27,6 +27,9 @@ class ExtensionPermissions(Enum):
     LIBRARIES_WRITE = "libraries:write"
     PLAYBACK_READ = "playback:read"
     PLAYBACK_CONTROL = "playback:control"
+    EXTENSIONS_READ = "extensions:read"
+    EXTENSIONS_WRITE = "extensions:write"
+    EXTENSIONS_ADMIN = "extensions:admin"
 
 
 class ExtensionCommand(BaseModel):
