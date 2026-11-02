@@ -27,3 +27,7 @@ build: web::build server::build
 
 bump-vers *ARGS: && sync-deps format
     uv run python scripts/bump-vers.py {{ARGS}}
+
+docker-build tag="magritte:latest": clean
+    VITE_ENV=prod VITE_API_URL=/api just build
+    docker build -t {{tag}} .
