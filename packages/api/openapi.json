@@ -419,6 +419,37 @@
                         }
                     }
                 }
+            },
+            "get": {
+                "summary": "Read an available extension on this instance",
+                "operationId": "read_available_extension_extensions_available__extension_id__get",
+                "security": [{ "OAuth2PasswordBearer": [] }],
+                "parameters": [
+                    {
+                        "name": "extension_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "title": "Extension Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/ExtensionRead" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/extensions/available": {

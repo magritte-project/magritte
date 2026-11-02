@@ -547,6 +547,51 @@ class TestReadAvailableExtensions:
         assert response.json().get("detail") == "Not authenticated"
 
 
+class TestReadAvailableExtension:
+    def test_read(
+        self,
+        client: TestClient,
+        standard_auth: AuthFixture,
+        throwaway_extension: int,
+        throwaway_extension_manifest_id: str,
+    ):
+        session = standard_auth.sign_in()
+
+        response = client.get(
+            f"/extensions/available/{throwaway_extension}",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+
+        assert response_json.get("id") == throwaway_extension
+        assert response_json.get("manifest").get("id") == (
+            throwaway_extension_manifest_id
+        )
+
+    def test_requires_extension_to_exist(
+        self,
+        client: TestClient,
+        standard_auth: AuthFixture,
+    ):
+        session = standard_auth.sign_in()
+
+        response = client.get(
+            "/extensions/available/9999999",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 404
+        assert response.json().get("detail") == "Extension not found"
+
+    def test_requires_user(
+        self,
+        client: TestClient,
+    ):
+        response = client.get("/extensions/available/1")
+        assert response.status_code == 401
+        assert response.json().get("detail") == "Not authenticated"
+
+
 class TestInstallExtension:
     def test_install(
         self,

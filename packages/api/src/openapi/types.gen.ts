@@ -1968,6 +1968,38 @@ export type DeleteExtensionExtensionsAvailableExtensionIdDeleteResponses = {
 export type DeleteExtensionExtensionsAvailableExtensionIdDeleteResponse =
     DeleteExtensionExtensionsAvailableExtensionIdDeleteResponses[keyof DeleteExtensionExtensionsAvailableExtensionIdDeleteResponses]
 
+export type ReadAvailableExtensionExtensionsAvailableExtensionIdGetData = {
+    body?: never
+    path: {
+        /**
+         * Extension Id
+         */
+        extension_id: number
+    }
+    query?: never
+    url: "/extensions/available/{extension_id}"
+}
+
+export type ReadAvailableExtensionExtensionsAvailableExtensionIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError
+}
+
+export type ReadAvailableExtensionExtensionsAvailableExtensionIdGetError =
+    ReadAvailableExtensionExtensionsAvailableExtensionIdGetErrors[keyof ReadAvailableExtensionExtensionsAvailableExtensionIdGetErrors]
+
+export type ReadAvailableExtensionExtensionsAvailableExtensionIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ExtensionRead
+}
+
+export type ReadAvailableExtensionExtensionsAvailableExtensionIdGetResponse =
+    ReadAvailableExtensionExtensionsAvailableExtensionIdGetResponses[keyof ReadAvailableExtensionExtensionsAvailableExtensionIdGetResponses]
+
 export type ReadAvailableExtensionsExtensionsAvailableGetData = {
     body?: never
     path?: never

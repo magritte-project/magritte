@@ -188,6 +188,28 @@ async def read_available_extensions(
     )
 
 
+@router.get(
+    "/available/{extension_id}",
+    response_model=ExtensionRead,
+    dependencies=[Security(get_current_user)],
+    summary="Read an available extension on this instance",
+)
+async def read_available_extension(
+    extension_id: int,
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+):
+    extension = await Extension.get_one_or_none(extension_id, session)
+    if not extension:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Extension not found"
+        )
+
+    return ExtensionRead(
+        id=extension.id,
+        manifest=ExtensionManifest(**extension.manifest),
+    )
+
+
 @router.post(
     "/available/{extension_id}/install",
     response_model=OperationResult,

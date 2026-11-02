@@ -79,6 +79,9 @@ import type {
     ReadArtworkImageArtworksArtworkIdImageGetData,
     ReadArtworkImageArtworksArtworkIdImageGetErrors,
     ReadArtworkImageArtworksArtworkIdImageGetResponses,
+    ReadAvailableExtensionExtensionsAvailableExtensionIdGetData,
+    ReadAvailableExtensionExtensionsAvailableExtensionIdGetErrors,
+    ReadAvailableExtensionExtensionsAvailableExtensionIdGetResponses,
     ReadAvailableExtensionsExtensionsAvailableGetData,
     ReadAvailableExtensionsExtensionsAvailableGetErrors,
     ReadAvailableExtensionsExtensionsAvailableGetResponses,
@@ -529,6 +532,31 @@ export const deleteExtensionExtensionsAvailableExtensionIdDelete = <
     (options.client ?? client).delete<
         DeleteExtensionExtensionsAvailableExtensionIdDeleteResponses,
         DeleteExtensionExtensionsAvailableExtensionIdDeleteErrors,
+        ThrowOnError,
+        "data"
+    >({
+        responseStyle: "data",
+        security: [{ scheme: "bearer", type: "http" }],
+        url: "/extensions/available/{extension_id}",
+        ...options,
+    })
+
+/**
+ * Read an available extension on this instance
+ */
+export const readAvailableExtensionExtensionsAvailableExtensionIdGet = <
+    ThrowOnError extends boolean = false,
+>(
+    options: Options<ReadAvailableExtensionExtensionsAvailableExtensionIdGetData, ThrowOnError>,
+): RequestResult<
+    ReadAvailableExtensionExtensionsAvailableExtensionIdGetResponses,
+    ReadAvailableExtensionExtensionsAvailableExtensionIdGetErrors,
+    ThrowOnError,
+    "data"
+> =>
+    (options.client ?? client).get<
+        ReadAvailableExtensionExtensionsAvailableExtensionIdGetResponses,
+        ReadAvailableExtensionExtensionsAvailableExtensionIdGetErrors,
         ThrowOnError,
         "data"
     >({

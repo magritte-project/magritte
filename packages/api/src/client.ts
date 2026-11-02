@@ -21,6 +21,7 @@ import {
     installExtensionExtensionsAvailableExtensionIdInstallPost,
     markAllNotificationsReadUsersNotificationsMarkAllReadPost,
     readAllSourcesSourcesAllGet,
+    readAvailableExtensionExtensionsAvailableExtensionIdGet,
     readAvailableExtensionsExtensionsAvailableGet,
     readFilesPreflightUsersFilesPreflightPost,
     readInstalledExtensionsExtensionsInstalledGet,
@@ -76,6 +77,7 @@ import {
     type CompleteResetPassword,
     type DeleteLibrarySongLibrariesLibraryIdSongsSongIdDeleteData,
     type ExtensionImportAdmin,
+    type ExtensionRead,
     type IngestPlaybackEvent,
     type InstanceStatusRead,
     type LibraryCreate,
@@ -652,6 +654,13 @@ export class APIClient {
         query?: ReadAvailableExtensionsExtensionsAvailableGetData["query"],
     ): Promise<LibraryMediaReadExtensionRead> {
         return await readAvailableExtensionsExtensionsAvailableGet({ ...this.options, query })
+    }
+
+    async readAvailableExtension(extension_id: number): Promise<ExtensionRead> {
+        return await readAvailableExtensionExtensionsAvailableExtensionIdGet({
+            ...this.options,
+            path: { extension_id },
+        })
     }
 
     async installExtension(extension_id: number): Promise<OperationResult> {
