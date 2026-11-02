@@ -1,0 +1,3 @@
+# Only the built wheel is needed to produce the image
+*
+!dist/*.whl
