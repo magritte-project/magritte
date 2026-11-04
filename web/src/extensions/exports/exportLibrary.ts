@@ -34,6 +34,48 @@ export function exportLibrary(
                 })
             },
         ),
+        readArtist: enforcePermissions(
+            manifest,
+            ["libraries:read"],
+            async ({ libraryId, artistId }) => {
+                return await api.client.readLibraryArtist(libraryId, artistId)
+            },
+        ),
+        readArtists: enforcePermissions(
+            manifest,
+            ["libraries:read"],
+            async ({ libraryId, ...query }) => {
+                return await api.client.readLibraryArtists(libraryId, query)
+            },
+        ),
+        readAlbum: enforcePermissions(
+            manifest,
+            ["libraries:read"],
+            async ({ libraryId, albumId }) => {
+                return await api.client.readLibraryAlbum(libraryId, albumId)
+            },
+        ),
+        readAlbums: enforcePermissions(
+            manifest,
+            ["libraries:read"],
+            async ({ libraryId, ...query }) => {
+                return await api.client.readLibraryAlbums(libraryId, query)
+            },
+        ),
+        readSong: enforcePermissions(
+            manifest,
+            ["libraries:read"],
+            async ({ libraryId, songId }) => {
+                return await api.client.readLibrarySong(libraryId, songId)
+            },
+        ),
+        readSongs: enforcePermissions(
+            manifest,
+            ["libraries:read"],
+            async ({ libraryId, ...query }) => {
+                return await api.client.readLibrarySongs(libraryId, query)
+            },
+        ),
         bulkIngestSongs: enforcePermissions(
             manifest,
             ["libraries:write"],

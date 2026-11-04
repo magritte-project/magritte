@@ -3,8 +3,8 @@ import { defineBroadcast, protocol, type ProtocolObject } from "@magritte/rpc"
 import z4 from "zod/v4"
 
 export const InstalledExtensionsQuerySchema = z4.object({
-    offset: z4.number().max(LIMIT_MAX).optional(),
-    limit: z4.number().optional(),
+    offset: z4.number().optional(),
+    limit: z4.number().max(LIMIT_MAX).optional(),
 })
 export type InstalledExtensionsQuery = z4.infer<typeof InstalledExtensionsQuerySchema>
 
@@ -12,8 +12,8 @@ export const InstalledExtensionsReadSchema = LibraryMediaReadExtensionReadSchema
 export type InstalledExtensionsRead = z4.infer<typeof InstalledExtensionsReadSchema>
 
 export const AvailableExtensionsQuerySchema = z4.object({
-    offset: z4.number().max(LIMIT_MAX).optional(),
-    limit: z4.number().optional(),
+    offset: z4.number().optional(),
+    limit: z4.number().max(LIMIT_MAX).optional(),
 })
 export type AvailableExtensionsQuery = z4.infer<typeof AvailableExtensionsQuerySchema>
 
