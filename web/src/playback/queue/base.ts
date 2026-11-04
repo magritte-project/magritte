@@ -24,6 +24,12 @@ export interface Queue<Item extends { id: unknown }> {
     randomItem(context: RandomItemContext<Item>): Promise<Item | null>
     itemPreceding(item: Item): Promise<Item | null>
     itemFollowing(item: Item): Promise<Item | null>
+
+    /** Called when the player starts using a queue */
+    connect(): void
+
+    /** Called whent the player stops using a queue */
+    disconnect(): void
 }
 
 export interface QueueContext {

@@ -8,7 +8,7 @@ import type {
 import type PlaybackEngineRegistry from "@/playback/engineRegistry"
 import { defaultPlaybackModes, type PlaybackModes } from "@/playback/modes"
 import ArrayQueue from "@/playback/queue/array"
-import { type Queue, type RandomItemContext } from "@/playback/queue/base"
+import { type Queue, type QueueEvent, type RandomItemContext } from "@/playback/queue/base"
 import { CountingStack, type ReadonlyCountingStack } from "@/utilities/countingStack"
 import {
     createEvent,
@@ -44,6 +44,7 @@ export class Player {
     private _activeEngineEventUnsubscribe: EventUnsubscriber | null
     private _activeEngine: PlaybackEngine | null
     private _queue: Queue<PlayableItem>
+    private _queueEventUnsubscribe: EventUnsubscriber
     private _playingItem: PlayableItem | null
     private _playbackState: PlaybackState
     private _volume: number
@@ -60,6 +61,9 @@ export class Player {
         this._activeEngineEventUnsubscribe = null
         this._activeEngine = null
         this._queue = ArrayQueue.of()
+        this._queueEventUnsubscribe = this._queue.subscribe((event) =>
+            this._handleQueueEvent(event),
+        )
         this._playingItem = null
         this._playbackState = "stopped"
         this._volume = parseFloat(localStorage.getItem("player.volume") ?? "1.0")
@@ -109,6 +113,23 @@ export class Player {
         }
     }
 
+    private async _changeQueue(newQueue: Queue<PlayableItem>): Promise<void> {
+        if (this._queue === newQueue) {
+            return
+        }
+
+        this._queueEventUnsubscribe()
+        this._queue.disconnect()
+
+        this._queue = newQueue
+        this._queue.connect()
+        this._queueEventUnsubscribe = this._queue.subscribe((event) =>
+            this._handleQueueEvent(event),
+        )
+
+        await this._dispatch({ type: "queueDidChange" })
+    }
+
     private async _playItem(
         item: PlayableItem,
         options: Omit<PlaybackEngineEnqueueOptions, "itemToPlay">,
@@ -133,30 +154,33 @@ export class Player {
         if (this._playingItem === null) {
             return await this.queue.firstItem()
         }
-        if (this._modes.repeat === "one") {
-            return this._playingItem
+        // Skipping back always moves back, repeating one only replays an item which ended
+        const previousItem =
+            this._modes.shuffle === "on"
+                ? (this._playedItems.pop() ?? null)
+                : await this._queue.itemPreceding(this._playingItem)
+        if (previousItem === null && this._modes.repeat === "all") {
+            this._playedItems.clear() // TODO: ew??
+            return await this.queue.lastItem()
         } else {
-            const previousItem =
-                this._modes.shuffle === "on"
-                    ? (this._playedItems.pop() ?? null)
-                    : await this._queue.itemPreceding(this._playingItem)
-            if (previousItem === null && this._modes.repeat === "all") {
-                this._playedItems.clear() // TODO: ew??
-                return await this.queue.lastItem()
-            } else {
-                return previousItem
-            }
+            return previousItem
         }
     }
 
-    private async _dequeueNextItem(): Promise<PlayableItem | null> {
+    /**
+     * Choose the item to play after the playing one.
+     *
+     * @param reason Why playback is moving on. Repeating one replays the item
+     *   when it ends, but skipping always moves to another item.
+     */
+    private async _dequeueNextItem(reason: "ended" | "skipped"): Promise<PlayableItem | null> {
         if (this._playingItem === null) {
             return this._modes.shuffle === "on"
                 ? await this._queue.randomItem(this._shuffleContext)
                 : await this.queue.firstItem()
         }
 
-        if (this._modes.repeat === "one") {
+        if (reason === "ended" && this._modes.repeat === "one") {
             return this._playingItem
         } else {
             this._playedItems.push(this._playingItem)
@@ -174,6 +198,14 @@ export class Player {
         }
     }
 
+    private async _handleQueueEvent(event: QueueEvent): Promise<void> {
+        switch (event.type) {
+            case "queueDidChange":
+                await this._dispatch({ type: "queueDidChange" })
+                break
+        }
+    }
+
     private async _handleEngineEvent(event: PlaybackEngineEvent): Promise<void> {
         switch (event.type) {
             case "playbackStateDidChange":
@@ -185,7 +217,7 @@ export class Player {
                 await this._dispatch(event)
                 break
             case "endOfAudio": {
-                const nextItem = await this._dequeueNextItem()
+                const nextItem = await this._dequeueNextItem("ended")
                 if (nextItem === null) {
                     await this.stop()
                     await this._dispatch(event)
@@ -242,13 +274,15 @@ export class Player {
     async replaceQueue({ newQueue, startingItem, ...options }: ReplaceQueueOptions): Promise<void> {
         this._playedItems.clear()
         await this._activeEngine?.stop()
+        // The playing item belongs to the old queue, so the new one starts from its beginning
+        this._playingItem = null
 
-        // TODO: Observe queue events
-        this._queue = newQueue
-        await this._dispatch({ type: "queueDidChange" })
-        const item = startingItem ?? (await this._dequeueNextItem())
+        await this._changeQueue(newQueue)
+        const item = startingItem ?? (await this._dequeueNextItem("skipped"))
         if (item === null) {
-            return // shrug
+            // Nothing to play, so make sure listeners know the old item is gone too
+            await this.stop()
+            return
         }
         await this._playItem(item, options)
     }
@@ -282,7 +316,7 @@ export class Player {
                 return true
             }
         }
-        const followingItem = await this._dequeueNextItem()
+        const followingItem = await this._dequeueNextItem("skipped")
         if (followingItem === null) {
             await this.stop()
             return false

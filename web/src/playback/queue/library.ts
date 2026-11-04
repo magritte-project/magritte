@@ -1,42 +1,58 @@
 import type { API, LibraryMediaReadSongRead } from "@magritte/api"
 import { type PlayableItem } from "@magritte/sdk"
-import type { QueryClient } from "@tanstack/react-query"
+import { QueryObserver, type QueryClient } from "@tanstack/react-query"
 
 import { readLibrarySongs, type ReadLibrarySongsCriteria } from "@/api/queries/libraries"
 import { createSongPlayableItemId, songToPlayableItem } from "@/playback/items"
 import type { Queue, QueueContext, QueueEvent, RandomItemContext } from "@/playback/queue/base"
-import { createEvent, type EventSubscribe } from "@/utilities/events"
+import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
 
 export default class LibraryQueue implements Queue<PlayableItem> {
+    private readonly _dispatch: EventDispatch<QueueEvent>
     private readonly _api: API
     private readonly _queryClient: QueryClient
     private readonly _criteria: Omit<ReadLibrarySongsCriteria, "offset" | "limit">
     private readonly _pages: Map<number, LibraryMediaReadSongRead>
+    private _queryObserver: { destroy(): void } | null
     private _limit: number
     private _total: number
+    /**
+     * When the loaded pages were last dropped, pages cached before then are out of date
+     */
+    private _pagesResetAt: number
 
     constructor(
         context: QueueContext,
         initialPage: LibraryMediaReadSongRead,
         criteria: ReadLibrarySongsCriteria,
     ) {
-        ;[, this.subscribe] = createEvent({ label: "LibraryQueue" })
-
-        // TODO: Wire up events
+        ;[this._dispatch, this.subscribe] = createEvent({ label: "LibraryQueue" })
 
         this._api = context.api
         this._queryClient = context.queryClient
         this._criteria = { ...criteria }
         this._pages = new Map().set(initialPage.offset, initialPage)
+        this._queryObserver = null
         this._limit = initialPage.limit
         this._total = initialPage.total
+        this._pagesResetAt = 0
     }
 
     /**
-     * The offset of the last page which has items.
+     * The offset of the last page which has items, or of the first page when there are none.
      */
     private get _lastPageOffset(): number {
-        return this._limit * Math.floor(this._total / this._limit)
+        if (this._total <= 0) {
+            return 0
+        }
+        return this._limit * Math.floor((this._total - 1) / this._limit)
+    }
+
+    /**
+     * The number of pages which have items, counting an empty library as one empty page.
+     */
+    private get _pageCount(): number {
+        return this._lastPageOffset / this._limit + 1
     }
 
     private async _pageAt(offset: number): Promise<LibraryMediaReadSongRead> {
@@ -44,12 +60,16 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         if (existingPage !== undefined) {
             return existingPage
         } else {
+            const options = readLibrarySongs(this._api, {
+                ...this._criteria,
+                offset,
+                limit: this._limit,
+            })
+            // Pages cached before the library changed size hold the wrong songs
+            const cachedAt = this._queryClient.getQueryState(options.queryKey)?.dataUpdatedAt ?? 0
             const newPage = await this._queryClient.query({
-                ...readLibrarySongs(this._api, {
-                    ...this._criteria,
-                    offset,
-                }),
-                staleTime: "static",
+                ...options,
+                staleTime: cachedAt <= this._pagesResetAt ? 0 : "static",
             })
             this._pages.set(offset, newPage)
             return newPage
@@ -72,7 +92,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         }
         for (
             let offset = 0, lastPageOffset = this._lastPageOffset;
-            offset < lastPageOffset;
+            offset <= lastPageOffset;
             offset += this._limit
         ) {
             if (visitedOffsets.has(offset)) {
@@ -120,7 +140,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
     async lastItem(): Promise<PlayableItem | null> {
         const lastPage = await this._pageAt(this._lastPageOffset)
         if (lastPage.items.length > 0) {
-            return songToPlayableItem(lastPage.items[0])
+            return songToPlayableItem(lastPage.items[lastPage.items.length - 1])
         } else {
             return null
         }
@@ -133,8 +153,11 @@ export default class LibraryQueue implements Queue<PlayableItem> {
     }: RandomItemContext<PlayableItem>): Promise<PlayableItem | null> {
         const maxAttempts = Math.max(0, this._total - (await getNumberOfPlayedItems()))
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
-            const offset = await randomIndex(this._pages.size)
+            const offset = (await randomIndex(this._pageCount)) * this._limit
             const page = await this._pageAt(offset)
+            if (page.items.length === 0) {
+                continue
+            }
             const index = await randomIndex(page.items.length)
             const item = songToPlayableItem(page.items[index])
             if (!(await hasPlayedItem(item))) {
@@ -176,5 +199,38 @@ export default class LibraryQueue implements Queue<PlayableItem> {
         } else {
             return songToPlayableItem(currentPage.items[index + 1])
         }
+    }
+
+    connect(): void {
+        if (this._queryObserver !== null) {
+            throw new Error("Queue already connected")
+        }
+
+        const queryObserver = new QueryObserver(
+            this._queryClient,
+            readLibrarySongs(this._api, {
+                ...this._criteria,
+                limit: this._limit,
+            }),
+        )
+        queryObserver.subscribe((result) => {
+            if (result.isSuccess) {
+                if (this._pages.has(result.data.offset)) {
+                    if (result.data.total !== this._total) {
+                        this._pages.clear()
+                        this._pagesResetAt = result.dataUpdatedAt
+                        this._total = result.data.total
+                    }
+                    this._pages.set(result.data.offset, result.data)
+                    void this._dispatch({ type: "queueDidChange" })
+                }
+            }
+        })
+        this._queryObserver = queryObserver
+    }
+
+    disconnect(): void {
+        this._queryObserver?.destroy()
+        this._queryObserver = null
     }
 }

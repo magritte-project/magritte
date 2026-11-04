@@ -75,6 +75,14 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
         return this._items[itemIndex + 1]
     }
 
+    connect(): void {
+        /* Nothing to do */
+    }
+
+    disconnect(): void {
+        /* Nothing to do */
+    }
+
     async push(...items: readonly Item[]): Promise<void> {
         this._items.push(...items)
         await this._dispatch({ type: "queueDidChange" })
