@@ -38,7 +38,6 @@ export function readTrackMatch(client: MusicBrainzClient, item: PlayableItem | n
                   title: normalizeForMatch(query.title),
                   artist: normalizeForMatch(query.artist),
                   album: normalizeForMatch(query.album),
-                  trackNumber: item.track_number ?? null,
               }
     return queryOptions({
         queryKey: mbTrackMatch(key),

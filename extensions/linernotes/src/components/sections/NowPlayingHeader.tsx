@@ -19,10 +19,10 @@ export default function NowPlayingHeader({ item }: NowPlayingHeaderProps) {
             <div className="flex min-w-0 flex-1 flex-col">
                 <div className="text-base font-bold leading-tight">{item.title ?? "--"}</div>
                 <div className="truncate text-sm text-gray-700">
-                    {joinDetails(item.artist_name, item.album_title)}
+                    {joinDetails(item.creator, item.collection)}
                 </div>
                 <div className="mt-0.5 truncate text-xs text-gray-500">
-                    {joinDetails(formatYear(item.release_date), item.genre)}
+                    {formatYear(item.releaseDate)}
                 </div>
             </div>
         </div>

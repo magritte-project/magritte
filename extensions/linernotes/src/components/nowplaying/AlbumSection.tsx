@@ -29,14 +29,14 @@ export default function AlbumSection({ item, match }: AlbumSectionProps) {
     const releaseGroupId = match?.releaseGroup?.id
     const releaseGroupQuery = useQuery(readReleaseGroup(musicbrainz, releaseGroupId))
     const releaseGroup = releaseGroupQuery.data
-    const albumQuery = useQuery(readLastfmAlbum(lastfm, item.artist_name, item.album_title))
+    const albumQuery = useQuery(readLastfmAlbum(lastfm, item.creator, item.collection))
     const album = albumQuery.data ?? null
     const prose = useProse({
         links: linksFromMatch(match, releaseGroupId !== undefined, releaseGroupQuery),
         fallback: { prose: album?.wiki, isPending: albumQuery.isLoading },
     })
 
-    const title = releaseGroup?.title ?? match?.releaseGroup?.name ?? item.album_title
+    const title = releaseGroup?.title ?? match?.releaseGroup?.name ?? item.collection
     if (!title) {
         return null
     }
@@ -58,7 +58,7 @@ export default function AlbumSection({ item, match }: AlbumSectionProps) {
                         {joinDetails(
                             releaseGroup?.primaryType,
                             releaseGroup?.secondaryTypes.join(", "),
-                            formatYear(releaseGroup?.firstReleaseDate ?? item.release_date),
+                            formatYear(releaseGroup?.firstReleaseDate ?? item.releaseDate),
                         )}
                     </div>
                 </div>

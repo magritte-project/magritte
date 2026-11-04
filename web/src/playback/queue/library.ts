@@ -1,8 +1,9 @@
 import type { API, LibraryMediaReadSongRead } from "@magritte/api"
-import type { PlayableItem } from "@magritte/sdk"
+import { type PlayableItem } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 
 import { readLibrarySongs, type ReadLibrarySongsCriteria } from "@/api/queries/libraries"
+import { createSongPlayableItemId, songToPlayableItem } from "@/playback/items"
 import type { Queue, QueueContext, QueueEvent, RandomItemContext } from "@/playback/queue/base"
 import { createEvent, type EventSubscribe } from "@/utilities/events"
 
@@ -84,7 +85,9 @@ export default class LibraryQueue implements Queue<PlayableItem> {
 
     private async _pageOffsetAndIndexForItem(item: PlayableItem): Promise<[number, number]> {
         for await (const [offset, page] of this._allPages()) {
-            const index = page.items.findIndex((candidate) => candidate.id === item.id)
+            const index = page.items.findIndex(
+                (candidate) => createSongPlayableItemId(candidate.id) === item.id,
+            )
             if (index !== -1) {
                 return [offset, index]
             }
@@ -96,7 +99,9 @@ export default class LibraryQueue implements Queue<PlayableItem> {
 
     async hasItem(item: PlayableItem): Promise<boolean> {
         for await (const [, page] of this._allPages()) {
-            if (page.items.some((candidate) => candidate.id === item.id)) {
+            if (
+                page.items.some((candidate) => createSongPlayableItemId(candidate.id) === item.id)
+            ) {
                 return true
             }
         }
@@ -106,7 +111,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
     async firstItem(): Promise<PlayableItem | null> {
         const firstPage = await this._pageAt(0)
         if (firstPage.items.length > 0) {
-            return firstPage.items[0]
+            return songToPlayableItem(firstPage.items[0])
         } else {
             return null
         }
@@ -115,7 +120,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
     async lastItem(): Promise<PlayableItem | null> {
         const lastPage = await this._pageAt(this._lastPageOffset)
         if (lastPage.items.length > 0) {
-            return lastPage.items[0]
+            return songToPlayableItem(lastPage.items[0])
         } else {
             return null
         }
@@ -131,7 +136,7 @@ export default class LibraryQueue implements Queue<PlayableItem> {
             const offset = await randomIndex(this._pages.size)
             const page = await this._pageAt(offset)
             const index = await randomIndex(page.items.length)
-            const item = page.items[index]
+            const item = songToPlayableItem(page.items[index])
             if (!(await hasPlayedItem(item))) {
                 return item
             }
@@ -149,10 +154,10 @@ export default class LibraryQueue implements Queue<PlayableItem> {
                 return null
             }
             const previousPage = await this._pageAt(offset - this._limit)
-            return previousPage.items[previousPage.items.length - 1]
+            return songToPlayableItem(previousPage.items[previousPage.items.length - 1])
         } else {
             const currentPage = await this._pageAt(offset)
-            return currentPage.items[index - 1]
+            return songToPlayableItem(currentPage.items[index - 1])
         }
     }
 
@@ -167,9 +172,9 @@ export default class LibraryQueue implements Queue<PlayableItem> {
                 return null
             }
             const nextPage = await this._pageAt(offset + this._limit)
-            return nextPage.items[0]
+            return songToPlayableItem(nextPage.items[0])
         } else {
-            return currentPage.items[index + 1]
+            return songToPlayableItem(currentPage.items[index + 1])
         }
     }
 }

@@ -44,7 +44,7 @@ export default function PageFooter() {
 
     useDocumentTitle(
         playingItem
-            ? `Magritte: ${playingItem.title} by ${playingItem.artist_name ?? "--"}`
+            ? `Magritte: ${playingItem.title} by ${playingItem.creator ?? "--"}`
             : "Magritte",
     )
 
@@ -120,11 +120,11 @@ export default function PageFooter() {
                                             key="nowPlayingDetails"
                                             layout
                                             className="text-sm truncate"
-                                            title={`${playingItem?.album_title ?? "--"} by ${playingItem?.artist_name ?? "--"}`}
+                                            title={`${playingItem?.collection ?? "--"} by ${playingItem?.creator ?? "--"}`}
                                         >
-                                            {playingItem?.album_title ?? "--"}{" "}
+                                            {playingItem?.collection ?? "--"}{" "}
                                             <span className="text-on-secondary">by</span>{" "}
-                                            {playingItem?.artist_name ?? "--"}
+                                            {playingItem?.creator ?? "--"}
                                         </motion.div>
                                         {(isMouseOver || isPrimarilyTouch) && (
                                             <motion.div

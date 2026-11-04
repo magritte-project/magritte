@@ -1,5 +1,5 @@
 import type { IngestSong } from "@magritte/api"
-import type { PlayableItem } from "@magritte/sdk"
+import { createPlayableItemId, type PlayableItem } from "@magritte/sdk"
 
 import type { SongResource } from "@/musickit/models/song"
 import { formatArtworkUrl } from "@/utilities/artwork"
@@ -65,8 +65,18 @@ export function songResourceToIngestSong(song: SongResource): IngestSong {
 }
 
 export function songResourceToPlayableItem(song: SongResource): PlayableItem {
+    const ingestSong = songResourceToIngestSong(song)
     return {
-        id: song.id,
-        ...songResourceToIngestSong(song),
+        kind: "song",
+        id: createPlayableItemId("applemusic", "song", song.id),
+        title: ingestSong.title,
+        creator: ingestSong.artist_name,
+        collection: ingestSong.album_title,
+        artworks: ingestSong.artworks,
+        sources: ingestSong.sources,
+        startTime: ingestSong.start_time,
+        endTime: ingestSong.end_time,
+        rating: ingestSong.rating,
+        releaseDate: ingestSong.release_date,
     }
 }

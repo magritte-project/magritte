@@ -12,11 +12,12 @@ import { parseRecordingSearch } from "@/musicbrainz/parse"
 
 function item(overrides: Partial<PlayableItem> = {}): PlayableItem {
     return {
-        id: 1,
+        kind: "song",
+        id: "1",
         title: "Smells Like Teen Spirit",
-        artist_name: "Nirvana",
-        album_title: "Nevermind",
-        end_time: 301.9,
+        creator: "Nirvana",
+        collection: "Nevermind",
+        endTime: 301.9,
         ...overrides,
     }
 }
@@ -26,7 +27,7 @@ const hits = parseRecordingSearch(searchFixture)
 describe("buildRecordingQuery", () => {
     it("needs a title and an artist", () => {
         expect(buildRecordingQuery(item({ title: " " }))).toBeNull()
-        expect(buildRecordingQuery(item({ artist_name: null }))).toBeNull()
+        expect(buildRecordingQuery(item({ creator: null }))).toBeNull()
         expect(buildRecordingQuery(null)).toBeNull()
     })
 
@@ -36,7 +37,7 @@ describe("buildRecordingQuery", () => {
             artist: "Nirvana",
             album: "Nevermind",
         })
-        expect(buildRecordingQuery(item({ album_title: "" }))?.album).toBeUndefined()
+        expect(buildRecordingQuery(item({ collection: "" }))?.album).toBeUndefined()
     })
 
     it("searches without edition and featuring suffixes", () => {
@@ -44,7 +45,7 @@ describe("buildRecordingQuery", () => {
             buildRecordingQuery(
                 item({
                     title: "Come Together - Remastered 2009",
-                    album_title: "Abbey Road (Remastered)",
+                    collection: "Abbey Road (Remastered)",
                 }),
             ),
         ).toEqual({ title: "Come Together", artist: "Nirvana", album: "Abbey Road" })
@@ -78,7 +79,7 @@ describe("chooseRecordingMatch", () => {
             hits,
             item({
                 title: "Smells Like Teen Spirit",
-                album_title: "From the Muddy Banks of the Wishkah",
+                collection: "From the Muddy Banks of the Wishkah",
             }),
         )
         expect(match?.recording.id).toBe("rec-live")
@@ -86,7 +87,7 @@ describe("chooseRecordingMatch", () => {
     })
 
     it("still picks the best release when the album is unknown", () => {
-        const match = chooseRecordingMatch(hits, item({ album_title: null }))
+        const match = chooseRecordingMatch(hits, item({ collection: null }))
         expect(match?.recording.id).toBe("rec-album")
         // The official studio album beats the compilation
         expect(match?.release?.id).toBe("rel-nevermind-us")
@@ -124,11 +125,11 @@ describe("chooseRecordingMatch", () => {
     it("prefers the recording which came out the year the item says", () => {
         const later = { ...hits[1], id: "rec-later", firstReleaseDate: "2021-11-11" }
         expect(
-            chooseRecordingMatch([later, hits[1]], item({ release_date: "1991-09-24" }))?.recording
+            chooseRecordingMatch([later, hits[1]], item({ releaseDate: "1991-09-24" }))?.recording
                 .id,
         ).toBe("rec-album")
         expect(
-            chooseRecordingMatch([hits[1], later], item({ release_date: "2021-11-12" }))?.recording
+            chooseRecordingMatch([hits[1], later], item({ releaseDate: "2021-11-12" }))?.recording
                 .id,
         ).toBe("rec-later")
     })
@@ -150,7 +151,7 @@ describe("chooseRecordingMatch", () => {
         }
         const original = { ...hits[1], score: 80 }
         expect(
-            chooseRecordingMatch([reissue, original], item({ release_date: "1991-09-24" }))
+            chooseRecordingMatch([reissue, original], item({ releaseDate: "1991-09-24" }))
                 ?.recording.id,
         ).toBe("rec-album")
     })
@@ -158,7 +159,7 @@ describe("chooseRecordingMatch", () => {
     it("does not let a live album with a longer title vouch for a live take", () => {
         const live = hits.find((hit) => hit.id === "rec-live")!
         expect(
-            chooseRecordingMatch([live], item({ album_title: "From the Muddy Banks" })),
+            chooseRecordingMatch([live], item({ collection: "From the Muddy Banks" })),
         ).toBeNull()
     })
 
@@ -176,10 +177,7 @@ describe("chooseRecordingMatch", () => {
 
     it("uses the length to separate otherwise equal recordings", () => {
         const shorter = { ...hits[1], id: "rec-short", lengthMs: 200_000 }
-        const match = chooseRecordingMatch(
-            [shorter, hits[1]],
-            item({ start_time: 0, end_time: 302 }),
-        )
+        const match = chooseRecordingMatch([shorter, hits[1]], item({ startTime: 0, endTime: 302 }))
         expect(match?.recording.id).toBe("rec-album")
     })
 })

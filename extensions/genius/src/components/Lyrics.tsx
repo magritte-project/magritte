@@ -7,11 +7,11 @@ import "@/components/Lyrics.css"
 
 export default function Lyrics() {
     const nowPlaying = useHostNowPlaying()
-    if (!nowPlaying?.item?.title || !nowPlaying.item.artist_name) {
+    if (!nowPlaying?.item?.title || !nowPlaying.item.creator) {
         return <div>Nothing Playing</div>
     }
 
-    return <SongLyrics artist={nowPlaying.item.artist_name} title={nowPlaying.item.title} />
+    return <SongLyrics artist={nowPlaying.item.creator} title={nowPlaying.item.title} />
 }
 
 interface SongLyricsProps {

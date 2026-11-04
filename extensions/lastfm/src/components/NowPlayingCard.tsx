@@ -42,7 +42,7 @@ export default function NowPlayingCard() {
         )
     }
 
-    const canScrobble = Boolean(item.artist_name?.trim() && item.title?.trim())
+    const canScrobble = Boolean(item.creator?.trim() && item.title?.trim())
     const isActive = session !== null && isScrobblingEnabled
     const status = !canScrobble
         ? incompleteStatus
@@ -62,7 +62,7 @@ export default function NowPlayingCard() {
             <div className="flex min-w-0 flex-1 flex-col">
                 <div className="truncate text-sm font-bold">{item.title ?? "--"}</div>
                 <div className="truncate text-xs text-gray-700">
-                    {joinDetails(item.artist_name, item.album_title)}
+                    {joinDetails(item.creator, item.collection)}
                 </div>
                 <div className={`mt-0.5 flex items-center gap-1 text-xs ${status.className}`}>
                     <StatusIcon className="shrink-0" aria-hidden />

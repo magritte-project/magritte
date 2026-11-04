@@ -5,6 +5,7 @@ import type { RegisteredRouter } from "@tanstack/react-router"
 
 import type { SearchCommand, SearchCommandSection } from "@/commands/base"
 import type { CommandInputs } from "@/commands/inputs/base"
+import { songToPlayableItem } from "@/playback/items"
 import type { Player } from "@/playback/player"
 import ArrayQueue from "@/playback/queue/array"
 
@@ -66,8 +67,8 @@ export class LibrarySongsSearchCommand implements SearchCommand {
                     },
                     play: async () => {
                         await this._player.replaceQueue({
-                            newQueue: new ArrayQueue(librarySongs.items),
-                            startingItem: song,
+                            newQueue: new ArrayQueue(librarySongs.items.map(songToPlayableItem)),
+                            startingItem: songToPlayableItem(song),
                             playNow: true,
                         })
                     },

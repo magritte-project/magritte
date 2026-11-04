@@ -34,8 +34,8 @@ export default function ArtistSection({ item, match }: ArtistSectionProps) {
             ? null
             : artistId
               ? { mbid: artistId }
-              : item.artist_name
-                ? { name: item.artist_name }
+              : item.creator
+                ? { name: item.creator }
                 : null
     const infoQuery = useQuery(readLastfmArtist(lastfm, lookup))
     const info = infoQuery.data ?? null
@@ -44,7 +44,7 @@ export default function ArtistSection({ item, match }: ArtistSectionProps) {
         fallback: { prose: info?.bio, isPending: match === undefined || infoQuery.isLoading },
     })
 
-    const name = artist?.name ?? match?.artist.name ?? item.artist_name
+    const name = artist?.name ?? match?.artist.name ?? item.creator
     if (!name) {
         return null
     }

@@ -36,8 +36,8 @@ export function connectMediaSession(api: API, player: Player) {
                     const playingItem = player.playingItem
                     mediaSession.metadata = new MediaMetadata({
                         title: playingItem.title ?? "",
-                        artist: playingItem.artist_name ?? "",
-                        album: playingItem.album_title ?? "",
+                        artist: playingItem.creator ?? "",
+                        album: playingItem.collection ?? "",
                         artwork: [],
                     })
                     const artworks = playingItem.artworks ?? []
@@ -49,8 +49,8 @@ export function connectMediaSession(api: API, player: Player) {
                             }
                             mediaSession.metadata = new MediaMetadata({
                                 title: playingItem.title ?? "",
-                                artist: playingItem.artist_name ?? "",
-                                album: playingItem.album_title ?? "",
+                                artist: playingItem.creator ?? "",
+                                album: playingItem.collection ?? "",
                                 artwork: artworks.flatMap((artwork) => {
                                     const src = resolveResourceUrl(artwork.image_url, token)
                                     return src ? [{ src }] : []

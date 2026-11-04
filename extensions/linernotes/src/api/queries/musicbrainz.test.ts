@@ -5,11 +5,12 @@ import { MusicBrainzClient } from "@/musicbrainz/client"
 import searchFixture from "@/musicbrainz/fixtures/recordingSearch.json"
 
 const item = {
-    id: 1,
+    kind: "song" as const,
+    id: "1",
     title: "Smells Like Teen Spirit",
-    artist_name: "Nirvana",
-    album_title: "Nevermind: The Singles",
-    end_time: 301.9,
+    creator: "Nirvana",
+    collection: "Nevermind: The Singles",
+    endTime: 301.9,
 }
 
 describe("readTrackMatch", () => {
@@ -31,7 +32,11 @@ describe("readTrackMatch", () => {
     })
 
     it("skips the lookup for an item with nothing to search for", () => {
-        const options = readTrackMatch(new MusicBrainzClient(), { id: 1, end_time: 10 })
+        const options = readTrackMatch(new MusicBrainzClient(), {
+            kind: "song",
+            id: "1",
+            endTime: 10,
+        })
         expect(typeof options.queryFn).not.toBe("function")
     })
 })

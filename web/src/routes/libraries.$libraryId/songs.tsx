@@ -1,5 +1,5 @@
 import { TAG_MAX_LENGTH } from "@magritte/api"
-import type { LibrarySongInput } from "@magritte/sdk"
+import { type LibrarySongInput } from "@magritte/sdk"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { useDebounce } from "@uidotdev/usehooks"
@@ -22,6 +22,7 @@ import usePlayingItem from "@/hooks/playingItemHook"
 import useQueryChangeEffect from "@/hooks/queryChangeEffectHook"
 import useQueueContext from "@/hooks/queueContextHook"
 import useSelection from "@/hooks/selectionHook"
+import { createSongPlayableItemId, songToPlayableItem } from "@/playback/items"
 import LibraryQueue from "@/playback/queue/library"
 import { resolveNewValue } from "@/utilities/react"
 
@@ -159,12 +160,12 @@ export const Route = createFileRoute("/libraries/$libraryId/songs")({
                                             artistId,
                                             sortBy,
                                         }),
-                                        startingItem: song,
+                                        startingItem: songToPlayableItem(song),
                                         playNow: true,
                                     })
                                 }
                                 onKeyDown={() => {}}
-                                playing={playingItem?.id === song.id}
+                                playing={playingItem?.id === createSongPlayableItemId(song.id)}
                                 selected={isSelected(song.id)}
                                 onToggleSelected={() => toggle(song.id)}
                             />
@@ -232,12 +233,12 @@ function SongPageFragment({ isSelected, toggle, offset, limit }: SongPageFragmen
                                 artistId,
                                 sortBy,
                             }),
-                            startingItem: song,
+                            startingItem: songToPlayableItem(song),
                             playNow: true,
                         })
                     }
                     onKeyDown={() => {}}
-                    playing={playingItem?.id === song.id}
+                    playing={playingItem?.id === createSongPlayableItemId(song.id)}
                     selected={isSelected(song.id)}
                     onToggleSelected={() => toggle(song.id)}
                 />

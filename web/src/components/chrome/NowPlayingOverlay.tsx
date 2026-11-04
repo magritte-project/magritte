@@ -60,10 +60,10 @@ function NowPlayingContent() {
             </div>
             <div
                 className="text-sm truncate"
-                title={`${playingItem?.album_title ?? "--"} by ${playingItem?.artist_name ?? "--"}`}
+                title={`${playingItem?.collection ?? "--"} by ${playingItem?.creator ?? "--"}`}
             >
-                {playingItem?.album_title ?? "--"} <span className="text-on-secondary">by</span>{" "}
-                {playingItem?.artist_name ?? "--"}
+                {playingItem?.collection ?? "--"} <span className="text-on-secondary">by</span>{" "}
+                {playingItem?.creator ?? "--"}
             </div>
             <div className="w-full px-lg">
                 <PlayerScrubber />

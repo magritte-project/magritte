@@ -9,7 +9,7 @@ export default class ArrayQueue<Item extends { id: unknown }> implements Queue<I
         return new ArrayQueue(items)
     }
 
-    constructor(items: readonly Item[] = []) {
+    constructor(items: Iterable<Item> = []) {
         ;[this._dispatch, this.subscribe] = createEvent({ label: "ArrayQueue" })
         this._items = [...items]
     }

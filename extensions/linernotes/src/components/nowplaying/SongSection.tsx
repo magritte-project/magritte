@@ -21,10 +21,10 @@ export interface SongSectionProps {
 export default function SongSection({ item, match }: SongSectionProps) {
     const { lastfm } = useClients()
     const navigation = useNavigation()
-    const trackQuery = useQuery(readLastfmTrack(lastfm, item.artist_name, item.title))
+    const trackQuery = useQuery(readLastfmTrack(lastfm, item.creator, item.title))
     const info = trackQuery.data ?? null
 
-    const playingMs = (item.end_time - (item.start_time ?? 0)) * 1000
+    const playingMs = (item.endTime - (item.startTime ?? 0)) * 1000
     const durationMs = info?.durationMs ?? playingMs
     return (
         <ListSection title="Song">

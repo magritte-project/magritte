@@ -19,11 +19,11 @@ export interface RecordingSearchQuery {
 /** What to search MusicBrainz for, or null when the item is too sparse to look up */
 export function buildRecordingQuery(item: PlayableItem | null): RecordingSearchQuery | null {
     const title = item?.title?.trim()
-    const artist = item?.artist_name?.trim()
+    const artist = item?.creator?.trim()
     if (!title || !artist) {
         return null
     }
-    const album = item?.album_title?.trim()
+    const album = item?.collection?.trim()
     // Tags carry editions and guests in the title, MusicBrainz keeps those elsewhere
     return {
         title: stripEditionSuffixesForSearch(title),
@@ -103,23 +103,23 @@ function scoreVariant(
     // A live album vouches for a live take, but only the very album that is playing:
     // `Post Live` must not stand in for `Post`
     const albumTypes =
-        release !== undefined && compareTitles(release.title, item.album_title) === 2
+        release !== undefined && compareTitles(release.title, item.collection) === 2
             ? release.releaseGroup.secondaryTypes.map((type) => type.toLowerCase())
             : []
     const wanted = new Set([
-        ...variantWords(`${item.title ?? ""} ${item.album_title ?? ""}`),
+        ...variantWords(`${item.title ?? ""} ${item.collection ?? ""}`),
         ...albumTypes,
     ])
     return words.every((word) => wanted.has(word)) ? 1 : -1.5
 }
 
 function scoreRelease(release: SearchHitRelease, item: PlayableItem): number {
-    let score = compareTitles(release.title, item.album_title)
+    let score = compareTitles(release.title, item.collection)
     // Reissues and box sets say so in a disambiguation or the title, the original pressing does not
     const namesEdition =
         (release.disambiguation !== undefined &&
-            compareTitles(release.disambiguation, item.album_title) === 0) ||
-        (hasEditionSuffix(release.title) && !hasEditionSuffix(item.album_title))
+            compareTitles(release.disambiguation, item.collection) === 0) ||
+        (hasEditionSuffix(release.title) && !hasEditionSuffix(item.collection))
     if (namesEdition) {
         score -= 0.25
     }
@@ -132,17 +132,11 @@ function scoreRelease(release: SearchHitRelease, item: PlayableItem): number {
     ) {
         score += 0.5
     }
-    if (
-        item.track_number != null &&
-        release.media.some((medium) => Number(medium.trackNumber) === item.track_number)
-    ) {
-        score += 0.5
-    }
     return score
 }
 
 function scoreArtist(hit: RecordingSearchHit, item: PlayableItem): number {
-    const wanted = normalizeForMatch(item.artist_name)
+    const wanted = normalizeForMatch(item.creator)
     if (wanted.length === 0) {
         return 0
     }
@@ -161,7 +155,7 @@ function scoreLength(hit: RecordingSearchHit, item: PlayableItem): number {
         return 0
     }
     // Like the host, a missing start time means the item plays from the beginning
-    const playingSeconds = item.end_time - (item.start_time ?? 0)
+    const playingSeconds = item.endTime - (item.startTime ?? 0)
     return Math.abs(playingSeconds - hit.lengthMs / 1000) <= 3 ? 0.5 : 0
 }
 
@@ -171,7 +165,7 @@ function scoreLength(hit: RecordingSearchHit, item: PlayableItem): number {
  * out the live takes and remixes that reissues add.
  */
 function scoreDate(hit: RecordingSearchHit, item: PlayableItem): number {
-    const wanted = Number(formatYear(item.release_date))
+    const wanted = Number(formatYear(item.releaseDate))
     const actual = Number(formatYear(hit.firstReleaseDate))
     if (!Number.isFinite(wanted) || !Number.isFinite(actual)) {
         return 0
@@ -195,7 +189,7 @@ function earliestDate(release: SearchHitRelease | undefined): string {
  *
  * MusicBrainz's own score is a weak signal on its own: many recordings tie at
  * 100, including music videos and re-recordings, so the album title, release
- * status, track number and length are what usually settle it.
+ * status and length are what usually settle it.
  */
 export function chooseRecordingMatch(
     hits: readonly RecordingSearchHit[],
@@ -246,7 +240,7 @@ export function chooseRecordingMatch(
         return null
     }
     // Prefer the credited artist whose name matches over whoever is listed first
-    const wanted = normalizeForMatch(item.artist_name)
+    const wanted = normalizeForMatch(item.creator)
     const artistPart =
         best.hit.artistCredit.find((part) => normalizeForMatch(part.artist.name) === wanted) ??
         best.hit.artistCredit.find((part) => normalizeForMatch(part.name) === wanted) ??
@@ -261,6 +255,6 @@ export function chooseRecordingMatch(
         releaseGroup: best.release
             ? { id: best.release.releaseGroup.id, name: best.release.releaseGroup.title }
             : undefined,
-        albumMatched: compareTitles(best.release?.title, item.album_title) >= 1,
+        albumMatched: compareTitles(best.release?.title, item.collection) >= 1,
     }
 }

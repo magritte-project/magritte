@@ -16,12 +16,13 @@ const POLL_INTERVAL = 5_000
 
 function makeItem(overrides: Partial<PlayableItem> = {}): PlayableItem {
     return {
-        id: 1,
+        kind: "song",
+        id: "1",
         title: "Untitled",
-        artist_name: "Someone",
-        album_title: "Somewhere",
-        start_time: 0,
-        end_time: 300,
+        creator: "Someone",
+        collection: "Somewhere",
+        startTime: 0,
+        endTime: 300,
         ...overrides,
     }
 }
@@ -38,7 +39,7 @@ class FakePlayer {
 
     async getCurrentTime(): Promise<PlaybackTime> {
         return {
-            totalTime: this.item ? this.item.end_time - (this.item.start_time ?? 0) : null,
+            totalTime: this.item ? this.item.endTime - (this.item.startTime ?? 0) : null,
             elapsedTime: this.item ? this.elapsedTime : null,
         }
     }
@@ -182,7 +183,7 @@ describe("Scrobbler", () => {
 
     it("scrobbles long tracks after four minutes rather than half way", async () => {
         const harness = makeHarness()
-        harness.player.item = makeItem({ id: 2, end_time: 1200 })
+        harness.player.item = makeItem({ id: "2", endTime: 1200 })
 
         // 48 intervals is four minutes, well short of the ten minute halfway point
         await harness.play(47)
@@ -232,7 +233,7 @@ describe("Scrobbler", () => {
 
     it("ignores tracks which are too short for Last.fm", async () => {
         const harness = makeHarness()
-        harness.player.item = makeItem({ id: 3, end_time: 20 })
+        harness.player.item = makeItem({ id: "3", endTime: 20 })
 
         await harness.play(10)
         expect(harness.updateNowPlaying).toHaveBeenCalledTimes(1)
@@ -241,7 +242,20 @@ describe("Scrobbler", () => {
 
     it("ignores tracks with no artist or title", async () => {
         const harness = makeHarness()
-        harness.player.item = makeItem({ id: 4, artist_name: null })
+        harness.player.item = makeItem({ id: "4", creator: null })
+
+        await harness.play(40)
+        expect(harness.updateNowPlaying).not.toHaveBeenCalled()
+        expect(harness.scrobble).not.toHaveBeenCalled()
+    })
+
+    it("ignores items which are not songs", async () => {
+        const harness = makeHarness()
+        // Only songs exist today, so stand in for a future kind of item
+        harness.player.item = makeItem({
+            id: "5",
+            kind: "podcast" as unknown as PlayableItem["kind"],
+        })
 
         await harness.play(40)
         expect(harness.updateNowPlaying).not.toHaveBeenCalled()
@@ -305,7 +319,7 @@ describe("Scrobbler", () => {
         const harness = makeHarness()
 
         await harness.play(20)
-        harness.player.item = makeItem({ id: 5, title: "Second" })
+        harness.player.item = makeItem({ id: "5", title: "Second" })
         harness.player.elapsedTime = 0
         await harness.play(20)
 
