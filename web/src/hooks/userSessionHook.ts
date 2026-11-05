@@ -1,5 +1,6 @@
 import type { Token, UserSession } from "@magritte/api"
 import { useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "@tanstack/react-router"
 import { useCallback, useMemo, useSyncExternalStore } from "react"
 
 import useAPI from "@/hooks/apiHook"
@@ -14,6 +15,7 @@ export interface UseUserSessionResult {
 
 export default function useUserSession(): UseUserSessionResult {
     const queryClient = useQueryClient()
+    const navigate = useNavigate()
     const { userSessionManager } = useAPI()
     const current = useSyncExternalStore(
         (onStoreChange) => {
@@ -51,7 +53,8 @@ export default function useUserSession(): UseUserSessionResult {
     )
     const signOut = useCallback(async () => {
         userSessionManager.replaceSession(null)
-    }, [userSessionManager])
+        navigate({ to: "/sign-in" })
+    }, [userSessionManager, navigate])
 
     const result = useMemo(
         (): UseUserSessionResult => ({ current: current, isSignedIn, signIn, signOut }),
