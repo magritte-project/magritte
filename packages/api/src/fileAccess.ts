@@ -1,4 +1,5 @@
 import type { APIClient } from "./client"
+import type { UserSessionManager } from "./userSession"
 
 export interface FileAccessTokenOptions {
     /**
@@ -36,13 +37,27 @@ export class FileAccess {
      * Construct a file access helper.
      *
      * @param client The API client files will be accessed through.
+     * @param userSessionManager The manager to access the current user session through.
      */
-    constructor(private readonly client: APIClient) {
+    constructor(
+        private readonly client: APIClient,
+        private readonly userSessionManager: UserSessionManager,
+    ) {
         this._token = null
         this._expiresAt = null
         this._pending = null
 
-        this.token({ refresh: true }).catch(() => undefined)
+        this.userSessionManager.subscribe((event) => {
+            if (event.type === "currentChanged") {
+                this._token = null
+                this._expiresAt = null
+                console.info("Clearing file access token for user change")
+            }
+        })
+
+        if (this.userSessionManager.isSignedIn) {
+            this.token({ refresh: true }).catch(() => undefined)
+        }
     }
 
     /**

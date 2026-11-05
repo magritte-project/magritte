@@ -10,7 +10,12 @@ import { secondsToMilliseconds } from "motion/react"
 
 import { userMeNotification, userMeNotifications } from "@/api/keys/users"
 import { readNotifications } from "@/api/queries/users"
-import { createEvent, type EventDispatch, type EventSubscribe } from "@/utilities/events"
+import {
+    createEvent,
+    justEventsMatching,
+    type EventDispatch,
+    type EventSubscribe,
+} from "@/utilities/events"
 import { promiseResolver, type PromiseResolver } from "@/utilities/promises"
 
 export type NotificationCenterEvent =
@@ -49,9 +54,19 @@ export class NotificationCenter {
 
         api.userEventsManager.subscribe((event) => this._handleUserEvent(event))
 
-        const observer = new QueryObserver(queryClient, readNotifications(api))
+        const observer = new QueryObserver(queryClient, {
+            ...readNotifications(api),
+            enabled: api.userSessionManager.isSignedIn,
+        })
         observer.subscribe((result) => this._handleReadNotificationsQueryResult(result))
-        queryClient.query({ ...readNotifications(api), staleTime: "static" }).catch(() => undefined)
+        api.userSessionManager.subscribe(
+            justEventsMatching("type", "currentChanged", () => {
+                observer.setOptions({
+                    ...observer.options,
+                    enabled: api.userSessionManager.isSignedIn,
+                })
+            }),
+        )
     }
 
     private async _handleUserEvent(event: UserEvent) {

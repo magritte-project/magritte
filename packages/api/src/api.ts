@@ -20,7 +20,7 @@ export function createAPI({
     userSessionManager = StorageUserSessionManager.local,
 }: APIOptions): API {
     const client = new APIClient({ baseUrl, userSessionManager })
-    const fileAccess = new FileAccess(client)
+    const fileAccess = new FileAccess(client, userSessionManager)
     const userEventsManager = new UserEventsManager(baseUrl, client, userSessionManager)
     return { client, fileAccess, userEventsManager, userSessionManager }
 }

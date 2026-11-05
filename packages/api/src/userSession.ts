@@ -5,6 +5,17 @@ export interface UserSession {
     readonly scopes: readonly OAuth2Scope[]
 }
 
+function equalUserSessions(a: UserSession | null, b: UserSession | null): boolean {
+    return (
+        a === b ||
+        (a !== null &&
+            b !== null &&
+            a.accessToken === b.accessToken &&
+            a.scopes.length === b.scopes.length &&
+            a.scopes.every((a, index) => a === b.scopes[index]))
+    )
+}
+
 export type UserSessionManagerEvent = { type: "currentChanged" }
 
 export interface UserSessionManager {
@@ -68,6 +79,9 @@ export class StorageUserSessionManager implements UserSessionManager {
     }
 
     replaceSession(newSession: UserSession | null) {
+        if (equalUserSessions(this._current, newSession)) {
+            return
+        }
         this._current = newSession
         storeUserSession(this.storage, newSession)
         for (const subscriber of this.subscribers.slice()) {
