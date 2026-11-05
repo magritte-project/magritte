@@ -26,6 +26,8 @@ export default function usePlaybackTime(): UsePlaybackTimeResult {
         if (isSeeking || player.playbackState !== "playing") {
             return
         }
+        // oxlint-disable-next-line react/set-state-in-effect
+        void updateCurrentTime()
         const interval = setInterval(() => {
             void updateCurrentTime()
         }, 1000)
