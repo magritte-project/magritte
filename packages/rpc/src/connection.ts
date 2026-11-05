@@ -73,18 +73,6 @@ export type RPCConnectionEvent =
     | { type: "invalidated"; fromRemoteSide: boolean }
 
 export class RPCConnection {
-    /**
-     * Tracks the current RPC connection, if any.
-     */
-    private static readonly $current = new Local<RPCConnection | null>(null)
-
-    /**
-     * Returns the current RPC connection, if any.
-     */
-    static get current(): RPCConnection | null {
-        return RPCConnection.$current.value
-    }
-
     constructor(options: RPCConnectionOptions) {
         this.subscribers = []
         this._isValid = true
@@ -161,38 +149,32 @@ export class RPCConnection {
      * Handles a message from the remote side of the connection.
      */
     private async handleMessage(message: RPCTransportMessage): Promise<void> {
-        await RPCConnection.$current.withValueAsync(this, async () => {
-            switch (message.type) {
-                case "command": {
-                    const result = await dispatchCommand(message.command, this.exportedObject)
-                    this.transport.postMessage({ id: message.id, type: "result", result })
-                    break
-                }
-                case "result": {
-                    const pending = this.pending.get(message.id)
-                    if (pending) {
-                        pending.resolve(message.result)
-                        this.pending.delete(message.id)
-                    }
-                    break
-                }
-                case "broadcast": {
-                    this.broadcaster._connection_receive(
-                        message.channel,
-                        message.what,
-                        message.data,
-                    )
-                    break
-                }
-                case "invalidate": {
-                    this._invalidateLocalOnly({ fromRemoteSide: true })
-                    break
-                }
-                default: {
-                    assertNever(message)
-                }
+        switch (message.type) {
+            case "command": {
+                const result = await dispatchCommand(message.command, this.exportedObject)
+                this.transport.postMessage({ id: message.id, type: "result", result })
+                break
             }
-        })
+            case "result": {
+                const pending = this.pending.get(message.id)
+                if (pending) {
+                    pending.resolve(message.result)
+                    this.pending.delete(message.id)
+                }
+                break
+            }
+            case "broadcast": {
+                this.broadcaster._connection_receive(message.channel, message.what, message.data)
+                break
+            }
+            case "invalidate": {
+                this._invalidateLocalOnly({ fromRemoteSide: true })
+                break
+            }
+            default: {
+                assertNever(message)
+            }
+        }
     }
 
     /**

@@ -1,5 +1,8 @@
 import z4 from "zod/v4"
 
+/**
+ * Schema for RPC commands that originate from the local side.
+ */
 export const RPCCommand = z4.union([
     z4.object({
         type: z4.literal("object.getProtocolNames"),
@@ -17,12 +20,18 @@ export const RPCCommand = z4.union([
 ])
 export type RPCCommand = z4.infer<typeof RPCCommand>
 
+/**
+ * Schema for RPC messages which originate from the local side.
+ */
 export const RPCTransportOutgoingMessage = z4.object({
     id: z4.string(),
     command: RPCCommand,
 })
 export type RPCTransportOutgoingMessage = z4.infer<typeof RPCTransportOutgoingMessage>
 
+/**
+ * Schema for the result of RPC commands that originate from the remote side.
+ */
 export const RPCCommandResult = z4.union([
     z4.object({
         type: z4.literal("object.getProtocolNames"),
