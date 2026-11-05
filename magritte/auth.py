@@ -1,3 +1,4 @@
+import logging
 from datetime import UTC, datetime, timedelta
 from enum import Enum
 from functools import lru_cache
@@ -18,6 +19,8 @@ from magritte.email import EmailClient, EmailRecipient
 from magritte.email.templates import render_email_template
 from magritte.model.user import User
 from magritte.schemas.auth import OAuth2Scope, Token
+
+logger = logging.getLogger(__name__)
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/sign-in",
@@ -292,27 +295,30 @@ async def send_verification_email(
     user_email: str,
     user_username: str,
 ):
-    token, expires_at = create_feature_token(
-        subject=user_username,
-        scope=FeatureScope.USER_VERIFY_EMAIL,
-        expire_after=timedelta(hours=1),
-    )
+    try:
+        token, expires_at = create_feature_token(
+            subject=user_username,
+            scope=FeatureScope.USER_VERIFY_EMAIL,
+            expire_after=timedelta(hours=1),
+        )
 
-    text, html = await render_email_template(
-        "verify_email",
-        {
-            "name": user_username,
-            "verify_link": f"{config.web_url}/verify/{token}",
-            "expiration": expires_at.strftime("%YYYY-%dd-%mm %H:%M:%S"),
-        },
-    )
-    await email_client.send(
-        sender=EmailRecipient(address=config.email_sender_address, name="Magritte"),
-        subject="Verify Your Email",
-        to={EmailRecipient(address=user_email, name=user_username)},
-        text=text,
-        html=html,
-    )
+        text, html = await render_email_template(
+            "verify_email",
+            {
+                "name": user_username,
+                "verify_link": f"{config.web_url}/verify/{token}",
+                "expiration": expires_at.strftime("%YYYY-%dd-%mm %H:%M:%S"),
+            },
+        )
+        await email_client.send(
+            sender=EmailRecipient(address=config.email_sender_address, name="Magritte"),
+            subject="Verify Your Email",
+            to={EmailRecipient(address=user_email, name=user_username)},
+            text=text,
+            html=html,
+        )
+    except Exception as e:
+        logger.exception("*** Failed to send verification email", e)
 
 
 async def send_reset_password_email(
@@ -322,17 +328,20 @@ async def send_reset_password_email(
     user_username: str,
     token: str,
 ):
-    text, html = await render_email_template(
-        "reset_password",
-        {
-            "name": user_username,
-            "reset_link": f"{config.web_url}/reset-password/complete?token={quote(token)}&email={quote(user_email)}",
-        },
-    )
-    await email_client.send(
-        sender=EmailRecipient(address=config.email_sender_address, name="Magritte"),
-        subject="Reset Your Password",
-        to={EmailRecipient(address=user_email, name=user_username)},
-        text=text,
-        html=html,
-    )
+    try:
+        text, html = await render_email_template(
+            "reset_password",
+            {
+                "name": user_username,
+                "reset_link": f"{config.web_url}/reset-password/complete?token={quote(token)}&email={quote(user_email)}",
+            },
+        )
+        await email_client.send(
+            sender=EmailRecipient(address=config.email_sender_address, name="Magritte"),
+            subject="Reset Your Password",
+            to={EmailRecipient(address=user_email, name=user_username)},
+            text=text,
+            html=html,
+        )
+    except Exception as e:
+        logger.exception("*** Failed to send reset password email", e)
