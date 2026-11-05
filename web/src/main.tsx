@@ -25,12 +25,6 @@ import { connectMediaSession } from "@/playback/mediaSession"
 import { PlaybackEventRecorder } from "@/playback/playbackEventRecorder"
 import { Player } from "@/playback/player"
 import reportWebVitals from "@/reportWebVitals"
-
-import "@magritte/fonts"
-
-import "@/styles.css"
-
-// NOTE: Must come after @/styles.css import
 import { applyTheme } from "@/themes/apply"
 import { retrieveCustomTheme } from "@/themes/custom"
 import { defaultTheme } from "@/themes/default"
