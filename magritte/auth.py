@@ -318,7 +318,9 @@ async def send_verification_email(
             html=html,
         )
     except Exception as e:
-        logger.exception("*** Failed to send verification email", e)
+        logger.exception(
+            f"*** Failed to send verification email from <{config.email_sender_address}>: {str(e)}"
+        )
 
 
 async def send_reset_password_email(
@@ -344,4 +346,6 @@ async def send_reset_password_email(
             html=html,
         )
     except Exception as e:
-        logger.exception("*** Failed to send reset password email", e)
+        logger.exception(
+            f"*** Failed to send reset password email from <{config.email_sender_address}>: {str(e)}"
+        )
