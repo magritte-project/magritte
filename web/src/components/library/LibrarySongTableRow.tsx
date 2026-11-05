@@ -1,4 +1,5 @@
 import type { SongRead } from "@magritte/api"
+import { WaveformIcon } from "@phosphor-icons/react"
 import classNames from "classnames"
 
 import ThemedCheckbox from "@/components/theme/ThemedCheckbox"
@@ -54,7 +55,7 @@ export default function LibrarySongTableRow({
             {...rest}
         >
             <TableDataCell showSeparator={false}>
-                <div className="flex items-center justify-center">
+                <div className="relative flex items-center justify-center">
                     <ThemedCheckbox
                         name={`songs[${song.id}]`}
                         checked={selected}
@@ -62,6 +63,12 @@ export default function LibrarySongTableRow({
                         onClick={(e) => e.stopPropagation()}
                         aria-label={selected ? "Deselect Song" : "Select Song"}
                     />
+                    {playing && !selected && (
+                        <WaveformIcon
+                            className="absolute top-1/2 left-1/2 -translate-1/2 pointer-events-none text-key"
+                            aria-label="Playing"
+                        />
+                    )}
                 </div>
             </TableDataCell>
             <TableDataCell title={song.title ?? undefined}>{song.title}</TableDataCell>
