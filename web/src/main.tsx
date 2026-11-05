@@ -24,6 +24,7 @@ import { LocalCache } from "@/playback/localCache"
 import { connectMediaSession } from "@/playback/mediaSession"
 import { PlaybackEventRecorder } from "@/playback/playbackEventRecorder"
 import { Player } from "@/playback/player"
+import { wireUpPlayerUserSession } from "@/playback/userSession"
 import reportWebVitals from "@/reportWebVitals"
 import { applyTheme } from "@/themes/apply"
 import { retrieveCustomTheme } from "@/themes/custom"
@@ -64,6 +65,7 @@ try {
     const player = new Player(playbackEngineRegistry)
     const playbackEventRecorder = await PlaybackEventRecorder.open({ api })
     playbackEventRecorder.wireUpPlayer(player)
+    wireUpPlayerUserSession(api, player)
 
     // Set up extensions
     const extensionRuntime = new ExtensionRuntime({
