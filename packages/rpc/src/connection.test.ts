@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import z4 from "zod/v4"
 
 import { defineBroadcast, RPCBroadcaster } from "./broadcasts"
-import { RPCConnection, type RPCConnectionEvent } from "./connection"
+import { RPCConnection, type RPCConnectionEvent, type RPCConnectionOptions } from "./connection"
 import { implement, protocol } from "./protocol"
 import type { RPCTransport, RPCTransportMessage } from "./transport"
 
@@ -104,10 +104,12 @@ function makePair({
     leftExports = [],
     rightExports = [],
     timeout,
+    rightRateLimit,
 }: {
-    leftExports?: ConstructorParameters<typeof RPCConnection>[0]["exportedObject"]
-    rightExports?: ConstructorParameters<typeof RPCConnection>[0]["exportedObject"]
+    leftExports?: RPCConnectionOptions["exportedObject"]
+    rightExports?: RPCConnectionOptions["exportedObject"]
     timeout?: number
+    rightRateLimit?: RPCConnectionOptions["rateLimit"]
 } = {}) {
     const [leftTransport, rightTransport] = PairedTransport.pair()
     const left = new RPCConnection({
@@ -119,6 +121,7 @@ function makePair({
         transport: rightTransport,
         exportedObject: rightExports,
         timeout,
+        rateLimit: rightRateLimit,
     })
     return { left, right }
 }
@@ -243,18 +246,44 @@ describe("RPCConnection", () => {
             expect(results).toStrictEqual(Array.from({ length: 20 }, (_, i) => i * 2))
         })
 
-        it("should reject with the message of an error thrown by the remote implementation", async () => {
+        it("should reject with the name and message of an error thrown by the remote implementation", async () => {
             const { left } = makePair({ rightExports: [ArithmeticImplementation] })
-            await expect(
-                left.remoteObject.invoke(ArithmeticProtocol.name, "divide", { a: 1, b: 0 }),
-            ).rejects.toThrow("Division by zero")
+            const result = left.remoteObject.invoke(ArithmeticProtocol.name, "divide", {
+                a: 1,
+                b: 0,
+            })
+            await expect(result).rejects.toThrow(Error)
+            await expect(result).rejects.toMatchObject({
+                name: "RangeError",
+                message: "Division by zero",
+            })
+        })
+
+        it("should reject with the name and message of an error result", async () => {
+            const transport = new MockTransport()
+            const connection = new RPCConnection({ transport, exportedObject: [] })
+            const result = connection.remoteObject.getProtocolNames()
+            const { id } = transport.lastCommand()
+            transport.deliver({
+                type: "result",
+                id,
+                result: { type: "error", name: "CustomError", message: "Something went wrong" },
+            })
+            await expect(result).rejects.toThrow(Error)
+            await expect(result).rejects.toMatchObject({
+                name: "CustomError",
+                message: "Something went wrong",
+            })
         })
 
         it("should reject when invoking a protocol the remote side does not implement", async () => {
             const { left } = makePair({ rightExports: [InspectableImplementation] })
             await expect(
                 left.remoteObject.invoke(ArithmeticProtocol.name, "add", { a: 1, b: 2 }),
-            ).rejects.toThrow(`Protocol ${ArithmeticProtocol.name} not found`)
+            ).rejects.toMatchObject({
+                name: "Error",
+                message: `Protocol ${ArithmeticProtocol.name} not found`,
+            })
         })
 
         it("should reject when invoking a selector the remote side does not implement", async () => {
@@ -268,7 +297,7 @@ describe("RPCConnection", () => {
             const { left } = makePair({ rightExports: [ArithmeticImplementation] })
             await expect(
                 left.remoteObject.invoke(ArithmeticProtocol.name, "add", { a: "1", b: 2 }),
-            ).rejects.toThrow()
+            ).rejects.toMatchObject({ name: "ZodError" })
         })
 
         it("should reject when the reply type does not match the command type", async () => {
@@ -378,6 +407,271 @@ describe("RPCConnection", () => {
                     result: { type: "error", name: "Error", message: "Unknown message type" },
                 },
             ])
+        })
+    })
+
+    describe("rate limiting", () => {
+        const RATE_LIMIT = { limit: 3, samplePeriod: 1_000 }
+        const RATE_LIMITED_RESULT = {
+            type: "error",
+            name: "RateLimitExceededError",
+            message: "Connection rate limit exceeded",
+        } as const
+
+        beforeEach(() => {
+            vi.useFakeTimers({ toFake: ["Date"], now: 0 })
+        })
+
+        afterEach(() => {
+            vi.useRealTimers()
+        })
+
+        function deliverCommands(transport: MockTransport, ids: readonly string[]): void {
+            for (const id of ids) {
+                transport.deliver({
+                    type: "command",
+                    id,
+                    command: { type: "object.getProtocolNames" },
+                })
+            }
+        }
+
+        function resultFor(transport: MockTransport, id: string): unknown {
+            const message = transport.sent.find(
+                (message) => message.type === "result" && message.id === id,
+            )
+            if (message?.type !== "result") {
+                throw new Error(`No result was sent for ${id}`)
+            }
+            return message.result
+        }
+
+        it("should reject invalid rate limit options", () => {
+            expect(
+                () =>
+                    new RPCConnection({
+                        transport: new MockTransport(),
+                        exportedObject: [],
+                        rateLimit: { limit: 0, samplePeriod: 1_000 },
+                    }),
+            ).toThrow(new RangeError("Invalid limit"))
+            expect(
+                () =>
+                    new RPCConnection({
+                        transport: new MockTransport(),
+                        exportedObject: [],
+                        rateLimit: { limit: 1, samplePeriod: 10 },
+                    }),
+            ).toThrow(new RangeError("Invalid sample period"))
+        })
+
+        it("should not limit commands when no rate limit is given", async () => {
+            const transport = new MockTransport()
+            void new RPCConnection({ transport, exportedObject: [InspectableImplementation] })
+            const ids = Array.from({ length: 50 }, (_, i) => String(i))
+            deliverCommands(transport, ids)
+            await flush()
+            for (const id of ids) {
+                expect(resultFor(transport, id)).toStrictEqual({
+                    type: "object.getProtocolNames",
+                    protocolNames: [InspectableProtocol.name],
+                })
+            }
+        })
+
+        it("should reply with an error to commands over the limit", async () => {
+            const transport = new MockTransport()
+            void new RPCConnection({
+                transport,
+                exportedObject: [InspectableImplementation],
+                rateLimit: RATE_LIMIT,
+            })
+            deliverCommands(transport, ["1", "2", "3", "4", "5"])
+            await flush()
+            for (const id of ["1", "2", "3"]) {
+                expect(resultFor(transport, id)).toStrictEqual({
+                    type: "object.getProtocolNames",
+                    protocolNames: [InspectableProtocol.name],
+                })
+            }
+            for (const id of ["4", "5"]) {
+                expect(resultFor(transport, id)).toStrictEqual(RATE_LIMITED_RESULT)
+            }
+            expect(transport.sent).toHaveLength(5)
+        })
+
+        it("should not dispatch commands over the limit to the exported object", async () => {
+            const transport = new MockTransport()
+            const add = vi.fn(async ({ a, b }: { a: number; b: number }) => a + b)
+            void new RPCConnection({
+                transport,
+                exportedObject: [
+                    implement(ArithmeticProtocol, { add, divide: async ({ a, b }) => a / b }),
+                ],
+                rateLimit: RATE_LIMIT,
+            })
+            for (let i = 0; i < 5; i++) {
+                transport.deliver({
+                    type: "command",
+                    id: String(i),
+                    command: {
+                        type: "object.invoke",
+                        protocolName: ArithmeticProtocol.name,
+                        selector: "add",
+                        parameters: { a: i, b: i },
+                    },
+                })
+            }
+            await flush()
+            expect(add).toHaveBeenCalledTimes(RATE_LIMIT.limit)
+        })
+
+        it("should count every type of command toward the limit", async () => {
+            const transport = new MockTransport()
+            void new RPCConnection({
+                transport,
+                exportedObject: [InspectableImplementation],
+                rateLimit: RATE_LIMIT,
+            })
+            const commands: Extract<RPCTransportMessage, { type: "command" }>["command"][] = [
+                { type: "object.getProtocolNames" },
+                { type: "object.implementsProtocol", protocolName: InspectableProtocol.name },
+                {
+                    type: "object.invoke",
+                    protocolName: InspectableProtocol.name,
+                    selector: "inspect",
+                    parameters: undefined,
+                },
+                { type: "object.getProtocolNames" },
+            ]
+            commands.forEach((command, i) =>
+                transport.deliver({ type: "command", id: String(i), command }),
+            )
+            await flush()
+            expect(resultFor(transport, "3")).toStrictEqual(RATE_LIMITED_RESULT)
+        })
+
+        it("should count commands which fail toward the limit", async () => {
+            const transport = new MockTransport()
+            void new RPCConnection({ transport, exportedObject: [], rateLimit: RATE_LIMIT })
+            for (let i = 0; i < 4; i++) {
+                transport.deliver({
+                    type: "command",
+                    id: String(i),
+                    command: {
+                        type: "object.invoke",
+                        protocolName: "Missing",
+                        selector: "missing",
+                        parameters: undefined,
+                    },
+                })
+            }
+            await flush()
+            expect(resultFor(transport, "3")).toStrictEqual(RATE_LIMITED_RESULT)
+        })
+
+        it("should accept commands again once the sample period has elapsed", async () => {
+            const transport = new MockTransport()
+            void new RPCConnection({
+                transport,
+                exportedObject: [InspectableImplementation],
+                rateLimit: RATE_LIMIT,
+            })
+            deliverCommands(transport, ["1", "2", "3", "4"])
+            await flush()
+            expect(resultFor(transport, "4")).toStrictEqual(RATE_LIMITED_RESULT)
+
+            vi.setSystemTime(RATE_LIMIT.samplePeriod + 1)
+            deliverCommands(transport, ["5", "6", "7", "8"])
+            await flush()
+            for (const id of ["5", "6", "7"]) {
+                expect(resultFor(transport, id)).toStrictEqual({
+                    type: "object.getProtocolNames",
+                    protocolNames: [InspectableProtocol.name],
+                })
+            }
+            expect(resultFor(transport, "8")).toStrictEqual(RATE_LIMITED_RESULT)
+        })
+
+        it("should reject remote invocations over the limit", async () => {
+            const { left } = makePair({
+                rightExports: [ArithmeticImplementation],
+                rightRateLimit: RATE_LIMIT,
+            })
+            for (let i = 0; i < RATE_LIMIT.limit; i++) {
+                await expect(
+                    left.remoteObject.invoke(ArithmeticProtocol.name, "add", { a: i, b: 1 }),
+                ).resolves.toBe(i + 1)
+            }
+            await expect(
+                left.remoteObject.invoke(ArithmeticProtocol.name, "add", { a: 1, b: 1 }),
+            ).rejects.toMatchObject({
+                name: "RateLimitExceededError",
+                message: "Connection rate limit exceeded",
+            })
+            expect(left.isValid).toBe(true)
+        })
+
+        it("should only limit commands received, not commands sent", async () => {
+            const { left, right } = makePair({
+                leftExports: [InspectableImplementation],
+                rightRateLimit: RATE_LIMIT,
+            })
+            for (let i = 0; i < RATE_LIMIT.limit * 3; i++) {
+                await expect(right.remoteObject.getProtocolNames()).resolves.toStrictEqual([
+                    InspectableProtocol.name,
+                ])
+            }
+            expect(left.isValid).toBe(true)
+        })
+
+        it("should not limit incoming broadcasts", () => {
+            const transport = new MockTransport()
+            const connection = new RPCConnection({
+                transport,
+                exportedObject: [],
+                rateLimit: RATE_LIMIT,
+            })
+            const received: unknown[] = []
+            connection.broadcaster.subscribe(Pinged, (data) => received.push(data))
+            for (let count = 0; count < 10; count++) {
+                transport.deliver({
+                    type: "broadcast",
+                    channel: "Test",
+                    what: "pinged",
+                    data: { count },
+                })
+            }
+            expect(received).toHaveLength(10)
+        })
+
+        it("should still handle invalidation once the limit is reached", async () => {
+            const transport = new MockTransport()
+            const connection = new RPCConnection({
+                transport,
+                exportedObject: [],
+                rateLimit: RATE_LIMIT,
+            })
+            deliverCommands(transport, ["1", "2", "3", "4"])
+            await flush()
+            transport.deliver({ type: "invalidate" })
+            expect(connection.isValid).toBe(false)
+        })
+
+        it("should track limits independently for each connection", async () => {
+            const first = new MockTransport()
+            const second = new MockTransport()
+            for (const transport of [first, second]) {
+                void new RPCConnection({ transport, exportedObject: [], rateLimit: RATE_LIMIT })
+            }
+            deliverCommands(first, ["1", "2", "3", "4"])
+            deliverCommands(second, ["1"])
+            await flush()
+            expect(resultFor(first, "4")).toStrictEqual(RATE_LIMITED_RESULT)
+            expect(resultFor(second, "1")).toStrictEqual({
+                type: "object.getProtocolNames",
+                protocolNames: [],
+            })
         })
     })
 

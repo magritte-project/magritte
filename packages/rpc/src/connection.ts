@@ -1,15 +1,23 @@
 import { RPCBroadcaster } from "./broadcasts"
-import { getErrorMessage, getErrorName } from "./errors"
+import { getErrorMessage, getErrorName, RPCError } from "./errors"
 import { Local } from "./internal/local"
 import { LocalObject } from "./internal/localObject"
+import { RateLimiter, RateLimitExceededError, type RateLimitOptions } from "./internal/rateLimiter"
 import { RemoteObject } from "./internal/remoteObject"
 import { assertNever } from "./internal/utilities"
 import type { RPCObject } from "./object"
 import type { ProtocolImplementation } from "./protocol"
 import type { RPCCommand, RPCCommandResult, RPCTransport, RPCTransportMessage } from "./transport"
 
-async function dispatchCommand(command: RPCCommand, object: RPCObject): Promise<RPCCommandResult> {
+async function dispatchCommand(
+    rateLimiter: RateLimiter | undefined,
+    command: RPCCommand,
+    object: RPCObject,
+): Promise<RPCCommandResult> {
     try {
+        if (rateLimiter && !rateLimiter.tryEnter()) {
+            throw new RateLimitExceededError("Connection rate limit exceeded")
+        }
         switch (command.type) {
             case "object.getProtocolNames":
                 return {
@@ -66,6 +74,9 @@ export interface RPCConnectionOptions {
 
     /** The default timeout for remote operations, in milliseconds  */
     readonly timeout?: number
+
+    /** The optional rate limit to apply to incoming commands */
+    readonly rateLimit?: RateLimitOptions
 }
 
 export type RPCConnectionEvent =
@@ -77,6 +88,7 @@ export class RPCConnection {
         this.subscribers = []
         this._isValid = true
         this.$timeout = new Local(options.timeout ?? 7_000)
+        this.rateLimiter = options.rateLimit && new RateLimiter(options.rateLimit)
         this.pending = new Map<string, PendingSend>()
         this.transport = options.transport
         this.broadcaster = options.broadcaster ?? new RPCBroadcaster()
@@ -84,7 +96,9 @@ export class RPCConnection {
         this.remoteObject = new RemoteObject(async (command) => {
             const reply = await this.send(command)
             if (isCommandResultOfType(reply, "error")) {
-                throw new Error(reply.message)
+                const error = new RPCError(reply.message)
+                error.name = reply.name
+                throw error
             }
             if (!isCommandResultOfType(reply, command.type)) {
                 throw new Error(`Reply to ${command.type} message was mismatched ${reply.type}`)
@@ -108,6 +122,9 @@ export class RPCConnection {
 
     /** Backing for the timeout property */
     private readonly $timeout: Local<number>
+
+    /** Optional rate limiter for this connection */
+    private readonly rateLimiter: RateLimiter | undefined
 
     /** Tracks all pending commands that have been sent but not yet received a reply */
     private readonly pending: Map<string, PendingSend>
@@ -151,7 +168,11 @@ export class RPCConnection {
     private async handleMessage(message: RPCTransportMessage): Promise<void> {
         switch (message.type) {
             case "command": {
-                const result = await dispatchCommand(message.command, this.exportedObject)
+                const result = await dispatchCommand(
+                    this.rateLimiter,
+                    message.command,
+                    this.exportedObject,
+                )
                 this.transport.postMessage({ id: message.id, type: "result", result })
                 break
             }

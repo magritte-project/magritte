@@ -15,3 +15,11 @@ export function getErrorMessage(error: unknown): string {
         return String(error)
     }
 }
+
+/** Error which originated on the other side of an RPC connection */
+export class RPCError extends Error {
+    constructor(message?: string) {
+        super(message)
+        this.name = "RPCError"
+    }
+}
