@@ -106,6 +106,7 @@ export class Extension {
             transport,
             broadcaster,
             exportedObject,
+            rateLimit: { limit: 60 * 3, samplePeriod: 1_000 },
         })
         signal?.throwIfAborted()
         const extension = new Extension(connection, manifest)
