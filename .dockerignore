@@ -1,3 +1,5 @@
-# Only the built wheel is needed to produce the image
+# Only the built wheel is needed to produce the image (and pyproject.toml to
+# check it is current)
 *
 !dist/*.whl
+!pyproject.toml

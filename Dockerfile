@@ -15,10 +15,27 @@ ENV UV_PYTHON_INSTALL_DIR=/opt/python \
 RUN uv python install --no-bin 3.13 \
     && uv venv --python 3.13 /opt/magritte
 
-# Bind-mount the wheel so it isn't left behind in an image layer
+# Bind-mount the wheel so it isn't left behind in an image layer. Refuse to build
+# from a stale or ambiguous dist/ (e.g. after `docker build` without `just build`).
 RUN --mount=type=bind,source=dist,target=/tmp/dist \
-    wheel="$(ls /tmp/dist/*.whl)" \
-    && uv pip install --python /opt/magritte "${wheel}[mailtrap]"
+    --mount=type=bind,source=pyproject.toml,target=/tmp/pyproject.toml \
+    set -e; \
+    set -- /tmp/dist/*.whl; \
+    if [ "$#" -ne 1 ] || [ ! -e "$1" ]; then \
+        echo "Expected exactly one wheel in dist/, found: $*" >&2; \
+        echo "Run \`just docker-build\` to rebuild it." >&2; \
+        exit 1; \
+    fi; \
+    wheel="$1"; \
+    expected="$(sed -n 's/^version = "\(.*\)"$/\1/p' /tmp/pyproject.toml | head -n 1)"; \
+    case "$(basename "$wheel")" in \
+        magritte_project-"$expected"-*.whl) ;; \
+        *) \
+            echo "$(basename "$wheel") does not match project version $expected" >&2; \
+            echo "Run \`just docker-build\` to rebuild it." >&2; \
+            exit 1 ;; \
+    esac; \
+    uv pip install --python /opt/magritte "${wheel}[mailtrap]"
 
 RUN addgroup -S -g 1000 magritte \
     && adduser -S -D -H -u 1000 -G magritte magritte \

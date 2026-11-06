@@ -46,14 +46,15 @@ async def read_instance_status(
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     try:
-        package_version = version("magritte")
+        package_version = version("magritte-project")
     except PackageNotFoundError:
         # NOTE: Magritte is not packaged during development, so we fallback
         #       to reading the current version from the project manifest:
         try:
             import tomllib
 
-            with Path("pyproject.toml").open("rb") as pyproject_file:
+            pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
+            with pyproject_path.open("rb") as pyproject_file:
                 pyproject = tomllib.load(pyproject_file)
                 package_version = str(pyproject["project"]["version"])
         except (KeyError, FileNotFoundError, tomllib.TOMLDecodeError):
