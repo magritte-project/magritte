@@ -52,10 +52,7 @@ export default function Palette({
 
     const showLegend = useDebounce(search.length === 0, 1_000)
 
-    const handleClose = useCallback(() => {
-        setSearch("")
-        setIsOpen(false)
-    }, [setSearch, setIsOpen])
+    const handleClose = useCallback(() => setIsOpen(false), [setIsOpen])
 
     const handleChange = useCallback(
         (value: object | null) => {
@@ -197,7 +194,11 @@ export default function Palette({
                                     </button>
                                 </div>
                             </div>
-                            <ComboboxOptions static className="relative max-h-80 overflow-y-auto">
+                            <ComboboxOptions
+                                static
+                                modal={false}
+                                className="relative max-h-80 overflow-y-auto"
+                            >
                                 {view === "command" && <PaletteCommandsView search={search} />}
                                 {view === "search" && <PaletteSearchCommandView search={search} />}
                                 <AnimatePresence mode="wait">

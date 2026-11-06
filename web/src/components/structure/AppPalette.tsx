@@ -15,10 +15,10 @@ export default function AppPalette() {
     const { isOpen, setIsOpen: _setIsOpen } = useAppPaletteContext()
     const lastClosedRef = useRef(0)
     const setIsOpen = useCallback(
-        (newValue: React.SetStateAction<boolean>) => {
-            _setIsOpen((oldValue) => {
-                const isOpen = resolveNewValue(oldValue, newValue)
-                if (isOpen != oldValue) {
+        (next: React.SetStateAction<boolean>) => {
+            _setIsOpen((prev) => {
+                const isOpen = resolveNewValue(prev, next)
+                if (isOpen != prev) {
                     if (!isOpen) {
                         lastClosedRef.current = Date.now()
                     } else if (Date.now() - lastClosedRef.current > STATE_MEMORY_LIMIT) {
