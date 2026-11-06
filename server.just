@@ -5,13 +5,13 @@ test:
     uv run pytest
 
 lint:
-    uvx ruff check --fix
+    uv run ruff check --fix
 
 format:
-    uvx ruff format
+    uv run ruff format
 
 check-types:
-    uvx ty check
+    uv run ty check
 
 clean:
     -[ -e "$PWD/dist" ] && rm -rf "$PWD/dist"
