@@ -1,0 +1,38 @@
+{
+    "name": "@magritte/extension-empty",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite --port 9876",
+        "build": "tsc -b && vite build",
+        "test": "vitest run --passWithNoTests",
+        "format": "oxfmt",
+        "lint": "oxlint",
+        "check": "oxlint && oxfmt --check",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@magritte/api": "workspace:",
+        "@magritte/rpc": "workspace:",
+        "@magritte/sdk": "workspace:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@testing-library/dom": "catalog:",
+        "@testing-library/react": "catalog:",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "@vitejs/plugin-react": "catalog:",
+        "jsdom": "catalog:",
+        "oxfmt": "catalog:",
+        "oxlint": "catalog:",
+        "oxlint-tsgolint": "catalog:",
+        "typescript": "catalog:",
+        "vite": "catalog:",
+        "vitest": "catalog:"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Empty",
+    "description": "A mostly empty testing extension",
+    "id": "magritte.empty",
+    "version": "0.0.0",
+    "url": "/",
+    "icon_url": "/favicon.svg",
+    "preferredWidth": "20rem",
+    "preferredHeight": "32rem"
+}
