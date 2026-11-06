@@ -25,6 +25,7 @@ data.
 
 - [@magritte/extension-applemusic](https://github.com/magritte-project/extension-applemusic)
 - [@magritte/extension-genius](https://github.com/magritte-project/extension-genius)
+- [@magritte/extension-lastfm](https://github.com/magritte-project/extension-lastfm)
 
 ## AI Usage Disclosure
 
