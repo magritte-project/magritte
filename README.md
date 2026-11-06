@@ -23,6 +23,7 @@ data.
 
 ## Extension Projects
 
+- [@magritte/extension-applemusic](https://github.com/magritte-project/extension-applemusic)
 - [@magritte/extension-genius](https://github.com/magritte-project/extension-genius)
 
 ## AI Usage Disclosure
