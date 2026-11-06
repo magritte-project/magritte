@@ -6,7 +6,7 @@ import { useEffect } from "react"
 import DialogIcon from "@/components/reusable/DialogIcon"
 import ThemedButton from "@/components/theme/ThemedButton"
 import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
-import useHotKeys from "@/hooks/hotKeysHook"
+import useHotKeyDispatcher from "@/hooks/hotKeyDispatcherHook"
 
 export interface DialogModalProps {
     readonly options: DialogOptions
@@ -14,13 +14,13 @@ export interface DialogModalProps {
 }
 
 export default function DialogModal({ options, onDismiss }: DialogModalProps) {
-    const { registerHotKey } = useHotKeys()
+    const hotkeyDispatcher = useHotKeyDispatcher()
     useEffect(() => {
         const buttons = [...(options.buttons ?? defaultDialogButtons)].reverse()
 
         const primaryButton = buttons.find((button) => button.role === "primary")
         if (primaryButton !== undefined) {
-            return registerHotKey({ key: "Enter", requiresModifier: false }, () => {
+            return hotkeyDispatcher.register({ key: "Enter", requiresModifier: false }, () => {
                 onDismiss(primaryButton.id)
                 return true
             })
@@ -28,12 +28,12 @@ export default function DialogModal({ options, onDismiss }: DialogModalProps) {
 
         const destructiveButton = buttons.find((button) => button.role === "destructive")
         if (destructiveButton !== undefined) {
-            return registerHotKey({ key: "Backspace" }, () => {
+            return hotkeyDispatcher.register({ key: "Backspace" }, () => {
                 onDismiss(destructiveButton.id)
                 return true
             })
         }
-    }, [options.buttons, registerHotKey, onDismiss])
+    }, [options.buttons, hotkeyDispatcher, onDismiss])
     return (
         <Dialog static open onClose={() => onDismiss()} className="relative">
             <DialogBackdrop

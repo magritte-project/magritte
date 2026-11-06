@@ -15,6 +15,7 @@ import { LibraryProtocol, type Library } from "../library"
 import { NotificationCenterProtocol, type NotificationCenter } from "../notificationCenter"
 import { PlaybackEngineProtocol, type PlaybackEngine } from "../playback/playbackEngine"
 import { PlayerProtocol, type Player } from "../playback/player"
+import { UIEventsProtocol, type UIEvents } from "../uiEvents"
 import { createDeferred, type Deferred } from "../utilities"
 import { ExtensionRequestClose, ExtensionRequestOpen } from "./common"
 
@@ -173,5 +174,9 @@ export class ExtensionHost {
 
     async player(): Promise<Player> {
         return cast(PlayerProtocol, this.connection.remoteObject)
+    }
+
+    async uiEvents(): Promise<UIEvents> {
+        return cast(UIEventsProtocol, this.connection.remoteObject)
     }
 }

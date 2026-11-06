@@ -17,5 +17,7 @@ export * from "./extensions"
 export * from "./library"
 export * from "./manifest"
 export * from "./notificationCenter"
+export * from "./uiEvents"
 
+export * from "./uiEventForwarding"
 export * from "./utilities"

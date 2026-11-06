@@ -8,7 +8,7 @@ import ThemedSubtleButton from "@/components/theme/ThemedSubtleButton"
 import useAppPaletteContext from "@/hooks/appPaletteContext"
 import useCommandInputs from "@/hooks/commandInputsHook"
 import useCommandRegistry from "@/hooks/commandRegistryHook"
-import useHotKeys from "@/hooks/hotKeysHook"
+import useHotKeyDispatcher from "@/hooks/hotKeyDispatcherHook"
 import { combineUnsubscribers, justEventsMatching } from "@/utilities/events"
 
 const highlightedCommandListVariants: Variants = {
@@ -21,7 +21,7 @@ const highlightedCommandItemVariants: Variants = {
 }
 
 export default function PaletteButton() {
-    const { modifierKey } = useHotKeys()
+    const hotkeyDispatcher = useHotKeyDispatcher()
     const { setIsOpen: setPaletteIsOpen } = useAppPaletteContext()
     const handleTogglePalette = useCallback(() => {
         setPaletteIsOpen((oldValue) => !oldValue)
@@ -62,7 +62,7 @@ export default function PaletteButton() {
     return (
         <div className="relative">
             <ThemedSubtleButton onClick={handleTogglePalette}>
-                {modifierKey === "meta" ? <CommandIcon /> : <ControlIcon />} K
+                {hotkeyDispatcher.modifierKey === "meta" ? <CommandIcon /> : <ControlIcon />} K
             </ThemedSubtleButton>
             <AnimatePresence mode="wait">
                 {highlightedCommands.length > 0 && (

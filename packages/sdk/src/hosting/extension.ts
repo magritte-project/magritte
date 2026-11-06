@@ -17,6 +17,7 @@ import { getExtensionOrigin } from "../manifest"
 import { type NotificationCenter, NotificationCenterProtocol } from "../notificationCenter"
 import { type PlaybackEngine, PlaybackEngineProtocol } from "../playback/playbackEngine"
 import { type Player, PlayerProtocol } from "../playback/player"
+import { UIEventsProtocol, type UIEvents } from "../uiEvents"
 import { createDeferred, type Deferred } from "../utilities"
 import { ExtensionRequestClose, ExtensionRequestOpen } from "./common"
 
@@ -37,6 +38,7 @@ export interface HostExportsObject {
     readonly notificationCenter: NotificationCenter
     readonly library: Library
     readonly player: Player
+    readonly uiEvents: UIEvents
 }
 
 export type HostExports =
@@ -44,7 +46,7 @@ export type HostExports =
     | ((options: HostExportsOptions) => Promise<HostExportsObject>)
 
 async function implementExports(options: HostExportsOptions, exports: HostExports) {
-    const { commandCoordinator, extensions, notificationCenter, library, player } =
+    const { commandCoordinator, extensions, notificationCenter, library, player, uiEvents } =
         typeof exports === "function" ? await exports(options) : exports
     return [
         implement(CommandCoordinatorProtocol, commandCoordinator),
@@ -52,6 +54,7 @@ async function implementExports(options: HostExportsOptions, exports: HostExport
         implement(NotificationCenterProtocol, notificationCenter),
         implement(LibraryProtocol, library),
         implement(PlayerProtocol, player),
+        implement(UIEventsProtocol, uiEvents),
     ]
 }
 

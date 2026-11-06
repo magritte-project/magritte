@@ -2,12 +2,15 @@ import type { API, ExtensionManifest } from "@magritte/api"
 import { Extension, getExtensionAllow, getExtensionSrc } from "@magritte/sdk"
 import type { QueryClient } from "@tanstack/react-query"
 
+import type { HotKeyDispatcher } from "@/commands/hotKeyDispatcher"
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
 import { exportCommandCoordinator } from "@/extensions/exports/exportCommandCoordinator"
+import { exportExtensions } from "@/extensions/exports/exportExtensions"
 import { exportLibrary } from "@/extensions/exports/exportLibrary"
 import { exportNotificationCenter } from "@/extensions/exports/exportNotificationCenter"
 import { exportPlayer } from "@/extensions/exports/exportPlayer"
+import { exportUIEvents } from "@/extensions/exports/exportUIEvents"
 import type { NotificationCenter } from "@/notifications/center"
 import type { Player } from "@/playback/player"
 import {
@@ -17,8 +20,6 @@ import {
     type EventSubscribe,
 } from "@/utilities/events"
 
-import { exportExtensions } from "./exports/exportExtensions"
-
 export interface ExtensionRuntimeOptions {
     readonly container: HTMLElement
     readonly commandInputs: CommandInputs
@@ -26,6 +27,7 @@ export interface ExtensionRuntimeOptions {
     readonly queryClient: QueryClient
     readonly api: API
     readonly notificationCenter: NotificationCenter
+    readonly hotKeyDispatcher: HotKeyDispatcher
     readonly player: Player
 }
 
@@ -109,6 +111,9 @@ export class ExtensionRuntime {
     /** The API */
     private readonly _api: API
 
+    /** The hot key dispatcher */
+    readonly _hotKeyDispatcher: HotKeyDispatcher
+
     /** The notification center */
     private readonly _notificationCenter: NotificationCenter
 
@@ -132,6 +137,7 @@ export class ExtensionRuntime {
         this._commandRegistry = options.commandRegistry
         this._queryClient = options.queryClient
         this._api = options.api
+        this._hotKeyDispatcher = options.hotKeyDispatcher
         this._notificationCenter = options.notificationCenter
         this._player = options.player
         this._available = new Map()
@@ -346,6 +352,7 @@ export class ExtensionRuntime {
                     notificationCenter: exportNotificationCenter(this._notificationCenter),
                     library: exportLibrary(manifest, this._queryClient, this._api),
                     player: exportPlayer(manifest, broadcaster, this._player),
+                    uiEvents: exportUIEvents(this._hotKeyDispatcher),
                 }),
             })
             extension.subscribe((event) => {

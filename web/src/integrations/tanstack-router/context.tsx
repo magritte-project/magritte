@@ -2,6 +2,7 @@ import type { API } from "@magritte/api"
 import type { QueryClient } from "@tanstack/react-query"
 import { createRouter, type RegisteredRouter } from "@tanstack/react-router"
 
+import type { HotKeyDispatcher } from "@/commands/hotKeyDispatcher"
 import type { CommandInputs } from "@/commands/inputs/base"
 import type { CommandRegistry } from "@/commands/registry"
 import type { SearchRegistry } from "@/commands/searchRegistry"
@@ -20,6 +21,7 @@ export interface MagritteRouterContext {
     readonly commandRegistry: CommandRegistry
     readonly searchRegistry: SearchRegistry
     readonly extensionRuntime: ExtensionRuntime
+    readonly hotKeyDispatcher: HotKeyDispatcher
     readonly localCache: LocalCache
     readonly notificationCenter: NotificationCenter
     readonly taskProgressReporter: TaskProgressReporter

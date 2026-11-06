@@ -1,12 +1,10 @@
 import { useEffect } from "react"
 
-import { type HotKeyDefinition } from "@/contexts/hotKeysContext"
-import useHotKeys from "@/hooks/hotKeysHook"
+import type { HotKeyDefinition } from "@/commands/hotKeyDispatcher"
+import useHotKeyDispatcher from "@/hooks/hotKeyDispatcherHook"
 
 export default function useHotKey(hotKey: HotKeyDefinition, handler: () => boolean) {
-    const { registerHotKey } = useHotKeys()
+    const hotKeyDispatcher = useHotKeyDispatcher()
 
-    useEffect(() => {
-        return registerHotKey(hotKey, handler)
-    }, [registerHotKey, hotKey, handler])
+    useEffect(() => hotKeyDispatcher.register(hotKey, handler), [hotKeyDispatcher, hotKey, handler])
 }

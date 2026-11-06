@@ -4,6 +4,7 @@ import { RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
+import { HotKeyDispatcher } from "@/commands/hotKeyDispatcher"
 import { CommandInputs } from "@/commands/inputs/base"
 import { CommandRegistry } from "@/commands/registry"
 import { LibraryAlbumsSearchCommand } from "@/commands/searchCommands/libraryAlbums"
@@ -54,6 +55,9 @@ try {
     // Set up user events
     const notificationCenter = new NotificationCenter(queryClient, api)
 
+    // Set up hot keys
+    const hotKeyDispatcher = new HotKeyDispatcher()
+
     // Set up job reporting
     const taskProgressReporter = new TaskProgressReporter()
 
@@ -75,6 +79,7 @@ try {
         queryClient,
         api,
         notificationCenter,
+        hotKeyDispatcher,
         player,
     })
     await extensionRuntime.sync()
@@ -85,13 +90,14 @@ try {
         api,
         commandInputs,
         commandRegistry,
-        searchRegistry,
         extensionRuntime,
+        hotKeyDispatcher,
         localCache,
         notificationCenter,
-        taskProgressReporter,
         player,
         queryClient,
+        searchRegistry,
+        taskProgressReporter,
     })
 
     // Hook up commands
