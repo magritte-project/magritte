@@ -21,6 +21,10 @@ data.
 - [Building Extensions](https://magritte-project.github.io/resources/extensions/)
 - [Architecture Overview](https://magritte-project.github.io/resources/architecture/)
 
+## Extension Projects
+
+- [@magritte/extension-genius](https://github.com/magritte-project/extension-genius)
+
 ## AI Usage Disclosure
 
 The Magritte project contains a mix of handwritten code and AI output.
