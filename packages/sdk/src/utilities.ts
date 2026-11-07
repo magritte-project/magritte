@@ -80,3 +80,49 @@ export function createDeferred<T>(): DeferredResolvers<T> {
     }
     return { deferred, resolve, reject }
 }
+
+/**
+ * The outcome of an operation which may have failed.
+ */
+export type SafeResult<T> =
+    | {
+          readonly success: true
+          readonly value: T
+          readonly error?: never
+      }
+    | {
+          readonly success: false
+          readonly data?: never
+          readonly error: unknown
+      }
+
+/**
+ * Await the value of a promise that may throw,
+ * converting any errors into a returned value.
+ *
+ * Use this function to make SDK calls where using a `try...catch`
+ * construct would be inconvenient or impossible:
+ *
+ * ```typescript
+ * const host = await safely(ExtensionHost.connect(...))
+ * if (!host.success) {
+ *      ...
+ * }
+ * ```
+ *
+ * @param pending A promise or a function which will
+ * return a promise.
+ * @returns A result containing either the resolved value
+ * from the promise or the error it was rejected with.
+ * @throws This function does not throw.
+ */
+export async function safely<T>(
+    pending: PromiseLike<T> | (() => PromiseLike<T> | T),
+): Promise<SafeResult<T>> {
+    try {
+        const value = await (typeof pending === "function" ? pending() : pending)
+        return { success: true, value }
+    } catch (error) {
+        return { success: false, error }
+    }
+}

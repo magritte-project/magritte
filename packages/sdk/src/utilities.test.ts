@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { createDeferred, PendingDeferredError } from "./utilities"
+import { createDeferred, PendingDeferredError, safely } from "./utilities"
 
 describe("utilities", () => {
     describe("#createDeferred", () => {
@@ -22,6 +22,64 @@ describe("utilities", () => {
             reject(new Error("Your card's been rejected"))
             expect(deferred.status).toStrictEqual("rejected")
             expect(() => deferred.get()).toThrow("Your card's been rejected")
+        })
+    })
+
+    describe("#safely", () => {
+        it("should return resolved values", async () => {
+            await expect(safely((async () => 42)())).resolves.toStrictEqual({
+                success: true,
+                value: 42,
+            })
+        })
+
+        it("should return rejected errors", async () => {
+            await expect(
+                safely(
+                    (async () => {
+                        throw "not gonna happen"
+                    })(),
+                ),
+            ).resolves.toStrictEqual({
+                success: false,
+                error: "not gonna happen",
+            })
+        })
+
+        it("should return resolved values from async function", async () => {
+            await expect(safely(async () => 42)).resolves.toStrictEqual({
+                success: true,
+                value: 42,
+            })
+        })
+
+        it("should return rejected errors from async function", async () => {
+            await expect(
+                safely(async () => {
+                    throw "not gonna happen"
+                }),
+            ).resolves.toStrictEqual({
+                success: false,
+                error: "not gonna happen",
+            })
+        })
+
+        it("should return resolved values from sync function", async () => {
+            await expect(safely(() => 42)).resolves.toStrictEqual({
+                success: true,
+                value: 42,
+            })
+        })
+
+        it("should return rejected errors from sync function", async () => {
+            await expect(
+                safely(() => {
+                    throw "not gonna happen"
+                }),
+            ).resolves.toStrictEqual({
+                success: false,
+                error: "not gonna happen",
+            })
         })
     })
 })
