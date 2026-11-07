@@ -385,7 +385,7 @@ async def send_verification_email(
             {
                 "name": user_username,
                 "verify_link": f"{config.web_url}/verify/{token}",
-                "expiration": expires_at.strftime("%YYYY-%dd-%mm %H:%M:%S"),
+                "expiration": expires_at.strftime("%Y-%m-%d %H:%M UTC"),
             },
         )
         await email_client.send(

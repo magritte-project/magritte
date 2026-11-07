@@ -1,3 +1,4 @@
+import re
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from unittest.mock import AsyncMock
@@ -79,6 +80,35 @@ class TestSignUp:
         assert response_json.get("email") == "anybody@nowhere.com"
 
         installed_mock_email_client.send.assert_called_once()
+
+    def test_verification_email_has_readable_expiration(
+        self,
+        client: TestClient,
+        installed_mock_email_client: AsyncMock,
+    ):
+        before = datetime.now(UTC)
+        response = client.post(
+            "/sign-up",
+            json={
+                "email": "anybody@nowhere.com",
+                "username": "anybody",
+                "password": "passpass",
+            },
+        )
+        assert response.status_code == 200
+
+        text = installed_mock_email_client.send.call_args.kwargs["text"]
+        match = re.search(r"Expires on (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) UTC", text)
+        assert match, text
+        expires_at = datetime.strptime(match.group(1), "%Y-%m-%d %H:%M").replace(
+            tzinfo=UTC
+        )
+        # Verification links last an hour; the format drops seconds
+        assert (
+            before + timedelta(minutes=59)
+            <= expires_at
+            <= before + timedelta(hours=1, minutes=1)
+        )
 
     def test_with_email_rejects_already_in_use_email(
         self,
