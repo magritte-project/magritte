@@ -1,6 +1,6 @@
 {
     "name": "magritte",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "private": true,
     "description": "Built-in front end for Magritte instances",
     "license": "GPL-3.0-only",
