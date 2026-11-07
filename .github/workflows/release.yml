@@ -86,7 +86,7 @@ jobs:
         name: Publish to npm
         runs-on: ubuntu-latest
         timeout-minutes: 10
-        environment: pypi
+        environment: npm
         permissions:
             contents: read
             id-token: write
