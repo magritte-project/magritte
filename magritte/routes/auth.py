@@ -8,7 +8,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col
+from sqlmodel import col, func
 
 from magritte.auth import (
     FeatureScope,
@@ -88,22 +88,30 @@ async def sign_up(
     session: Annotated[AsyncSession, Depends(get_db_session, scope="function")],
 ):
     try:
+        if email_client is not None and not sign_up.email:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Email required",
+            )
+
+        # Checked before creating the user, which would otherwise be flushed and found.
+        # The DB's unique constraint on usernames is case sensitive, so it can't catch this.
+        if await User.read_by_username(sign_up.username, session):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Username already taken",
+            )
+
         new_user = await create_user(
             sign_up.username,
             sign_up.password,
             session,
         )
 
-        if email_client is not None:
-            if not sign_up.email:
-                raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-                    detail="Email required",
-                )
-
+        if email_client is not None and sign_up.email:
             email_already_used = await User.exists(
                 where=[
-                    col(User.email) == sign_up.email,
+                    func.lower(col(User.email)) == func.lower(sign_up.email),
                 ],
                 joins=[],
                 session=session,

@@ -156,6 +156,63 @@ class TestSignUp:
 
         installed_mock_email_client.send.assert_not_called()
 
+    @pytest.mark.parametrize("username", ["admin", "ADMIN", "Admin"])
+    def test_rejects_taken_username_in_any_case(
+        self,
+        client: TestClient,
+        installed_mock_email_client: AsyncMock,
+        username: str,
+    ):
+        response = client.post(
+            "/sign-up",
+            json={
+                "username": username,
+                "password": "passpass",
+                "email": "newcomer@example.com",
+            },
+        )
+        assert response.status_code == 409
+        assert response.json().get("detail") == "Username already taken"
+
+    @pytest.mark.parametrize(
+        "email",
+        ["admin@example.com", "ADMIN@EXAMPLE.COM", "Admin@Example.com"],
+    )
+    def test_rejects_taken_email_in_any_case(
+        self,
+        client: TestClient,
+        installed_mock_email_client: AsyncMock,
+        email: str,
+    ):
+        response = client.post(
+            "/sign-up",
+            json={
+                "username": "newcomer",
+                "password": "passpass",
+                "email": email,
+            },
+        )
+        assert response.status_code == 409
+        assert response.json().get("detail") == "Email already in use"
+
+        installed_mock_email_client.send.assert_not_called()
+
+    def test_preserves_username_case(
+        self,
+        client: TestClient,
+        installed_mock_email_client: AsyncMock,
+    ):
+        response = client.post(
+            "/sign-up",
+            json={
+                "username": "Newcomer",
+                "password": "passpass",
+                "email": "newcomer@example.com",
+            },
+        )
+        assert response.status_code == 200
+        assert response.json().get("username") == "Newcomer"
+
 
 class TestSignIn:
     def test_with_valid_credentials(
@@ -202,6 +259,95 @@ class TestSignIn:
         )
         assert token_response.status_code == 400
         assert token_response.json().get("detail") == "Incorrect username or password"
+
+    @pytest.mark.parametrize("username", ["admin", "ADMIN", "Admin", "aDmIn"])
+    def test_username_is_case_insensitive(
+        self,
+        client: TestClient,
+        username: str,
+    ):
+        token_response = client.post(
+            "/sign-in",
+            data={
+                "username": username,
+                "password": "password",
+            },
+        )
+        assert token_response.status_code == 200
+
+        me_response = client.get(
+            "/users/me",
+            headers={
+                "Authorization": f"Bearer {token_response.json()['access_token']}"
+            },
+        )
+        assert me_response.json().get("username") == "admin"
+
+    @pytest.mark.parametrize(
+        "email",
+        ["admin@example.com", "ADMIN@EXAMPLE.COM", "Admin@Example.com"],
+    )
+    def test_email_is_case_insensitive(
+        self,
+        client: TestClient,
+        installed_mock_email_client: AsyncMock,
+        email: str,
+    ):
+        token_response = client.post(
+            "/sign-in",
+            data={
+                "username": email,
+                "password": "password",
+            },
+        )
+        assert token_response.status_code == 200
+
+        me_response = client.get(
+            "/users/me",
+            headers={
+                "Authorization": f"Bearer {token_response.json()['access_token']}"
+            },
+        )
+        assert me_response.json().get("username") == "admin"
+
+    def test_requires_right_password_in_any_case(
+        self,
+        client: TestClient,
+    ):
+        token_response = client.post(
+            "/sign-in",
+            data={
+                "username": "ADMIN",
+                "password": "nope",
+            },
+        )
+        assert token_response.status_code == 400
+        assert token_response.json().get("detail") == "Incorrect username or password"
+
+    def test_mixed_case_sign_up_signs_in_with_any_case(
+        self,
+        client: TestClient,
+        installed_mock_email_client: AsyncMock,
+    ):
+        sign_up_response = client.post(
+            "/sign-up",
+            json={
+                "username": "MixedCase",
+                "password": "passpass",
+                "email": "Mixed.Case@Example.com",
+            },
+        )
+        assert sign_up_response.status_code == 200
+
+        for username in ("mixedcase", "MIXEDCASE", "mixed.case@example.com"):
+            token_response = client.post(
+                "/sign-in",
+                data={
+                    "username": username,
+                    "password": "passpass",
+                },
+            )
+            assert token_response.status_code == 200
 
 
 class TestVerifyEmail:
@@ -373,6 +519,23 @@ class TestResetPassword:
         assert response.json().get("detail") == "User not found"
 
         installed_mock_email_client.send.assert_not_called()
+
+    def test_email_is_case_insensitive(
+        self,
+        client: TestClient,
+        installed_mock_email_client: AsyncMock,
+    ):
+        response = client.post(
+            "/reset-password",
+            json={"email": "STANDARD@Example.COM"},
+        )
+        assert response.status_code == 200
+
+        installed_mock_email_client.send.assert_called_once()
+        recipients = installed_mock_email_client.send.call_args.kwargs["to"]
+        assert {recipient.address for recipient in recipients} == {
+            "standard@example.com"
+        }
 
 
 class TestResetPasswordComplete:

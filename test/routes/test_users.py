@@ -520,6 +520,59 @@ class TestUpdateMe:
         # It should only send the email for the successful request
         installed_mock_email_client.send.assert_called_once()
 
+    @pytest.mark.asyncio
+    async def test_rejects_other_users_email_in_any_case(
+        self,
+        client: TestClient,
+        standard_auth: AuthFixture,
+        installed_mock_email_client: AsyncMock,
+    ):
+        session = standard_auth.sign_in()
+
+        response = client.post(
+            "/users/me",
+            json={
+                "email": "ADMIN@Example.com",
+                "preferred_name": None,
+                "enable_playback_events": True,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        assert response.status_code == 409
+        assert response.json().get("detail") == "Email already in use"
+
+        installed_mock_email_client.send.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_changing_case_of_own_email_keeps_it_verified(
+        self,
+        client: TestClient,
+        standard_auth: AuthFixture,
+        installed_mock_email_client: AsyncMock,
+    ):
+        session = standard_auth.sign_in()
+
+        response = client.post(
+            "/users/me",
+            json={
+                "email": "Standard@Example.com",
+                "preferred_name": None,
+                "enable_playback_events": True,
+            },
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        # Email validation lowercases the domain, but keeps the local part's case
+        assert response_json.get("email") == "Standard@example.com"
+        assert response_json.get("is_email_verified") is True
+
+        installed_mock_email_client.send.assert_not_called()
+
+        async with standard_auth.db_session() as db_session:
+            user = await db_session.get_one(User, await standard_auth.user_id)
+            assert user.is_email_verified is True
+
 
 class TestReadUsers:
     @pytest.mark.asyncio
@@ -598,6 +651,23 @@ class TestReadUser:
         )
         assert response.status_code == 401
         assert response.json().get("detail") == "Not authenticated"
+
+    @pytest.mark.asyncio
+    async def test_read_by_username_is_case_insensitive(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+    ):
+        session = admin_auth.sign_in()
+
+        response = client.get(
+            "/users/all/ADMIN",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("id") == 1
+        assert response_json.get("username") == "admin"
 
 
 class TestReadUsersAdmin:
@@ -736,6 +806,23 @@ class TestReadUserAdmin:
         )
         assert response.status_code == 401
         assert response.json().get("detail") == "Not authenticated"
+
+    @pytest.mark.asyncio
+    async def test_read_by_username_is_case_insensitive(
+        self,
+        client: TestClient,
+        admin_auth: AuthFixture,
+    ):
+        session = admin_auth.sign_in()
+
+        response = client.get(
+            "/users/admin/all/ADMIN",
+            headers={"Authorization": f"Bearer {session.access_token}"},
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert response_json.get("id") == 1
+        assert response_json.get("username") == "admin"
 
 
 class TestUpdateUserAdmin:

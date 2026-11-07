@@ -14,7 +14,7 @@ from fastapi import (
 )
 from sqlalchemy import ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col, select, update
+from sqlmodel import col, func, select, update
 
 from magritte.auth import (
     FeatureScope,
@@ -98,22 +98,31 @@ async def update_me(
                 detail="Cannot clear email",
             )
 
-        email_already_used = await User.exists(
-            where=[
-                col(User.email) == str(profile_update.email),
-            ],
-            joins=[],
-            session=session,
-        )
-        if email_already_used:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT, detail="Email already in use"
+        new_email = str(profile_update.email)
+        if current_user.email is not None and (
+            new_email.lower() == current_user.email.lower()
+        ):
+            # Only the capitalization changed, so it's still the same, verified address
+            current_user.email = new_email
+        else:
+            email_already_used = await User.exists(
+                where=[
+                    func.lower(col(User.email)) == func.lower(new_email),
+                    col(User.id) != current_user.id,
+                ],
+                joins=[],
+                session=session,
             )
+            if email_already_used:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Email already in use",
+                )
 
-        current_user.email = str(profile_update.email)
-        current_user.is_email_verified = False
+            current_user.email = new_email
+            current_user.is_email_verified = False
 
-        if email_client is not None:
+        if email_client is not None and not current_user.is_email_verified:
             token, expires_at = create_verify_email_token(current_user)
             background_tasks.add_task(
                 send_verification_email,
@@ -378,7 +387,7 @@ async def read_user(
     except ValueError:
         user = await session.scalar(
             select(User).where(
-                col(User.username) == id_or_username,
+                func.lower(col(User.username)) == func.lower(id_or_username),
             )
         )
 
@@ -440,7 +449,7 @@ async def read_user_admin(
     except ValueError:
         user = await session.scalar(
             select(User).where(
-                col(User.username) == id_or_username,
+                func.lower(col(User.username)) == func.lower(id_or_username),
             )
         )
 

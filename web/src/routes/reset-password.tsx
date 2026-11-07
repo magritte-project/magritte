@@ -44,6 +44,7 @@ export const Route = createFileRoute("/reset-password")({
                         {(field) => (
                             <FieldDecoration field={field} label="Email">
                                 <field.InputField
+                                    type="email"
                                     placeholder="Enter your email"
                                     disabled={form.state.isSubmitted && !resetMutation.isError}
                                 />

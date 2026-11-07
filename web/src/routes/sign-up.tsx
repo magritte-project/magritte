@@ -78,7 +78,7 @@ export const Route = createFileRoute("/sign-up")({
                         >
                             {(field) => (
                                 <FieldDecoration field={field} label="Email">
-                                    <field.InputField placeholder="Enter your email" />
+                                    <field.InputField type="email" placeholder="Enter your email" />
                                 </FieldDecoration>
                             )}
                         </form.AppField>
@@ -94,7 +94,11 @@ export const Route = createFileRoute("/sign-up")({
                     >
                         {(field) => (
                             <FieldDecoration field={field} label="Username">
-                                <field.InputField placeholder="Choose a username" />
+                                <field.InputField
+                                    placeholder="Choose a username"
+                                    autoCapitalize="off"
+                                    autoCorrect="off"
+                                />
                             </FieldDecoration>
                         )}
                     </form.AppField>

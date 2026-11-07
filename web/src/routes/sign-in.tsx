@@ -90,6 +90,8 @@ export const Route = createFileRoute("/sign-in")({
                                             ? "Enter your username or email"
                                             : "Enter your username"
                                     }
+                                    autoCapitalize="off"
+                                    autoCorrect="off"
                                 />
                             </FieldDecoration>
                         )}

@@ -101,6 +101,8 @@ class User(LibraryModel, table=True):
         description="The user's handle",
     )
     email: str | None = Field(
+        unique=True,
+        index=True,
         default=None,
         description="The user's email, if any",
     )
@@ -192,7 +194,7 @@ class User(LibraryModel, table=True):
     ) -> Self | None:
         return await session.scalar(
             select(cls).where(
-                col(cls.username) == username,
+                func.lower(col(cls.username)) == func.lower(username),
             ),
         )
 
@@ -200,7 +202,7 @@ class User(LibraryModel, table=True):
     async def read_by_email(cls, email: str, session: AsyncSession) -> Self | None:
         return await session.scalar(
             select(cls).where(
-                col(cls.email) == email,
+                func.lower(col(cls.email)) == func.lower(email),
             ),
         )
 
@@ -211,10 +213,10 @@ class User(LibraryModel, table=True):
         return await session.scalar(
             select(cls).where(
                 or_(
-                    col(cls.username) == username_or_email,
+                    func.lower(col(cls.username)) == func.lower(username_or_email),
                     and_(
                         col(cls.email).is_not(None),
-                        col(cls.email) == username_or_email,
+                        func.lower(col(cls.email)) == func.lower(username_or_email),
                     ),
                 ),
             ),
