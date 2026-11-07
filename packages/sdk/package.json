@@ -71,7 +71,7 @@
     "peerDependencies": {
         "@magritte/api": "workspace:^",
         "@magritte/rpc": "workspace:^",
-        "zod": "^4.6.7"
+        "zod": "catalog:packages"
     },
     "packageManager": "pnpm@12.8.1"
 }
