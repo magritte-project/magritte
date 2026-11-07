@@ -1,19 +1,17 @@
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from magritte.auth import password_hash
-from magritte.config import get_secrets_config
 from magritte.model.library import Library
 from magritte.model.user import User, UserLibraryLink
 from magritte.schemas.auth import OAuth2Scope
 
 
 async def _seed_users(session: AsyncSession):
-    secrets_config = get_secrets_config()
     # Seed the first user which is always an admin
     session.add(
         User(
             username="admin",
-            hashed_password=password_hash.hash("password", salt=secrets_config.salt),
+            hashed_password=password_hash.hash("password"),
             email="admin@example.com",
             is_email_verified=True,
             scope=OAuth2Scope.to_str({*OAuth2Scope}),
@@ -23,7 +21,7 @@ async def _seed_users(session: AsyncSession):
     session.add(
         User(
             username="standard",
-            hashed_password=password_hash.hash("password", salt=secrets_config.salt),
+            hashed_password=password_hash.hash("password"),
             email="standard@example.com",
             is_email_verified=True,
             scope=OAuth2Scope.to_str({OAuth2Scope.PROFILE, OAuth2Scope.LIBRARIES_READ}),
@@ -33,7 +31,7 @@ async def _seed_users(session: AsyncSession):
     session.add(
         User(
             username="fresh_admin",
-            hashed_password=password_hash.hash("password", salt=secrets_config.salt),
+            hashed_password=password_hash.hash("password"),
             email="fresh_admin@example.com",
             is_email_verified=True,
             scope=OAuth2Scope.to_str({*OAuth2Scope}),

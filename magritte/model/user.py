@@ -1,3 +1,4 @@
+import secrets
 from datetime import datetime
 from typing import TYPE_CHECKING, Self, override
 
@@ -13,6 +14,11 @@ if TYPE_CHECKING:
     from .extension import Extension
     from .library import Library
     from .notification import Notification
+
+
+def generate_session_key() -> str:
+    """Generate a random key to embed in a user's access tokens."""
+    return secrets.token_hex(32)
 
 
 class UserLibraryLink(SQLModel, table=True):
@@ -123,6 +129,13 @@ class User(LibraryModel, table=True):
     scope: str = Field(
         description="The user's enabled scopes",
     )
+    session_key: str = Field(
+        default_factory=generate_session_key,
+        description=(
+            "A random key embedded in this user's access tokens. "
+            "Changing it revokes every token issued to the user."
+        ),
+    )
     enable_playback_events: bool = Field(
         default=True,
         description="Whether the user has enabled playback events",
@@ -145,6 +158,10 @@ class User(LibraryModel, table=True):
         ondelete="SET NULL",
         description="ID of the artwork set as the cover of this user",
     )
+
+    def revoke_tokens(self):
+        """Revoke every session and feature token issued to this user."""
+        self.session_key = generate_session_key()
 
     @property
     def scopes(self) -> set[OAuth2Scope]:

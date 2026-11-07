@@ -14,12 +14,13 @@ from magritte.auth import (
     FeatureScope,
     authenticate_user,
     create_user,
+    create_verify_email_token,
     get_feature_user,
     password_hash,
     send_reset_password_email,
     send_verification_email,
 )
-from magritte.config import config, get_secrets_config
+from magritte.config import config
 from magritte.db import get_db_session
 from magritte.email import EmailClient, get_email_client
 from magritte.model.user import User
@@ -114,14 +115,20 @@ async def sign_up(
 
             new_user.email = sign_up.email
             new_user.is_email_verified = False
+
+        await session.flush()
+
+        if email_client is not None and new_user.email is not None:
+            token, expires_at = create_verify_email_token(new_user)
             background_tasks.add_task(
                 send_verification_email,
                 email_client,
                 user_email=new_user.email,
                 user_username=new_user.username,
+                token=token,
+                expires_at=expires_at,
             )
 
-        await session.flush()
         return UserProfileMeRead(**new_user.model_dump())
     except IntegrityError as e:
         raise HTTPException(
@@ -217,9 +224,7 @@ async def reset_password(
         )
 
     token = secrets.token_hex(32)
-    user.hashed_reset_password_token = password_hash.hash(
-        token, salt=get_secrets_config().salt
-    )
+    user.hashed_reset_password_token = password_hash.hash(token)
     user.reset_password_token_created_at = datetime.now(UTC)
 
     await session.flush()
@@ -280,12 +285,12 @@ async def reset_password_complete(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token"
         )
 
-    user.hashed_password = password_hash.hash(
-        complete_reset_password.new_password,
-        salt=get_secrets_config().salt,
-    )
+    user.hashed_password = password_hash.hash(complete_reset_password.new_password)
     user.hashed_reset_password_token = None
     user.reset_password_token_created_at = None
+    # Sign out every existing session, which may belong to whoever
+    # had access to the account before the password was reset
+    user.revoke_tokens()
 
     await session.flush()
 

@@ -19,6 +19,7 @@ from sqlmodel import col, select, update
 from magritte.auth import (
     FeatureScope,
     create_feature_token,
+    create_verify_email_token,
     get_current_user,
     get_feature_user,
     send_verification_email,
@@ -113,11 +114,14 @@ async def update_me(
         current_user.is_email_verified = False
 
         if email_client is not None:
+            token, expires_at = create_verify_email_token(current_user)
             background_tasks.add_task(
                 send_verification_email,
                 email_client,
                 user_email=current_user.email,
                 user_username=current_user.username,
+                token=token,
+                expires_at=expires_at,
             )
 
     await session.flush()
@@ -296,7 +300,7 @@ async def stream_user_events_preflight(
     ],
 ):
     token, _ = create_feature_token(
-        subject=current_user.username,
+        user=current_user,
         scope=FeatureScope.USER_EVENTS_STREAM,
         expire_after=timedelta(seconds=30),
     )
@@ -533,7 +537,7 @@ async def read_files_preflight(
     ],
 ):
     token, expires_at = create_feature_token(
-        subject=current_user.username,
+        user=current_user,
         scope=FeatureScope.FILES_READ,
         expire_after=timedelta(hours=1),
     )

@@ -1,3 +1,6 @@
+import base64
+import binascii
+import hmac
 import logging
 from datetime import UTC, datetime, timedelta
 from enum import Enum
@@ -35,13 +38,85 @@ oauth2_scheme = OAuth2PasswordBearer(
 password_hash = PasswordHash.recommended()
 
 
+def _uses_shared_salt(hashed_password: str) -> bool:
+    """
+    Check whether a password hash was created with the instance-wide salt
+    which older versions of Magritte used for every password.
+
+    :param hashed_password: An argon2 hash in PHC string format.
+    :returns: `True` if the hash's salt is the instance-wide salt.
+    """
+    # $argon2id$v=19$m=...,t=...,p=...$<salt>$<hash>
+    parts = hashed_password.split("$")
+    if len(parts) != 6:
+        return False
+    encoded_salt = parts[4]
+    try:
+        salt = base64.b64decode(encoded_salt + "=" * (-len(encoded_salt) % 4))
+    except (ValueError, binascii.Error):
+        return False
+    return hmac.compare_digest(salt, get_secrets_config().salt)
+
+
+def _verify_user_password(user: User, password: str) -> bool:
+    """
+    Verify a user's password, upgrading the stored hash if it uses outdated
+    parameters or the instance-wide salt older versions of Magritte used.
+
+    :param user: The user whose password to check.
+    :param password: The password to check.
+    :returns: `True` if the password is correct.
+    """
+    is_valid, updated_hash = password_hash.verify_and_update(
+        password, user.hashed_password
+    )
+    if not is_valid:
+        return False
+    if updated_hash is not None:
+        user.hashed_password = updated_hash
+    elif _uses_shared_salt(user.hashed_password):
+        user.hashed_password = password_hash.hash(password)
+    return True
+
+
+def _read_token_subject(to_decode: dict[str, Any]) -> tuple[int, str]:
+    """
+    Read and validate the user ID and session key claims of a decoded token.
+
+    :raises: A `jwt.InvalidTokenError` if either claim is missing or malformed.
+    """
+    subject = to_decode.get("sub")
+    if not isinstance(subject, str) or not subject.isdigit():
+        raise jwt.InvalidTokenError("Bad subject")
+
+    key = to_decode.get("key")
+    if not isinstance(key, str):
+        raise jwt.InvalidTokenError("Bad key")
+
+    return int(subject), key
+
+
+async def _read_token_user(user_id: int, key: str, session: AsyncSession) -> User:
+    """
+    Read the user a token was issued to, checking the token hasn't been revoked.
+
+    :raises: A `jwt.InvalidTokenError` if the user doesn't exist or the token's
+    key no longer matches the user's session key.
+    """
+    user = await session.get(User, user_id)
+    if not user or not hmac.compare_digest(key, user.session_key):
+        raise jwt.InvalidTokenError("Invalid user")
+    return user
+
+
 def _create_access_token(
-    subject: str,
+    user: User,
     scopes: set[OAuth2Scope] = set(),
     expire_after: timedelta | None = timedelta(weeks=4),
 ):
     to_encode = dict[str, Any]()
-    to_encode["sub"] = subject
+    to_encode["sub"] = str(user.id)
+    to_encode["key"] = user.session_key
     if scopes:
         to_encode["scope"] = OAuth2Scope.to_str(scopes)
     if expire_after:
@@ -51,15 +126,13 @@ def _create_access_token(
     )
 
 
-def _read_access_token(token: str) -> tuple[str, set[OAuth2Scope]]:
+def _read_access_token(token: str) -> tuple[int, str, set[OAuth2Scope]]:
     to_decode = jwt.decode(
         token,
         get_secrets_config().session_token_secret,
         algorithms=[config.token_algorithm],
     )
-    subject = to_decode.get("sub")
-    if not isinstance(subject, str):
-        raise jwt.InvalidTokenError("Bad subject")
+    user_id, key = _read_token_subject(to_decode)
 
     scope = to_decode.get("scope")
     if not isinstance(scope, str):
@@ -67,7 +140,7 @@ def _read_access_token(token: str) -> tuple[str, set[OAuth2Scope]]:
 
     scopes = OAuth2Scope.from_str(scope)
 
-    return subject, scopes
+    return user_id, key, scopes
 
 
 async def create_user(
@@ -90,7 +163,7 @@ async def create_user(
         }
     new_user = User(
         username=username,
-        hashed_password=password_hash.hash(password, salt=get_secrets_config().salt),
+        hashed_password=password_hash.hash(password),
         scope=OAuth2Scope.to_str(scopes),
     )
     session.add(new_user)
@@ -109,12 +182,12 @@ async def authenticate_user(
         user = await User.read_by_username(username, session)
     if not user:
         return None
-    if not password_hash.verify(password, user.hashed_password):
+    if not _verify_user_password(user, password):
         return None
 
     return Token(
         scopes=list(user.scopes),
-        access_token=_create_access_token(user.username, user.scopes),
+        access_token=_create_access_token(user, user.scopes),
         token_type="bearer",
     )
 
@@ -125,10 +198,8 @@ async def get_current_user(
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     try:
-        username, token_scopes = _read_access_token(token)
-        user = await User.read_by_username(username, session)
-        if not user:
-            raise jwt.InvalidTokenError("Invalid user")
+        user_id, key, token_scopes = _read_access_token(token)
+        user = await _read_token_user(user_id, key, session)
     except (jwt.InvalidTokenError, ValidationError) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -179,14 +250,14 @@ class FeatureScope(str, Enum):
 
 def create_feature_token(
     *,
-    subject: str,
+    user: User,
     scope: FeatureScope,
     expire_after: timedelta,
 ) -> tuple[str, datetime]:
     """
     Create a feature access token with the given parameters.
 
-    :param subject: The subject the token grants access to, a username.
+    :param user: The user the token grants access as.
     :param scope: The scope of the feature access token. Unlike a session token,
     a feature token may only grant a single scope.
     :param expires_after: How long the feature access token will be valid for.
@@ -195,7 +266,8 @@ def create_feature_token(
 
     expires_at = datetime.now(UTC) + expire_after
     to_encode = dict[str, Any]()
-    to_encode["sub"] = subject
+    to_encode["sub"] = str(user.id)
+    to_encode["key"] = user.session_key
     to_encode["scope"] = scope.value
     to_encode["exp"] = expires_at
     token = jwt.encode(
@@ -204,13 +276,13 @@ def create_feature_token(
     return token, expires_at
 
 
-def _read_feature_token(token: str) -> tuple[str, FeatureScope]:
+def _read_feature_token(token: str) -> tuple[int, str, FeatureScope]:
     """
     Read the contents of a feature access token,
     validating that it's well-formed.
 
     :param token: A feature access token.
-    :returns: Tuple of subject, scope for the caller to further verify.
+    :returns: Tuple of user ID, session key, scope for the caller to further verify.
     :raises: A `jwt.InvalidTokenError` error if the token is malformed.
     """
 
@@ -219,9 +291,7 @@ def _read_feature_token(token: str) -> tuple[str, FeatureScope]:
         get_secrets_config().feature_token_secret,
         algorithms=[config.token_algorithm],
     )
-    subject = to_decode.get("sub")
-    if not isinstance(subject, str):
-        raise jwt.InvalidTokenError("Bad subject")
+    user_id, key = _read_token_subject(to_decode)
 
     raw_scope = to_decode.get("scope")
     if not isinstance(raw_scope, str):
@@ -232,7 +302,7 @@ def _read_feature_token(token: str) -> tuple[str, FeatureScope]:
     except ValueError as e:
         raise jwt.InvalidTokenError("Invalid scope") from e
 
-    return subject, scope
+    return user_id, key, scope
 
 
 @lru_cache()
@@ -256,10 +326,8 @@ def get_feature_user(required_scope: FeatureScope):
         session: Annotated[AsyncSession, Depends(get_db_session)],
     ) -> User:
         try:
-            username, scope = _read_feature_token(token)
-            user = await User.read_by_username(username, session)
-            if not user:
-                raise jwt.InvalidTokenError("Invalid user")
+            user_id, key, scope = _read_feature_token(token)
+            user = await _read_token_user(user_id, key, session)
         except (jwt.InvalidTokenError, ValidationError) as e:
             if conn.scope["type"] == "websocket":
                 raise WebSocketException(
@@ -289,19 +357,29 @@ def get_feature_user(required_scope: FeatureScope):
     return get_feature_user
 
 
+def create_verify_email_token(user: User) -> tuple[str, datetime]:
+    """
+    Create a token which allows a user to verify their email.
+
+    :param user: The user whose email to verify. Must already be flushed to the DB.
+    :returns: Tuple of token, expires at.
+    """
+    return create_feature_token(
+        user=user,
+        scope=FeatureScope.USER_VERIFY_EMAIL,
+        expire_after=timedelta(hours=1),
+    )
+
+
 async def send_verification_email(
     email_client: EmailClient,
     *,
     user_email: str,
     user_username: str,
+    token: str,
+    expires_at: datetime,
 ):
     try:
-        token, expires_at = create_feature_token(
-            subject=user_username,
-            scope=FeatureScope.USER_VERIFY_EMAIL,
-            expire_after=timedelta(hours=1),
-        )
-
         text, html = await render_email_template(
             "verify_email",
             {

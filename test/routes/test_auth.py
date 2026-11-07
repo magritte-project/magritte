@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 
 from conftest import AuthFixture, override_dependency
 from magritte.auth import FeatureScope, create_feature_token, password_hash
-from magritte.config import get_secrets_config
 from magritte.email import get_email_client
 from magritte.model.user import User
 
@@ -181,16 +180,18 @@ class TestVerifyEmail:
             user = await session.get_one(User, await auth.user_id)
             return user.is_email_verified
 
-    def _create_token(
+    async def _create_token(
         self,
         auth: AuthFixture,
         scope: FeatureScope = FeatureScope.USER_VERIFY_EMAIL,
     ) -> str:
-        token, _ = create_feature_token(
-            subject=auth.username,
-            scope=scope,
-            expire_after=timedelta(hours=1),
-        )
+        async with auth.db_session() as session:
+            user = await session.get_one(User, await auth.user_id)
+            token, _ = create_feature_token(
+                user=user,
+                scope=scope,
+                expire_after=timedelta(hours=1),
+            )
         return token
 
     @pytest.mark.asyncio
@@ -204,7 +205,7 @@ class TestVerifyEmail:
 
         response = client.post(
             "/verify-email",
-            params={"token": self._create_token(standard_auth)},
+            params={"token": await self._create_token(standard_auth)},
         )
         assert response.status_code == 200
         assert response.json().get("message") == "Email verified"
@@ -222,7 +223,7 @@ class TestVerifyEmail:
 
         response = client.post(
             "/verify-email",
-            params={"token": self._create_token(standard_auth)},
+            params={"token": await self._create_token(standard_auth)},
         )
         assert response.status_code == 501
         assert response.json().get("detail") == "Not configured to support emails"
@@ -240,7 +241,7 @@ class TestVerifyEmail:
 
         response = client.post(
             "/verify-email",
-            params={"token": self._create_token(standard_auth)},
+            params={"token": await self._create_token(standard_auth)},
         )
         assert response.status_code == 400
         assert response.json().get("detail") == "User has no email"
@@ -257,7 +258,7 @@ class TestVerifyEmail:
         # Seeded users already have verified emails
         response = client.post(
             "/verify-email",
-            params={"token": self._create_token(standard_auth)},
+            params={"token": await self._create_token(standard_auth)},
         )
         assert response.status_code == 400
         assert response.json().get("detail") == "Email already verified"
@@ -274,7 +275,7 @@ class TestVerifyEmail:
         response = client.post(
             "/verify-email",
             params={
-                "token": self._create_token(
+                "token": await self._create_token(
                     standard_auth, scope=FeatureScope.FILES_READ
                 )
             },
@@ -354,9 +355,7 @@ class TestResetPasswordComplete:
     ):
         await _update_user(
             auth,
-            hashed_reset_password_token=password_hash.hash(
-                self._token, salt=get_secrets_config().salt
-            ),
+            hashed_reset_password_token=password_hash.hash(self._token),
             reset_password_token_created_at=created_at or datetime.now(UTC),
         )
 
