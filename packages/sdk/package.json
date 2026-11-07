@@ -1,6 +1,6 @@
 {
     "name": "@magritte/sdk",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "SDK for developing Magritte extensions",
     "keywords": [
         "extensions",
