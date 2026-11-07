@@ -19,6 +19,7 @@ from magritte.ingestion.canon import Canonizer
 from magritte.ingestion.files import pre_ingest_uploaded_file, try_ingest_path
 from magritte.model import Library
 from magritte.model.source import Source
+from magritte.utilities.files import is_contained_path
 from magritte.utilities.gc import garbage_collect
 from magritte.utilities.user_events import UserEvent, UserEventType
 from magritte.worker.events import (
@@ -81,6 +82,22 @@ def _send_libraries_changed(
     )
 
 
+def _library_home_path(library: Library) -> Path:
+    """
+    Resolve the directory a library's files are stored in.
+
+    :raises: A `ValueError` if the library has no home path, or if its
+    home path would place it outside of the music home.
+    """
+    if library.home_path is None:
+        raise ValueError(f"Library is streaming only '{library.id}'")
+
+    library_home_path = config.music_home_path.joinpath(library.home_path)
+    if not is_contained_path(library_home_path, config.music_home_path):
+        raise ValueError(f"Library home is outside of the music home '{library.id}'")
+    return library_home_path
+
+
 async def _process_event(
     connection: "Connection",
     event: LibraryWorkerEvent | FileSystemEvent,
@@ -99,14 +116,13 @@ async def _process_event(
                 }
                 _send_notifications_changed(connection, user_ids_to_notify)
                 try:
-                    library_home_path = config.music_home_path.joinpath(
-                        library.home_path
-                    )
+                    library_home_path = _library_home_path(library)
                     canonizer = Canonizer.from_file()
                     if event.only_paths is not None:
                         for path in event.only_paths:
-                            if not path.is_relative_to(library_home_path):
+                            if not is_contained_path(path, library_home_path):
                                 logger.warning(f"*** Ignoring invalid subpath: {path}")
+                                continue
 
                             await try_ingest_path(
                                 path=path,
@@ -137,7 +153,7 @@ async def _process_event(
                     raise ValueError(f"Library is streaming only '{event.library_id}'")
 
                 canonizer = Canonizer.from_file()
-                library_home_path = config.music_home_path.joinpath(library.home_path)
+                library_home_path = _library_home_path(library)
                 target_directory_paths = set[Path]()
                 for uploaded_file in event.uploaded_files:
                     try:

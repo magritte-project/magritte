@@ -6,7 +6,7 @@ from magritte.schemas.artwork import ArtworkKind
 from magritte.schemas.base import (
     EMBEDDED_TEXT_MAX_LENGTH,
     TAG_MAX_LENGTH,
-    URL_MAX_LENGTH,
+    ClientUrl,
 )
 
 INGEST_BATCH_MAX_SIZE: int = 50
@@ -15,7 +15,7 @@ INGEST_BATCH_MAX_SIZE: int = 50
 
 class IngestArtwork(BaseModel):
     kind: ArtworkKind
-    image_url: Annotated[str, Field(max_length=URL_MAX_LENGTH)]
+    image_url: ClientUrl
     background_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     primary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     secondary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
@@ -23,7 +23,7 @@ class IngestArtwork(BaseModel):
 
 
 class IngestSource(BaseModel):
-    url: Annotated[str, Field(max_length=URL_MAX_LENGTH)]
+    url: ClientUrl
     mime_type: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     extension_manifest_id: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     extension_tag: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]

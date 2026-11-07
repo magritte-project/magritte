@@ -15,6 +15,7 @@ from sqlmodel import and_, col, select
 from magritte.auth import get_current_user
 from magritte.config import config
 from magritte.db import get_db_session
+from magritte.model.access import artwork_libraries, source_libraries
 from magritte.model.album import Album
 from magritte.model.artist import Artist
 from magritte.model.artwork import Artwork
@@ -161,7 +162,13 @@ async def ingest_songs(
                 ),
                 session,
             )
-            if not inserted:
+            # Only update an existing artwork if every library using it permits editing
+            if not inserted and await Library.user_has_permission_on_all(
+                await artwork_libraries(artwork, session),
+                current_user.id,
+                session,
+                can_edit=True,
+            ):
                 artwork.background_color = create_artwork.background_color
                 artwork.primary_color = create_artwork.primary_color
                 artwork.secondary_color = create_artwork.secondary_color
@@ -179,7 +186,13 @@ async def ingest_songs(
                 col(Source.url) == create_source.url,
                 session,
             )
-            if not inserted:
+            # Only update an existing source if every library using it permits editing
+            if not inserted and await Library.user_has_permission_on_all(
+                await source_libraries(source),
+                current_user.id,
+                session,
+                can_edit=True,
+            ):
                 source.mime_type = create_source.mime_type
                 source.is_invalid = False
                 source.extension_manifest_id = create_source.extension_manifest_id

@@ -24,7 +24,7 @@ from magritte.model.notification import Notification
 from magritte.model.song import Song
 from magritte.model.source import Source
 from magritte.schemas.artwork import ArtworkKind
-from magritte.utilities.files import path_as_file_uri
+from magritte.utilities.files import is_contained_path, path_as_file_uri
 
 logger = logging.getLogger("Ingestions")
 
@@ -267,6 +267,17 @@ def _resolve_uploaded_file_mime_type(
     return None
 
 
+def _safe_path_component(name: str, fallback: str) -> str:
+    """
+    Sanitize a tag so it can be used as a single path component. Names such as
+    `..` survive `sanitize_filename`, so they are replaced with the fallback.
+    """
+    sanitized_name = sanitize_filename(name).strip()
+    if sanitized_name in ("", ".", ".."):
+        return fallback
+    return sanitized_name
+
+
 def pre_ingest_uploaded_file(
     library_home_path: Path,
     temp_path: str,
@@ -288,15 +299,19 @@ def pre_ingest_uploaded_file(
             raise ValueError("Could not resolve extension")
 
         track_number = tags.track or 0
-        title = sanitize_filename(tags.title or "Unknown Title")
-        artist_name = sanitize_filename(
-            canonizer.fix_artist(tags.artist) or "Unknown Artist"
+        title = _safe_path_component(tags.title or "", "Unknown Title")
+        artist_name = _safe_path_component(
+            canonizer.fix_artist(tags.artist) or "", "Unknown Artist"
         )
-        album_title = sanitize_filename(
-            canonizer.fix_album(tags.album) or "Unknown Album"
+        album_title = _safe_path_component(
+            canonizer.fix_album(tags.album) or "", "Unknown Album"
         )
 
         target_directory_path = library_home_path.joinpath(artist_name, album_title)
+        if not is_contained_path(target_directory_path, library_home_path):
+            raise ValueError(
+                f"Upload target is outside of the library: {target_directory_path}"
+            )
 
         filename = f"{track_number} {title}{extension}"
         while target_directory_path.joinpath(filename).exists():

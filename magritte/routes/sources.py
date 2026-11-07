@@ -1,5 +1,4 @@
 from typing import Annotated
-from urllib.parse import unquote, urlparse
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
 from fastapi.responses import FileResponse
@@ -8,8 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import and_, col, select
 
 from magritte.auth import FeatureScope, get_current_user, get_feature_user
+from magritte.config import config
 from magritte.db import get_db_session
 from magritte.model import Library, Song
+from magritte.model.access import source_accessible_by, source_libraries
 from magritte.model.source import Source
 from magritte.model.user import User
 from magritte.schemas.auth import OAuth2Scope
@@ -22,6 +23,7 @@ from magritte.schemas.source import (
     SourceRead,
     SourceUpdate,
 )
+from magritte.utilities.files import file_uri_as_contained_path, is_file_uri
 
 router = APIRouter(prefix="/sources")
 
@@ -53,6 +55,10 @@ async def read_all_sources(
                 col(Song.libraries).any(col(Library.id) == query.library_id)
             )
         )
+    else:
+        where_criteria.append(
+            source_accessible_by(current_user.id, include_orphans=True)
+        )
     if query.extension_manifest_id is not None:
         where_criteria.append(
             col(Source.extension_manifest_id) == query.extension_manifest_id
@@ -79,11 +85,13 @@ async def read_all_sources(
 @router.post(
     "/create",
     response_model=SourceRead,
-    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])],
     summary="Create a source",
 )
 async def create_source(
     create_source: SourceCreate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     source, inserted = await Source(
@@ -95,7 +103,13 @@ async def create_source(
         col(Source.url) == create_source.url,
         session,
     )
-    if not inserted:
+    # Only update an existing source if every library using it permits the user to edit
+    if not inserted and await Library.user_has_permission_on_all(
+        await source_libraries(source),
+        current_user.id,
+        session,
+        can_edit=True,
+    ):
         source.mime_type = create_source.mime_type
         source.is_invalid = False
         source.extension_manifest_id = create_source.extension_manifest_id
@@ -106,16 +120,23 @@ async def create_source(
 @router.patch(
     "/{source_id}",
     response_model=SourceRead,
-    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])],
     summary="Update a source",
 )
 async def update_source(
     source_id: int,
     update_source: SourceUpdate,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     source = await session.get(Source, source_id)
-    if not source:
+    if not source or not await Library.user_has_permission_on_all(
+        await source_libraries(source),
+        current_user.id,
+        session,
+        can_edit=True,
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Source not found"
         )
@@ -131,15 +152,22 @@ async def update_source(
 
 @router.delete(
     "/{source_id}",
-    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])],
     summary="Delete a source",
 )
 async def delete_source(
     source_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_WRITE])
+    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     source = await session.get(Source, source_id)
-    if not source:
+    if not source or not await Library.user_has_permission_on_all(
+        await source_libraries(source),
+        current_user.id,
+        session,
+        can_remove=True,
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Source not found"
         )
@@ -194,14 +222,21 @@ async def read_source_changes(
 @router.get(
     "/{source_id}",
     response_model=SourceRead,
-    dependencies=[Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])],
     summary="Read a source",
 )
 async def read_source(
     source_id: int,
+    current_user: Annotated[
+        User, Security(get_current_user, scopes=[OAuth2Scope.LIBRARIES_READ])
+    ],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
-    source = await session.get(Source, source_id)
+    source = await session.scalar(
+        select(Source).where(
+            col(Source.id) == source_id,
+            source_accessible_by(current_user.id, include_orphans=True),
+        )
+    )
     if not source:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Source not found"
@@ -213,28 +248,36 @@ async def read_source(
 @router.get(
     "/{source_id}/file",
     response_class=FileResponse,
-    dependencies=[
-        Depends(get_feature_user(FeatureScope.FILES_READ)),
-    ],
     summary="Stream the file of a source",
 )
 async def stream_source_file(
     source_id: int,
+    current_user: Annotated[User, Depends(get_feature_user(FeatureScope.FILES_READ))],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
-    source = await session.get(Source, source_id)
+    source = await session.scalar(
+        select(Source).where(
+            col(Source.id) == source_id,
+            source_accessible_by(current_user.id),
+        )
+    )
     if not source:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Source not found"
         )
 
-    source_url = urlparse(source.url)
-    if source_url.scheme != "file":
+    if not is_file_uri(source.url):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Source is not a file",
         )
-    source_file_path = unquote(source_url.path)
+
+    # Only serve files from the music home, even if a stored URL points elsewhere
+    source_file_path = file_uri_as_contained_path(source.url, [config.music_home_path])
+    if source_file_path is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Source file not found"
+        )
 
     return FileResponse(
         path=source_file_path,

@@ -7,6 +7,7 @@ from sqlmodel import col
 
 from magritte.auth import get_current_user
 from magritte.db import get_db_session
+from magritte.model.access import read_album_in_library, read_artist_in_library
 from magritte.model.album import Album
 from magritte.model.artist import Artist
 from magritte.model.library import Library
@@ -41,7 +42,7 @@ async def read_library_album(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    album = await session.get(Album, album_id)
+    album = await read_album_in_library(album_id, library_id, session)
     if not album:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Album not found"
@@ -79,10 +80,29 @@ async def update_library_album(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    album = await session.get(Album, album_id)
+    album = await read_album_in_library(album_id, library_id, session)
     if not album:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Album not found"
+        )
+
+    # Albums can be shared between libraries, so this must be allowed in all of them
+    if not await Library.user_has_permission_on_all(
+        await album.awaitable_attrs.libraries,
+        current_user.id,
+        session,
+        can_edit=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Album is shared with a library you cannot edit",
+        )
+
+    if update_album.artist_id is not None and not await read_artist_in_library(
+        update_album.artist_id, library_id, session
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Artist not found"
         )
 
     changes = update_album.model_dump(
@@ -125,10 +145,22 @@ async def delete_library_album(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    album = await session.get(Album, album_id)
+    album = await read_album_in_library(album_id, library_id, session)
     if not album:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Album not found"
+        )
+
+    # Albums can be shared between libraries, so this must be allowed in all of them
+    if not await Library.user_has_permission_on_all(
+        await album.awaitable_attrs.libraries,
+        current_user.id,
+        session,
+        can_remove=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Album is shared with a library you cannot remove from",
         )
 
     await session.delete(album)

@@ -1,9 +1,9 @@
 from enum import Enum
 from typing import TYPE_CHECKING, Annotated, Self
 
-from pydantic import BaseModel, Field, field_serializer, field_validator
+from pydantic import BaseModel, Field, field_serializer
 
-from magritte.schemas.base import TAG_MAX_LENGTH, URL_MAX_LENGTH
+from magritte.schemas.base import TAG_MAX_LENGTH, ClientUrl
 
 if TYPE_CHECKING:
     from magritte.model.artwork import Artwork
@@ -15,34 +15,20 @@ class ArtworkKind(str, Enum):
 
 class ArtworkCreate(BaseModel):
     kind: ArtworkKind
-    image_url: Annotated[str, Field(max_length=URL_MAX_LENGTH)]
+    image_url: ClientUrl
     background_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     primary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     secondary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     tertiary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
 
-    @field_validator("image_url", mode="before")
-    @classmethod
-    def reject_file_image_url(cls, image_url: str):
-        if image_url.startswith("file:"):
-            raise ValueError("Forbidden URL")
-        return image_url
-
 
 class ArtworkUpdate(BaseModel):
     kind: ArtworkKind | None = None
-    image_url: Annotated[str | None, Field(max_length=URL_MAX_LENGTH)] = None
+    image_url: ClientUrl | None = None
     background_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
     primary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
     secondary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
     tertiary_color: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
-
-    @field_validator("image_url", mode="before")
-    @classmethod
-    def reject_file_image_url(cls, image_url: str | None):
-        if image_url is not None and image_url.startswith("file:"):
-            raise ValueError("Forbidden URL")
-        return image_url
 
 
 class ArtworkRead(BaseModel):

@@ -1,7 +1,9 @@
 from enum import Enum
 from typing import Annotated
 
-from pydantic import BaseModel, Field
+from pydantic import AfterValidator, BaseModel, Field
+
+from magritte.utilities.files import is_file_uri
 
 TAG_MAX_LENGTH: int = 1000
 """The maximum length of a common tag such as the name of a song."""
@@ -17,6 +19,23 @@ URL_MAX_LENGTH: int = 8000
 
 LIMIT_MAX: int = 250
 """The maximum number of items to read per page."""
+
+
+def _reject_file_url(url: str) -> str:
+    if is_file_uri(url):
+        raise ValueError("Forbidden URL")
+    return url
+
+
+ClientUrl = Annotated[
+    str,
+    Field(max_length=URL_MAX_LENGTH),
+    AfterValidator(_reject_file_url),
+]
+"""
+A URL provided by a client. Local `file:` URLs are rejected because only
+Magritte itself may create sources and artworks backed by local files.
+"""
 
 
 class SortOrder(str, Enum):

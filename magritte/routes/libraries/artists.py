@@ -7,6 +7,7 @@ from sqlmodel import col
 
 from magritte.auth import get_current_user
 from magritte.db import get_db_session
+from magritte.model.access import read_artist_in_library
 from magritte.model.artist import Artist
 from magritte.model.library import Library
 from magritte.model.user import User
@@ -40,7 +41,7 @@ async def read_library_artist(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    artist = await session.get(Artist, artist_id)
+    artist = await read_artist_in_library(artist_id, library_id, session)
     if not artist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Artist not found"
@@ -78,10 +79,22 @@ async def update_library_artist(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    artist = await session.get(Artist, artist_id)
+    artist = await read_artist_in_library(artist_id, library_id, session)
     if not artist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Artist not found"
+        )
+
+    # Artists can be shared between libraries, so this must be allowed in all of them
+    if not await Library.user_has_permission_on_all(
+        await artist.awaitable_attrs.libraries,
+        current_user.id,
+        session,
+        can_edit=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Artist is shared with a library you cannot edit",
         )
 
     changes = update_artist.model_dump(
@@ -123,10 +136,22 @@ async def delete_library_artist(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    artist = await session.get(Artist, artist_id)
+    artist = await read_artist_in_library(artist_id, library_id, session)
     if not artist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Artist not found"
+        )
+
+    # Artists can be shared between libraries, so this must be allowed in all of them
+    if not await Library.user_has_permission_on_all(
+        await artist.awaitable_attrs.libraries,
+        current_user.id,
+        session,
+        can_remove=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Artist is shared with a library you cannot remove from",
         )
 
     await session.delete(artist)

@@ -3,18 +3,18 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field, field_serializer
 
-from magritte.schemas.base import TAG_MAX_LENGTH, URL_MAX_LENGTH, PaginatedQuery
+from magritte.schemas.base import TAG_MAX_LENGTH, ClientUrl, PaginatedQuery
 
 
 class SourceCreate(BaseModel):
-    url: Annotated[str, Field(max_length=URL_MAX_LENGTH)]
+    url: ClientUrl
     mime_type: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     extension_manifest_id: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
     extension_tag: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)]
 
 
 class SourceUpdate(BaseModel):
-    url: Annotated[str | None, Field(max_length=URL_MAX_LENGTH)] = None
+    url: ClientUrl | None = None
     mime_type: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = None
     is_invalid: bool | None = None
     extension_manifest_id: Annotated[str | None, Field(max_length=TAG_MAX_LENGTH)] = (

@@ -72,6 +72,55 @@ class Library(LibraryModel, table=True):
         return permissions
 
     @classmethod
+    def ids_for_user(
+        cls,
+        user_id: int,
+        can_add: bool | None = None,
+        can_edit: bool | None = None,
+        can_remove: bool | None = None,
+    ):
+        """
+        Build a query selecting the IDs of the libraries a user belongs to.
+
+        :param user_id: The user whose libraries to select.
+        :param can_add: If specified, the add permission the user must have.
+        :param can_edit: If specified, the edit permission the user must have.
+        :param can_remove: If specified, the remove permission the user must have.
+        :returns: A select statement suitable for use with `in_`.
+        """
+        return select(col(UserLibraryLink.library_id)).where(
+            col(UserLibraryLink.user_id) == user_id,
+            *cls._build_permissions(can_add, can_edit, can_remove),
+        )
+
+    @classmethod
+    async def user_has_permission_on_all(
+        cls,
+        libraries: list["Library"],
+        user_id: int,
+        session: AsyncSession,
+        can_add: bool | None = None,
+        can_edit: bool | None = None,
+        can_remove: bool | None = None,
+    ) -> bool:
+        """
+        Check whether a user has the given permissions on every one of the given libraries.
+        Used before changing shared media, so a user cannot change media in a library
+        they only have partial access to by way of another library.
+
+        :param libraries: The libraries to check.
+        :param user_id: The user to check.
+        :param session: The DB to read from.
+        :returns: `True` if the user has the permissions on every library.
+        """
+        allowed_ids = set(
+            await session.scalars(
+                cls.ids_for_user(user_id, can_add, can_edit, can_remove)
+            )
+        )
+        return all(library.id in allowed_ids for library in libraries)
+
+    @classmethod
     async def read_all(
         cls,
         user_id: int,

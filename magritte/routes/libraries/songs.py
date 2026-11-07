@@ -15,13 +15,18 @@ from sqlmodel import col
 
 from magritte.auth import get_current_user
 from magritte.db import get_db_session
+from magritte.model.access import (
+    read_accessible_artworks,
+    read_accessible_sources,
+    read_album_in_library,
+    read_artist_in_library,
+    read_song_in_library,
+)
 from magritte.model.album import Album
 from magritte.model.artist import Artist
-from magritte.model.artwork import Artwork
 from magritte.model.ignored_resource import IgnoredResource
 from magritte.model.library import Library
 from magritte.model.song import Song
-from magritte.model.source import Source
 from magritte.model.user import User
 from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.auth import OAuth2Scope
@@ -55,7 +60,7 @@ async def read_library_song(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    song = await session.get(Song, song_id)
+    song = await read_song_in_library(song_id, library_id, session)
     if not song:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Song not found"
@@ -98,10 +103,22 @@ async def update_library_song(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    song = await session.get(Song, song_id)
+    song = await read_song_in_library(song_id, library_id, session)
     if not song:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Song not found"
+        )
+
+    # Songs can be shared between libraries, so editing one must be allowed in all of them
+    if not await Library.user_has_permission_on_all(
+        await song.awaitable_attrs.libraries,
+        current_user.id,
+        session,
+        can_edit=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Song is shared with a library you cannot edit",
         )
 
     changes = update_song.model_dump(
@@ -112,16 +129,50 @@ async def update_library_song(
         setattr(song, name, value)
 
     if "album_id" in update_song.model_fields_set:
-        song.album = await Album.get_one_or_none(update_song.album_id, session)
+        if update_song.album_id is None:
+            song.album = None
+        else:
+            album = await read_album_in_library(
+                update_song.album_id, library_id, session
+            )
+            if not album:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, detail="Album not found"
+                )
+            song.album = album
 
     if "artist_id" in update_song.model_fields_set:
-        song.artist = await Artist.get_one_or_none(update_song.artist_id, session)
+        if update_song.artist_id is None:
+            song.artist = None
+        else:
+            artist = await read_artist_in_library(
+                update_song.artist_id, library_id, session
+            )
+            if not artist:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, detail="Artist not found"
+                )
+            song.artist = artist
 
     if update_song.artwork_ids:
-        song.artworks = await Artwork.get_many(update_song.artwork_ids, session)
+        artworks = await read_accessible_artworks(
+            update_song.artwork_ids, current_user.id, session
+        )
+        if artworks is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Artwork not found"
+            )
+        song.artworks = artworks
 
     if update_song.source_ids:
-        song.sources = await Source.get_many(update_song.source_ids, session)
+        sources = await read_accessible_sources(
+            update_song.source_ids, current_user.id, session
+        )
+        if sources is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Source not found"
+            )
+        song.sources = sources
 
     song.has_altered_metadata = True
 
@@ -163,10 +214,22 @@ async def delete_library_song(
             status_code=status.HTTP_404_NOT_FOUND, detail="Library not found"
         )
 
-    song = await session.get(Song, song_id)
+    song = await read_song_in_library(song_id, library_id, session)
     if not song:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Song not found"
+        )
+
+    # Deleting a song removes it from every library, so it must be allowed in all of them
+    if not await Library.user_has_permission_on_all(
+        await song.awaitable_attrs.libraries,
+        current_user.id,
+        session,
+        can_remove=True,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Song is shared with a library you cannot remove from",
         )
 
     if suppress_source_file:

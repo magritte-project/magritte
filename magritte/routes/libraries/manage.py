@@ -18,6 +18,7 @@ from magritte.auth import get_current_user
 from magritte.config import config
 from magritte.db import get_db_session
 from magritte.model import Artwork
+from magritte.model.access import read_accessible_artworks
 from magritte.model.ignored_resource import IgnoredResource
 from magritte.model.library import Library
 from magritte.model.user import User, UserLibraryLink
@@ -35,9 +36,22 @@ from magritte.schemas.library import (
     LibraryRead,
     LibraryUpdate,
 )
+from magritte.utilities.files import is_contained_path, is_safe_relative_path
 from magritte.worker import sync_library
 
 router = APIRouter()
+
+
+async def _read_cover_artwork(
+    artwork_id: int, user_id: int, session: AsyncSession
+) -> Artwork:
+    """Read an artwork to use as a library cover, provided the user can access it."""
+    artworks = await read_accessible_artworks([artwork_id], user_id, session)
+    if not artworks:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Artwork not found"
+        )
+    return artworks[0]
 
 
 @router.get(
@@ -72,15 +86,19 @@ async def read_libraries(
 async def read_library_home_subpaths(
     relative_to: Annotated[str, Query(max_length=PATH_MAX_LENGTH)],
 ):
-    relative_to_path = Path(relative_to)
-    if relative_to_path.is_absolute():
+    if not is_safe_relative_path(relative_to):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="relative_to not relative",
         )
 
+    relative_to_path = Path(relative_to)
     absolute_path = config.music_home_path.joinpath(relative_to_path)
-    if absolute_path.is_symlink() or not absolute_path.is_dir():
+    if (
+        absolute_path.is_symlink()
+        or not absolute_path.is_dir()
+        or not is_contained_path(absolute_path, config.music_home_path)
+    ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="relative_to invalid",
@@ -121,7 +139,9 @@ async def create_library(
         name=library_create.name,
         home_path=library_create.home_path,
         uploads_enabled=library_create.uploads_enabled,
-        cover_artwork=await session.get_one(Artwork, library_create.cover_artwork.id)
+        cover_artwork=await _read_cover_artwork(
+            library_create.cover_artwork.id, current_user.id, session
+        )
         if library_create.cover_artwork
         else None,
     )
@@ -181,8 +201,8 @@ async def update_library(
         setattr(library, name, value)
 
     if update_library.cover_artwork:
-        library.cover_artwork = await session.get_one(
-            Artwork, update_library.cover_artwork.id
+        library.cover_artwork = await _read_cover_artwork(
+            update_library.cover_artwork.id, current_user.id, session
         )
     else:
         library.cover_artwork = None

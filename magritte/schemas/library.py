@@ -1,10 +1,10 @@
-from pathlib import Path
 from typing import Annotated
 
 from pydantic import BaseModel, Field, field_validator
 
 from magritte.schemas.artwork import ArtworkRead
 from magritte.schemas.base import PATH_MAX_LENGTH, TAG_MAX_LENGTH
+from magritte.utilities.files import is_safe_relative_path
 
 
 class LibraryCreate(BaseModel):
@@ -15,9 +15,9 @@ class LibraryCreate(BaseModel):
 
     @field_validator("home_path", mode="before")
     @classmethod
-    def reject_file_image_url(cls, home_path: str | None):
-        if home_path is not None and Path(home_path).is_absolute():
-            raise ValueError("home_path must be relative")
+    def reject_unsafe_home_path(cls, home_path: str | None):
+        if home_path is not None and not is_safe_relative_path(home_path):
+            raise ValueError("home_path must be relative and must not contain '..'")
         return home_path
 
 
