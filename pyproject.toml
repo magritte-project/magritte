@@ -7,27 +7,27 @@ license = "GPL-3.0-only"
 requires-python = ">=3.13"
 dependencies = [
     "aiosqlite>=0.22.1",
-    "alembic>=1.20.0",
+    "alembic>=1.20.1",
     "cryptography>=50.0.2",
     "email-validator>=2.3.0",
-    "fastapi>=0.143.1",
+    "fastapi>=0.162.2",
     "greenlet>=3.5.6",
     "httptools>=0.9.0",
-    "httpx2>=2.13.1",
+    "httpx2>=2.16.0",
     "jinja2>=3.1.6",
     "pathvalidate>=3.3.1",
-    "pillow>=12.3.0",
+    "pillow>=13.0.0",
     "pwdlib[argon2]>=0.3.1",
-    "pydantic>=2.14.1",
+    "pydantic>=2.14.3",
     "pyjwt>=2.15.1",
     "python-dotenv>=1.2.4",
-    "python-multipart>=0.0.32",
+    "python-multipart>=0.0.33",
     "sqlmodel>=0.0.48",
     "tinytag>=2.3.2",
     "uvicorn>=0.54.0",
     "uvloop>=0.23.0; sys_platform != 'win32' and sys_platform != 'cygwin' and platform_python_implementation != 'PyPy'",
-    "watchdog>=6.0.0",
-    "websockets>=17.2",
+    "watchdog>=7.1.0",
+    "websockets>=17.4",
 ]
 
 [project.urls]
@@ -42,19 +42,19 @@ desktop = [
     "keyring>=25.7.0",
 ]
 mailtrap = [
-    "mailtrap>=2.11.0"
+    "mailtrap>=3.0.0"
 ]
 
 [dependency-groups]
 dev = [
-    "datamodel-code-generator>=0.83.0",
-    "faker>=40.43.0",
-    "pytest>=9.1.1",
-    "pytest-asyncio>=1.4.0",
-    "ruff>=0.17.0",
+    "datamodel-code-generator>=0.90.0",
+    "faker>=40.44.0",
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1.post1",
+    "ruff>=0.17.4",
     "semver>=3.1.0",
     "tomlkit>=0.15.2",
-    "ty>=0.0.87",
+    "ty>=0.0.98,!=0.0.99",
     "watchfiles>=1.3.0",
 ]
 
